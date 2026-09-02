@@ -72,16 +72,22 @@ GRID: dict[str, list[tuple[dict, int, float | None]]] = {
         ({"C": 0.005}, 45, None),
         ({"C": 0.2}, 91, None),
     ],
-    # Only two points measured so far (C=1 -> 0.6038, C=4 -> 0.5941), and svm's
-    # optimum sits down at 0.02, so the grid leans low. This is the model most
-    # likely to change the conclusion: it is the runner-up by 0.0012 and has
-    # never been swept properly.
+    # Only two points measured before this sweep — C=4 -> 0.5941 and C=1 ->
+    # 0.6038 — both at or above 1, and the score was still climbing as C fell.
+    # Nobody had gone lower, while svm's optimum on this same matrix sits at
+    # 0.02. So the grid runs downhill all the way to 0.02.
+    #
+    # C=2.0 was in this list and was dropped: it falls between two measured
+    # points that bracket it, so its result is interpolable at ~0.599 and it
+    # would have spent one of six cells confirming something already known.
+    # This is the model most likely to overturn the conclusion — runner-up by
+    # 0.0012, which is inside the noise band, and never swept properly.
     "logreg": [
         ({"C": 1.0}, 685, 0.6038),
         ({"C": 0.5}, 500, None),
         ({"C": 0.25}, 400, None),
         ({"C": 0.1}, 300, None),
-        ({"C": 2.0}, 800, None),
+        ({"C": 0.02}, 220, None),
         ({"C": 0.05}, 250, None),
     ],
     # max_features="sqrt" draws 486 of 236.596 columns per split on a matrix

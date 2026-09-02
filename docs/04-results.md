@@ -41,3 +41,6 @@ Selection uses `val`. `test` is scored once, at the end.
 | cat-TREE-xgb100-full | 08-31 08:45 | category | xgb100 | full | province | val | 7159 | macroF1=0.5861 | acc=0.6249 | balAcc=0.6105 | F1@15=0.6157 | top3=0.9239 | 3208.8s | uncommit+dirty |
 | cat-CAL-knn30 | 08-31 10:10 | category | knn(n_neighbors=30) | full | province | val | 7159 | macroF1=0.4059±0.0081 · acc=0.5086 · balAcc=0.3783 · F1@15=0.4268 · top3=0.8127 | 27.0s | uncommit+dirty |
 | cat-CAL-knn30-idle | 08-31 10:46 | category | knn(n_neighbors=30) | full | province | val | 7159 | macroF1=0.4059±0.0081 · acc=0.5086 · balAcc=0.3783 · F1@15=0.4268 · top3=0.8127 | 17.5s | uncommit+dirty |
+| cat-SW-svm-1 | 09-02 03:05 | category | svm(C=0.02) | full | province | val | 7159 | macroF1=0.6050±0.0071 · acc=0.6445 · balAcc=0.6713 · F1@15=0.6376 | 42.2s | 2d30be9b |
+| cat-SW-knn-1 | 09-02 03:07 | category | knn(n_neighbors=30) | full | province | val | 7159 | macroF1=0.4059±0.0081 · acc=0.5086 · balAcc=0.3783 · F1@15=0.4268 · top3=0.8127 | 22.5s | 2d30be9b+dirty |
+| cat-SW-rf-1 | 09-02 03:08 | category | rf(n_estimators=100) | full | province | val | 7159 | macroF1=0.5630±0.0079 · acc=0.6082 · balAcc=0.5844 · F1@15=0.5935 · top3=0.9014 | 55.3s | 2d30be9b+dirty |
