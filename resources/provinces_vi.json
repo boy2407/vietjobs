@@ -1,0 +1,93 @@
+{
+  "_readme": [
+    "District/alias -> province mapping for src/vietjobs/vitext.py (section 2.7).",
+    "",
+    "Fixes a fragmentation found in the data audit: 'hà đông' (859 rows) was a",
+    "separate location value from 'hà nội' (13,232 rows), even though Hà Đông is",
+    "a ward of Hanoi. Same story for the HCMC and Đà Nẵng districts.",
+    "",
+    "Keys are province names; values are the districts and spelling variants that",
+    "should fold into them. Lookup is accent- and punctuation-insensitive, so",
+    "'TP.HCM', 'tp hcm' and 'Tp. Hồ Chí Minh' all resolve through 'tphcm'.",
+    "",
+    "Not exhaustive over all 63 provinces — a province that appears in the data",
+    "under its own name needs no entry, it passes through unchanged. Only the",
+    "districts and aliases that actually cause fragmentation are listed."
+  ],
+
+  "hồ chí minh": [
+    "tphcm", "tp hcm", "hcm", "sai gon", "sài gòn", "saigon", "sgn",
+    "ho chi minh city", "thanh pho ho chi minh",
+    "quận 1", "quận 2", "quận 3", "quận 4", "quận 5", "quận 6", "quận 7",
+    "quận 8", "quận 9", "quận 10", "quận 11", "quận 12",
+    "thủ đức", "bình thạnh", "gò vấp", "phú nhuận", "tân bình", "tân phú",
+    "bình tân", "củ chi", "hóc môn", "bình chánh", "nhà bè", "cần giờ"
+  ],
+
+  "hà nội": [
+    "hanoi", "ha noi", "thủ đô",
+    "ba đình", "hoàn kiếm", "tây hồ", "long biên", "cầu giấy", "đống đa",
+    "hai bà trưng", "hoàng mai", "thanh xuân", "sóc sơn", "đông anh",
+    "gia lâm", "nam từ liêm", "bắc từ liêm", "từ liêm", "thanh trì",
+    "mê linh", "hà đông", "sơn tây", "ba vì", "phúc thọ", "đan phượng",
+    "hoài đức", "quốc oai", "thạch thất", "chương mỹ", "thanh oai",
+    "thường tín", "phú xuyên", "ứng hòa", "mỹ đức"
+  ],
+
+  "đà nẵng": [
+    "danang", "da nang",
+    "hải châu", "thanh khê", "sơn trà", "ngũ hành sơn", "liên chiểu",
+    "cẩm lệ", "hòa vang"
+  ],
+
+  "hải phòng": [
+    "haiphong", "hai phong",
+    "hồng bàng", "ngô quyền", "lê chân", "hải an", "kiến an", "đồ sơn",
+    "dương kinh", "an dương", "an lão", "thủy nguyên", "tiên lãng",
+    "vĩnh bảo", "cát hải", "kiến thụy"
+  ],
+
+  "cần thơ": [
+    "cantho", "can tho",
+    "ninh kiều", "bình thủy", "cái răng", "ô môn", "thốt nốt",
+    "phong điền", "cờ đỏ", "thới lai", "vĩnh thạnh"
+  ],
+
+  "bình dương": ["thủ dầu một", "dĩ an", "thuận an", "bến cát", "tân uyên"],
+  "đồng nai": ["biên hòa", "long khánh", "nhơn trạch", "trảng bom", "long thành"],
+  "bà rịa vũng tàu": ["vũng tàu", "bà rịa", "phú mỹ", "vung tau", "brvt"],
+  "khánh hòa": ["nha trang", "cam ranh", "ninh hòa"],
+  "thừa thiên huế": ["huế", "hue"],
+  "quảng ninh": ["hạ long", "cẩm phả", "uông bí", "móng cái"],
+  "nghệ an": ["vinh", "cửa lò"],
+  "lâm đồng": ["đà lạt", "da lat", "bảo lộc"],
+  "bắc ninh": ["từ sơn", "tu son"],
+  "thanh hóa": ["sầm sơn", "bỉm sơn"],
+  "kiên giang": ["rạch giá", "phú quốc", "hà tiên"],
+  "an giang": ["long xuyên", "châu đốc"],
+  "tiền giang": ["mỹ tho", "gò công"],
+  "vĩnh long": ["bình minh"],
+  "hưng yên": ["mỹ hào", "văn lâm"],
+  "hà nam": ["phủ lý"],
+  "nam định": ["thành phố nam định"],
+  "thái nguyên": ["sông công", "phổ yên"],
+  "phú thọ": ["việt trì"],
+  "vĩnh phúc": ["phúc yên", "vĩnh yên"],
+  "hải dương": ["chí linh", "kinh môn"],
+  "bình định": ["quy nhơn", "qui nhơn"],
+  "quảng nam": ["hội an", "tam kỳ", "điện bàn"],
+  "quảng ngãi": ["đức phổ"],
+  "bình thuận": ["phan thiết"],
+  "ninh thuận": ["phan rang", "phan rang tháp chàm"],
+  "đắk lắk": ["buôn ma thuột", "dak lak", "đăk lăk"],
+  "gia lai": ["pleiku", "playku"],
+  "long an": ["tân an", "bến lức", "đức hòa"],
+  "tây ninh": ["trảng bàng", "gò dầu"],
+  "cà mau": ["thành phố cà mau"],
+  "bạc liêu": ["giá rai"],
+  "sóc trăng": ["vĩnh châu"],
+  "đồng tháp": ["cao lãnh", "sa đéc"],
+  "bến tre": ["mỏ cày"],
+  "trà vinh": ["duyên hải"],
+  "hậu giang": ["vị thanh", "ngã bảy"]
+}

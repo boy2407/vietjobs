@@ -1,0 +1,96 @@
+{
+  "_readme": [
+    "Recruitment-domain abbreviations for src/vietjobs/vitext.py (section 2.3).",
+    "",
+    "'contextual' rules run FIRST, as regex substitutions, and exist for the",
+    "ambiguous abbreviations: TP is both 'trưởng phòng' and 'thành phố'; CP is",
+    "both 'cổ phần' and 'chính phủ'; CV is 'chuyên viên', 'công việc' or the CV",
+    "you attach to an application. A wrong expansion is worse than none, so an",
+    "ambiguous token that matches no rule is left untouched.",
+    "",
+    "'simple' entries are whole-token replacements and must be unambiguous in",
+    "job-ad text. Deliberately NOT included, because they are genuinely",
+    "ambiguous and no reliable context rule exists: KH (khách hàng / kế hoạch),",
+    "KT (kế toán / kỹ thuật), QC (quảng cáo / quality control), ĐH (đại học /",
+    "điều hành), CĐ (cao đẳng / cộng đồng), PG, TT."
+  ],
+
+  "contextual": [
+    {
+      "_why": "TP followed by a dot, or by a known city name, is 'thành phố'.",
+      "pattern": "\\bTP\\s*\\.\\s*",
+      "replacement": "thành phố "
+    },
+    {
+      "_why": "TP directly before a city name, no dot: still 'thành phố'.",
+      "pattern": "\\bTP\\s+(?=(?:HCM|H\\.?C\\.?M|Hồ Chí Minh|HN|Hà Nội|Đà Nẵng|Hải Phòng|Cần Thơ|Biên Hòa|Vinh|Huế|Nha Trang|Vũng Tàu)\\b)",
+      "replacement": "thành phố "
+    },
+    {
+      "_why": "TP before a department name is 'trưởng phòng'.",
+      "pattern": "\\bTP\\.?\\s+(?=(?:Kinh doanh|Kinh Doanh|Nhân sự|Nhân Sự|Marketing|Kỹ thuật|Kỹ Thuật|Kế toán|Kế Toán|Sản xuất|Sản Xuất|Hành chính|Hành Chính|Dự án|Dự Án|Chất lượng|Chất Lượng|IT|R&D)\\b)",
+      "replacement": "trưởng phòng "
+    },
+    {
+      "_why": "'công ty CP' / 'cty cp' is 'cổ phần'.",
+      "pattern": "\\b(công ty|cty|c\\.ty)\\s+CP\\b",
+      "replacement": "\\1 cổ phần"
+    },
+    {
+      "_why": "A CV that is submitted/attached is the document, not a job title.",
+      "pattern": "\\bCV\\s+(?=(?:xin việc|ứng tuyển|đính kèm|của bạn|ứng viên)\\b)",
+      "replacement": "hồ sơ "
+    },
+    {
+      "_why": "CV before a department name is the job title 'chuyên viên'.",
+      "pattern": "\\bCV\\s+(?=(?:Kinh doanh|Kinh Doanh|Nhân sự|Nhân Sự|Marketing|Kỹ thuật|Kỹ Thuật|Kế toán|Kế Toán|Tư vấn|Tư Vấn|Pháp chế|Pháp Chế|Phân tích|Phân Tích)\\b)",
+      "replacement": "chuyên viên "
+    }
+  ],
+
+  "simple": {
+    "nv": "nhân viên",
+    "ktv": "kỹ thuật viên",
+    "nvkd": "nhân viên kinh doanh",
+    "gđ": "giám đốc",
+    "tgđ": "tổng giám đốc",
+    "pgđ": "phó giám đốc",
+
+    "cty": "công ty",
+    "c.ty": "công ty",
+    "tnhh": "trách nhiệm hữu hạn",
+    "mtv": "một thành viên",
+    "dn": "doanh nghiệp",
+    "ncc": "nhà cung cấp",
+
+    "bhxh": "bảo hiểm xã hội",
+    "bhyt": "bảo hiểm y tế",
+    "bhtn": "bảo hiểm thất nghiệp",
+    "bhld": "bảo hiểm lao động",
+    "bhlđ": "bảo hiểm lao động",
+    "atlđ": "an toàn lao động",
+    "atld": "an toàn lao động",
+    "l13": "lương tháng 13",
+    "ot": "tăng ca",
+
+    "kcn": "khu công nghiệp",
+    "kcx": "khu chế xuất",
+    "tphcm": "hồ chí minh",
+    "tp.hcm": "hồ chí minh",
+    "hcm": "hồ chí minh",
+    "sg": "hồ chí minh",
+    "hn": "hà nội",
+
+    "cskh": "chăm sóc khách hàng",
+    "cntt": "công nghệ thông tin",
+    "bđs": "bất động sản",
+    "bds": "bất động sản",
+    "xnk": "xuất nhập khẩu",
+    "lđpt": "lao động phổ thông",
+    "ldpt": "lao động phổ thông",
+    "hcns": "hành chính nhân sự",
+    "ns": "nhân sự",
+    "vp": "văn phòng",
+    "kn": "kinh nghiệm"
+  }
+}

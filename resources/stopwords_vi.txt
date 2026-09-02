@@ -1,0 +1,177 @@
+# Vietnamese stopwords — src/vietjobs/vitext.py section 2.5
+#
+# ABLATION-GATED. Not applied by default: TF-IDF already carries max_df=0.6 and
+# sublinear_tf, so the benefit may be zero. Turn on with --stopwords and let the
+# ablation row in docs/02-vietnamese-nlp.md decide.
+#
+# DELIBERATELY EXCLUDED — these look like function words but carry meaning in
+# job ads, and removing them inverts the sentence:
+#     không        "không yêu cầu kinh nghiệm" is the opposite of "yêu cầu ..."
+#     chưa         "chưa có kinh nghiệm"
+#     trên / dưới  salary and experience thresholds
+#     ít / nhiều   "ít nhất 2 năm"
+#     tối / thiểu  "tối thiểu", "tối đa"
+#     từ / đến     range boundaries: "từ 10 đến 15"
+#     ưu / tiên    "ưu tiên có kinh nghiệm"
+
+và
+với
+của
+các
+những
+được
+cho
+trong
+là
+có
+khi
+nếu
+để
+này
+đó
+kia
+một
+hai
+những
+mà
+thì
+nên
+vì
+do
+bởi
+tại
+về
+theo
+như
+cùng
+cũng
+đã
+đang
+sẽ
+rất
+quá
+lắm
+hơn
+nhất
+đều
+vẫn
+còn
+chỉ
+mới
+lại
+ra
+vào
+lên
+xuống
+đi
+tới
+ở
+bên
+trên đây
+sau đây
+dưới đây
+sau
+trước
+giữa
+ngoài
+gồm
+bao gồm
+tức
+tức là
+nghĩa là
+ví dụ
+chẳng hạn
+vân vân
+vv
+hoặc
+hay
+hoặc là
+nhưng
+tuy
+tuy nhiên
+mặc dù
+dù
+song
+vậy
+thế
+nào
+sao
+gì
+ai
+đâu
+bao giờ
+bao nhiêu
+mỗi
+mọi
+tất cả
+toàn bộ
+cả
+riêng
+chung
+khác
+nhau
+lẫn nhau
+tự
+mình
+chúng
+họ
+nó
+anh
+chị
+em
+bạn
+tôi
+chúng tôi
+chúng ta
+quý
+ông
+bà
+người
+việc
+điều
+cái
+chiếc
+con
+sự
+cách
+lúc
+khi nào
+hiện
+hiện nay
+hiện tại
+nay
+đây
+ạ
+à
+ừ
+ơi
+nhé
+nha
+thôi
+đấy
+ấy
+rồi
+xong
+luôn
+ngay
+liền
+dần
+dần dần
+từ từ
+lần
+lượt
+lần lượt
+thứ
+số
+kể
+kể cả
+ngoài ra
+thêm
+nữa
+đồng thời
+sau đó
+trước đó
+tiếp
+tiếp theo
+cuối cùng
+đầu tiên

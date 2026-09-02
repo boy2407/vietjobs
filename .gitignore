@@ -1,0 +1,28 @@
+# Data — never committed. See data/README.md for how to fetch.
+data/raw/
+data/interim/
+data/processed/
+*.csv
+*.parquet
+
+# Models / run outputs
+artifacts/
+*.joblib
+*.pkl
+*.pt
+*.pth
+*.h5
+*.ckpt
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+*.egg-info/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
