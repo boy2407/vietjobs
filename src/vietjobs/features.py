@@ -46,10 +46,35 @@ _MASKABLE = {
     "benefits_text": "benefits_masked",
 }
 
+# Not every column has a segmented mirror — short list-ish fields like
+# soft_skills are left alone because segmenting them buys nothing.
+_SEG_NAME = {
+    "job_title": "job_title_seg",
+    "description": "description_seg",
+    "requirements_text": "requirements_seg",
+    "job_title_masked": "job_title_masked_seg",
+    "description_masked": "description_masked_seg",
+    "requirements_masked": "requirements_masked_seg",
+    "benefits_masked": "benefits_masked_seg",
+    "technical_skills_text": "technical_skills_seg",
+    "qualifications_text": "qualifications_seg",
+}
+
+
 #: Columns a salary/disclosed model must never see. Used by the leak test.
-UNMASKED_COLUMNS = frozenset(_MASKABLE) | {
-    f"{c}_seg" for c in ("job_title", "description", "requirements_text")
-} | set(C.TARGET_LEAK_COLUMNS) | {"salary_mid", "salary_mid_log", "salary_is_range"}
+#
+# The segmented names come from ``_SEG_NAME``, not from ``f"{c}_seg"``. Building
+# them by string concatenation produced ``requirements_text_seg`` while the real
+# column is ``requirements_seg`` — a shield guarding a name that does not exist,
+# which is exactly the silent failure this set was written to prevent.
+# ``tests/test_no_leak.py`` now asserts every one of these names is real.
+UNMASKED_COLUMNS = (
+    frozenset(_MASKABLE)
+    | {_SEG_NAME[c] for c in _MASKABLE if c in _SEG_NAME}
+    | set(C.TARGET_LEAK_COLUMNS)
+    | {"salary_mid", "salary_mid_log", "salary_is_range",
+       "salary_disclosed", "salary_extreme"}
+)
 
 
 def resolve_column(name: str, *, task: str, segmented: bool) -> str:
@@ -64,20 +89,6 @@ def resolve_column(name: str, *, task: str, segmented: bool) -> str:
             return seg
     return col
 
-
-# Not every column has a segmented mirror — short list-ish fields like
-# soft_skills are left alone because segmenting them buys nothing.
-_SEG_NAME = {
-    "job_title": "job_title_seg",
-    "description": "description_seg",
-    "requirements_text": "requirements_seg",
-    "job_title_masked": "job_title_masked_seg",
-    "description_masked": "description_masked_seg",
-    "requirements_masked": "requirements_masked_seg",
-    "benefits_masked": "benefits_masked_seg",
-    "technical_skills_text": "technical_skills_seg",
-    "qualifications_text": "qualifications_seg",
-}
 
 
 # ---------------------------------------------------------------------------

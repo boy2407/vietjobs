@@ -1,8 +1,9 @@
 """Model registry — the five required algorithms, plus the baselines they must beat.
 
-Classification : KNN, SVM (LinearSVC), LogisticRegression
-                 + tree ensembles for the algorithm-comparison axis:
-                   RandomForest, LightGBM, XGBoost
+Classification : KNN, SVM (LinearSVC), LogisticRegression   <- the required three
+                 + for the algorithm-comparison axis:
+                   RandomForest, ExtraTrees, LightGBM, XGBoost   (trees)
+                   ComplementNB, SGDClassifier, NearestCentroid  (classical text)
 Regression     : LinearRegression, LightGBM
 
 Baselines are not optional decoration. A text model that cannot beat
@@ -15,9 +16,15 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.dummy import DummyClassifier, DummyRegressor
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LinearRegression, LogisticRegression, Ridge
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
+from sklearn.linear_model import (
+    LinearRegression,
+    LogisticRegression,
+    Ridge,
+    SGDClassifier,
+)
+from sklearn.naive_bayes import ComplementNB
+from sklearn.neighbors import KNeighborsClassifier, NearestCentroid
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import LinearSVC
 from sklearn.utils.class_weight import compute_sample_weight
@@ -253,6 +260,43 @@ CLASSIFIERS = {
     "logreg": lambda seed: LogisticRegression(
         C=4.0, class_weight="balanced", max_iter=2000, n_jobs=-1, random_state=seed
     ),
+    # --- classical text baselines the first sweep left out ---
+    # Naive Bayes is THE textbook baseline for TF-IDF text classification, and
+    # its absence was the most conspicuous gap in the comparison. ComplementNB
+    # rather than MultinomialNB: the complement formulation was designed for
+    # imbalanced corpora, and this one is 27:1.
+    #
+    # Caveat that belongs in the report, not hidden here: NB assumes features
+    # are counts, while these are L2-normalised TF-IDF weights. It runs, it is
+    # what everyone does, and the assumption is still violated. That is a real
+    # weakness of the model on this data, not a detail.
+    #
+    # ComplementNB has no class_weight — same limitation as knn and centroid.
+    "nb": lambda seed: ComplementNB(alpha=1.0),
+    # Same linear family as svm/logreg but fitted one sample at a time. Cheap
+    # enough to answer: is LinearSVC paying for an exact solution it does not
+    # need? Unlike the other two it does support class_weight.
+    "sgd": lambda seed: SGDClassifier(
+        loss="hinge", alpha=1e-4, class_weight="balanced",
+        max_iter=2000, tol=1e-4, random_state=seed, n_jobs=-1,
+    ),
+    # Randomised split thresholds instead of searched ones. On a matrix that is
+    # 99.79% zero, most candidate splits are uninformative anyway, so the
+    # question is whether searching them was ever worth the cost.
+    "extra": lambda seed: ExtraTreesClassifier(
+        n_estimators=300, max_features="sqrt", min_samples_leaf=2,
+        class_weight="balanced_subsample", random_state=seed, n_jobs=-1,
+    ),
+    # Rocchio: one centroid per class, predict by nearest centroid. The control
+    # for knn — also distance-based, but comparing against 16 averaged vectors
+    # instead of 33.396 individual ones, so it does not fail the same way.
+    #
+    # scikit-learn 1.9 restricts metric to {euclidean, manhattan}; cosine is not
+    # available. On L2-normalised rows euclidean distance is a monotone function
+    # of cosine distance for the PAIRWISE case, but a centroid is not itself
+    # normalised, so the equivalence does not carry. This handicaps the model on
+    # text, and the report must say so rather than presenting the score bare.
+    "centroid": lambda seed: NearestCentroid(metric="euclidean"),
     # --- tree ensembles, for the algorithm-comparison axis ---
     # These are NOT in the required set. They are here to turn "linear beats
     # trees on TF-IDF" from a convention into a measured row.

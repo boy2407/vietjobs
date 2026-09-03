@@ -112,6 +112,64 @@ GRID: dict[str, list[tuple[dict, int, float | None]]] = {
         ({"n_estimators": 100, "learning_rate": 0.3, "num_leaves": 95}, 1050, None),
         ({"n_estimators": 100, "learning_rate": 0.3, "colsample_bytree": 0.5}, 1200, None),
     ],
+    # --- classical text baselines, added after the first 36-cell sweep ---
+    # alpha is Laplace smoothing: how much probability mass to hand a word the
+    # class never used. It is the only real knob, so six values sweep it wide.
+    # norm=True renormalises the complement weights — the one structural
+    # variation ComplementNB offers.
+    "nb": [
+        ({"alpha": 1.0}, 72, None),
+        ({"alpha": 0.1}, 72, None),
+        ({"alpha": 0.01}, 72, None),
+        ({"alpha": 10.0}, 72, None),
+        ({"alpha": 1.0, "norm": True}, 72, None),
+        ({"alpha": 0.1, "norm": True}, 72, None),
+    ],
+    # loss picks which linear model SGD is fitting: hinge = an SVM, log_loss =
+    # logistic regression, modified_huber = hinge that can output probabilities.
+    # alpha here is the regularisation strength and is NOT on the same scale as
+    # C — it is roughly 1/(C*n), so small alpha means a free model.
+    "sgd": [
+        ({"loss": "hinge", "alpha": 1e-4}, 80, None),
+        ({"loss": "hinge", "alpha": 1e-5}, 85, None),
+        ({"loss": "log_loss", "alpha": 1e-4}, 85, None),
+        ({"loss": "modified_huber", "alpha": 1e-4}, 85, None),
+        ({"loss": "hinge", "alpha": 1e-4, "penalty": "elasticnet"}, 95, None),
+        ({"loss": "hinge", "alpha": 1e-3}, 78, None),
+    ],
+    # Same shape of grid as rf, so the two forest variants are directly
+    # comparable: does searching for the best split threshold beat picking one
+    # at random, on a matrix where most candidate splits are all-zero anyway?
+    "extra": [
+        ({"n_estimators": 300}, 200, None),
+        ({"n_estimators": 600}, 380, None),
+        ({"n_estimators": 300, "max_features": 1000}, 400, None),
+        ({"n_estimators": 300, "min_samples_leaf": 1}, 240, None),
+        ({"n_estimators": 300, "criterion": "entropy"}, 220, None),
+        ({"n_estimators": 300, "max_features": "log2"}, 90, None),
+    ],
+    # shrink_threshold pulls each class centroid toward the overall centroid,
+    # zeroing out features that do not separate the class. It is the only knob,
+    # and on 236.596 mostly-empty columns it is the one that matters.
+    "centroid": [
+        ({"shrink_threshold": None}, 72, None),
+        ({"shrink_threshold": 0.1}, 75, None),
+        ({"shrink_threshold": 0.2}, 75, None),
+        ({"shrink_threshold": 0.5}, 75, None),
+        ({"shrink_threshold": 1.0}, 75, None),
+        ({"shrink_threshold": 2.0}, 75, None),
+    ],
+    # Identical grid to svm, one flag apart: class_weight=None instead of
+    # "balanced". Every difference between these two rows is the price of
+    # ignoring a 27:1 imbalance.
+    "svm_plain": [
+        ({"C": 0.02}, 100, None),
+        ({"C": 0.05}, 100, None),
+        ({"C": 0.1}, 105, None),
+        ({"C": 0.5}, 140, None),
+        ({"C": 1.0}, 180, None),
+        ({"C": 0.005}, 95, None),
+    ],
     # Cost scales with node count 2**depth - 1, so depth is the lever, not the
     # round count. depth=8 is what killed the 400-round run after 4h07m.
     "xgb": [
@@ -133,6 +191,13 @@ GRID: dict[str, list[tuple[dict, int, float | None]]] = {
 # silently inherit that.
 MUST_DECLARE = {"lgbm": {"n_estimators", "learning_rate"},
                 "xgb": {"n_estimators", "learning_rate"}}
+
+# Cells that already hit the timeout once and were deliberately not re-run.
+# Without this they would be retried on every resume, spending 45 minutes each
+# to produce the same DNF. Both models lose to the linear ones at P < 0.013, so
+# a sixth configuration cannot change any conclusion — and the fact that they do
+# not finish in 45 minutes is itself reported, in the cost column.
+KNOWN_DNF = {("rf", 4), ("xgb", 5)}
 
 DEFAULT_TIMEOUT = 2700
 LONG_TIMEOUT = 5400          # xgb #1 is estimated at 3209s
@@ -209,7 +274,9 @@ def main() -> None:
     args = ap.parse_args()
 
     plan = build_plan()
-    pending = [c for c in plan if not already_done(c["rid"])]
+    pending = [c for c in plan
+               if not already_done(c["rid"])
+               and (c["model"], c["n"]) not in KNOWN_DNF]
     total_est = sum(c["est"] for c in pending) * args.calib + 40 * len(pending)
 
     print(f"{len(plan)} runs · {len(plan) - len(pending)} already done · "
@@ -217,7 +284,10 @@ def main() -> None:
     print(f"estimate (calib {args.calib:g}): {fmt(total_est)}\n")
     print(f"{'wave':>4} {'run_id':22} {'est':>7}  config")
     for c in plan:
-        mark = "skip" if already_done(c["rid"]) else "    "
+        if (c["model"], c["n"]) in KNOWN_DNF:
+            mark = "DNF "
+        else:
+            mark = "skip" if already_done(c["rid"]) else "    "
         anchor = f"  anchor={c['anchor']}" if c["anchor"] else ""
         cfg = ",".join(f"{k}={v}" for k, v in c["cfg"].items())
         print(f"{c['n']:>4} {c['rid']:22} {fmt(c['est'] * args.calib):>7}  "
