@@ -2,7 +2,7 @@
 
 # Nền tảng — dành cho người mới vào ML/DL
 
-Bảy note giải thích **khái niệm**, không chứa kết quả thí nghiệm. Chúng không phải
+Tám note giải thích **khái niệm**, không chứa kết quả thí nghiệm. Chúng không phải
 cập nhật sau mỗi lần chạy mô hình — đó là lý do chúng nằm riêng ở đây.
 
 Mọi ví dụ lấy từ chính kho dữ liệu VietJobs, không lấy ví dụ sách giáo khoa.
@@ -20,10 +20,11 @@ Mọi ví dụ lấy từ chính kho dữ liệu VietJobs, không lấy ví dụ
 | 5 | [Rò rỉ dữ liệu](05-ro-ri-du-lieu.md) | Ba loại rò rỉ, và vì sao **không loại nào báo lỗi** | [03-protocol](../03-protocol.md) |
 | 6 | [Đo lường và baseline](06-do-luong-va-baseline.md) | Vì sao accuracy nói dối khi lớp lệch 27:1 | [04-results](../04-results.md) |
 | 7 | [Chính quy hoá](07-chinh-quy-hoa.md) | `C` là gì. Vì sao `C` tối ưu = 0,02 là mô hình đang kêu cứu | [07-bai-toan-luong](../07-bai-toan-luong.md) |
+| 8 | [Đọc một bảng so sánh mô hình](08-doc-mot-bang-so-sanh.md) | Siêu tham số · "ô" là gì · vì sao cùng số ô vẫn chưa công bằng · lời nguyền của người thắng · σ so với paired bootstrap | [10-so-sanh-mo-hinh](../10-so-sanh-mo-hinh.md) |
 
 ---
 
-## Một câu tóm tắt cho cả bảy note
+## Một câu tóm tắt cho bảy note đầu
 
 > Học máy trên văn bản là bài toán **đếm chuỗi ký tự rồi tìm trọng số**.
 > Mọi bước tiền xử lý chỉ có một việc: làm cho phép đếm đó đếm đúng thứ ta muốn đếm.

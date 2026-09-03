@@ -75,3 +75,8 @@ Selection uses `val`. `test` is scored once, at the end.
 | cat-SW-logreg-6 | 09-02 08:36 | category | logreg(C=0.05) | full | province | val | 7159 | macroF1=0.5768±0.0067 · acc=0.6170 · balAcc=0.6535 · F1@15=0.6102 · top3=0.8948 | 126.3s | 341685f7+dirty |
 | cat-SW-xgb-6 | 09-02 09:01 | category | xgb(n_estimators=100,learning_rate=0.3,max_depth=5,colsample_bytree=0.2) | full | province | val | 7159 | macroF1=0.5861±0.0077 · acc=0.6276 · balAcc=0.6166 · F1@15=0.6191 · top3=0.9240 | 1487.7s | 341685f7+dirty |
 | cat-SW-lgbm-6 | 09-02 09:16 | category | lgbm(n_estimators=100,learning_rate=0.3,colsample_bytree=0.5) | full | province | val | 7159 | macroF1=0.5708±0.0084 · acc=0.6233 · balAcc=0.5644 · F1@15=0.5992 · top3=0.9166 | 896.8s | 341685f7+dirty |
+| cat-SW-nb-1 | 09-03 06:53 | category | nb(alpha=1.0) | full | province | val | 7159 | macroF1=0.5371±0.0077 · acc=0.6283 · balAcc=0.5246 · F1@15=0.5720 · top3=0.9174 | 26.1s | e99eb606 |
+| cat-SW-sgd-1 | 09-03 07:04 | category | sgd(loss=hinge,alpha=0.0001) | full | province | val | 7159 | macroF1=0.5618±0.0070 · acc=0.5978 · balAcc=0.6318 · F1@15=0.5932 | 72.1s | e99eb606+dirty |
+| cat-SW-svm_plain-1 | 09-03 07:05 | category | svm_plain(C=0.02) | full | province | val | 7159 | macroF1=0.5818±0.0082 · acc=0.6579 · balAcc=0.5608 · F1@15=0.6173 | 58.4s | e99eb606+dirty |
+| cat-SW-extra-1 | 09-03 07:12 | category | extra(n_estimators=300) | full | province | val | 7159 | macroF1=0.5650±0.0079 · acc=0.6039 · balAcc=0.6071 · F1@15=0.5936 · top3=0.9133 | 334.9s | e99eb606+dirty |
+| cat-SW-nb-2 | 09-03 07:13 | category | nb(alpha=0.1) | full | province | val | 7159 | macroF1=0.5535±0.0080 · acc=0.6340 · balAcc=0.5437 · F1@15=0.5869 · top3=0.9155 | 24.3s | e99eb606+dirty |

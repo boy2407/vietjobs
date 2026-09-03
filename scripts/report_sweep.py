@@ -28,10 +28,12 @@ from vietjobs import evaluate as E        # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 ARTIFACTS = ROOT / "artifacts"
 N_BOOT = 1000
-MODELS = ["knn", "svm", "logreg", "rf", "lgbm", "xgb"]
 
-# Configuration #1 of each model reproduces a row that already existed. If one
-# of these misses, something changed underneath and the whole sweep is suspect.
+# Configuration #1 of these six reproduces a row that already existed before the
+# sweep. If one of them misses, something changed underneath and the whole sweep
+# is suspect. Families added later have no prior row to anchor against, so they
+# are simply absent here — the model list itself is discovered from artifacts,
+# never hard-coded, so a new family joins every table by being run.
 ANCHORS = {"knn": 0.4059, "svm": 0.6050, "logreg": 0.6038,
            "rf": 0.5630, "lgbm": 0.5555, "xgb": 0.5861}
 
@@ -98,9 +100,12 @@ def main() -> None:
         r["boot"] = E.bootstrap_scores(r["y_true"], r["y_pred"], idx)
         r["sigma"] = E.bootstrap_summary(r["boot"])["std"]
 
+    # Discovered from what actually ran, ordered by best score so the tables read
+    # top-down. A family that was never run simply does not appear.
+    names = sorted({r["model"] for r in runs},
+                   key=lambda m: -max(r["f1"] for r in runs if r["model"] == m))
     by_model = {m: sorted([r for r in runs if r["model"] == m], key=lambda r: r["n"])
-                for m in MODELS}
-    by_model = {m: v for m, v in by_model.items() if v}
+                for m in names}
 
     # --- 0 · reproducibility ------------------------------------------------
     print("## Bảng 0 — tái lập\n")
@@ -109,7 +114,7 @@ def main() -> None:
     for m, rs in by_model.items():
         first = next((r for r in rs if r["n"] == 1), None)
         if first is None or m not in ANCHORS:
-            continue
+            continue  # families added after the anchors were set
         d = first["f1"] - ANCHORS[m]
         flag = " ✅" if abs(d) < 5e-4 else " ⚠️"
         print(f"| `{m}` | {num(ANCHORS[m])} | {num(first['f1'])} | {signed(d)}{flag} |")
