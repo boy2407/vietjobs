@@ -126,10 +126,10 @@ một chiến thắng — và trình bày được đánh đổi đó mới là 
 3. **Chốt mô hình bằng file, không bằng thời gian sửa file.** `_latest_run` đang chọn
    thư mục artifact mới sửa gần nhất — chạm nhầm một file là đổi mô hình đang chạy.
    Thay bằng `artifacts/PRODUCTION.json` ánh xạ task → run_id, chọn có chủ ý.
-4. **Sửa cột lệch trong `04-results.md`.** Header khai 11 cột nhưng `HEADLINE`
-   ([train.py:89](../src/vietjobs/train.py#L89)) nhét nhiều metric ngăn bằng `|` vào
-   một ô, nên mỗi dòng ra 12–15 ô và trình render cắt lặng lẽ hai cột cuối. Sửa ở
-   `train.py` cho **dòng mới**; dòng cũ giữ nguyên vì log là append-only.
+4. ~~**Sửa cột lệch trong `04-results.md`.**~~ **Xong.** `HEADLINE` giờ ngăn các
+   metric bằng ` · ` thay vì `|`, nên dòng mới render đúng 11 cột. 34 dòng cũ giữ
+   nguyên vì log là append-only — chúng vẫn lệch, và đó là đúng.
+   Có `tests/test_train_overrides.py` canh không cho `|` quay lại.
 5. **Một mặt demo mỏng** (FastAPI hoặc Streamlit, ~50 dòng): biến "mấy mô hình" thành
    "một hệ thống" trong mắt người đọc báo cáo.
 

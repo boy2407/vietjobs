@@ -14,6 +14,7 @@ Sau **mỗi** thay đổi có thật, cập nhật ngay trong cùng lượt làm
 | Đổi cách dựng đặc trưng (`features.py`) | `05-dac-trung-tfidf.md` |
 | Chạy xong bài toán lương | `07-bai-toan-luong.md` + `00-tong-quan.md` (ô cam → xanh) |
 | Thêm/sửa/xoá module trong `src/` | `08-ma-nguon.md` — sơ đồ + bảng vai trò file + số dòng/số test |
+| Chạy lại cụm quét so sánh mô hình | `10-so-sanh-mo-hinh.md` (bảy bảng, sinh bằng `scripts/report_sweep.py`) + bậc thang trong `06-mo-hinh-phan-lop.md` |
 | Xong một hạng mục | Bảng trạng thái `00-tong-quan.md` + `09-lo-trinh.md` |
 | Đổi kiến trúc mô hình / hệ thống | Sơ đồ mermaid trong note tương ứng |
 

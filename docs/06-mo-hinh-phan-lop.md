@@ -3,7 +3,9 @@
 # Bài toán 1 — phân lớp nghề
 
 16 lớp, lệch 27:1. **Đã xong và đã chấm test một lần: macro-F1 0,6112.**
-33 thí nghiệm ghi trong [04-results.md](04-results.md).
+71 thí nghiệm ghi trong [04-results.md](04-results.md). Lựa chọn mô hình được
+kiểm lại bằng một cụm quét công bằng 6 mô hình × 6 cấu hình —
+[10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md).
 
 ---
 
@@ -66,12 +68,18 @@ từng khối ở [05-dac-trung-tfidf.md §9](05-dac-trung-tfidf.md#9-khối-nà
 | Không dùng ML | trùng từ khoá tiêu đề | 0,4321 | — |
 | KNN toàn văn | k=30 | 0,4059 | 17,3s |
 | KNN tốt nhất | k=15, chỉ tiêu đề | 0,5307 | 0,7s |
-| LightGBM | 100 vòng @ lr 0,3 | 0,5555 | 744,3s |
-| RandomForest | 100 cây | 0,5630 | 69,3s |
+| KNN tốt nhất (cụm công bằng) | k=5, toàn văn | 0,4361 | 17s |
+| RandomForest tốt nhất | 600 cây | 0,5644 | 5,3 ph |
 | SVM mặc định | C=0,5, toàn văn | 0,5763 | 77,2s |
-| XGBoost | 100 vòng @ lr 0,3, depth 6 | 0,5861 | 3.208,8s |
-| LogReg tốt nhất | C=1 | 0,6038 | 684,7s |
-| **Tốt nhất** | **SVM C=0,02, toàn văn + chuẩn tỉnh** | **0,6050** | **27,8s** |
+| LightGBM tốt nhất | 200 vòng @ lr 0,15, leaves 31 | 0,5830 | 12,9 ph |
+| XGBoost tốt nhất | 100 @ lr 0,3, depth 4, colsample 0,1 | 0,5912 | 18,7 ph |
+| **Tốt nhất** | **SVM C=0,02, toàn văn + chuẩn tỉnh** | **0,6050** | **42s** |
+| LogReg tốt nhất | C=0,5 | 0,6072 | 4,8 ph |
+
+Hai dòng cuối **hoà**: `P(logreg > svm) = 0,685`, không phân biệt được. Khi hoà
+thì thứ tách chúng ra là chi phí — 42 giây so với 4,8 phút. Cả hai thắng cả ba
+mô hình cây với `P > 0,975`. Chi tiết ở
+[10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md).
 
 **Test (chạy một lần duy nhất): macro-F1 0,6112 · accuracy 0,6527 · balanced accuracy 0,6816.**
 Test cao hơn val nên không có dấu hiệu overfit vào val.
@@ -95,7 +103,7 @@ buộc. Chúng chạy hai lần, khác nhau đúng một thứ: số chiều.
 
 **Ở 60 chiều cây thắng tuyến tính +0,05; ở 236.596 chiều cây thua tuyến tính
 −0,04 đến −0,05.** Cùng thuật toán, cùng dữ liệu, cùng seed — chỉ đổi số chiều,
-và kết luận lật ngược. Cả hai khoảng cách đều lớn hơn σ = 0,009 nhiều lần.
+và kết luận lật ngược. Cả hai khoảng cách đều lớn hơn σ = 0,0077 nhiều lần.
 
 Vì sao: cây tách theo **một chiều mỗi lần**. Với 480 ô khác 0 trên 236.596 cột,
 hầu hết phép tách rơi vào vùng toàn số 0. Còn tín hiệu văn bản là **cộng dồn** —
@@ -142,10 +150,10 @@ Lớp lớn nhất gấp 27 lần lớp nhỏ nhất. Baseline "đoán lớp đa
 qua hoàn toàn 15 lớp. Chi tiết ở [03-protocol.md §4](03-protocol.md) và
 [nền tảng: đo lường và baseline](nen-tang/06-do-luong-va-baseline.md).
 
-> **Đọc bảng trong [04-results.md](04-results.md) cẩn thận.** Header khai 11 cột
-> nhưng ô `Headline` chứa nhiều metric ngăn bằng dấu `|`, nên trình render đẩy
-> hai cột cuối (`Time`, `Commit`) ra ngoài và cắt lặng lẽ. Số liệu vẫn đúng, chỉ
-> là hiển thị lệch. Việc sửa ghi ở [09-lo-trinh.md](09-lo-trinh.md#ưu-tiên-5--hoàn-thiện-hệ-thống).
+> **Về cột lệch trong [04-results.md](04-results.md):** đã sửa. Ô `Headline` từng
+> ngăn các metric bằng dấu `|`, làm trình render đẩy `Time` và `Commit` ra ngoài.
+> Dòng mới dùng dấu ` · ` và render đúng 11 cột; 34 dòng cũ giữ nguyên vì log là
+> append-only, nên chúng vẫn hiển thị lệch.
 
 ---
 

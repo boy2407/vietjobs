@@ -97,7 +97,35 @@ cùng seed.
 
 Trộn hai trục lại sẽ không biết cải thiện đến từ tiền xử lý hay từ thuật toán.
 
-## 6. Quy tắc gỡ bỏ
+## 7. So sánh mô hình — quy tắc quyết định
+
+Thêm sau cụm quét công bằng ([10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md)).
+Ba điều ràng buộc mọi so sánh mô hình từ đây:
+
+**a. Cùng số cấu hình cho mọi mô hình.** So "cái tốt nhất trong chín lần thử"
+với "lần thử đầu tiên" là so công sức chỉnh tay, không phải so thuật toán. Nếu
+một mô hình được quét `n` cấu hình thì mọi mô hình trong cùng bảng phải được `n`.
+
+**b. Mỗi run lưu `predictions.npz`.** `train.py` ghi `row_index`, `y_true`,
+`y_pred` trên tập đánh giá. Không có nó thì run đó **không so cặp được** với bất
+kỳ run nào khác — đó là lý do 33 run trước cụm phải chạy lại từ đầu.
+
+**c. Quyết định bằng paired bootstrap, không bằng σ.** Dùng **một** ma trận chỉ
+số dùng chung (`evaluate.bootstrap_indices`) cho mọi mô hình được so, rồi đọc
+`P(A > B)` từ `evaluate.paired_delta`. Ngưỡng: **>0,975 hoặc <0,025** là khác
+biệt rõ; quanh 0,5 là không phân biệt được.
+
+σ của từng mô hình (≈ 0,0077) vẫn được báo cáo, nhưng **không phải là cơ sở
+quyết định**: nó trả lời "điểm này dao động bao nhiêu nếu đổi tập val", còn câu
+cần hỏi là "A có hơn B trên cùng những dòng đó không". Hai mô hình sai ở phần
+lớn cùng những tin nhập nhằng, nên phép so cặp nhạy hơn hẳn.
+
+**Chọn mô hình trên `val`, không bao giờ trên `test`** — kể cả để "kiểm chứng"
+kết quả một cụm quét. Quy tắc §2 không có ngoại lệ.
+
+---
+
+## 8. Quy tắc gỡ bỏ
 
 Mỗi bước tiền xử lý phải có một dòng ablation chứng minh nó đóng góp.
 **Bước nào không cải thiện thì gỡ bỏ**, không giữ lại vì "trông có vẻ đúng" hay

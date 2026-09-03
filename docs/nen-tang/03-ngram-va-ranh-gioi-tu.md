@@ -109,7 +109,7 @@ Cùng `C = 0,02`, chỉ bật/tắt bước tách từ:
 | Chỉ chuẩn tỉnh | **0,6050** | `cat-T-svm-C0.02` |
 | Chuẩn tỉnh + **tách từ** | 0,5998 | `cat-R-svm-C0.02-seg` |
 
-Tách từ làm **giảm** 0,0052 — nằm trong nhiễu (σ ≈ 0,009), nên kết luận đúng là
+Tách từ làm **giảm** 0,0052 — nằm trong nhiễu (σ ≈ 0,0077), nên kết luận đúng là
 "không giúp gì", không phải "làm hại".
 
 **Vì sao nó không giúp:** bigram đã bắt `nhân viên` rồi. Bước 5 giải một bài toán

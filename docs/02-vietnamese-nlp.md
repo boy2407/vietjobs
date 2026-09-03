@@ -128,7 +128,7 @@ Mọi con số ở cột cuối đo trên 47.707 tin sau khử trùng lặp, tá
 | 5 | **Tách từ**<br/>`segment` · underthesea | "Nhân viên kinh doanh" → "Nhân_viên kinh_doanh" | Tiếng Việt là ngôn ngữ đơn lập: khoảng trắng tách **âm tiết**, không tách **từ**. Ở mức unigram, một token "viên" gộp chung nhân viên / chuyên viên / kỹ thuật viên / giáo viên — bốn nghề khác nhau | Âm tiết "viên" xuất hiện **27.053 lần** trong tiêu đề, đứng sau **70 âm tiết** khác nhau: nhân 20.138 · chuyên 4.858 · thuật 498 |
 | 6 | **Kênh gấp dấu**<br/>`fold_accents` | Tạo bản sao bỏ dấu để nuôi kênh char 3-5gram. **Không bao giờ** áp lên kênh từ | Một phần tin viết không dấu ("Nhan Vien Kinh Doanh"); kênh từ không cách nào khớp chúng với bản có dấu. Nhưng dấu trong tiếng Việt **là** từ — má / mà / mả / mã / mạ là năm từ khác nhau — nên bản gấp dấu chỉ được sống ở kênh ký tự | **2.148 tiêu đề (4,50 %)** không có dấu nào |
 | 7 | **Chuẩn tỉnh**<br/>`normalize_province` | Quy địa danh về 42 tỉnh qua bảng 183 alias: "hà đông" → "hà nội", "Tp. HCM" → "hồ chí minh". Địa danh lạ giữ nguyên tên có dấu, chỉ cắt tiền tố hành chính | Cột địa điểm bị vụn thành gần một nghìn giá trị, one-hot ra gần một nghìn chiều gần như rỗng. Quận, huyện, phường nằm rời khỏi tỉnh chứa nó nên tín hiệu vùng miền không bao giờ cộng dồn được | 984 chuỗi địa điểm → **265 giá trị**; **7.481 dòng (15,7 %)** đổi giá trị. Riêng "hà nội" gom **136 biến thể**: hà đông 1.166 · bắc từ liêm 166 · cầu giấy 136 |
-| 8 | **Bỏ từ dừng**<br/>`remove_stopwords` | Bỏ 161 mục trong `stopwords_vi.txt` (193 dạng, tính cả dạng gạch dưới cho văn bản đã tách từ) | Lý thuyết: từ dừng chiếm chỗ mà không mang nghĩa nghề. Thực tế `idf` **đã** tự hạ trọng số những từ có mặt khắp nơi, nên bước này chỉ lặp lại việc TF-IDF làm sẵn. Danh sách cố ý chừa "không", "trên", "tối thiểu": "không yêu cầu kinh nghiệm" ngược nghĩa "yêu cầu kinh nghiệm" | So cùng cấu hình ở C=0,5: bật 0,5756 (`cat-P5-svm-stop`) so với tắt 0,5754 (`cat-P4-svm-charfold`) — chênh **0,0002**, nằm sâu dưới nhiễu 0,009 |
+| 8 | **Bỏ từ dừng**<br/>`remove_stopwords` | Bỏ 161 mục trong `stopwords_vi.txt` (193 dạng, tính cả dạng gạch dưới cho văn bản đã tách từ) | Lý thuyết: từ dừng chiếm chỗ mà không mang nghĩa nghề. Thực tế `idf` **đã** tự hạ trọng số những từ có mặt khắp nơi, nên bước này chỉ lặp lại việc TF-IDF làm sẵn. Danh sách cố ý chừa "không", "trên", "tối thiểu": "không yêu cầu kinh nghiệm" ngược nghĩa "yêu cầu kinh nghiệm" | So cùng cấu hình ở C=0,5: bật 0,5756 (`cat-P5-svm-stop`) so với tắt 0,5754 (`cat-P4-svm-charfold`) — chênh **0,0002**, nằm sâu dưới nhiễu 0,0077 |
 | 9 | **Khoá gộp nhóm**<br/>`group_key` | Băm SHA-1 (tiêu đề + mô tả + yêu cầu) sau khi hạ chữ thường, gấp dấu, bỏ dấu câu → id 16 ký tự | Nhà tuyển dụng đăng lại cùng một tin nhiều lần với sửa đổi vặt. Chia tập theo dòng thì cùng một tin nằm ở cả train lẫn test: mô hình chỉ cần **thuộc lòng** là có điểm cao, và điểm đó không nói gì về khả năng tổng quát hoá | 47.707 dòng chỉ có **34.899 nhóm** — **12.808 dòng (26,8 %)** là tin đăng lại, nhóm lớn nhất 33 dòng. `dataset.build()` assert 0 nhóm lọt giữa hai tập |
 
 ### Ba chỗ tinh tế đáng đọc kỹ
@@ -164,7 +164,12 @@ những từ cố ý giữ lại vì lý do đó: `không`, `chưa`, `trên/dư�
 ## 4. Ablation — bước nào thật sự đáng giữ
 
 Cố định SVM ở `C = 0,02`, chỉ bật/tắt từng bước. Bootstrap 200 lần cho độ lệch
-chuẩn macro-F1 ≈ **0,009** — chênh lệch nhỏ hơn ngưỡng đó là nhiễu, không phải cải thiện.
+chuẩn macro-F1 ≈ **0,0077** — chênh lệch nhỏ hơn ngưỡng đó là nhiễu, không phải cải thiện.
+Con số này đo được từ 34 run của cụm so sánh, xem
+[10-so-sanh-mo-hinh.md §7](10-so-sanh-mo-hinh.md#7-σ--lần-đầu-được-tính-bằng-code).
+Cảnh báo: ba kết luận "trong nhiễu" dưới đây được rút ra bằng cách so hai điểm
+**độc lập**. Phép so **cặp** (paired bootstrap) nhạy hơn nhiều, nhưng các run
+trong bảng này không lưu `y_pred` nên chưa kiểm lại được.
 
 | Cấu hình | Cờ `PrepConfig` | macro-F1 (val) | Run trong [04-results.md](04-results.md) |
 |---|---|---|---|

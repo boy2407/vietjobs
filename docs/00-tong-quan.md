@@ -17,7 +17,7 @@ Bản đồ tổng thể: từ file CSV thô đến hệ thống dự đoán. M�
 | **Mới vào ML/DL** | [nen-tang/](nen-tang/00-index.md) trước → rồi [01](01-data-audit.md) → [02](02-vietnamese-nlp.md) → [05](05-dac-trung-tfidf.md) → [06](06-mo-hinh-phan-lop.md) |
 | **Đã biết ML, muốn hiểu dự án** | [01](01-data-audit.md) → [02](02-vietnamese-nlp.md) → [05](05-dac-trung-tfidf.md) → [06](06-mo-hinh-phan-lop.md) → [07](07-bai-toan-luong.md) |
 | **Muốn sửa code** | [08](08-ma-nguon.md) → [03](03-protocol.md) → [09](09-lo-trinh.md) |
-| **Muốn xem kết quả** | [04-results.md](04-results.md) → [06](06-mo-hinh-phan-lop.md) |
+| **Muốn xem kết quả** | [04-results.md](04-results.md) → [06](06-mo-hinh-phan-lop.md) → [10](10-so-sanh-mo-hinh.md) |
 
 ---
 
@@ -63,7 +63,8 @@ flowchart LR
 | Xử lý tiếng Việt | xong | 73 test xanh, tách từ 0 lỗi trên 48k tin | [02](02-vietnamese-nlp.md) |
 | Chia tập | xong | 0 nhóm lọt giữa các tập, 16 lớp đủ ở cả ba | [01](01-data-audit.md#7-chia-tập--theo-nhóm-không-theo-dòng) |
 | Đặc trưng | xong | 236.596 chiều, test chống rò rỉ lương xanh | [05](05-dac-trung-tfidf.md) |
-| **Bài toán 1 — phân lớp** | **xong** | **test macro-F1 0,6112 · 33 thí nghiệm** | [06](06-mo-hinh-phan-lop.md) |
+| **Bài toán 1 — phân lớp** | **xong** | **test macro-F1 0,6112 · 71 thí nghiệm** | [06](06-mo-hinh-phan-lop.md) |
+| **So sánh mô hình** | **xong** | **6 mô hình × 6 cấu hình, paired bootstrap** | [10](10-so-sanh-mo-hinh.md) |
 | Bài toán 2 — lương | chưa chạy | code đã có, chưa huấn luyện | [07](07-bai-toan-luong.md) |
 | Hệ thống `predict.py` | khung xong | chưa chạy thử đầu-cuối | [09](09-lo-trinh.md#ưu-tiên-0--khoá-trainserve-skew-chặn-mọi-thứ-khác) |
 
@@ -82,6 +83,7 @@ flowchart LR
 | [07-bai-toan-luong.md](07-bai-toan-luong.md) | Bài toán 2 · kiến trúc 2 tầng · bẫy đã biết trước | Chạy xong bài toán lương |
 | [08-ma-nguon.md](08-ma-nguon.md) | Chín module làm gì, phụ thuộc nhau ra sao | Thêm/sửa/xoá module trong `src/` |
 | [09-lo-trinh.md](09-lo-trinh.md) | Còn phải làm gì, theo thứ tự nào | Xong một hạng mục |
+| [10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md) | Sáu thuật toán, sáu cấu hình mỗi cái · paired bootstrap · chọn mô hình nào và vì sao | Chạy lại cụm quét công bằng |
 | [nen-tang/](nen-tang/00-index.md) | Khái niệm nền cho người mới: TF-IDF, n-gram, rò rỉ, chính quy hoá | Hiếm — note nền tảng **không chứa con số kết quả** |
 
 ---
@@ -99,10 +101,8 @@ Mỗi con số trong vault này phải truy được về một trong ba nguồn
 Bảng chín bước trong [02](02-vietnamese-nlp.md) đo lại được bằng
 `python scripts/measure_vitext.py`.
 
-> **Lưu ý khi đọc [04-results.md](04-results.md):** header khai 11 cột nhưng ô
-> `Headline` chứa nhiều metric ngăn bằng dấu `|`, nên trình render đẩy hai cột
-> cuối ra ngoài. Số liệu đúng, hiển thị lệch. Sửa ghi ở
-> [09-lo-trinh.md](09-lo-trinh.md#ưu-tiên-5--hoàn-thiện-hệ-thống).
+> **Về cột lệch trong [04-results.md](04-results.md):** đã sửa cho dòng mới
+> (dấu ngăn ` · ` thay cho `|`). 34 dòng cũ giữ nguyên vì log là append-only.
 
 ---
 

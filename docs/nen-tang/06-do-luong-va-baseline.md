@@ -124,13 +124,14 @@ Cho bài toán lương, sàn tương ứng là:
 Chạy hai cấu hình, một cái ra 0,6050 và một cái ra 0,6033. Cái đầu tốt hơn chứ?
 
 **Chưa chắc.** Điểm số đo trên một tập val hữu hạn (7.159 tin) nên bản thân nó
-có dao động ngẫu nhiên. Dự án đo dao động đó bằng **bootstrap 200 lần**:
+có dao động ngẫu nhiên. Đo dao động đó bằng **bootstrap 1.000 lần**
+(`evaluate.bootstrap_scores`, chạy trên cả 34 run của cụm so sánh):
 
 ```
-độ lệch chuẩn macro-F1  ≈  0,009
+độ lệch chuẩn macro-F1  ≈  0,0077      (khoảng 0,0067 – 0,0087)
 ```
 
-Nghĩa là: **chênh lệch nhỏ hơn 0,009 không phân biệt được với nhiễu.**
+Nghĩa là: **chênh lệch nhỏ hơn 0,0077 không phân biệt được với nhiễu.**
 
 Áp vào bảng ablation:
 
@@ -138,10 +139,37 @@ Nghĩa là: **chênh lệch nhỏ hơn 0,009 không phân biệt được với 
 |---|---|---|
 | `province` 0,6050 vs `raw` 0,6033 | +0,0017 | **Trong nhiễu.** "Có lẽ giúp", P(>0) = 0,97 |
 | Bỏ từ dừng: 0,5756 vs 0,5754 | +0,0002 | **Trong nhiễu.** Không phân biệt được |
-| `C` 0,02 vs `C` 0,5: 0,6050 vs 0,5763 | +0,0287 | **Thật.** Gấp hơn 3 lần σ |
+| `C` 0,02 vs `C` 0,5: 0,6050 vs 0,5763 | +0,0287 | **Thật.** Gấp gần 4 lần σ |
 
 Không có bước này thì rất dễ đi tối ưu những chênh lệch 0,001 suốt cả tuần, và
 tin rằng mình đang tiến bộ.
+
+### σ này từng chỉ là một con số truyền miệng
+
+Cho tới cụm so sánh mô hình, `docs/` viện dẫn **σ ≈ 0,009** ở năm chỗ mà **không
+có file `.py` nào trong repo tính ra nó**. Nó có lẽ được tính một lần trong REPL
+rồi chép vào tài liệu. Giá trị hiện tại (0,0077) là lần đầu nó đến từ code chạy
+lại được — và nó thấp hơn con số cũ khoảng 15%, tức quy tắc cũ **quá bảo thủ**.
+
+Bài học rộng hơn con số: **một ngưỡng quyết định mà không ai chạy lại được thì
+không phải bằng chứng, dù nó nghe rất khoa học.** Nó đã đứng ra chống đỡ ba kết
+luận "bỏ bước này đi" trong suốt bảng ablation tiếng Việt.
+
+### σ độc lập không phải cách so hai mô hình
+
+σ trả lời: *"điểm này dao động bao nhiêu nếu đổi tập val?"*
+Câu thật sự cần hỏi là: *"A có hơn B trên **cùng** những dòng đó không?"*
+
+Hai câu khác nhau, và câu thứ hai nhạy hơn nhiều. Lý do: hai mô hình sai ở phần
+lớn cùng những tin nhập nhằng, nên nếu lấy lại **cùng** một mẫu dòng cho cả hai
+rồi trừ, phần dao động chung bị triệt tiêu. Đó là **paired bootstrap**, và nó là
+cơ sở quyết định trong
+[10-so-sanh-mo-hinh.md §4](../10-so-sanh-mo-hinh.md#4-ma-trận-phàng--cột).
+
+Ví dụ thật từ cụm đó: `logreg` 0,6072 so với `svm` 0,6050 — chênh +0,0022, nhỏ
+hơn σ nên quy tắc cũ gọi là nhiễu. Paired bootstrap cho `P(logreg > svm) = 0,685`,
+tức **vẫn không phân biệt được**, nhưng giờ ta biết điều đó bằng phép đo đúng
+chứ không phải bằng một ngưỡng thô.
 
 > **Nguyên tắc:** trước khi mừng vì một cải thiện, hỏi *"nó có lớn hơn nhiễu không?"*
 > Không biết nhiễu bằng bao nhiêu thì không được phép kết luận gì.

@@ -26,6 +26,7 @@ SOURCES=(
   "docs/06-mo-hinh-phan-lop.md:05-mo-hinh-phan-lop"
   "docs/07-bai-toan-luong.md:06-bai-toan-luong"
   "docs/08-ma-nguon.md:07-ma-nguon"
+  "docs/10-so-sanh-mo-hinh.md:08-so-sanh-mo-hinh"
 )
 
 NAMES=()
