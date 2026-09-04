@@ -38,15 +38,15 @@ flowchart LR
 |---|---|---|---|
 | [`vitext.py`](../src/vietjobs/vitext.py) | 534 | Toàn bộ xử lý tiếng Việt. Hàm thuần khiết, có test riêng từng bước | [02](02-vietnamese-nlp.md) |
 | [`dataset.py`](../src/vietjobs/dataset.py) | 275 | Làm sạch + chia tập đóng băng. Tách từ chạy **một lần** rồi cache vào parquet | [01](01-data-audit.md) |
-| [`features.py`](../src/vietjobs/features.py) | 268 | `PrepConfig` bật/tắt từng bước → mỗi cấu hình là một dòng ablation | [05](05-dac-trung-tfidf.md) |
+| [`features.py`](../src/vietjobs/features.py) | 279 | `PrepConfig` bật/tắt từng bước → mỗi cấu hình là một dòng ablation | [05](05-dac-trung-tfidf.md) |
 | [`train.py`](../src/vietjobs/train.py) | 362 | Một lần chạy = một dòng trong [04-results.md](04-results.md), không sửa dòng đã ghi | [03](03-protocol.md) |
 | [`predict.py`](../src/vietjobs/predict.py) | 260 | Dùng **đúng** code path tiền xử lý đã tạo dữ liệu train | [09](09-lo-trinh.md) |
-| [`models.py`](../src/vietjobs/models.py) | 367 | KNN · SVM · LogReg · LinearRegression · LightGBM (bắt buộc) + RandomForest · LightGBM · XGBoost cho trục so sánh thuật toán + baseline phải vượt | [06](06-mo-hinh-phan-lop.md) |
+| [`models.py`](../src/vietjobs/models.py) | 466 | KNN · SVM · LogReg · LinearRegression · LightGBM (bắt buộc) + RandomForest · LightGBM · XGBoost cho trục so sánh thuật toán + baseline phải vượt | [06](06-mo-hinh-phan-lop.md) |
 | [`evaluate.py`](../src/vietjobs/evaluate.py) | 267 | Metric cho cả ba bài toán + bootstrap và so cặp | [03](03-protocol.md) · [10](10-so-sanh-mo-hinh.md) |
 | [`config.py`](../src/vietjobs/config.py) | 59 | Đường dẫn · `SPLIT_SEED` · nhóm cột · tên task | — |
 | [`scripts/measure_vitext.py`](../scripts/measure_vitext.py) | 125 | Đo lại bằng chứng cho bảng chín bước. Không dính vào train, chạy lúc nào cũng được | [02](02-vietnamese-nlp.md) |
-| [`scripts/sweep_category.py`](../scripts/sweep_category.py) | 290 | Chạy lưới 6×6 tuần tự trong một tiến trình, resume được, xếp theo wave | [10](10-so-sanh-mo-hinh.md) |
-| [`scripts/report_sweep.py`](../scripts/report_sweep.py) | 201 | Đọc artifact cụm → bảy bảng markdown. In ra stdout, không tự ghi vào `docs/` | [10](10-so-sanh-mo-hinh.md) |
+| [`scripts/sweep_category.py`](../scripts/sweep_category.py) | 362 | Chạy lưới 6×6 tuần tự trong một tiến trình, resume được, xếp theo wave | [10](10-so-sanh-mo-hinh.md) |
+| [`scripts/report_sweep.py`](../scripts/report_sweep.py) | 206 | Đọc artifact cụm → bảy bảng markdown. In ra stdout, không tự ghi vào `docs/` | [10](10-so-sanh-mo-hinh.md) |
 
 ---
 
@@ -64,12 +64,12 @@ Quy tắc số 3, giữ bởi [`tests/test_no_leak.py`](../tests/test_no_leak.py
 
 ## Test
 
-97 test, đếm bằng `pytest --collect-only -q`:
+100 test, đếm bằng `pytest --collect-only -q`:
 
 | File | Test | Giữ điều gì |
 |---|---|---|
 | [`tests/test_vitext.py`](../tests/test_vitext.py) | 54 | Từng bước tiếng Việt, kể cả bốn ca "40 triệu người dùng" **không** được che |
-| [`tests/test_no_leak.py`](../tests/test_no_leak.py) | 19 | Bài lương không bao giờ đọc cột chưa che |
+| [`tests/test_no_leak.py`](../tests/test_no_leak.py) | 22 | Bài lương không bao giờ đọc cột chưa che · **mọi tên trong lá chắn phải là cột có thật** · ba cột kỹ năng không chứa con số lương |
 | [`tests/test_train_overrides.py`](../tests/test_train_overrides.py) | 16 | `--set` thật sự tới được estimator; khoá lạ báo lỗi thay vì im lặng; ô `Headline` không chứa `\|` |
 | [`tests/test_bootstrap.py`](../tests/test_bootstrap.py) | 8 | Bootstrap tất định theo seed; hai mô hình y hệt cho hoà 0,5; so cặp nhạy hơn σ độc lập |
 

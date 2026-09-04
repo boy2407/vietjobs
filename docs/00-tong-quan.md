@@ -63,8 +63,8 @@ flowchart LR
 | Xử lý tiếng Việt | xong | 73 test xanh, tách từ 0 lỗi trên 48k tin | [02](02-vietnamese-nlp.md) |
 | Chia tập | xong | 0 nhóm lọt giữa các tập, 16 lớp đủ ở cả ba | [01](01-data-audit.md#7-chia-tập--theo-nhóm-không-theo-dòng) |
 | Đặc trưng | xong | 236.596 chiều, test chống rò rỉ lương xanh | [05](05-dac-trung-tfidf.md) |
-| **Bài toán 1 — phân lớp** | **xong** | **test macro-F1 0,6112 · 71 thí nghiệm** | [06](06-mo-hinh-phan-lop.md) |
-| **So sánh mô hình** | **xong** | **6 mô hình × 6 cấu hình, paired bootstrap** | [10](10-so-sanh-mo-hinh.md) |
+| **Bài toán 1 — phân lớp** | **xong** | **test macro-F1 0,6112 · 100 thí nghiệm** | [06](06-mo-hinh-phan-lop.md) |
+| **So sánh mô hình** | **xong** | **11 thuật toán × 6 cấu hình, paired bootstrap** | [10](10-so-sanh-mo-hinh.md) |
 | Bài toán 2 — lương | chưa chạy | code đã có, chưa huấn luyện | [07](07-bai-toan-luong.md) |
 | Hệ thống `predict.py` | khung xong | chưa chạy thử đầu-cuối | [09](09-lo-trinh.md#ưu-tiên-0--khoá-trainserve-skew-chặn-mọi-thứ-khác) |
 
@@ -83,8 +83,8 @@ flowchart LR
 | [07-bai-toan-luong.md](07-bai-toan-luong.md) | Bài toán 2 · kiến trúc 2 tầng · bẫy đã biết trước | Chạy xong bài toán lương |
 | [08-ma-nguon.md](08-ma-nguon.md) | Chín module làm gì, phụ thuộc nhau ra sao | Thêm/sửa/xoá module trong `src/` |
 | [09-lo-trinh.md](09-lo-trinh.md) | Còn phải làm gì, theo thứ tự nào | Xong một hạng mục |
-| [10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md) | Sáu thuật toán, sáu cấu hình mỗi cái · paired bootstrap · chọn mô hình nào và vì sao | Chạy lại cụm quét công bằng |
-| [nen-tang/](nen-tang/00-index.md) | Khái niệm nền cho người mới: TF-IDF, n-gram, rò rỉ, chính quy hoá | Hiếm — note nền tảng **không chứa con số kết quả** |
+| [10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md) | Mười một thuật toán, sáu cấu hình mỗi cái · paired bootstrap · điểm yếu từng mô hình · chọn cái nào và vì sao | Chạy lại cụm quét công bằng |
+| [nen-tang/](nen-tang/00-index.md) | Khái niệm nền cho người mới: TF-IDF, n-gram, rò rỉ, chính quy hoá, **cách đọc một bảng so sánh** | Hiếm — note nền tảng **không chứa con số kết quả** |
 
 ---
 

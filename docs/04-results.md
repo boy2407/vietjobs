@@ -98,3 +98,9 @@ Selection uses `val`. `test` is scored once, at the end.
 | cat-SW-sgd-6 | 09-03 08:49 | category | sgd(loss=hinge,alpha=0.001) | full | province | val | 7159 | macroF1=0.5234±0.0062 · acc=0.5604 · balAcc=0.6575 · F1@15=0.5531 | 29.6s | fbc98136+dirty |
 | cat-SW-extra-6 | 09-03 08:50 | category | extra(n_estimators=300,max_features=log2) | full | province | val | 7159 | macroF1=0.5507±0.0076 · acc=0.5888 · balAcc=0.6458 · F1@15=0.5750 · top3=0.8869 | 29.7s | fbc98136+dirty |
 | cat-SW-svm_plain-6 | 09-03 08:51 | category | svm_plain(C=0.005) | full | province | val | 7159 | macroF1=0.5460±0.0065 · acc=0.6490 · balAcc=0.5249 · F1@15=0.5843 | 26.5s | fbc98136+dirty |
+| cat-SW-centroid-1 | 09-04 07:29 | category | centroid(shrink_threshold=None) | full | province | val | 7159 | macroF1=0.3204±0.0056 · acc=0.3512 · balAcc=0.3972 · F1@15=0.3392 | 18.1s | 0c01c772 |
+| cat-SW-centroid-2 | 09-04 07:29 | category | centroid(shrink_threshold=0.1) | full | province | val | 7159 | macroF1=0.3203±0.0056 · acc=0.3510 · balAcc=0.3971 · F1@15=0.3390 | 18.0s | 0c01c772+dirty |
+| cat-SW-centroid-3 | 09-04 07:30 | category | centroid(shrink_threshold=0.2) | full | province | val | 7159 | macroF1=0.3203±0.0056 · acc=0.3509 · balAcc=0.3970 · F1@15=0.3390 | 18.2s | 0c01c772+dirty |
+| cat-SW-centroid-4 | 09-04 07:30 | category | centroid(shrink_threshold=0.5) | full | province | val | 7159 | macroF1=0.3198±0.0056 · acc=0.3505 · balAcc=0.3967 · F1@15=0.3385 | 18.0s | 0c01c772+dirty |
+| cat-SW-centroid-5 | 09-04 07:31 | category | centroid(shrink_threshold=1.0) | full | province | val | 7159 | macroF1=0.3196±0.0056 · acc=0.3502 · balAcc=0.3965 · F1@15=0.3383 | 18.2s | 0c01c772+dirty |
+| cat-SW-centroid-6 | 09-04 07:31 | category | centroid(shrink_threshold=2.0) | full | province | val | 7159 | macroF1=0.3182±0.0056 · acc=0.3482 · balAcc=0.3955 · F1@15=0.3368 | 17.8s | 0c01c772+dirty |

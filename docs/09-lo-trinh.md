@@ -16,7 +16,38 @@ Cách làm: lấy 20 dòng bất kỳ từ `VietJobs.csv`, cho qua `build_frame`
 đúng 20 dòng đó trong `train.parquet`. Lệch một cột là mọi con số hệ thống mất giá trị.
 Đây là loại lỗi **không báo lỗi** — nó chỉ làm dự đoán kém đi một cách lặng lẽ.
 
-## Ưu tiên 0b — đóng lỗ hổng che lương chưa được test phủ
+## ~~Ưu tiên 0b~~ — **XONG**: không phải rò rỉ
+
+Đo trên `train.parquet` bằng `re.search` với đúng ba pattern
+`_PAT_MILLIONS` / `_PAT_DONG` / `_PAT_USD`:
+
+| Cột | Số dòng khớp |
+|---|---|
+| `soft_skills_text` | **0** |
+| `qualifications_text` | **0** |
+| `technical_skills_text` (mục này **bỏ sót** trong bản cũ) | **0** |
+| `benefits_text` chưa che, để đối chứng | 3.522 (10,55%) |
+| `benefits_masked` | 0 ✓ |
+
+**Không có con số lương nào trong ba cột đó.** Không kết quả nào phải bỏ.
+Phép đo giờ là một test thường trực (`tests/test_no_leak.py`), nên một bộ dữ
+liệu tương lai làm hỏng tính chất này sẽ bị bắt tại đây.
+
+> ⚠️ **Cảnh báo phương pháp.** Đo bằng `Series.str.contains(pattern_đã_compile)`
+> cho **111 hit giả** ở `qualifications_text` — pandas không giữ ngữ nghĩa `\b`
+> của pattern đã biên dịch, nên "sinh viên năm 2 trở lên" bị tính là khớp. Dùng
+> `re.search`, nếu không sẽ kết luận sai là "rò rỉ thật" và vứt bỏ công việc
+> không cần vứt.
+
+**Một lỗ hổng thật khác đã tìm ra và sửa trong lúc kiểm:** `UNMASKED_COLUMNS`
+sinh tên bằng `f"{c}_seg"`, cho ra `requirements_text_seg`, trong khi cột thật
+tên `requirements_seg`. Lá chắn canh một cái tên **không tồn tại** nên bảo vệ
+không gì cả, và mọi test vẫn xanh. Nay lấy tên từ `_SEG_NAME` — đúng bảng mà
+`resolve_column` dùng — và có test khẳng định mọi tên trong lá chắn là cột thật.
+
+<details><summary>Nội dung cảnh báo cũ, giữ lại để đối chiếu</summary>
+
+### (bản cũ) Đóng lỗ hổng che lương chưa được test phủ
 
 Hai cột đi thẳng vào mô hình lương ở dạng **chưa che**:
 
@@ -40,6 +71,10 @@ dòng khớp `_PAT_MILLIONS` / `_PAT_DONG` / `_PAT_USD` trong hai cột đó.
 Đây là ví dụ sống cho một điều đáng nhớ: **test chống rò rỉ chỉ bảo vệ được những
 cột mà người viết test nghĩ tới.** Ghi thêm ở
 [nền tảng: rò rỉ dữ liệu](nen-tang/05-ro-ri-du-lieu.md).
+
+</details>
+
+---
 
 ## Ưu tiên 1 — chạy bài toán lương
 

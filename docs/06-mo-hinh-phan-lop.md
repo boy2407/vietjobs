@@ -3,8 +3,8 @@
 # Bài toán 1 — phân lớp nghề
 
 16 lớp, lệch 27:1. **Đã xong và đã chấm test một lần: macro-F1 0,6112.**
-71 thí nghiệm ghi trong [04-results.md](04-results.md). Lựa chọn mô hình được
-kiểm lại bằng một cụm quét công bằng 6 mô hình × 6 cấu hình —
+100 thí nghiệm ghi trong [04-results.md](04-results.md). Lựa chọn mô hình được
+kiểm lại bằng một cụm quét công bằng **11 thuật toán × 6 cấu hình** —
 [10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md).
 
 ---
@@ -68,18 +68,28 @@ từng khối ở [05-dac-trung-tfidf.md §9](05-dac-trung-tfidf.md#9-khối-nà
 | Không dùng ML | trùng từ khoá tiêu đề | 0,4321 | — |
 | KNN toàn văn | k=30 | 0,4059 | 17,3s |
 | KNN tốt nhất | k=15, chỉ tiêu đề | 0,5307 | 0,7s |
+| Rocchio (centroid) | cosine, 16 vectơ trung bình | 0,3204 | 18s |
 | KNN tốt nhất (cụm công bằng) | k=5, toàn văn | 0,4361 | 17s |
+| Naive Bayes | ComplementNB, alpha=0,1 | 0,5535 | **24s** |
 | RandomForest tốt nhất | 600 cây | 0,5644 | 5,3 ph |
 | SVM mặc định | C=0,5, toàn văn | 0,5763 | 77,2s |
+| ExtraTrees tốt nhất | 600 cây | 0,5665 | 6,4 ph |
 | LightGBM tốt nhất | 200 vòng @ lr 0,15, leaves 31 | 0,5830 | 12,9 ph |
+| SVM **không** `class_weight` | C=0,05 | 0,5927 | 42s |
 | XGBoost tốt nhất | 100 @ lr 0,3, depth 4, colsample 0,1 | 0,5912 | 18,7 ph |
+| SGD tốt nhất | log_loss, alpha=1e-4 | 0,6010 | **40s** |
 | **Tốt nhất** | **SVM C=0,02, toàn văn + chuẩn tỉnh** | **0,6050** | **42s** |
 | LogReg tốt nhất | C=0,5 | 0,6072 | 4,8 ph |
 
-Hai dòng cuối **hoà**: `P(logreg > svm) = 0,685`, không phân biệt được. Khi hoà
-thì thứ tách chúng ra là chi phí — 42 giây so với 4,8 phút. Cả hai thắng cả ba
-mô hình cây với `P > 0,975`. Chi tiết ở
-[10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md).
+**Ba mô hình tuyến tính dẫn đầu đều hoà nhau** — `P(logreg > svm) = 0,685`,
+`P(svm > sgd) = 0,829`, đều dưới ngưỡng 0,975. Và thứ hạng **đảo** khi so trung
+vị thay vì so cực đại: theo trung vị thì `svm` đứng nhất, `sgd` tụt năm bậc.
+Khi hoà thì thứ tách chúng ra là chi phí — **42 giây** so với 4,8 phút.
+
+Cả ba thắng mọi mô hình cây và mọi baseline văn bản cổ điển với `P > 0,975`.
+Chi tiết, kèm mục **điểm yếu của từng mô hình**, ở
+[10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md); các khái niệm dùng trong đó
+giải thích ở [nền tảng note 8](nen-tang/08-doc-mot-bang-so-sanh.md).
 
 **Test (chạy một lần duy nhất): macro-F1 0,6112 · accuracy 0,6527 · balanced accuracy 0,6816.**
 Test cao hơn val nên không có dấu hiệu overfit vào val.
