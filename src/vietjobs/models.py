@@ -24,7 +24,7 @@ from sklearn.linear_model import (
     SGDClassifier,
 )
 from sklearn.naive_bayes import ComplementNB
-from sklearn.neighbors import KNeighborsClassifier, NearestCentroid
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.svm import LinearSVC
 from sklearn.utils.class_weight import compute_sample_weight
@@ -180,6 +180,68 @@ def _lgbm_classifier(seed: int, n_estimators: int = 400, learning_rate: float = 
     )
 
 
+class CosineNearestCentroid(BaseEstimator, ClassifierMixin):
+    """Rocchio: one centroid per class, predict the nearest one by cosine.
+
+    Written by hand because sklearn's NearestCentroid cannot be used here, for
+    two independent reasons — both measured, not assumed:
+
+    1. It densifies. Its distance computation materialises the 7.159 x 236.596
+       evaluation matrix, which is 13.5 GB; every one of six configurations was
+       killed by the OS with SIGKILL on a 16 GB machine.
+    2. scikit-learn 1.9 restricts ``metric`` to {euclidean, manhattan}. On
+       L2-normalised TF-IDF rows the meaningful distance is cosine, and a
+       centroid is not itself normalised, so euclidean is not a stand-in.
+
+    Both problems vanish once the centroids are L2-normalised and scoring is a
+    single sparse-times-dense product: ``X @ centroids.T`` is 7.159 x 16, and
+    the centroid block is 16 x 236.596 = 30 MB.
+
+    This is the control for knn. Both decide by distance, but knn compares
+    against 33.396 individual rows while this compares against 16 averaged ones,
+    so it does not fail the same way in high dimensions — which is exactly the
+    comparison worth having.
+
+    ``shrink_threshold`` soft-thresholds each centroid toward the global
+    centroid, zeroing features that do not separate the class. This is a
+    simplified variant of nearest-shrunken-centroid: the threshold is scaled by
+    the median absolute deviation rather than by a per-feature pooled standard
+    error. Simpler, and enough to sweep the knob; not identical to Tibshirani's
+    formulation, and the report should not claim it is.
+
+    No ``class_weight`` — a centroid is a mean, and every class gets exactly one
+    regardless of how many rows it holds. With 27:1 imbalance that is a real
+    handicap, the same one knn and ComplementNB carry.
+    """
+
+    def __init__(self, shrink_threshold: float | None = None):
+        self.shrink_threshold = shrink_threshold
+
+    def fit(self, X, y):
+        y = np.asarray(y)
+        self.classes_ = np.unique(y)
+        cents = np.vstack([np.asarray(X[y == c].mean(axis=0)).ravel()
+                           for c in self.classes_])
+        if self.shrink_threshold:
+            overall = np.asarray(X.mean(axis=0)).ravel()
+            dev = cents - overall
+            nz = np.abs(dev[dev != 0])
+            t = self.shrink_threshold * (float(np.median(nz)) if nz.size else 0.0)
+            dev = np.sign(dev) * np.maximum(np.abs(dev) - t, 0.0)
+            cents = overall + dev
+        norms = np.linalg.norm(cents, axis=1, keepdims=True)
+        norms[norms == 0] = 1.0
+        self.centroids_ = cents / norms
+        return self
+
+    def predict(self, X):
+        scores = np.asarray(X @ self.centroids_.T)
+        return self.classes_[scores.argmax(axis=1)]
+
+    def decision_function(self, X):
+        return np.asarray(X @ self.centroids_.T)
+
+
 class BalancedXGBClassifier(BaseEstimator, ClassifierMixin):
     """XGBoost multiclass, with the two things it does not do on its own.
 
@@ -287,16 +349,9 @@ CLASSIFIERS = {
         n_estimators=300, max_features="sqrt", min_samples_leaf=2,
         class_weight="balanced_subsample", random_state=seed, n_jobs=-1,
     ),
-    # Rocchio: one centroid per class, predict by nearest centroid. The control
-    # for knn — also distance-based, but comparing against 16 averaged vectors
-    # instead of 33.396 individual ones, so it does not fail the same way.
-    #
-    # scikit-learn 1.9 restricts metric to {euclidean, manhattan}; cosine is not
-    # available. On L2-normalised rows euclidean distance is a monotone function
-    # of cosine distance for the PAIRWISE case, but a centroid is not itself
-    # normalised, so the equivalence does not carry. This handicaps the model on
-    # text, and the report must say so rather than presenting the score bare.
-    "centroid": lambda seed: NearestCentroid(metric="euclidean"),
+    # Rocchio. Hand-written — sklearn's NearestCentroid was OOM-killed on all
+    # six configurations here. See CosineNearestCentroid above.
+    "centroid": lambda seed: CosineNearestCentroid(),
     # --- tree ensembles, for the algorithm-comparison axis ---
     # These are NOT in the required set. They are here to turn "linear beats
     # trees on TF-IDF" from a convention into a measured row.

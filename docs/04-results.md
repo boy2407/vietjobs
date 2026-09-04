@@ -80,3 +80,21 @@ Selection uses `val`. `test` is scored once, at the end.
 | cat-SW-svm_plain-1 | 09-03 07:05 | category | svm_plain(C=0.02) | full | province | val | 7159 | macroF1=0.5818±0.0082 · acc=0.6579 · balAcc=0.5608 · F1@15=0.6173 | 58.4s | e99eb606+dirty |
 | cat-SW-extra-1 | 09-03 07:12 | category | extra(n_estimators=300) | full | province | val | 7159 | macroF1=0.5650±0.0079 · acc=0.6039 · balAcc=0.6071 · F1@15=0.5936 · top3=0.9133 | 334.9s | e99eb606+dirty |
 | cat-SW-nb-2 | 09-03 07:13 | category | nb(alpha=0.1) | full | province | val | 7159 | macroF1=0.5535±0.0080 · acc=0.6340 · balAcc=0.5437 · F1@15=0.5869 · top3=0.9155 | 24.3s | e99eb606+dirty |
+| cat-SW-sgd-2 | 09-03 07:19 | category | sgd(loss=hinge,alpha=1e-05) | full | province | val | 7159 | macroF1=0.5521±0.0077 · acc=0.5904 · balAcc=0.5669 · F1@15=0.5824 | 61.3s | fbc98136 |
+| cat-SW-svm_plain-2 | 09-03 07:20 | category | svm_plain(C=0.05) | full | province | val | 7159 | macroF1=0.5927±0.0078 · acc=0.6560 · balAcc=0.5763 · F1@15=0.6290 | 42.3s | fbc98136+dirty |
+| cat-SW-extra-2 | 09-03 07:27 | category | extra(n_estimators=600) | full | province | val | 7159 | macroF1=0.5665±0.0076 · acc=0.6057 · balAcc=0.6096 · F1@15=0.5973 · top3=0.9159 | 383.7s | fbc98136+dirty |
+| cat-SW-nb-3 | 09-03 07:28 | category | nb(alpha=0.01) | full | province | val | 7159 | macroF1=0.5491±0.0079 · acc=0.6304 · balAcc=0.5414 · F1@15=0.5822 · top3=0.9152 | 20.4s | fbc98136+dirty |
+| cat-SW-sgd-3 | 09-03 07:34 | category | sgd(loss=log_loss,alpha=0.0001) | full | province | val | 7159 | macroF1=0.6010±0.0069 · acc=0.6479 · balAcc=0.6467 · F1@15=0.6371 · top3=0.9211 | 40.0s | fbc98136+dirty |
+| cat-SW-svm_plain-3 | 09-03 07:34 | category | svm_plain(C=0.1) | full | province | val | 7159 | macroF1=0.5902±0.0076 · acc=0.6474 · balAcc=0.5784 · F1@15=0.6222 | 45.5s | fbc98136+dirty |
+| cat-SW-extra-3 | 09-03 07:41 | category | extra(n_estimators=300,max_features=1000) | full | province | val | 7159 | macroF1=0.5642±0.0077 · acc=0.6047 · balAcc=0.6024 · F1@15=0.5949 · top3=0.9124 | 361.8s | fbc98136+dirty |
+| cat-SW-nb-4 | 09-03 07:42 | category | nb(alpha=10.0) | full | province | val | 7159 | macroF1=0.3582±0.0064 · acc=0.5471 · balAcc=0.3561 · F1@15=0.3832 · top3=0.7980 | 19.6s | fbc98136+dirty |
+| cat-SW-sgd-4 | 09-03 07:47 | category | sgd(loss=modified_huber,alpha=0.0001) | full | province | val | 7159 | macroF1=0.5804±0.0077 · acc=0.6212 · balAcc=0.6071 · F1@15=0.6110 · top3=0.8785 | 52.3s | fbc98136+dirty |
+| cat-SW-svm_plain-4 | 09-03 07:49 | category | svm_plain(C=0.5) | full | province | val | 7159 | macroF1=0.5714±0.0081 · acc=0.6146 · balAcc=0.5669 · F1@15=0.6001 | 80.3s | fbc98136+dirty |
+| cat-SW-nb-5 | 09-03 08:35 | category | nb(alpha=1.0,norm=True) | full | province | val | 7159 | macroF1=0.4692±0.0069 · acc=0.5992 · balAcc=0.4518 · F1@15=0.5019 · top3=0.8856 | 17.7s | fbc98136+dirty |
+| cat-SW-sgd-5 | 09-03 08:40 | category | sgd(loss=hinge,alpha=0.0001,penalty=elasticnet) | full | province | val | 7159 | macroF1=0.5455±0.0065 · acc=0.5846 · balAcc=0.6528 · F1@15=0.5785 | 76.6s | fbc98136+dirty |
+| cat-SW-svm_plain-5 | 09-03 08:41 | category | svm_plain(C=1.0) | full | province | val | 7159 | macroF1=0.5539±0.0082 · acc=0.5988 · balAcc=0.5487 · F1@15=0.5819 | 101.2s | fbc98136+dirty |
+| cat-SW-extra-5 | 09-03 08:45 | category | extra(n_estimators=300,criterion=entropy) | full | province | val | 7159 | macroF1=0.5497±0.0080 · acc=0.5914 · balAcc=0.5787 · F1@15=0.5792 · top3=0.8969 | 166.8s | fbc98136+dirty |
+| cat-SW-nb-6 | 09-03 08:45 | category | nb(alpha=0.1,norm=True) | full | province | val | 7159 | macroF1=0.5532±0.0079 · acc=0.6336 · balAcc=0.5404 · F1@15=0.5866 · top3=0.9134 | 17.4s | fbc98136+dirty |
+| cat-SW-sgd-6 | 09-03 08:49 | category | sgd(loss=hinge,alpha=0.001) | full | province | val | 7159 | macroF1=0.5234±0.0062 · acc=0.5604 · balAcc=0.6575 · F1@15=0.5531 | 29.6s | fbc98136+dirty |
+| cat-SW-extra-6 | 09-03 08:50 | category | extra(n_estimators=300,max_features=log2) | full | province | val | 7159 | macroF1=0.5507±0.0076 · acc=0.5888 · balAcc=0.6458 · F1@15=0.5750 · top3=0.8869 | 29.7s | fbc98136+dirty |
+| cat-SW-svm_plain-6 | 09-03 08:51 | category | svm_plain(C=0.005) | full | province | val | 7159 | macroF1=0.5460±0.0065 · acc=0.6490 · balAcc=0.5249 · F1@15=0.5843 | 26.5s | fbc98136+dirty |

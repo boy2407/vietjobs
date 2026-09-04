@@ -193,11 +193,13 @@ MUST_DECLARE = {"lgbm": {"n_estimators", "learning_rate"},
                 "xgb": {"n_estimators", "learning_rate"}}
 
 # Cells that already hit the timeout once and were deliberately not re-run.
+# extra#4 (min_samples_leaf=1) joined them: unlimited leaf depth on a matrix
+# this sparse grows trees until the clock runs out.
 # Without this they would be retried on every resume, spending 45 minutes each
 # to produce the same DNF. Both models lose to the linear ones at P < 0.013, so
 # a sixth configuration cannot change any conclusion — and the fact that they do
 # not finish in 45 minutes is itself reported, in the cost column.
-KNOWN_DNF = {("rf", 4), ("xgb", 5)}
+KNOWN_DNF = {("rf", 4), ("xgb", 5), ("extra", 4)}
 
 DEFAULT_TIMEOUT = 2700
 LONG_TIMEOUT = 5400          # xgb #1 is estimated at 3209s
