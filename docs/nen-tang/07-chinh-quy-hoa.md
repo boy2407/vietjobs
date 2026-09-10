@@ -1,168 +1,177 @@
-[← Đo lường và baseline](06-do-luong-va-baseline.md) · [Nền tảng](00-index.md)
+[← Metrics and baselines](06-do-luong-va-baseline.md) · [Background](00-index.md) · [Reading a comparison table →](08-doc-mot-bang-so-sanh.md)
 
-# 7. Chính quy hoá — `C`, `alpha`, và vì sao mô hình cần bị kìm lại
+# 7. Regularisation — `C`, `alpha`, and why a model needs holding back
 
-Note cuối, và là note giải thích con số kỳ lạ nhất trong dự án: **`C = 0,02`**,
-thấp hơn mặc định 50 lần, mà lại cho kết quả tốt nhất.
+The note that explains the strangest number in the project: **`C = 0.02`**, fifty
+times below the default, and yet the best result.
 
 ---
 
-## 1. Quá khớp — nhìn bằng số, không bằng lời
+## 1. Overfitting — in numbers, not in words
 
-Hai dòng đo thật của dự án, cùng dữ liệu, cùng đặc trưng, chỉ khác một thứ:
+Two real measurements from this project, same data, same features, one difference:
 
-| Mô hình | R² **train** | R² **val** | MAE val |
+| Model | R² **train** | R² **dev** | MAE dev |
 |---|---|---|---|
-| `LinearRegression` thuần | 0,718 | **0,081** | **6,00 tr** |
-| `Ridge` alpha=1 | 0,657 | **0,507** | **4,25 tr** |
+| Plain `LinearRegression` | 0.718 | **0.081** | **6.00 M** |
+| `Ridge` alpha=1 | 0.657 | **0.507** | **4.25 M** |
 
-Đọc kỹ hai dòng này — chúng chứa toàn bộ ý tưởng của chính quy hoá:
+Read those two rows carefully — they contain the whole idea of regularisation:
 
-- Mô hình thứ nhất **giỏi hơn trên dữ liệu nó đã thấy** (0,718 > 0,657).
-- Mô hình thứ nhất **tệ hơn rất nhiều trên dữ liệu mới** (0,081 so với 0,507 —
-  kém hơn **sáu lần**).
+- The first model is **better on data it has already seen** (0.718 > 0.657).
+- The first model is **far worse on new data** (0.081 versus 0.507 — **six times**
+  worse).
 
-Ridge **cố tình** làm mình tệ đi trên train, để đổi lấy tốt hơn nhiều trên val.
+Ridge **deliberately** makes itself worse on train in exchange for being far better
+on dev.
 
-Thêm một chi tiết cay đắng: MAE 6,00 triệu của mô hình thuần còn **tệ hơn baseline
-"lấy trung vị theo nhóm nghề"** (5,54 triệu). Tức là tệ hơn không dùng mô hình nào.
+One more bitter detail: the plain model's MAE of 6.00 million is worse than the
+"median per occupation group" baseline (5.54 million). That is, worse than using no
+model at all.
 
-**Quá khớp** = mô hình học thuộc chi tiết vụn vặt và nhiễu của tập train, thay vì
-học quy luật tổng quát.
-
----
-
-## 2. Vì sao quá khớp xảy ra ở đây
-
-Quay lại tỷ lệ p/n từ [note 4](04-ma-tran-thua-va-so-chieu.md):
-
-```
-p = 236.596 chiều      n = 33.396 mẫu      p/n = 7,1
-```
-
-Có nhiều "nút vặn" gấp 7 lần số ví dụ để học. Với `p > n`, luôn tồn tại một tổ
-hợp trọng số khớp **hoàn hảo** dữ liệu train — kể cả khi nhãn hoàn toàn ngẫu nhiên.
-
-Mô hình không cần *hiểu* gì. Nó chỉ cần *nhớ*. Và cái nó nhớ không dùng được cho
-tin mới.
+**Overfitting** = the model memorises the small details and the noise of the
+training set instead of learning the general rule.
 
 ---
 
-## 3. Chính quy hoá làm gì
+## 2. Why overfitting happens here
 
-Không chính quy hoá, mô hình chỉ tối ưu một thứ:
-
-```
-tối thiểu hoá:   sai số trên train
-```
-
-Chính quy hoá thêm một khoản phạt vào **độ lớn của trọng số**:
+Back to the p/n ratio from [note 4](04-ma-tran-thua-va-so-chieu.md):
 
 ```
-tối thiểu hoá:   sai số trên train  +  λ × (tổng bình phương trọng số)
+p = 236,596 dimensions      n = 33,396 samples      p/n = 7.1
 ```
 
-Bây giờ mô hình phải trả giá cho mỗi trọng số nó đặt. Nó chỉ chịu trả giá khi
-đặc trưng đó **thật sự** giúp giảm sai số nhiều hơn khoản phạt.
+There are 7× more "knobs" than examples to learn from. With `p > n`, there always
+exists a combination of weights that fits the training data **perfectly** — even if
+the labels are entirely random.
 
-Kết quả: hàng trăm nghìn chiều nhiễu bị ép về gần 0, chỉ những chiều có tín hiệu
-thật mới giữ được trọng số đáng kể. **Đó chính là cách SVM sống sót trong 236.596
-chiều còn KNN thì không** — KNN không có cơ chế nào để bỏ qua chiều vô dụng.
+The model does not need to *understand* anything. It only needs to *memorise*. And
+what it memorises is useless on a new posting.
 
 ---
 
-## 4. `C` và `alpha` — cùng một nút vặn, ngược chiều nhau
+## 3. What regularisation does
 
-Đây là chỗ hay nhầm nhất, nên nói rõ:
+Without regularisation, the model optimises one thing only:
 
-| Tham số | Ở đâu | Ý nghĩa | Giá trị **nhỏ** nghĩa là |
+```
+minimise:   the error on train
+```
+
+Regularisation adds a penalty on **the size of the weights**:
+
+```
+minimise:   error on train  +  λ × (sum of squared weights)
+```
+
+Now the model has to pay for every weight it assigns. It only agrees to pay when the
+feature **genuinely** reduces the error by more than the penalty.
+
+The result: hundreds of thousands of noisy dimensions get pushed toward 0, and only
+dimensions carrying real signal keep a meaningful weight. **That is exactly how SVM
+survives in 236,596 dimensions where KNN does not** — KNN has no mechanism for
+ignoring a useless dimension.
+
+---
+
+## 4. `C` and `alpha` — one knob, turned in opposite directions
+
+This is the easiest thing to confuse, so let us be explicit:
+
+| Parameter | Where | Meaning | A **small** value means |
 |---|---|---|---|
-| `alpha` | `Ridge`, `Lasso` | **Là** λ, hệ số phạt | phạt **nhẹ** → mô hình tự do hơn |
-| `C` | `LinearSVC`, `LogisticRegression` | Là **nghịch đảo** của λ | phạt **NẶNG** → mô hình bị kìm chặt |
+| `alpha` | `Ridge`, `Lasso` | **Is** λ, the penalty coefficient | a **light** penalty → a freer model |
+| `C` | `LinearSVC`, `LogisticRegression` | Is the **inverse** of λ | a **HEAVY** penalty → a tightly held model |
 
 ```
-alpha ↑   =   chính quy hoá mạnh hơn
-C     ↓   =   chính quy hoá mạnh hơn      ← ngược chiều!
+alpha ↑   =   stronger regularisation
+C     ↓   =   stronger regularisation      ← the other way round!
 ```
 
-Nhớ bằng một câu: **`C` là "độ tự do" (Cost of misclassification), `alpha` là "độ kìm".**
+Remember it in one sentence: **`C` is "freedom" (Cost of misclassification),
+`alpha` is "restraint".**
 
 ---
 
-## 5. Đường cong `C` của dự án — đọc như một triệu chứng
+## 5. The project's `C` curve — read it as a symptom
 
-Quét `C` cho `LinearSVC`, cùng cấu hình `province`, cùng seed:
+Sweeping `C` for `LinearSVC`, same `province` configuration, same seed:
 
-| `C` | macro-F1 (val) | Thời gian | Diễn giải |
+| `C` | macro-F1 (dev) | Time | Interpretation |
 |---|---|---|---|
-| 4,0 | 0,5171 | 313,6 s | Quá tự do — quá khớp nặng |
-| 1,0 *(mặc định)* | 0,5618 | 110,6 s | Vẫn quá tự do |
-| 0,2 | 0,5873 | 90,9 s | |
-| 0,1 | 0,5983 | 37,5 s | |
-| 0,05 | 0,6030 | 33,5 s | |
-| **0,02** | **0,6050** | **27,8 s** | **Điểm ngọt** |
-| 0,01 | 0,5976 | 34,4 s | Bắt đầu quá kìm |
-| 0,005 | 0,5865 | 44,5 s | Quá kìm — thiếu khớp |
+| 4.0 | 0.5171 | 313.6 s | Too free — badly overfit |
+| 1.0 *(default)* | 0.5618 | 110.6 s | Still too free |
+| 0.2 | 0.5873 | 90.9 s | |
+| 0.1 | 0.5983 | 37.5 s | |
+| 0.05 | 0.6030 | 33.5 s | |
+| **0.02** | **0.6050** | **27.8 s** | **The sweet spot** |
+| 0.01 | 0.5976 | 34.4 s | Starting to be over-restrained |
+| 0.005 | 0.5865 | 44.5 s | Over-restrained — underfitting |
 
-Đường cong hình chữ **∩** kinh điển. Hai bên đều tệ, ở giữa có một đỉnh:
+The classic **∩**-shaped curve. Both ends are bad, with a peak in the middle:
 
-- **`C` quá lớn** → quá khớp. Học thuộc nhiễu của train.
-- **`C` quá nhỏ** → thiếu khớp. Ép trọng số về 0 đến mức không học được cả tín hiệu thật.
+- **`C` too large** → overfitting. Memorising the noise in train.
+- **`C` too small** → underfitting. Weights pushed to 0 so hard that even real
+  signal cannot be learned.
 
-### Ba điều đáng chú ý ngoài cái đỉnh
+### Three things worth noting besides the peak
 
-**a. `C` tối ưu thấp hơn mặc định 50 lần.** Đây không phải một con số ngẫu nhiên
-đẹp — nó là **triệu chứng**. Nó nói rằng phần lớn 236.596 chiều đang là nhiễu.
-Việc nên làm tiếp không phải quét `C` thêm vòng nữa mà là **cắt bớt chiều** —
-quét `min_df`, `max_features`. Ghi ở
-[09-lo-trinh.md — Ưu tiên 3b](../09-lo-trinh.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-phân-lớp-làm-trước-khi-nghĩ-đến-dl).
+**a. The optimal `C` is 50× below the default.** This is not a pretty accident — it
+is a **symptom**. It says most of the 236,596 dimensions are noise. The next thing to
+do is not another `C` sweep but **cutting dimensions** — sweeping `min_df` and
+`max_features`. Recorded in
+[09-lo-trinh.md — Priority 3b](../archive/09-lo-trinh-ml.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-mốc-cơ-sở-ml).
 
-**b. Chính quy hoá mạnh chạy NHANH hơn.** `C=0,02` mất 27,8 s, `C=4,0` mất 313,6 s
-— **nhanh gấp 11 lần** và điểm cao hơn. Ràng buộc chặt làm bài toán tối ưu dễ hội
-tụ hơn. Bạn không phải đánh đổi gì cả ở đây.
+**b. Stronger regularisation runs FASTER.** `C=0.02` takes 27.8 s, `C=4.0` takes
+313.6 s — **11× faster** and a higher score. A tighter constraint makes the
+optimisation converge more easily. There is no trade-off to make here.
 
-**c. Một dòng siêu tham số ăn đứt chín bước xử lý ngôn ngữ.**
+**c. One hyper-parameter line beats nine language-processing steps.**
 
-| Việc làm | Đóng góp macro-F1 |
+| Work done | macro-F1 contribution |
 |---|---|
-| Toàn bộ 9 bước xử lý tiếng Việt | **+0,0017** |
-| Chỉnh `C` từ 0,5 xuống 0,02 | **+0,0287** |
+| All 9 Vietnamese processing steps | **+0.0017** |
+| Tuning `C` from 0.5 down to 0.02 | **+0.0287** |
 
-Gấp gần **17 lần**. Đây là bài học thực tế đắt giá nhất của dự án: nếu bạn còn
-chưa quét siêu tham số, đừng bỏ thời gian viết thêm bước tiền xử lý.
-
----
-
-## 6. `class_weight="balanced"` — một dạng chỉnh khác
-
-Cấu hình chốt cũng bật `class_weight="balanced"`. Nó không phải chính quy hoá,
-nhưng cùng tinh thần "sửa cho mô hình đừng đi theo đường dễ".
-
-Với lớp lệch 27:1, đường dễ nhất là bỏ rơi lớp hiếm — accuracy vẫn đẹp
-([note 6](06-do-luong-va-baseline.md)). `class_weight="balanced"` nhân trọng số
-sai sót của mỗi lớp lên tỷ lệ nghịch với số mẫu của nó: đoán sai một tin thuộc
-lớp 196 dòng bị phạt nặng hơn nhiều so với đoán sai một tin thuộc lớp 5.000 dòng.
-
-Đây là lý do `balanced_accuracy` (0,6816) **cao hơn** macro-F1 (0,6112) trên test:
-mô hình đang cố ý dành recall cho lớp hiếm.
+Nearly **17×**. This is the project's most expensive practical lesson: if you have
+not swept the hyper-parameters yet, do not spend time writing another preprocessing
+step.
 
 ---
 
-## 7. Bảng chọn nhanh
+## 6. `class_weight="balanced"` — a different kind of correction
 
-| Triệu chứng | Nghĩa là | Làm gì |
+The final configuration also sets `class_weight="balanced"`. It is not
+regularisation, but it shares the spirit of "stop the model from taking the easy
+route".
+
+With classes skewed 27:1, the easiest route is to abandon the rare classes —
+accuracy still looks fine ([note 6](06-do-luong-va-baseline.md)).
+`class_weight="balanced"` scales each class's error weight inversely to its sample
+count: getting a posting from a 196-row class wrong is punished far more heavily
+than getting one from a 5,000-row class wrong.
+
+This is why `balanced_accuracy` (0.6816) is **higher** than macro-F1 (0.6112) on
+test: the model is deliberately spending recall on the rare classes.
+
+---
+
+## 7. Quick decision table
+
+| Symptom | Means | What to do |
 |---|---|---|
-| Điểm train cao, điểm val thấp | Quá khớp | Giảm `C` / tăng `alpha` · tăng `min_df` · giảm `max_features` |
-| Điểm train thấp, điểm val cũng thấp | Thiếu khớp | Tăng `C` / giảm `alpha` · thêm đặc trưng · đổi mô hình |
-| Hai điểm gần nhau, cả hai đều thấp | Đặc trưng không đủ tín hiệu | Đổi cách biểu diễn, đừng vặn siêu tham số |
-| `C` tối ưu thấp bất thường | Quá nhiều chiều nhiễu | Cắt chiều, đừng quét `C` nữa |
-| Điểm test **cao hơn** val | Không có dấu hiệu overfit vào val | Bình thường — dự án này 0,6112 > 0,6050 |
+| High train score, low dev score | Overfitting | Lower `C` / raise `alpha` · raise `min_df` · lower `max_features` |
+| Low train score, low dev score too | Underfitting | Raise `C` / lower `alpha` · add features · change the model |
+| Both scores close together and both low | The features carry too little signal | Change the representation, do not turn hyper-parameters |
+| An unusually low optimal `C` | Too many noisy dimensions | Cut dimensions, stop sweeping `C` |
+| Test score **higher** than dev | No sign of overfitting to dev | Normal — in this project 0.6112 > 0.6050 |
 
 ---
 
-## Quay lại thực tế dự án
+## Back to the project itself
 
-- [07-bai-toan-luong.md](../07-bai-toan-luong.md#bẫy-đã-biết-trước) — bảng `LinearRegression` vs `Ridge`
-- [06-mo-hinh-phan-lop.md](../06-mo-hinh-phan-lop.md) — bậc thang kết quả đầy đủ
-- [note 4 — ma trận thưa và số chiều](04-ma-tran-thua-va-so-chieu.md) — vì sao p/n = 7,1 là vấn đề
-- [04-results.md](../04-results.md) — mọi dòng quét `C`
+- [07-bai-toan-luong.md](../07-bai-toan-luong.md#traps-known-in-advance) — the `LinearRegression` vs `Ridge` table
+- [06-mo-hinh-phan-lop.md](../archive/06-mo-hinh-phan-lop.md) — the full results ladder
+- [note 4 — sparse matrices and dimensionality](04-ma-tran-thua-va-so-chieu.md) — why p/n = 7.1 is a problem
+- [04-results.md](../archive/04-results-ml.md) — every `C`-sweep row

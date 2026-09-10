@@ -1,131 +1,140 @@
 ---
 name: giai-thich
-description: "Giải thích ngắn gọn một khái niệm trong pipeline VietJobs — làm sạch dữ liệu, xử lý tiếng Việt, TF-IDF, đặc trưng, rò rỉ, metric, chính quy hoá — bằng ví dụ đời thường trước rồi mới tới thuật ngữ. Use this skill when the user asks what a preprocessing step, feature-engineering choice, or ML concept in this project means or why it exists, invokes /giai-thich, or asks 'tại sao phải ...' about any pipeline stage."
+description: "Briefly explain one concept in the VietJobs pipeline — data cleaning, Vietnamese processing, TF-IDF, features, leakage, metrics, regularisation — starting from an everyday analogy and only then naming the term. Use this skill when the user asks what a preprocessing step, feature-engineering choice, or ML concept in this project means or why it exists, invokes /giai-thich, or asks 'tại sao phải ...' about any pipeline stage."
 trigger: "Use this skill when the user asks what a preprocessing step, feature-engineering choice, or ML concept in this project means or why it exists, invokes /giai-thich, or asks 'tại sao phải ...' about any pipeline stage."
 version: 1
 ---
 
-# Giải thích — tra cứu khái niệm pipeline VietJobs
+# Explain — a concept lookup for the VietJobs pipeline
 
-Người hỏi mới vào ML/DL. Nhiệm vụ là làm họ **hiểu**, không phải làm họ thấy mình
-thông thái. Ví dụ đời thường trước, thuật ngữ sau, luôn nói rõ bỏ đi thì hỏng gì.
+The person asking is new to ML/DL. The job is to make them **understand**, not to
+make yourself look clever. Everyday analogy first, terminology second, and always
+say what breaks without the step.
 
-## Khi nào dùng
+## When to use it
 
-- Người dùng gõ `/giai-thich <chủ đề>`
-- Người dùng hỏi "tại sao phải ...", "... để làm gì", "... là gì" về một bước
-  trong pipeline
-- Người dùng gặp một thuật ngữ lạ khi đọc `docs/` và hỏi lại
+- The user types `/giai-thich <topic>`
+- The user asks "tại sao phải ...", "... để làm gì", "... là gì" ("why do we have
+  to", "what is it for", "what is it") about a pipeline step
+- The user hits an unfamiliar term while reading `docs/` and asks about it
 
-## Quy trình bắt buộc
+## Mandatory procedure
 
-1. Tra chủ đề trong **Bản đồ chủ đề** bên dưới (khớp cả bí danh).
-2. **`Read` file nguồn của chủ đề đó.** Bắt buộc, kể cả khi thấy mình đã biết.
-3. Mới viết trả lời, theo khuôn năm khối.
+1. Look the topic up in the **Topic map** below (aliases count too).
+2. **`Read` the source file for that topic.** Mandatory, even when you are sure you
+   already know it.
+3. Only then write the answer, in the five-block template.
 
-Bước 2 không được bỏ. Skill này **cố ý không chứa con số** — số nằm ở `docs/`,
-và `docs/` được cập nhật sau mỗi thí nghiệm. Trả lời từ trí nhớ là cách chắc chắn
-để đưa ra con số cũ mà không ai phát hiện.
+Step 2 may not be skipped. This skill **deliberately contains no numbers** — the
+numbers live in `docs/`, and `docs/` is updated after every experiment. Answering
+from memory is the surest way to hand over a stale number that nobody catches.
 
-## Khuôn trả lời — năm khối
+## Answer template — five blocks
 
 ```markdown
-## <Tên chủ đề>
+## <Topic name>
 
-**Hình dung:** <ví dụ đời thường, 2–3 câu. Không một thuật ngữ nào.>
+**Picture it:** <everyday analogy, 2–3 sentences. Not one piece of jargon.>
 
-**Tên gọi thật:** <đặt tên thuật ngữ, nối nó với ví dụ trên. 1–2 câu.>
+**What it is called:** <name the term, tie it to the analogy above. 1–2 sentences.>
 
-**Trong VietJobs:** <cụ thể hoá, 2–4 dòng. Số lấy từ file nguồn vừa đọc.>
+**In VietJobs:** <make it concrete, 2–4 lines. Numbers come from the source file you just read.>
 
-**Bỏ đi thì sao:** <hậu quả cụ thể, 1–3 dòng.>
+**What breaks without it:** <concrete consequence, 1–3 lines.>
 
-**Đọc sâu:** <link tới file nguồn>
+**Read deeper:** <link to the source file>
 ```
 
-Hết năm khối là dừng. Muốn sâu hơn thì đã có link.
+Five blocks and stop. Anyone who wants more depth has the link.
 
-Nếu file nguồn ghi rõ một bước **đã bị gỡ** vì đo ra không giúp, nói thẳng điều đó
-trong khối **Trong VietJobs**. Bước bị gỡ là bằng chứng, không phải chuyện xấu hổ.
+If the source file says a step **was removed** because it measured as no help, say
+so plainly in the **In VietJobs** block. A removed step is evidence, not something
+to be embarrassed about.
 
-## Bản đồ chủ đề
+## Topic map
 
-Cột "mồi" là gợi ý hướng ví dụ, không phải câu phải chép nguyên.
+The "analogy seed" column is a direction for the example, not a sentence to copy.
 
-### Dữ liệu
+### Data
 
-| Gõ | Cũng nhận | Đọc file | Mồi ví dụ đời thường |
+| Type | Also accepts | Read this file | Everyday analogy seed |
 |---|---|---|---|
-| `lam-sach` | `clean`, `vi-sao-lam-sach` | `docs/nen-tang/01-vi-sao-phai-lam-sach.md` | Danh bạ lưu "Nguyễn Văn A" và "nguyen van a" thành hai người |
-| `trung-lap` | `dedup`, `gop-nhom`, `group-id` | `docs/01-data-audit.md` §2 | Cùng một tờ rơi dán 33 chỗ trong phố |
-| `chia-tap` | `split`, `train-val-test`, `seed` | `docs/01-data-audit.md` §7 | Đề thi thử không được trùng câu với đề thi thật |
-| `nhan` | `label`, `target`, `luong-mid` | `docs/01-data-audit.md` §5 | "8–12 triệu" và "thoả thuận" là hai loại thông tin khác nhau |
+| `cleaning` | `lam-sach`, `clean`, `why-clean` | `docs/nen-tang/01-vi-sao-phai-lam-sach.md` | A contacts app storing "Nguyễn Văn A" and "nguyen van a" as two people |
+| `duplicates` | `trung-lap`, `dedup`, `grouping`, `group-id` | `docs/01-data-audit.md` §2 | The same flyer stuck up in 33 places along one street |
+| `splitting` | `chia-tap`, `split`, `train-dev-test`, `seed` | `docs/01-data-audit.md` §7 | A mock exam must not share questions with the real one |
+| `labels` | `nhan`, `label`, `target`, `salary-mid` | `docs/01-data-audit.md` §5 | "8–12 million" and "negotiable" are two different kinds of information |
 
-### Xử lý tiếng Việt
+### Vietnamese processing
 
-| Gõ | Cũng nhận | Đọc file | Mồi ví dụ đời thường |
+| Type | Also accepts | Read this file | Everyday analogy seed |
 |---|---|---|---|
-| `tieng-viet` | `vitext`, `chin-buoc`, `tien-xu-ly` | `docs/02-vietnamese-nlp.md` | Máy đếm mặt chữ, nó không đọc nghĩa |
-| `dau-thanh` | `nfc`, `unicode`, `hoa-hoà` | `docs/02-vietnamese-nlp.md` §3 bước 1–2 | "hoà" và "hòa" nhìn y hệt, máy thấy hai từ |
-| `viet-tat` | `abbrev`, `nv`, `bhxh` | `docs/02-vietnamese-nlp.md` §3 bước 3 | "NV" và "nhân viên" — người hiểu, máy thì không |
-| `che-luong` | `mask`, `mask-salary`, `salary-token` | `docs/02-vietnamese-nlp.md` §3 bước 4 | Chấm bài mà đề đã in sẵn đáp án ở góc trang |
-| `tach-tu` | `segment`, `phan-doan`, `underthesea` | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` | "nhân viên" là một từ hay hai từ? Khoảng trắng không nói |
-| `gap-dau` | `fold-accents`, `khong-dau`, `char-ngram` | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` §5 | Đọc biển hiệu viết không dấu — người vẫn hiểu, máy thì chịu |
-| `chuan-tinh` | `province`, `dia-diem`, `ha-dong` | `docs/02-vietnamese-nlp.md` §3 bước 7 | "Hà Đông" và "Hà Nội" — bạn biết là một, máy không |
-| `tu-dung` | `stopwords`, `bo-tu-dung` | `docs/02-vietnamese-nlp.md` §3 bước 8 | Bỏ chữ "không" khỏi "không yêu cầu kinh nghiệm" |
+| `vietnamese` | `tieng-viet`, `vitext`, `nine-steps`, `preprocessing` | `docs/02-vietnamese-nlp.md` | The machine counts letter shapes; it does not read meaning |
+| `tone-marks` | `dau-thanh`, `nfc`, `unicode`, `hoa-hoà` | `docs/02-vietnamese-nlp.md` §3 steps 1–2 | "hoà" and "hòa" look identical; the machine sees two words |
+| `abbreviations` | `viet-tat`, `abbrev`, `nv`, `bhxh` | `docs/02-vietnamese-nlp.md` §3 step 3 | "NV" and "nhân viên" — a person understands, a machine does not |
+| `salary-masking` | `che-luong`, `mask`, `mask-salary`, `salary-token` | `docs/02-vietnamese-nlp.md` §3 step 4 | Marking an exam whose answer key is printed in the corner |
+| `segmentation` | `tach-tu`, `segment`, `underthesea` | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` | Is "nhân viên" one word or two? The space does not say |
+| `accent-folding` | `gap-dau`, `fold-accents`, `no-diacritics`, `char-ngram` | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` §5 | Reading a sign written without diacritics — a person copes, a machine does not |
+| `provinces` | `chuan-tinh`, `province`, `location`, `ha-dong` | `docs/02-vietnamese-nlp.md` §3 step 7 | "Hà Đông" and "Hà Nội" — you know they are one place, the machine does not |
+| `stopwords` | `tu-dung`, `stopwords` | `docs/02-vietnamese-nlp.md` §3 step 8 | Deleting "không" from "không yêu cầu kinh nghiệm" |
 
-### Đặc trưng
+### Features
 
-| Gõ | Cũng nhận | Đọc file | Mồi ví dụ đời thường |
+| Type | Also accepts | Read this file | Everyday analogy seed |
 |---|---|---|---|
-| `tf-idf` | `tfidf`, `tf`, `idf`, `tui-tu` | `docs/nen-tang/02-tf-idf-la-gi.md` | Từ hiếm trong sách mới đáng tra cứu, chữ "và" thì không |
-| `ngram` | `bigram`, `unigram`, `n-gram` | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` §1 | "bánh mì" khác hẳn "bánh" và "mì" đứng riêng |
-| `dac-trung` | `feature`, `khoi`, `column-transformer` | `docs/05-dac-trung-tfidf.md` | Làm hồ sơ ứng viên — mỗi mục một ô, không nhét hết vào một dòng |
-| `tham-so-tfidf` | `min-df`, `max-df`, `sublinear`, `max-features` | `docs/05-dac-trung-tfidf.md` §4 | Nút vặn trên máy lọc: lọc quá thô hay quá mịn đều hỏng |
-| `ma-tran-thua` | `sparse`, `so-chieu`, `p-n`, `loi-nguyen` | `docs/nen-tang/04-ma-tran-thua-va-so-chieu.md` | Danh bạ hai trăm nghìn số mà bạn chỉ gọi năm số |
+| `tf-idf` | `tfidf`, `tf`, `idf`, `bag-of-words`, `tui-tu` | `docs/nen-tang/02-tf-idf-la-gi.md` | A rare word in a book is worth looking up; the word "and" is not |
+| `ngram` | `bigram`, `unigram`, `n-gram` | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` §1 | "bánh mì" is nothing like "bánh" and "mì" standing apart |
+| `features` | `dac-trung`, `feature`, `blocks`, `column-transformer` | `docs/archive/05-dac-trung-tfidf.md` (closed track) | Filling in an application form — one field per item, not everything on one line |
+| `tfidf-params` | `tham-so-tfidf`, `min-df`, `max-df`, `sublinear`, `max-features` | `docs/archive/05-dac-trung-tfidf.md` §4 (closed track) | The dials on a filter: too coarse and too fine are both wrong |
+| `sparse-matrix` | `ma-tran-thua`, `sparse`, `dimensions`, `p-n`, `curse` | `docs/nen-tang/04-ma-tran-thua-va-so-chieu.md` | A phone book with two hundred thousand numbers when you only call five |
+| `semantic-vectors` | `vector-ngu-nghia`, `phobert`, `embedding`, `subword` | `docs/nen-tang/09-vector-ngu-nghia.md` | Two job ads with no words in common that mean the same job |
 
-### Mô hình và đo lường
+### Models and measurement
 
-| Gõ | Cũng nhận | Đọc file | Mồi ví dụ đời thường |
+| Type | Also accepts | Read this file | Everyday analogy seed |
 |---|---|---|---|
-| `hai-mo-hinh` | `bai-toan`, `phan-lop`, `luong` | `docs/06-mo-hinh-phan-lop.md` + `docs/07-bai-toan-luong.md` | Đoán nghề và đoán lương là hai câu hỏi, chung một hồ sơ |
-| `metric` | `macro-f1`, `accuracy`, `baseline`, `nhieu` | `docs/nen-tang/06-do-luong-va-baseline.md` | Lớp 40 em, 39 giỏi 1 kém — "97% giỏi" giấu mất em kém |
-| `chinh-quy-hoa` | `c`, `alpha`, `ridge`, `qua-khop`, `overfit` | `docs/nen-tang/07-chinh-quy-hoa.md` | Học vẹt đề cũ: 10 điểm ở nhà, 3 điểm phòng thi |
+| `two-tasks` | `hai-mo-hinh`, `bai-toan`, `classification`, `salary` | `docs/06-baseline-dl.md` + `docs/07-bai-toan-luong.md` | Guessing the occupation and guessing the pay are two questions about one CV |
+| `metrics` | `metric`, `macro-f1`, `accuracy`, `baseline`, `noise` | `docs/nen-tang/06-do-luong-va-baseline.md` | A class of 40 with 39 top students and 1 struggling — "97 % excellent" hides that one |
+| `regularisation` | `chinh-quy-hoa`, `c`, `alpha`, `ridge`, `overfit` | `docs/nen-tang/07-chinh-quy-hoa.md` | Rote-learning last year's paper: 10/10 at home, 3/10 in the exam hall |
+| `comparison-table` | `bang-so-sanh`, `paired-bootstrap`, `winners-curse` | `docs/nen-tang/08-doc-mot-bang-so-sanh.md` | Twenty coin flippers — the best one is not skilled, just lucky |
 
-### Tính đúng đắn
+### Correctness
 
-| Gõ | Cũng nhận | Đọc file | Mồi ví dụ đời thường |
+| Type | Also accepts | Read this file | Everyday analogy seed |
 |---|---|---|---|
-| `ro-ri` | `leak`, `leakage`, `resolve-column` | `docs/nen-tang/05-ro-ri-du-lieu.md` | Ôn trúng tủ vì đã xem trước đề — điểm cao mà không biết gì |
-| `ablation` | `bo-buoc`, `buoc-nao-dang-giu` | `docs/02-vietnamese-nlp.md` §4 | Nấu ăn bớt dần từng gia vị để biết cái nào thật sự cần |
+| `leakage` | `ro-ri`, `leak`, `resolve-column` | `docs/nen-tang/05-ro-ri-du-lieu.md` | Acing an exam because you saw the paper — a high mark, no knowledge |
+| `ablation` | `bo-buoc`, `which-steps-to-keep` | `docs/02-vietnamese-nlp.md` §5 | Cooking a dish with one spice removed at a time to see which one matters |
 
-## Gọi không tham số
+## Called with no argument
 
-In bản đồ chủ đề theo năm nhóm, mỗi chủ đề một dòng ngắn, rồi hỏi muốn xem cái nào.
-Không tự chọn giùm.
+Print the topic map in its five groups, one short line per topic, then ask which
+one they want. Do not choose for them.
 
-## Gõ sai hoặc không khớp
+## A typo, or no match
 
-Gợi ý 2–3 chủ đề gần nhất rồi dừng. Không đoán bừa một chủ đề rồi trả lời.
+Suggest the 2–3 nearest topics and stop. Do not guess a topic and answer anyway.
 
-Nếu là khái niệm ML chung mà dự án **chưa dùng** (ví dụ cross-validation, dropout,
-attention): nói thẳng là dự án chưa dùng, trả lời ngắn theo đúng khuôn năm khối,
-và **bỏ trống khối "Đọc sâu"** — đừng bịa một link `docs/` không tồn tại.
+If it is a general ML concept the project **does not use** (cross-validation,
+dropout, attention, say): say plainly that the project does not use it, answer
+briefly in the same five-block template, and **leave "Read deeper" empty** — do not
+invent a `docs/` link that does not exist.
 
-## Hỏi tiếp, hỏi sâu
+## Follow-up questions
 
-Nếu người dùng hỏi tiếp trong cùng chủ đề, bỏ khuôn năm khối và trả lời thẳng câu
-hỏi của họ. Khuôn là để mở đầu, không phải cái lồng.
+If the user asks a follow-up within the same topic, drop the five-block template
+and answer their actual question. The template is an opening, not a cage.
 
-## Tránh
+## Avoid
 
-- **Chép số từ trí nhớ.** Đọc file nguồn trước. Số trong `docs/` đổi sau mỗi thí
-  nghiệm; số trong đầu thì không.
-- **Dùng thuật ngữ trong khối "Hình dung".** Nó phá đúng mục đích của khối đó.
-  Nếu không nghĩ ra cách nói mà không dùng thuật ngữ, tức là mình chưa hiểu đủ.
-- **Ví dụ nghe hay nhưng sai bản chất.** Ví dụ phải **gãy ở đúng chỗ khái niệm
-  gãy**. Một ví dụ đẹp mà dẫn sai hướng còn tệ hơn không có ví dụ.
-- **Bỏ khối "Bỏ đi thì sao".** Đó là khối làm người đọc nhớ lâu nhất.
-- **Trả lời dài.** Năm khối rồi dừng.
-- **Giấu thất bại.** Ba bước tiền xử lý trong dự án này đo ra không giúp gì và đã
-  bị gỡ. Nói ra, kèm số. Đó là phần đáng học nhất.
+- **Quoting numbers from memory.** Read the source file first. The numbers in
+  `docs/` change after every experiment; the numbers in your head do not.
+- **Using jargon in the "Picture it" block.** It defeats the entire purpose of that
+  block. If you cannot phrase it without jargon, you do not understand it well
+  enough yet.
+- **An analogy that sounds good but is wrong underneath.** The analogy must **break
+  where the concept breaks**. A pretty analogy that leads the wrong way is worse
+  than none.
+- **Dropping the "What breaks without it" block.** It is the block readers remember
+  longest.
+- **A long answer.** Five blocks and stop.
+- **Hiding failures.** Three preprocessing steps in this project measured as no help
+  and were removed. Say so, with the numbers. That is the most instructive part.

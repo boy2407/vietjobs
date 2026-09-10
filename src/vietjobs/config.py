@@ -22,9 +22,28 @@ RESULTS_LOG = DOCS_DIR / "04-results.md"
 # --- Split policy -----------------------------------------------------------
 # Reposted ads are common in this dump, so rows are grouped by a hash of the
 # folded posting text and the *group* — not the row — is assigned to a split.
-# Freeze these three values once a model has been trained; see docs/03-protocol.md.
+# Freeze these values once a model has been trained; see docs/03-protocol.md.
+#
+# Two stages, in this order (scheme v2, 2026-09-09):
+#   1. train_pool : test = 8 : 2
+#   2. train_pool -> train : dev = 9 : 1
+# which lands at 72 / 8 / 20 of the rows. The stages are kept separate rather
+# than collapsed into one three-way draw because the second stage must be able
+# to run again on the same pool without moving a single row of test.
 SPLIT_SEED = 20260826
-SPLIT_FRACTIONS = {"train": 0.70, "val": 0.15, "test": 0.15}
+SPLIT_TEST_FRACTION = 0.20   # stage 1
+SPLIT_DEV_FRACTION = 0.10    # stage 2, taken out of what stage 1 left
+SPLIT_NAMES = ("train", "dev", "test")
+# The splits are plain CSV so they can be opened in anything. CSV stores no
+# types, so `manifest.json` carries a `column_dtypes` map and `dataset.load_split`
+# is the only supported way to read them back — see the comment above it.
+SPLIT_SUFFIX = ".csv"
+# Derived, recorded in the manifest — never the thing that drives the split.
+SPLIT_FRACTIONS = {
+    "train": round((1 - SPLIT_TEST_FRACTION) * (1 - SPLIT_DEV_FRACTION), 4),
+    "dev": round((1 - SPLIT_TEST_FRACTION) * SPLIT_DEV_FRACTION, 4),
+    "test": SPLIT_TEST_FRACTION,
+}
 RANDOM_SEED = 42
 
 # --- Tasks ------------------------------------------------------------------
@@ -38,6 +57,13 @@ MASKED_TASKS = frozenset({TASK_SALARY, TASK_DISCLOSED})
 
 # Salary figures in this dataset are in millions of Vietnamese dong per month.
 SALARY_UNIT = "triệu VND/month"
+
+# Flagged, never dropped: the upper tail is genuine management pay.
+SALARY_EXTREME_THRESHOLD = 100.0
+# Outside these bounds a monthly figure is almost certainly the wrong unit —
+# hourly/per-shift pay below, annual pay above. Measured in docs/05, §6.
+SALARY_IMPLAUSIBLE_LOW = 2.0
+SALARY_IMPLAUSIBLE_HIGH = 200.0
 
 # The catch-all label. It mixes marketing/IT/manufacturing ads that belong
 # elsewhere, so macro-F1 is also reported with this class excluded.

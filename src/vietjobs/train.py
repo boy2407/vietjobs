@@ -15,7 +15,7 @@ runs can be compared by *paired* bootstrap — resampling the same val rows for
 both models — which is far more sensitive than comparing their independent error
 bars. See ``evaluate.paired_delta``.
 
-Model and hyper-parameter selection use ``--eval val``. Scoring the test set
+Model and hyper-parameter selection use ``--eval dev``. Scoring the test set
 requires ``--eval test --confirm-test``, which exists so that touching it is a
 deliberate act rather than a default.
 """
@@ -196,7 +196,7 @@ def main() -> None:
         "--boot", type=int, default=1000, metavar="N",
         help="bootstrap resamples for the macro-F1 error bar (0 disables)",
     )
-    ap.add_argument("--eval", choices=["val", "test"], default="val")
+    ap.add_argument("--eval", choices=["dev", "test"], default="dev")
     ap.add_argument("--confirm-test", action="store_true")
     ap.add_argument("--seed", type=int, default=C.RANDOM_SEED)
     ap.add_argument("--run-id", default=None)
@@ -208,7 +208,7 @@ def main() -> None:
     if args.eval == "test" and not args.confirm_test:
         raise SystemExit(
             "Refusing to score the test set without --confirm-test.\n"
-            "Model and hyper-parameter selection use --eval val."
+            "Model and hyper-parameter selection use --eval dev."
         )
 
     prep = F.PrepConfig(

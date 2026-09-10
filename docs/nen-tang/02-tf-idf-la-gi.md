@@ -1,287 +1,306 @@
-[← Vì sao phải làm sạch](01-vi-sao-phai-lam-sach.md) · [Nền tảng](00-index.md) · [n-gram và ranh giới từ →](03-ngram-va-ranh-gioi-tu.md)
+[← Why clean the data](01-vi-sao-phai-lam-sach.md) · [Background](00-index.md) · [n-grams and word boundaries →](03-ngram-va-ranh-gioi-tu.md)
 
-# 2. TF-IDF là gì
+# 2. What TF-IDF is
 
-Mô hình học máy chỉ ăn được **số**. TF-IDF là cách biến một đoạn văn thành một
-dãy số. Toàn bộ ý tưởng gói trong một câu:
+> **A note from the closed track.** Since 2026-09-08 the main track of this project
+> is semantic vectors from PhoBERT ([note 9](09-vector-ngu-nghia.md)), not TF-IDF.
+> This note is kept because it explains what *counting words* means — and without
+> understanding the counting you cannot see what makes a semantic vector different.
 
-> Một từ quan trọng với tài liệu này nếu nó **xuất hiện nhiều trong tài liệu này**
-> nhưng **hiếm gặp ở các tài liệu khác**.
+A machine-learning model can only eat **numbers**. TF-IDF is a way of turning a
+passage of text into a list of numbers. The whole idea fits in one sentence:
 
-Hai vế đó chính là TF và IDF.
+> A word matters to this document if it **appears often in this document** but is
+> **rare in the other documents**.
 
-**Tên đầy đủ: Term Frequency – Inverse Document Frequency.** Bốn chữ, đọc từng chữ
-thì ra luôn công thức:
+Those two clauses are exactly TF and IDF.
 
-| Chữ | Nghĩa | Trong công thức |
+**Full name: Term Frequency – Inverse Document Frequency.** Four words; read them
+one at a time and you get the formula:
+
+| Word | Meaning | In the formula |
 |---|---|---|
-| **T**erm | *từ* (hoặc n-gram) — đơn vị được đếm | `t` |
-| **F**requency | *tần suất* — đếm bao nhiêu **lần** | `tf(t, d)` |
-| **I**nverse | *nghịch đảo* — càng nhiều thì càng nhỏ | dấu chia trong `N / df` |
-| **D**ocument **F**requency | số **tài liệu** chứa từ đó | `df(t)` |
+| **T**erm | the *word* (or n-gram) — the unit being counted | `t` |
+| **F**requency | how many **times** it occurs | `tf(t, d)` |
+| **I**nverse | the more there are, the smaller it gets | the division in `N / df` |
+| **D**ocument **F**requency | how many **documents** contain the word | `df(t)` |
 
-Hai chỗ dễ đọc sai:
+Two things that are easy to misread:
 
-- **"Inverse" gắn vào "Document Frequency", không gắn vào "Term Frequency".**
-  Đọc là `TF × I(DF)`. Tần suất từ giữ chiều thuận — lặp nhiều thì điểm cao;
-  chỉ tần suất tài liệu mới bị lật ngược.
-- **"Document Frequency" không phải "tần suất trong tài liệu".** Nó đếm có bao
-  nhiêu **tin** chứa từ đó, không phải từ đó xuất hiện bao nhiêu lần.
+- **"Inverse" attaches to "Document Frequency", not to "Term Frequency".**
+  Read it as `TF × I(DF)`. Term frequency keeps its direction — repeat more, score
+  higher; only the document frequency gets flipped.
+- **"Document Frequency" is not "frequency within the document".** It counts how
+  many **postings** contain the word, not how many times the word appears.
 
 ---
 
-## 1. Túi từ — bước đầu tiên, và cái giá phải trả
+## 1. Bag of words — the first step, and its price
 
-Trước khi có TF-IDF, phải chấp nhận một sự đơn giản hoá thô bạo: **túi từ**
-(bag of words). Văn bản bị coi là một cái túi đựng từ, **không có thứ tự**.
+Before TF-IDF there is a brutal simplification to accept: the **bag of words**.
+Text is treated as a bag holding words, **with no order**.
 
 ```
 "Nhân viên kinh doanh"  →  {nhân: 1, viên: 1, kinh: 1, doanh: 1}
-"Doanh kinh viên nhân"  →  {nhân: 1, viên: 1, kinh: 1, doanh: 1}   ← giống hệt!
+"Doanh kinh viên nhân"  →  {nhân: 1, viên: 1, kinh: 1, doanh: 1}   ← identical!
 ```
 
-Mô hình **không phân biệt được** hai câu trên. Đó là mất mát thật, và ta trả giá
-đó một cách có ý thức, đổi lấy hai thứ:
+The model **cannot tell** those two apart. That is a real loss, and we pay it
+knowingly in exchange for two things:
 
-- Ma trận thưa, tính rất nhanh — 27 thí nghiệm chạy trong một buổi.
-- Mô hình tuyến tính, xem được trọng số từng từ, giải thích được vì sao nó đoán vậy.
+- A sparse matrix that computes very fast — 27 experiments in an afternoon.
+- A linear model whose per-word weights are inspectable, so its predictions can be
+  explained.
 
-Cách vá một phần mất mát này là **n-gram** — xem [note 3](03-ngram-va-ranh-gioi-tu.md).
-Cách vá triệt để là mạng nơ-ron đọc theo thứ tự (PhoBERT), ghi ở
-[09-lo-trinh.md — Ưu tiên 4](../09-lo-trinh.md#ưu-tiên-4--một-mốc-học-sâu).
+The partial patch for this loss is **n-grams** — see
+[note 3](03-ngram-va-ranh-gioi-tu.md). The complete patch is a neural network that
+reads in order (PhoBERT), recorded in
+[09-lo-trinh.md — Priority 4](../archive/09-lo-trinh-ml.md#ưu-tiên-4--chuyển-trục-chính-sang-học-sâu-đa-nhiệm).
 
 ---
 
-## 2. TF — tần suất trong tài liệu
+## 2. TF — frequency inside the document
 
-`tf(t, d)` = số lần từ `t` xuất hiện trong tài liệu `d`.
+`tf(t, d)` = how many times the term `t` appears in document `d`.
 
-Nhưng đếm thô có vấn đề: một từ xuất hiện 10 lần **không** quan trọng gấp 10 lần
-một từ xuất hiện 1 lần. Tin tuyển dụng hay lặp từ khoá ngành vì lý do SEO chứ
-không phải vì tin đó "bán hàng hơn" tin khác.
+But raw counting has a problem: a word appearing 10 times is **not** ten times as
+important as a word appearing once. Job postings repeat sector keywords for SEO
+reasons, not because the posting is "more sales" than another.
 
-Nên dự án bật `sublinear_tf=True`, đổi công thức thành:
+So the project sets `sublinear_tf=True`, changing the formula to:
 
 ```
-tf = 1 + log(số lần xuất hiện)
+tf = 1 + log(number of occurrences)
 ```
 
-| Số lần xuất hiện | `tf` thô | `1 + log(tf)` |
+| Occurrences | Raw `tf` | `1 + log(tf)` |
 |---|---|---|
-| 1 | 1 | 1,00 |
-| 2 | 2 | 1,69 |
-| 5 | 5 | 2,61 |
-| 10 | 10 | 3,30 |
-| 100 | 100 | 5,61 |
+| 1 | 1 | 1.00 |
+| 2 | 2 | 1.69 |
+| 5 | 5 | 2.61 |
+| 10 | 10 | 3.30 |
+| 100 | 100 | 5.61 |
 
-Lần thứ hai thêm nhiều thông tin; lần thứ một trăm gần như không thêm gì.
-Thang log nói đúng điều đó.
+The second occurrence adds a lot of information; the hundredth adds almost nothing.
+A log scale says exactly that.
 
 ---
 
-## 3. IDF — độ hiếm trên toàn kho
+## 3. IDF — rarity across the corpus
 
-Vế thứ hai sửa một lỗ hổng lớn của TF: từ *"công ty"* xuất hiện ở gần như **mọi**
-tin tuyển dụng. TF của nó cao, nhưng nó chẳng phân biệt được nghề nào với nghề nào.
+The second clause fixes a large hole in TF: the word *"công ty"* (company) appears
+in nearly **every** job posting. Its TF is high, but it distinguishes no occupation
+from any other.
 
-`idf` hạ trọng số những từ có mặt khắp nơi. Công thức sklearn dùng:
+`idf` downweights words that are everywhere. The formula sklearn uses:
 
 ```
 idf(t) = ln( (1 + N) / (1 + df(t)) ) + 1
 ```
 
-- `N` = tổng số tài liệu (ở đây: **33.396** tin trong tập train)
-- `df(t)` = số tài liệu **có chứa** từ `t` (bao nhiêu tin, không phải bao nhiêu lần)
+- `N` = the total number of documents (here: **33,396** postings in train)
+- `df(t)` = the number of documents that **contain** `t` (how many postings, not how many times)
 
-Từ càng phổ biến → `df` càng lớn → `idf` càng nhỏ.
+The more common a word, the larger `df`, the smaller `idf`.
 
-| Nếu từ xuất hiện ở… | `df` | `idf` |
+| If a word appears in… | `df` | `idf` |
 |---|---|---|
-| 1 % số tin | 334 | 5,60 |
-| 10 % số tin | 3.340 | 3,30 |
-| 50 % số tin | 16.698 | 1,69 |
-| 90 % số tin | 30.056 | 1,11 |
+| 1 % of postings | 334 | 5.60 |
+| 10 % of postings | 3,340 | 3.30 |
+| 50 % of postings | 16,698 | 1.69 |
+| 90 % of postings | 30,056 | 1.11 |
 
-**TF-IDF = tf × idf**. Còn một bước cuối nữa — chuẩn hoá L2 — ở mục kế tiếp.
+**TF-IDF = tf × idf**. One more step remains — L2 normalisation — in the next
+section.
 
 ---
 
-## 4. Chuẩn hoá L2 — vì sao mọi tin phải dài đúng 1
+## 4. L2 normalisation — why every posting must have length exactly 1
 
-Nhân `tf × idf` xong vẫn chưa dùng được. Còn một bệnh chưa chữa: **tin dài tự
-động thắng tin ngắn**.
+Multiplying `tf × idf` still does not give something usable. One disease is
+untreated: **long postings automatically beat short ones**.
 
-### Kho ví dụ
+### The example corpus
 
-Một kho duy nhất phục vụ cả mục này và [§5](#5-ma-trận-hiện-hình).
+One corpus serves both this section and [§5](#5-the-matrix-made-visible).
 
 ```
-D1 = "tuyển nhân viên kinh doanh"                      kinh doanh · ngắn
-D2 = "nhân viên kinh doanh phụ trách tìm kiếm khách     kinh doanh · DÀI
+D1 = "tuyển nhân viên kinh doanh"                      sales · short
+D2 = "nhân viên kinh doanh phụ trách tìm kiếm khách     sales · LONG
       hàng và chăm sóc khách hàng cũ"
-D3 = "kế toán tổng hợp"                                 kế toán
-D4 = "kế toán trưởng có kinh nghiệm"                    kế toán
-D5 = "kỹ sư xây dựng công trình"                        kỹ thuật
+D3 = "kế toán tổng hợp"                                 accounting
+D4 = "kế toán trưởng có kinh nghiệm"                    accounting
+D5 = "kỹ sư xây dựng công trình"                        engineering
 ```
 
-Năm tin, ba nghề, `N = 5`. **D1 và D2 cùng nghề**, và D2 là tin dài.
+Five postings, three occupations, `N = 5`. **D1 and D2 are the same occupation**,
+and D2 is the long one.
 
-### Bệnh
+### The disease
 
-Một tin viết dài có nhiều từ khác 0 hơn, nên vector của nó **dài hơn** — theo
-nghĩa hình học. Mà mọi phép tính phía sau đều đọc độ dài đó: khoảng cách của KNN,
-điểm `w · x` của SVM. Mô hình học nhầm rằng "tin dài thì đặc biệt", trong khi độ
-dài chỉ phản ánh công ty đó viết nhiều lời quảng cáo hay ít.
+A long posting has more non-zero entries, so its vector is **longer** — in the
+geometric sense. And every calculation downstream reads that length: KNN's
+distance, SVM's `w · x` score. The model mislearns that "long postings are
+special", when the length only reflects whether that company writes a lot of
+marketing copy.
 
-Đo khoảng cách từ **D1** tới các tin khác:
+Measuring the distance from **D1** to the others:
 
-| | `‖D1‖` | `‖D2‖` | `‖D3‖` | `d(D1,D2)` | `d(D1,D3)` | Gần D1 nhất |
+| | `‖D1‖` | `‖D2‖` | `‖D3‖` | `d(D1,D2)` | `d(D1,D3)` | Nearest to D1 |
 |---|---|---|---|---|---|---|
-| **Không L2** | 3,870 | **8,430** | 3,813 | 8,055 | 5,433 | **D3 — sai nghề** ✗ |
-| **Có L2** | 1,000 | 1,000 | 1,000 | 1,163 | 1,414 | **D2 — đúng nghề** ✓ |
+| **No L2** | 3.870 | **8.430** | 3.813 | 8.055 | 5.433 | **D3 — wrong occupation** ✗ |
+| **With L2** | 1.000 | 1.000 | 1.000 | 1.163 | 1.414 | **D2 — right occupation** ✓ |
 
-Nhìn kỹ dòng đầu, vì nó phi lý đến mức đáng nhớ:
+Look closely at the first row, because it is absurd enough to be memorable:
 
-- D1 và D2 **chung bốn từ** (`nhân`, `viên`, `kinh`, `doanh`) → khoảng cách **8,055**
-- D1 và D3 **không chung một từ nào** → khoảng cách **5,433**
+- D1 and D2 **share four words** (`nhân`, `viên`, `kinh`, `doanh`) → distance **8.055**
+- D1 and D3 **share no word at all** → distance **5.433**
 
-Hai tin chẳng liên quan gì lại được xếp gần nhau hơn hai tin cùng nghề. Lý do rất
-tầm thường: `‖D1‖ = 3,870` và `‖D3‖ = 3,813` gần bằng nhau — **cùng ngắn**.
-Khoảng cách đang đo chênh lệch độ dài văn bản, không đo nội dung.
+Two unrelated postings end up closer together than two in the same occupation. The
+reason is trivial: `‖D1‖ = 3.870` and `‖D3‖ = 3.813` are nearly equal — **both
+short**. The distance is measuring a difference in text length, not content.
 
-Mô hình dựa trên khoảng cách chịu đòn nặng nhất — xem
-[note 4](04-ma-tran-thua-va-so-chieu.md) về vì sao KNN dễ sụp.
+Distance-based models take the hardest hit — see
+[note 4](04-ma-tran-thua-va-so-chieu.md) on why KNN collapses.
 
-Tái lập bảng trên (kho khai báo ở [§5 · Tái lập](#tái-lập)):
+Reproduce the table above (the corpus is declared in [§5 · Reproduce](#reproduce)):
 
 ```python
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 for norm in (None, "l2"):
-    X = TfidfVectorizer(sublinear_tf=True, norm=norm).fit_transform(kho.values()).toarray()
+    X = TfidfVectorizer(sublinear_tf=True, norm=norm).fit_transform(corpus.values()).toarray()
     print(norm, [round(np.linalg.norm(X[0] - X[i]), 3) for i in range(1, 5)])
 ```
 
-### "Dài đúng 1" nghĩa là gì
+### What "length exactly 1" means
 
-Chia cả vector cho độ dài của chính nó. Nhưng "độ dài" ở đây là **định lý
-Pythagore**, không phải phép cộng.
+Divide the whole vector by its own length. But "length" here is **Pythagoras**, not
+addition.
 
-Vector 2 chiều `(3, 4)`. Độ dài của nó không phải 3 + 4 = 7, mà là:
+Take the 2-dimensional vector `(3, 4)`. Its length is not 3 + 4 = 7, it is:
 
 ```
-√(3² + 4²) = √25 = 5      →      (3, 4) / 5 = (0,6 ; 0,8)
+√(3² + 4²) = √25 = 5      →      (3, 4) / 5 = (0.6 , 0.8)
 ```
 
-Kiểm tra kết quả:
+Check the result:
 
-- cộng **bình phương**: 0,6² + 0,8² = 0,36 + 0,64 = **1** ✓
-- cộng thẳng: 0,6 + 0,8 = **1,4** ✗
+- sum of **squares**: 0.6² + 0.8² = 0.36 + 0.64 = **1** ✓
+- plain sum: 0.6 + 0.8 = **1.4** ✗
 
-> ⚠️ Chỗ này rất dễ nhớ nhầm. L2 **không** làm các giá trị cộng lại bằng 1 —
-> nó làm chúng **cộng bình phương** lại bằng 1.
+> ⚠️ This is very easy to misremember. L2 does **not** make the values sum to 1 —
+> it makes their **squares** sum to 1.
 
-Vector D1 sau chuẩn hoá, kiểm lại bằng số thật:
+The D1 vector after normalisation, checked against the real numbers:
 
-| Từ | TF-IDF | Bình phương |
+| Word | TF-IDF | Squared |
 |---|---|---|
-| tuyển | 0,5422 | 0,2940 |
-| nhân | 0,4375 | 0,1914 |
-| viên | 0,4375 | 0,1914 |
-| doanh | 0,4375 | 0,1914 |
-| kinh | 0,3631 | 0,1318 |
-| **Cộng lại** | **2,2178** ✗ | **1,0000** ✓ |
+| tuyển | 0.5422 | 0.2940 |
+| nhân | 0.4375 | 0.1914 |
+| viên | 0.4375 | 0.1914 |
+| doanh | 0.4375 | 0.1914 |
+| kinh | 0.3631 | 0.1318 |
+| **Sum** | **2.2178** ✗ | **1.0000** ✓ |
 
-Sau L2, mỗi tin là một **mũi tên dài đúng 1** xuất phát từ gốc. Mọi tin chỉ còn
-khác nhau ở **hướng** — tức tỷ lệ các từ — chứ không còn khác nhau ở lượng chữ.
+After L2, each posting is **an arrow of length exactly 1** from the origin. Postings
+now differ only in **direction** — the proportions among their words — not in how
+much text they contain.
 
-### Vì sao L2 chứ không phải L1
+### Why L2 and not L1
 
-Chuẩn hoá sao cho **cộng thẳng** bằng 1 cũng có thật, tên là **L1**.
+Normalising so that the values **sum** to 1 is also a real thing, called **L1**.
 
-| | Ràng buộc | Đọc ra được gì |
+| | Constraint | What it lets you read |
 |---|---|---|
-| **L1** | Σ giá trị = 1 | Mỗi từ chiếm bao nhiêu **phần trăm** của tin |
-| **L2** | Σ (giá trị)² = 1 | Mỗi tin là một mũi tên dài 1 |
+| **L1** | Σ value = 1 | What **percentage** of the posting each word is |
+| **L2** | Σ (value)² = 1 | Each posting is an arrow of length 1 |
 
-L1 nghe trực giác hơn, và nó cũng chữa được bệnh tin dài. Dự án vẫn chọn L2 vì
-một lý do hình học: **sau L2, tích vô hướng của hai tin chính bằng cosine góc
-giữa chúng.** Quan hệ đó chỉ đúng với L2, vì Pythagore là hình học của khoảng
-cách Euclid — mà `LinearSVC` (`w · x`) và KNN (khoảng cách) đều làm việc trong
-đúng hình học đó. Chọn L1 thì các phép đo phía sau mất diễn giải gọn gàng này.
+L1 sounds more intuitive, and it also cures the long-posting disease. The project
+still picks L2 for a geometric reason: **after L2, the dot product of two postings
+is exactly the cosine of the angle between them.** That relation only holds for L2,
+because Pythagoras is the geometry of Euclidean distance — and `LinearSVC` (`w · x`)
+and KNN (distance) both work in exactly that geometry. Choose L1 and the downstream
+measurements lose this tidy interpretation.
 
-### Cái giá phải trả
+### The price
 
-**1. L2 xoá sạch thông tin độ dài.** Mà độ dài đôi khi có ích thật — tin tuyển vị
-trí cấp cao thường mô tả dài hơn tin thời vụ. Dự án lấy lại nó bằng đường khác:
-các cột số `desc_len`, `req_len`, `title_len` không đi qua TF-IDF nên không bị L2
-chạm tới. Đây là một quyết định thiết kế đáng chú ý — **vứt thông tin ở kênh này
-rồi đưa nó lại ở kênh khác dưới dạng sạch hơn**, thay vì để nó lẫn vào và làm
-nhiễu phép đo khoảng cách. Xem [§7](#7-tf-idf-không-nhìn-thấy-gì).
+**1. L2 erases length information entirely.** And length is sometimes genuinely
+useful — a senior-position posting usually has a longer description than a seasonal
+one. The project recovers it by another route: the numeric columns `desc_len`,
+`req_len`, `title_len` do not pass through TF-IDF, so L2 never touches them. This
+is a design decision worth noticing — **throw information away in one channel and
+reintroduce it in another, in a cleaner form**, instead of letting it contaminate a
+distance measurement. See [§7](#7-what-tf-idf-cannot-see).
 
-**2. Tin dài bị loãng từ khoá.** D1 và D2 đều dài đúng 1 sau L2, nhưng chúng chia
-ngân sách đó khác nhau:
+**2. Long postings have their keywords diluted.** D1 and D2 both have length 1 after
+L2, but they divide that budget differently:
 
-| | Số ô khác 0 | `nhân` | `viên` | `doanh` | `kinh` |
+| | Non-zero cells | `nhân` | `viên` | `doanh` | `kinh` |
 |---|---|---|---|---|---|
-| D1 — tin ngắn | 5 | **0,4375** | **0,4375** | **0,4375** | **0,3631** |
-| D2 — tin dài, **cùng nghề** | 14 | 0,2009 | 0,2009 | 0,2009 | 0,1667 |
+| D1 — short posting | 5 | **0.4375** | **0.4375** | **0.4375** | **0.3631** |
+| D2 — long posting, **same occupation** | 14 | 0.2009 | 0.2009 | 0.2009 | 0.1667 |
 
-D2 phải chia độ dài 1 cho 14 chiều nên mỗi từ khoá nhạt đi hơn một nửa; D1 dồn hết
-vào 5 chiều nên đậm. Phần lớn đây là hành vi **đúng** — trong một tin dài thì
-`kinh doanh` thật sự chỉ chiếm một phần nhỏ nội dung. Nhưng nó cũng có mặt trái:
-tin nào viết nhiều lời quảng cáo chung chung ("môi trường trẻ trung", "phúc lợi
-hấp dẫn") sẽ tự làm loãng tín hiệu nghề của chính nó. Cách bù là **nhân trọng số
-theo khối** để kéo lại phần đậm đã bị chia mỏng —
-[09-lo-trinh.md Ưu tiên 3a](../09-lo-trinh.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-phân-lớp-làm-trước-khi-nghĩ-đến-dl).
+D2 has to spread its length of 1 over 14 dimensions, so each keyword fades by more
+than half; D1 concentrates everything into 5 dimensions and stays strong. Mostly
+this is the **correct** behaviour — inside a long posting, `kinh doanh` genuinely is
+a small part of the content. But it has a downside: a posting stuffed with generic
+marketing copy ("young environment", "attractive benefits") dilutes its own
+occupation signal. The compensation is **block weighting**, to restore what was
+spread thin —
+[09-lo-trinh.md Priority 3a](../archive/09-lo-trinh-ml.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-mốc-cơ-sở-ml).
 
 ---
 
-## 5. Ma trận hiện hình
+## 5. The matrix made visible
 
-Bốn mục trên nói **từng bước**. Mục này in ra **vật thể cuối cùng** mà mô hình
-thật sự nhận được — vẫn trên kho 5 tin ở [§4](#4-chuẩn-hoá-l2--vì-sao-mọi-tin-phải-dài-đúng-1),
-đủ nhỏ để nhìn hết một lần.
+The four sections above describe **each step**. This one prints the **final
+object** the model actually receives — still on the 5-posting corpus from
+[§4](#4-l2-normalisation--why-every-posting-must-have-length-exactly-1), small
+enough to take in at a glance.
 
-### Bảng 1 · Từ điển — học một lần, dùng chung cho mọi tin
+### Table 1 · The vocabulary — learned once, shared by every posting
 
-Đếm `df` = **số tin chứa** từ đó, rồi `idf = ln((1+5)/(1+df)) + 1`.
+Count `df` = **the number of postings containing** the word, then
+`idf = ln((1+5)/(1+df)) + 1`.
 
-| `df` | `idf` | Gồm những từ nào |
+| `df` | `idf` | Which words |
 |---|---|---|
-| 3 | ln(6/4) + 1 = **1,4055** | `kinh` |
-| 2 | ln(6/3) + 1 = **1,6931** | `doanh`, `kế`, `nhân`, `toán`, `viên` |
-| 1 | ln(6/2) + 1 = **2,0986** | 22 từ còn lại |
+| 3 | ln(6/4) + 1 = **1.4055** | `kinh` |
+| 2 | ln(6/3) + 1 = **1.6931** | `doanh`, `kế`, `nhân`, `toán`, `viên` |
+| 1 | ln(6/2) + 1 = **2.0986** | the remaining 22 words |
 
-Chỉ có **ba** giá trị `idf`, vì kho tí hon này chỉ có ba mức `df`. Từ càng hiếm,
-`idf` càng lớn — `kinh` có mặt ở 3/5 tin nên bị dìm thấp nhất.
+There are only **three** `idf` values, because this tiny corpus has only three `df`
+levels. The rarer the word, the larger the `idf` — `kinh` is in 3 of 5 postings, so
+it is pushed lowest.
 
-Đây là một **vector 28 số**, không phải ma trận. Nó không phụ thuộc vào tin nào.
+This is a **vector of 28 numbers**, not a matrix. It does not depend on any one
+posting.
 
-### Bảng 2 · Dây chuyền tính, riêng tin D1
+### Table 2 · The computation chain, for D1 alone
 
-| Từ | 1 · `tf` thô | 2 · `1+ln(tf)` | 3 · `df` | 4 · `idf` | 5 · `tf × idf` | 6 · `÷ ‖D1‖` |
+| Word | 1 · raw `tf` | 2 · `1+ln(tf)` | 3 · `df` | 4 · `idf` | 5 · `tf × idf` | 6 · `÷ ‖D1‖` |
 |---|---|---|---|---|---|---|
-| tuyển | 1 | 1,0 | 1 | 2,0986 | 2,0986 | **0,5422** |
-| nhân | 1 | 1,0 | 2 | 1,6931 | 1,6931 | **0,4375** |
-| doanh | 1 | 1,0 | 2 | 1,6931 | 1,6931 | **0,4375** |
-| viên | 1 | 1,0 | 2 | 1,6931 | 1,6931 | **0,4375** |
-| kinh | 1 | 1,0 | 3 | 1,4055 | 1,4055 | **0,3631** |
+| tuyển | 1 | 1.0 | 1 | 2.0986 | 2.0986 | **0.5422** |
+| nhân | 1 | 1.0 | 2 | 1.6931 | 1.6931 | **0.4375** |
+| doanh | 1 | 1.0 | 2 | 1.6931 | 1.6931 | **0.4375** |
+| viên | 1 | 1.0 | 2 | 1.6931 | 1.6931 | **0.4375** |
+| kinh | 1 | 1.0 | 3 | 1.4055 | 1.4055 | **0.3631** |
 
 ```
-‖D1‖ = √(2,0986² + 1,6931² + 1,6931² + 1,6931² + 1,4055²) = √14,9800 = 3,8704
+‖D1‖ = √(2.0986² + 1.6931² + 1.6931² + 1.6931² + 1.4055²) = √14.9800 = 3.8704
 ```
 
-Tổng bình phương hàng cuối = **1,000000** ✓
+The sum of squares of the last row = **1.000000** ✓
 
-Cột 1 và cột 2 giống hệt nhau — **mọi `tf` của D1 đều bằng 1**, vì D1 không lặp
-từ nào. Nghĩa là với riêng D1, TF-IDF thực chất chỉ còn là `idf` sau chuẩn hoá.
-Bảng 4 lấy D2 để bật TF lên.
+Columns 1 and 2 are identical — **every `tf` in D1 equals 1**, because D1 repeats no
+word. So for D1 specifically, TF-IDF really reduces to `idf` after normalisation.
+Table 4 uses D2 to make TF do something.
 
-### Bảng 3 · Ma trận cuối — 5 hàng × 28 cột
+### Table 3 · The final matrix — 5 rows × 28 columns
 
-Mỗi **hàng** là một tin, mỗi **cột** là một từ. Dấu `·` là số 0.
+Each **row** is a posting, each **column** a word. A `·` is a zero.
 
 ```
     chăm    có  công    cũ doanh  dựng  hàng   hợp khách  kinh  kiếm    kế    kỹ nghiệm
@@ -299,132 +318,142 @@ D4     ·     ·     ·     ·  0.37     ·     ·   0.46     ·     ·     ·  
 D5     ·     ·     ·  0.41     ·     ·  0.41      ·     ·     ·     ·     ·     ·  0.41
 ```
 
-**Đọc theo hàng = một tin.** D1 có đúng 5 ô khác 0 — đúng 5 từ của nó. 23 cột còn
-lại là 0: D1 "không chứa" mọi từ khác. Tổng bình phương mỗi hàng bằng 1.
+**Read by row = one posting.** D1 has exactly 5 non-zero cells — its 5 words. The
+other 23 columns are 0: D1 "does not contain" every other word. Each row's squares
+sum to 1.
 
-**Đọc theo cột = một từ, xuyên qua cả kho.** Cột `kinh` khác 0 ở D1, D2, D4. Cột
-`sư` chỉ khác 0 ở D5.
+**Read by column = one word, across the corpus.** The `kinh` column is non-zero in
+D1, D2 and D4. The `sư` column is non-zero only in D5.
 
-**Cùng một từ, giá trị khác nhau giữa các tin.** `nhân` được 0,44 ở D1 nhưng chỉ
-0,20 ở D2 — cùng `idf`, cùng `tf`, chênh nhau **chỉ vì L2**. Đây là pha loãng ở
-[§4](#4-chuẩn-hoá-l2--vì-sao-mọi-tin-phải-dài-đúng-1), nhìn thấy trực tiếp trên
-ma trận: hàng D2 trải mỏng ra 14 cột, hàng D1 dồn vào 5 cột.
+**The same word takes different values across postings.** `nhân` is 0.44 in D1 but
+only 0.20 in D2 — same `idf`, same `tf`, differing **purely because of L2**. This is
+the dilution from
+[§4](#4-l2-normalisation--why-every-posting-must-have-length-exactly-1), visible
+directly in the matrix: row D2 spreads thin across 14 columns, row D1 concentrates
+into 5.
 
-**Hàng D1 và hàng D3 không giao nhau ở một cột nào.** Đó chính là cặp mà [§4](#bệnh)
-cho thấy bị xếp *gần nhau nhất* khi thiếu L2 — bằng chứng bằng mắt rằng khoảng
-cách khi đó không hề đo nội dung.
+**Rows D1 and D3 do not intersect in a single column.** That is exactly the pair
+[§4](#the-disease) showed being ranked *closest together* without L2 — visual proof
+that the distance was not measuring content at all.
 
-**Ma trận không biết nghề.** D1 và D2 cùng nghề kinh doanh, và điều đó chỉ lộ ra
-qua bốn cột chung. D3 và D4 cùng nghề kế toán, chung hai cột. Không có cột nào tên
-là "nghề" cả — biết được nghề là việc của nhãn và của mô hình phân lớp, không phải
-của ma trận này. Xem [§7](#7-tf-idf-không-nhìn-thấy-gì).
+**The matrix does not know about occupations.** D1 and D2 are both sales postings,
+and that only shows through four shared columns. D3 and D4 are both accounting, with
+two shared columns. There is no column called "occupation" — knowing the occupation
+is the job of the label and of the classifier, not of this matrix. See
+[§7](#7-what-tf-idf-cannot-see).
 
-**35 ô khác 0 trên 140 ô — 25 %.** Ở dữ liệu thật tỷ lệ này nhỏ hơn hàng trăm lần;
-đó là ý nghĩa của "thưa", xem [note 4](04-ma-tran-thua-va-so-chieu.md).
+**35 non-zero cells out of 140 — 25 %.** On real data this ratio is hundreds of
+times smaller; that is what "sparse" means, see
+[note 4](04-ma-tran-thua-va-so-chieu.md).
 
-### Bảng 4 · TF thật sự hoạt động — khi từ lặp lại
+### Table 4 · TF actually doing something — when a word repeats
 
-D2 lặp `khách` và `hàng` hai lần ("tìm kiếm **khách hàng** mới và chăm sóc
-**khách hàng** cũ"). Đây là chỗ duy nhất trong kho có `tf > 1`:
+D2 repeats `khách` and `hàng` twice ("tìm kiếm **khách hàng** mới và chăm sóc
+**khách hàng** cũ" — find new *customers* and care for old *customers*). This is the
+only place in the corpus with `tf > 1`:
 
-| Từ trong D2 | `tf` | `1+ln(tf)` | `idf` | `tf × idf` | Sau L2 |
+| Word in D2 | `tf` | `1+ln(tf)` | `idf` | `tf × idf` | After L2 |
 |---|---|---|---|---|---|
-| khách | **2** | **1,6931** | 2,0986 | 3,5533 | **0,4215** |
-| hàng | **2** | **1,6931** | 2,0986 | 3,5533 | **0,4215** |
-| nhân | 1 | 1,0000 | 1,6931 | 1,6931 | 0,2009 |
-| kinh | 1 | 1,0000 | 1,4055 | 1,4055 | 0,1667 |
+| khách | **2** | **1.6931** | 2.0986 | 3.5533 | **0.4215** |
+| hàng | **2** | **1.6931** | 2.0986 | 3.5533 | **0.4215** |
+| nhân | 1 | 1.0000 | 1.6931 | 1.6931 | 0.2009 |
+| kinh | 1 | 1.0000 | 1.4055 | 1.4055 | 0.1667 |
 
-`khách` mạnh gấp **hơn hai lần** `nhân` trong cùng một tin. Hai lực cộng dồn:
-nó lặp (TF cao) **và** nó hiếm trong kho (IDF cao). Đó đúng là định nghĩa của
-"từ khoá đặc trưng cho tài liệu này".
+`khách` is **more than twice** as strong as `nhân` inside the same posting. Two
+forces add up: it repeats (high TF) **and** it is rare in the corpus (high IDF).
+That is precisely the definition of "a keyword characteristic of this document".
 
-Nếu để `tf` thô thay vì `1+ln(tf)`, `khách` sẽ được `2 × 2,0986 = 4,1972` thay vì
-`3,5533` — đậm hơn 18 %. Và một tin nhồi từ khoá SEO hai mươi lần sẽ dìm mọi từ
-khác của chính nó xuống gần 0, vì L2 buộc cả hàng phải dài đúng 1. Đó là lý do
-dự án bật `sublinear_tf=True`.
+With a raw `tf` instead of `1+ln(tf)`, `khách` would get `2 × 2.0986 = 4.1972`
+instead of `3.5533` — 18 % stronger. And a posting stuffing an SEO keyword twenty
+times would push all of its own other words toward 0, because L2 forces the row to
+length exactly 1. That is why the project sets `sublinear_tf=True`.
 
-### Tái lập
+### Reproduce
 
 ```python
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-kho = {"D1": "tuyển nhân viên kinh doanh",
-       "D2": "nhân viên kinh doanh phụ trách tìm kiếm khách hàng "
-             "và chăm sóc khách hàng cũ",
-       "D3": "kế toán tổng hợp",
-       "D4": "kế toán trưởng có kinh nghiệm",
-       "D5": "kỹ sư xây dựng công trình"}
+corpus = {"D1": "tuyển nhân viên kinh doanh",
+          "D2": "nhân viên kinh doanh phụ trách tìm kiếm khách hàng "
+                "và chăm sóc khách hàng cũ",
+          "D3": "kế toán tổng hợp",
+          "D4": "kế toán trưởng có kinh nghiệm",
+          "D5": "kỹ sư xây dựng công trình"}
 V = TfidfVectorizer(sublinear_tf=True, norm="l2")
-X = V.fit_transform(kho.values())
-print(pd.DataFrame(X.toarray().round(2), index=kho,
+X = V.fit_transform(corpus.values())
+print(pd.DataFrame(X.toarray().round(2), index=corpus,
                    columns=V.get_feature_names_out()).replace(0, "·").to_string())
 ```
 
 ---
 
-## 6. Ví dụ tính tay — trên dữ liệu thật
+## 6. A worked example — on the real data
 
-Lấy tiêu đề phổ biến nhất trong kho: **"Nhân viên kinh doanh"** (754 tin trong
-train). Với `ngram_range=(1,2)`, nó sinh ra **7 đặc trưng**:
+Take the most common title in the corpus: **"Nhân viên kinh doanh"** (sales staff,
+754 postings in train). With `ngram_range=(1,2)` it generates **7 features**:
 
-| Đặc trưng | Loại | `df` (trên 33.396 tin) | `idf` | **TF-IDF** |
+| Feature | Kind | `df` (of 33,396 postings) | `idf` | **TF-IDF** |
 |---|---|---|---|---|
-| `viên kinh` | bigram | 3.321 · 9,94 % | 3,308 | **0,491** |
-| `kinh doanh` | bigram | 4.764 · 14,27 % | 2,947 | **0,437** |
-| `doanh` | unigram | 4.899 · 14,67 % | 2,919 | **0,433** |
-| `kinh` | unigram | 5.118 · 15,33 % | 2,876 | **0,427** |
-| `nhân viên` | bigram | 14.494 · 43,40 % | 1,835 | **0,272** |
-| `nhân` | unigram | 14.951 · 44,77 % | 1,804 | **0,268** |
-| `viên` | unigram | 19.181 · **57,44 %** | 1,554 | **0,231** |
+| `viên kinh` | bigram | 3,321 · 9.94 % | 3.308 | **0.491** |
+| `kinh doanh` | bigram | 4,764 · 14.27 % | 2.947 | **0.437** |
+| `doanh` | unigram | 4,899 · 14.67 % | 2.919 | **0.433** |
+| `kinh` | unigram | 5,118 · 15.33 % | 2.876 | **0.427** |
+| `nhân viên` | bigram | 14,494 · 43.40 % | 1.835 | **0.272** |
+| `nhân` | unigram | 14,951 · 44.77 % | 1.804 | **0.268** |
+| `viên` | unigram | 19,181 · **57.44 %** | 1.554 | **0.231** |
 
-Tái lập bằng `_word_tfidf(PrepConfig(), max_features=60_000)` khớp trên cột
-`job_title` của `train.parquet`. Cả 7 ô đều có `tf = 1` (mỗi từ xuất hiện một lần),
-nên cột TF-IDF ở đây chính là `idf` sau chuẩn hoá L2.
+Reproduced with `_word_tfidf(PrepConfig(), max_features=60_000)` fitted on the
+`job_title` column of `train.parquet`. All 7 cells have `tf = 1` (each word appears
+once), so the TF-IDF column here is just `idf` after L2 normalisation.
 
-### Bốn điều đọc ra từ bảng này
+### Four things to read off this table
 
-**a. Vector có 6.835 chiều nhưng chỉ 7 ô khác 0.** Từ điển tiêu đề đúng bằng
-**6.835** từ — chính là con số trong sơ đồ ở
-[06-mo-hinh-phan-lop.md](../06-mo-hinh-phan-lop.md). 6.828 chiều còn lại là số 0.
-Đó là ý nghĩa của "thưa" — [note 4](04-ma-tran-thua-va-so-chieu.md).
+**a. The vector has 6,835 dimensions but only 7 non-zero cells.** The title
+vocabulary is exactly **6,835** words — the number in the diagram in
+[06-mo-hinh-phan-lop.md](../archive/06-mo-hinh-phan-lop.md). The other 6,828
+dimensions are zero. That is what "sparse" means —
+[note 4](04-ma-tran-thua-va-so-chieu.md).
 
-**b. `viên` yếu nhất (0,231) dù nó là từ phổ biến nhất.** Đó chính là IDF làm việc:
-`viên` có mặt ở 57 % số tin nên nó gần như không phân biệt được gì. Nó *có mặt* ở
-nhân viên, chuyên viên, kỹ thuật viên, giáo viên — bốn nghề khác nhau.
+**b. `viên` is weakest (0.231) even though it is the most common word.** That is
+IDF working: `viên` appears in 57 % of postings, so it distinguishes almost nothing.
+It occurs in nhân viên, chuyên viên, kỹ thuật viên, giáo viên — staff, specialist,
+technician, teacher: four different occupations.
 
-**c. `viên kinh` mạnh nhất (0,491) — và đây là bigram vô nghĩa về mặt ngữ pháp.**
-"viên kinh" không phải một từ tiếng Việt. Nhưng nó **hiếm** (9,94 %), nên nó là
-dấu vân tay rất tốt cho đúng cụm "nhân viên kinh doanh". Máy không cần hiểu ngữ
-pháp — nó chỉ cần một chuỗi ký tự phân biệt được.
+**c. `viên kinh` is strongest (0.491) — and it is a grammatically meaningless
+bigram.** "viên kinh" is not a Vietnamese word. But it is **rare** (9.94 %), so it
+is an excellent fingerprint for exactly the phrase "nhân viên kinh doanh". The
+machine does not need grammar — it needs a character sequence that discriminates.
 
-**d. `viên` suýt bị loại.** Dự án đặt `max_df=0.6` — mọi từ có mặt ở hơn 60 % tài
-liệu bị vứt thẳng. `viên` ở **57,44 %**, sát ngưỡng. Từ `công ty` phổ biến hơn
-trong *mô tả* thì bị `max_df` cắt ở khối đó. Đây là **bộ lọc từ dừng tự động, học
-từ chính dữ liệu** — và là lý do bước bỏ từ dừng thủ công đo ra chỉ **+0,0002**.
+**d. `viên` was nearly dropped.** The project sets `max_df=0.6` — any word present
+in more than 60 % of documents is thrown out. `viên` sits at **57.44 %**, right at
+the threshold. The phrase `công ty`, more common in *descriptions*, is cut by
+`max_df` in that block. This is a **stopword filter learned automatically from the
+data itself** — and the reason the manual stopword step measured only **+0.0002**.
 
 ---
 
-## 7. TF-IDF **không** nhìn thấy gì
+## 7. What TF-IDF **cannot** see
 
-Biết giới hạn của công cụ quan trọng ngang biết cách dùng nó.
+Knowing a tool's limits matters as much as knowing how to use it.
 
-| Nó không thấy | Hệ quả trong dự án này |
+| What it cannot see | The consequence in this project |
 |---|---|
-| **Thứ tự từ** | "không yêu cầu kinh nghiệm" và "yêu cầu kinh nghiệm" chỉ khác nhau ở một token `không`. Bigram vá được một phần |
-| **Nghĩa / từ đồng nghĩa** | `NV` và `nhân viên` là hai chiều rời nhau cho tới khi bước mở viết tắt gộp chúng lại |
-| **Phủ định, mỉa mai, ngữ cảnh xa** | Đây là lý do trần của mô hình túi từ nằm dưới trần của PhoBERT |
-| **Độ dài văn bản** | [Chuẩn hoá L2](#4-chuẩn-hoá-l2--vì-sao-mọi-tin-phải-dài-đúng-1) xoá luôn thông tin này. Muốn giữ thì phải thêm cột riêng — đúng là điều `desc_len`, `req_len`, `title_len` làm |
+| **Word order** | "không yêu cầu kinh nghiệm" and "yêu cầu kinh nghiệm" differ by a single `không` token. Bigrams patch part of it |
+| **Meaning / synonyms** | `NV` and `nhân viên` are two unrelated dimensions until the abbreviation-expansion step merges them |
+| **Negation, irony, long-range context** | This is why the bag-of-words ceiling sits below the PhoBERT ceiling |
+| **Text length** | [L2 normalisation](#4-l2-normalisation--why-every-posting-must-have-length-exactly-1) erases it. To keep it you have to add a separate column — exactly what `desc_len`, `req_len` and `title_len` do |
 
-Bảng này giải thích vì sao dự án **thêm** 14 cột số và 3 cột one-hot bên cạnh
-TF-IDF: chúng mang đúng những thứ TF-IDF vứt đi. Và bảng trọng số ở
-[05-dac-trung-tfidf.md §9](../05-dac-trung-tfidf.md#9-khối-nào-thật-sự-được-dùng)
-cho thấy mô hình **rất coi trọng** những cột đó.
+This table explains why the project **adds** 14 numeric columns and 3 one-hot
+columns alongside TF-IDF: they carry precisely what TF-IDF discards. And the weight
+table in
+[05-dac-trung-tfidf.md §9](../archive/05-dac-trung-tfidf.md#9-khối-nào-thật-sự-được-dùng)
+shows the model takes those columns **very** seriously.
 
 ---
 
-## Quay lại thực tế dự án
+## Back to the project itself
 
-- [05-dac-trung-tfidf.md](../05-dac-trung-tfidf.md) — từng tham số TF-IDF của dự án, và bỏ đi thì sao
-- [note 3 — n-gram và ranh giới từ](03-ngram-va-ranh-gioi-tu.md) — vì sao `(1,2)` mà không phải `(1,1)`
-- [note 4 — ma trận thưa](04-ma-tran-thua-va-so-chieu.md) — 7 ô khác 0 trên 6.835 chiều nghĩa là gì
+- [05-dac-trung-tfidf.md](../archive/05-dac-trung-tfidf.md) — every TF-IDF parameter in this project, and what happens without it
+- [note 3 — n-grams and word boundaries](03-ngram-va-ranh-gioi-tu.md) — why `(1,2)` and not `(1,1)`
+- [note 4 — sparse matrices](04-ma-tran-thua-va-so-chieu.md) — what 7 non-zero cells out of 6,835 dimensions means

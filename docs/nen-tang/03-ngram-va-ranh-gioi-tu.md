@@ -1,179 +1,193 @@
-[← TF-IDF là gì](02-tf-idf-la-gi.md) · [Nền tảng](00-index.md) · [Ma trận thưa →](04-ma-tran-thua-va-so-chieu.md)
+[← What TF-IDF is](02-tf-idf-la-gi.md) · [Background](00-index.md) · [Sparse matrices →](04-ma-tran-thua-va-so-chieu.md)
 
-# 3. n-gram và ranh giới từ
+# 3. n-grams and word boundaries
 
-Note này giải thích một kết quả gây bất ngờ trong dự án: **bước tách từ tiếng Việt
-— bước "đúng đắn" nhất về mặt ngôn ngữ học — đo ra không giúp gì và đã bị tắt.**
+> **The conclusion in this note holds for TF-IDF only.** With PhoBERT the opposite
+> is true: word segmentation is **mandatory**, because the model was pre-trained on
+> segmented text. One step, two opposite verdicts — and *why* that happens is the
+> most worthwhile part of this note. See [note 9](09-vector-ngu-nghia.md) and
+> [02 §4](../02-vietnamese-nlp.md#4-which-steps-the-phobert-path-actually-runs).
 
-Lý do không phải vì tách từ vô nghĩa. Lý do là `ngram_range=(1,2)` đã giải sẵn
-đúng bài toán đó.
+This note explains a surprising result in the project: **the Vietnamese word
+segmentation step — the most linguistically "correct" step of all — measured as no
+help and was switched off.**
+
+The reason is not that segmentation is meaningless. The reason is that
+`ngram_range=(1,2)` already solves the same problem.
 
 ---
 
-## 1. n-gram là gì
+## 1. What an n-gram is
 
-n-gram = chuỗi `n` token liền nhau.
+An n-gram is a sequence of `n` adjacent tokens.
 
 ```
 "Nhân viên kinh doanh"
 
-unigram (1-gram):  nhân · viên · kinh · doanh
-bigram  (2-gram):  nhân viên · viên kinh · kinh doanh
-trigram (3-gram):  nhân viên kinh · viên kinh doanh
+unigrams (1-grams):  nhân · viên · kinh · doanh
+bigrams  (2-grams):  nhân viên · viên kinh · kinh doanh
+trigrams (3-grams):  nhân viên kinh · viên kinh doanh
 ```
 
-`ngram_range=(1,2)` nghĩa là: lấy **cả** unigram **và** bigram. Câu bốn chữ trên
-sinh ra 4 + 3 = **7 đặc trưng**, đúng như bảng tính tay ở
-[note 2](02-tf-idf-la-gi.md#6-ví-dụ-tính-tay--trên-dữ-liệu-thật).
+`ngram_range=(1,2)` means: take **both** unigrams **and** bigrams. The four-word
+phrase above yields 4 + 3 = **7 features**, exactly as in the worked table in
+[note 2](02-tf-idf-la-gi.md#6-a-worked-example--on-the-real-data).
 
-Bigram là cách túi từ vá lại một phần thông tin thứ tự đã vứt đi: nó không biết
-toàn bộ trật tự câu, nhưng nó biết **hai chữ nào đứng cạnh nhau**.
+Bigrams are how a bag of words patches back some of the ordering information it
+threw away: it does not know the whole sentence order, but it knows **which two
+words stand next to each other**.
 
 ---
 
-## 2. Vấn đề riêng của tiếng Việt
+## 2. Vietnamese's own problem
 
-Hầu hết công cụ NLP mặc định một giả định lấy từ tiếng Anh:
+Most NLP tooling defaults to an assumption borrowed from English:
 
-> **Khoảng trắng tách từ.**
+> **Whitespace separates words.**
 
-Với tiếng Anh, giả định đó gần đúng: `"salesperson"` là một từ, một token.
-Với tiếng Việt, giả định đó **sai**. Tiếng Việt là ngôn ngữ **đơn lập**: khoảng
-trắng tách **âm tiết**, không tách **từ**.
+For English that is roughly true: `"salesperson"` is one word, one token.
+For Vietnamese it is **false**. Vietnamese is an **isolating** language: whitespace
+separates **syllables**, not **words**.
 
 ```
-tiếng Anh:   salesperson              →  1 token,  đúng là 1 từ
-tiếng Việt:  nhân viên kinh doanh     →  4 token,  thật ra là 2 từ
+English:     salesperson              →  1 token,  and indeed 1 word
+Vietnamese:  nhân viên kinh doanh     →  4 tokens, but really 2 words
 ```
 
-### Hậu quả: âm tiết "viên" nuốt bốn nghề
+### The consequence: the syllable "viên" swallows four occupations
 
-Đo được trong kho VietJobs: âm tiết `viên` xuất hiện **27.053 lần** trong tiêu đề,
-đứng sau **70 âm tiết khác nhau**:
+Measured in the VietJobs corpus: the syllable `viên` appears **27,053 times** in
+titles, following **70 different syllables**:
 
-| Cụm | Số lần | Là nghề gì |
+| Phrase | Count | Which occupation |
 |---|---|---|
-| nhân **viên** | 20.138 | nhân viên |
-| chuyên **viên** | 4.858 | chuyên viên |
-| kỹ thuật **viên** | 498 | kỹ thuật viên |
-| giáo **viên** | … | giáo viên |
+| nhân **viên** | 20,138 | staff |
+| chuyên **viên** | 4,858 | specialist |
+| kỹ thuật **viên** | 498 | technician |
+| giáo **viên** | … | teacher |
 
-Ở mức **chỉ unigram**, cả bốn nghề đổ chung vào một chiều `viên`. Chiều đó xuất
-hiện ở 57,44 % số tin nên gần như vô dụng — nó không phân biệt được gì.
+With **unigrams only**, all four occupations pour into the single `viên` dimension.
+That dimension occurs in 57.44 % of postings, so it is nearly useless — it
+distinguishes nothing.
 
 ---
 
-## 3. Hai cách sửa — và chúng làm cùng một việc
+## 3. Two fixes — and they do the same job
 
-### Cách A — tách từ (`underthesea`)
+### Option A — word segmentation (`underthesea`)
 
-Chạy một mô hình phân đoạn tiếng Việt, nối các âm tiết thuộc cùng một từ bằng
-gạch dưới:
+Run a Vietnamese segmentation model and join the syllables of one word with an
+underscore:
 
 ```
 "Nhân viên kinh doanh"  →  "Nhân_viên kinh_doanh"
 ```
 
-Bây giờ `nhân_viên` là một token riêng, `chuyên_viên` là một token riêng.
+Now `nhân_viên` is its own token, and `chuyên_viên` is its own token.
 
-### Cách B — bigram (`ngram_range=(1,2)`)
+### Option B — bigrams (`ngram_range=(1,2)`)
 
-Không cần biết gì về tiếng Việt. Chỉ cần ghép mọi cặp chữ liền nhau:
+Requires knowing nothing about Vietnamese. Just pair every two adjacent words:
 
 ```
 "Nhân viên kinh doanh"  →  ... + "nhân viên" + "viên kinh" + "kinh doanh"
 ```
 
-Bây giờ `nhân viên` cũng là một đặc trưng riêng, `chuyên viên` cũng vậy.
+Now `nhân viên` is also its own feature, and so is `chuyên viên`.
 
-### So sánh
+### Comparison
 
-| | Tách từ | Bigram |
+| | Segmentation | Bigrams |
 |---|---|---|
-| Có `nhân_viên` / `nhân viên` là một đặc trưng riêng | ✅ | ✅ |
-| Cần mô hình ngôn ngữ | ✅ underthesea | ❌ không cần gì |
-| Chi phí | **1.533,7 giây** trên 48k tin | gần như bằng 0 |
-| Sinh thêm đặc trưng rác (`viên kinh`) | ❌ | ✅ có |
-| Sai thì sao | Cắt sai từ → token sai hoàn toàn | Không có khái niệm "sai" |
+| Gives `nhân_viên` / `nhân viên` its own feature | ✅ | ✅ |
+| Needs a language model | ✅ underthesea | ❌ nothing |
+| Cost | **1,533.7 seconds** over 48k postings | effectively zero |
+| Generates junk features (`viên kinh`) | ❌ | ✅ yes |
+| What happens when it is wrong | A bad cut → a completely wrong token | There is no notion of "wrong" |
 
-**Cả hai cách giải cùng một bài toán.** Mà bigram đã bật sẵn từ đầu.
+**Both options solve the same problem.** And bigrams were on from the start.
 
 ---
 
-## 4. Kết quả đo được
+## 4. The measured result
 
-Cùng `C = 0,02`, chỉ bật/tắt bước tách từ:
+Same `C = 0.02`, only the segmentation step toggled:
 
-| Cấu hình | macro-F1 (val) | Run |
+| Configuration | macro-F1 (dev) | Run |
 |---|---|---|
-| Chỉ chuẩn tỉnh | **0,6050** | `cat-T-svm-C0.02` |
-| Chuẩn tỉnh + **tách từ** | 0,5998 | `cat-R-svm-C0.02-seg` |
+| Province normalisation only | **0.6050** | `cat-T-svm-C0.02` |
+| Province + **segmentation** | 0.5998 | `cat-R-svm-C0.02-seg` |
 
-Tách từ làm **giảm** 0,0052 — nằm trong nhiễu (σ ≈ 0,0077), nên kết luận đúng là
-"không giúp gì", không phải "làm hại".
+Segmentation **lowers** the score by 0.0052 — inside the noise (σ ≈ 0.0077), so the
+correct verdict is "no help", not "harmful".
 
-**Vì sao nó không giúp:** bigram đã bắt `nhân viên` rồi. Bước 5 giải một bài toán
-mà bộ vectơ hoá đã giải sẵn — chỉ khác là nó tốn 25 phút và cần một thư viện ngoài.
+**Why it does not help:** bigrams already catch `nhân viên`. Step 5 solves a problem
+the vectoriser had already solved — the only difference being that it costs 25
+minutes and an external library.
 
-**Vì sao nó hơi hại:** tách từ **giảm** số đặc trưng phân biệt. Sau khi tách,
-`nhân_viên` là một token, và bigram của bản đã tách là `nhân_viên kinh_doanh` —
-không còn `viên kinh` nữa. Mà theo bảng ở [note 2](02-tf-idf-la-gi.md), `viên kinh`
-là đặc trưng **mạnh nhất** trong cả bảy (TF-IDF 0,491), chính vì nó hiếm.
-Tách từ đã xoá mất đặc trưng mạnh nhất của tiêu đề phổ biến nhất.
+**Why it is mildly harmful:** segmentation **reduces** the number of discriminative
+features. After segmentation, `nhân_viên` is one token, and the bigram of the
+segmented text is `nhân_viên kinh_doanh` — `viên kinh` no longer exists. And by the
+table in [note 2](02-tf-idf-la-gi.md), `viên kinh` was the **strongest** of all
+seven features (TF-IDF 0.491), precisely because it is rare. Segmentation deleted
+the strongest feature of the most common title.
 
 ---
 
-## 5. Còn tin viết không dấu thì sao — kênh ký tự
+## 5. What about accent-less postings — the character channel
 
-**2.148 tiêu đề (4,50 %)** viết hoàn toàn không dấu:
+**2,148 titles (4.50 %)** are written entirely without diacritics:
 
 ```
-"Nhan Vien Kinh Doanh"    ← kênh từ không cách nào khớp với "Nhân Viên Kinh Doanh"
+"Nhan Vien Kinh Doanh"    ← the word channel can never match "Nhân Viên Kinh Doanh"
 ```
 
-Không thể sửa bằng cách bỏ dấu cả kho, vì **dấu tiếng Việt mang nghĩa** —
-`má / mà / mả / mã / mạ` là năm từ khác nhau. Bỏ dấu toàn bộ là gộp năm chiều
-có nghĩa thành một chiều vô nghĩa.
+This cannot be fixed by stripping diacritics from the whole corpus, because
+**Vietnamese diacritics carry meaning** — `má / mà / mả / mã / mạ` are five
+different words. Stripping them everywhere merges five meaningful dimensions into
+one meaningless one.
 
-Giải pháp: một **kênh thứ hai** chạy song song, dùng n-gram **ký tự** trên bản đã
-bỏ dấu:
+The solution: a **second channel** running in parallel, using **character** n-grams
+over the accent-stripped copy:
 
 ```
 analyzer="char_wb", ngram_range=(3, 5), preprocessor=fold_accents
 
 "nhan vien"  →  nha · han · nhan · vie · ien · vien · ...
-"nhân viên"  →  (sau khi bỏ dấu) nha · han · nhan · vie · ien · vien · ...
-                                  ↑ khớp nhau
+"nhân viên"  →  (after folding) nha · han · nhan · vie · ien · vien · ...
+                                 ↑ they match
 ```
 
-Kênh từ giữ nghĩa của dấu; kênh ký tự bắc cầu cho tin không dấu. **Bổ sung, không
-thay thế.**
+The word channel keeps the meaning of the diacritics; the character channel bridges
+the accent-less postings. **Additive, not a replacement.**
 
-Kết quả đo: 0,6024 so với 0,6050 — cũng **không giúp**, và cũng bị tắt.
-4,50 % số tin quá ít để bù cho 60.000 chiều nhiễu mà kênh này thêm vào.
+The measured result: 0.6024 versus 0.6050 — also **no help**, and also switched off.
+4.50 % of postings is too few to pay for the 60,000 noisy dimensions this channel
+adds.
 
 ---
 
-## 6. Bài học rút ra
+## 6. The lesson
 
-**Trước khi thêm một bước xử lý ngôn ngữ, hãy hỏi: bộ vectơ hoá đã làm việc đó chưa?**
+**Before adding a language-processing step, ask: has the vectoriser already done
+it?**
 
-Ba cặp trùng lặp có thật trong dự án này:
+Three real overlaps in this project:
 
-| Bước thủ công | Đã được làm sẵn bởi | Kết quả đo |
+| Manual step | Already done by | Measured result |
 |---|---|---|
-| Tách từ | `ngram_range=(1,2)` | −0,0052 |
-| Bỏ từ dừng | `max_df=0.6` và `idf` | +0,0002 |
-| Kênh gấp dấu | (không trùng, nhưng quá ít dữ liệu) | −0,0026 |
+| Word segmentation | `ngram_range=(1,2)` | −0.0052 |
+| Stopword removal | `max_df=0.6` and `idf` | +0.0002 |
+| Accent-folded channel | (no overlap, but too little data) | −0.0026 |
 
-Bước tiền xử lý "đúng về mặt lý thuyết" không tự động là bước có ích. **Chỉ có
-dòng ablation mới quyết định được** — đó là quy tắc số 6 trong
-[03-protocol.md](../03-protocol.md).
+A preprocessing step that is "theoretically right" is not automatically a useful
+one. **Only an ablation row can decide** — that is the removal rule,
+[03-protocol.md §8](../03-protocol.md#8-the-removal-rule).
 
 ---
 
-## Quay lại thực tế dự án
+## Back to the project itself
 
-- [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — chín bước và bảng ablation đầy đủ
-- [05-dac-trung-tfidf.md](../05-dac-trung-tfidf.md#4-từng-tham-số-tf-idf--và-bỏ-đi-thì-sao) — `ngram_range` và các tham số anh em
-- [note 2 — TF-IDF là gì](02-tf-idf-la-gi.md) — bảng tính tay 7 đặc trưng
+- [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — the nine steps and the full ablation table
+- [05-dac-trung-tfidf.md](../archive/05-dac-trung-tfidf.md#4-từng-tham-số-tf-idf--và-bỏ-đi-thì-sao) — `ngram_range` and its sibling parameters
+- [note 2 — what TF-IDF is](02-tf-idf-la-gi.md) — the worked table of 7 features

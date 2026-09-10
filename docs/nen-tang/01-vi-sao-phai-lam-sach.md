@@ -1,131 +1,135 @@
-[← Nền tảng](00-index.md) · [TF-IDF là gì →](02-tf-idf-la-gi.md)
+[← Background](00-index.md) · [What TF-IDF is →](02-tf-idf-la-gi.md)
 
-# 1. Vì sao phải làm sạch dữ liệu
+# 1. Why clean the data at all
 
-Câu trả lời quen thuộc là "rác vào rác ra". Câu đó **không sai nhưng vô dụng** —
-nó không cho biết bước nào đáng làm và bước nào là nghi lễ.
+The familiar answer is "garbage in, garbage out". That answer is **not wrong but
+useless** — it does not say which step is worth doing and which is ritual.
 
-Có hai lý do thật, cụ thể, và đo được.
+There are two real reasons, both concrete and both measurable.
 
 ---
 
-## Lý do 1 — máy đếm chữ, không đọc chữ
+## Reason 1 — the machine counts characters, it does not read them
 
-Đây là điều khó chấp nhận nhất với người mới, nên nói thẳng:
+This is the hardest thing for a newcomer to accept, so let us say it plainly:
 
-> Mô hình không hiểu tiếng Việt. Nó **đếm chuỗi ký tự**.
+> The model does not understand Vietnamese. It **counts character sequences**.
 
-Với `TfidfVectorizer`, `"hoà"` và `"hòa"` là hai chuỗi ký tự khác nhau, nên chúng
-là **hai đặc trưng riêng biệt**, giống hệt như `"hoà"` và `"máy xúc"` là hai đặc
-trưng riêng biệt. Máy không có cách nào biết hai cái đầu là cùng một từ.
+To `TfidfVectorizer`, `"hoà"` and `"hòa"` are two different character sequences,
+so they are **two separate features**, exactly as `"hoà"` and `"máy xúc"`
+(excavator) are two separate features. The machine has no way of knowing the first
+two are the same word.
 
-### Chuyện gì xảy ra khi một khái niệm bị xẻ đôi
+### What happens when one concept gets split in two
 
-Giả sử từ "hoà" xuất hiện trong 1.000 tin, nhưng viết theo hai kiểu:
+Suppose the word "hoà" appears in 1,000 postings, written two ways:
 
-| | Nếu **không** chuẩn hoá | Nếu **có** chuẩn hoá |
+| | **Without** normalisation | **With** normalisation |
 |---|---|---|
-| Chiều `hoà` | 600 tin | **1.000 tin** |
-| Chiều `hòa` | 400 tin | — |
+| Dimension `hoà` | 600 postings | **1,000 postings** |
+| Dimension `hòa` | 400 postings | — |
 
-Ba hậu quả, hậu quả sau nặng hơn hậu quả trước:
+Three consequences, each heavier than the last:
 
-**a. Mỗi mảnh yếu đi.** Mô hình học trọng số cho từng chiều. Một chiều thấy 600
-ví dụ học được ít hơn một chiều thấy 1.000 ví dụ.
+**a. Each half is weaker.** The model learns a weight per dimension. A dimension
+that sees 600 examples learns less than one that sees 1,000.
 
-**b. Hai mảnh học ra hai trọng số khác nhau** — thậm chí ngược dấu, nếu ngẫu nhiên
-kiểu viết `hòa` hay xuất hiện trong ngành nào đó. Mô hình học một mối tương quan
-**giả**, đến từ thói quen gõ phím chứ không từ nội dung.
+**b. The two halves learn two different weights** — possibly of opposite sign, if
+the `hòa` spelling happens to be more common in some sector. The model learns a
+**spurious** correlation that comes from typing habits, not from content.
 
-**c. Lúc dự đoán, tin mới chỉ kích hoạt một trong hai chiều.** Nếu người dùng gõ
-kiểu ít phổ biến hơn, mô hình dùng chiều yếu hơn — và trả lời kém hơn, một cách
-hoàn toàn im lặng.
+**c. At prediction time, a new posting activates only one of the two dimensions.**
+If the user types the less common style, the model uses the weaker dimension — and
+answers worse, entirely silently.
 
-### Việc này to đến đâu trong kho VietJobs
+### How big this is in the VietJobs corpus
 
-Toàn số đo thật, từ `python scripts/measure_vitext.py`:
+All real measurements, from `python scripts/measure_vitext.py`:
 
-| Dạng "xẻ chiều" | Quy mô |
+| Form of "dimension splitting" | Scale |
 |---|---|
-| Chữ tổ hợp Unicode chưa gộp (`ế` viết bằng 2–3 code point) | **529 dòng (1,11 %)** |
-| Mô tả dùng cả hai lối đặt dấu `hoà`/`hòa` | 76,6 % dùng kiểu này, 30,3 % dùng kiểu kia — **phần lớn tin lẫn cả hai** |
-| Mô tả chứa viết tắt chưa mở (`NV`, `BHXH`, `CSKH`) | **3.436 mô tả (7,2 %)** |
-| Địa điểm bị vụn (`hà đông` không nối được với `hà nội`) | 984 chuỗi → chỉ còn **265** sau chuẩn hoá; **7.481 dòng (15,7 %)** đổi giá trị |
-| Tiêu đề viết **không dấu** hoàn toàn | **2.148 tiêu đề (4,50 %)** |
+| Uncomposed Unicode letters (`ế` written as 2–3 code points) | **529 rows (1.11 %)** |
+| Descriptions using both tone-mark placements `hoà`/`hòa` | 76.6 % use one style, 30.3 % the other — **most postings mix both** |
+| Descriptions with unexpanded abbreviations (`NV`, `BHXH`, `CSKH`) | **3,436 descriptions (7.2 %)** |
+| Fragmented locations (`hà đông` cannot be linked to `hà nội`) | 984 strings → only **265** after normalisation; **7,481 rows (15.7 %)** change value |
+| Titles written entirely **without diacritics** | **2,148 titles (4.50 %)** |
 
-Nhìn riêng thì mỗi con số nhỏ. Nhưng chúng chồng lên nhau, và mỗi cái đều xẻ đúng
-những từ **phổ biến nhất** — tức những từ mô hình dựa vào nhiều nhất.
-
----
-
-## Lý do 2 — chặn mô hình nhìn thấy đáp án
-
-Lý do này quan trọng hơn lý do 1 rất nhiều, và hoàn toàn khác về bản chất.
-
-Lý do 1 nói về **hiệu năng**: không làm thì mô hình kém hơn một chút.
-Lý do 2 nói về **tính đúng đắn**: không làm thì mọi con số bạn báo cáo đều **sai**,
-và sai theo hướng đẹp lên.
-
-Trong dự án này có hai đường rò rỉ, cả hai đều bị chặn ở khâu làm sạch:
-
-**a. Đáp án nằm trong chính đầu vào.** Bài toán 2 dự đoán mức lương. Nhưng
-**10,65 %** dòng nhắc lại con số lương ngay trong ô *phúc lợi*. Không che thì mô
-hình chỉ cần đọc lại con số đó — R² đẹp trong báo cáo, hỏng ngoài đời.
-
-**b. Cùng một tin nằm ở cả train lẫn test.** Nhà tuyển dụng đăng lại tin nhiều
-lần: **12.808 dòng (26,8 %)** là tin đăng lại. Chia tập theo dòng thì mô hình chỉ
-cần **thuộc lòng** là có điểm cao trên test — và điểm đó không nói gì về khả năng
-tổng quát hoá.
-
-Chi tiết đầy đủ ở [note 5 — rò rỉ dữ liệu](05-ro-ri-du-lieu.md).
+Each number looks small on its own. But they stack, and each one splits precisely
+the **most common** words — the ones the model relies on most.
 
 ---
 
-## Hệ quả: hai loại bước tiền xử lý
+## Reason 2 — stopping the model from seeing the answer
 
-Từ hai lý do trên suy ra một cách phân loại rất hữu ích, và nó là xương sống
-của cả dự án:
+This reason is far more important than reason 1, and completely different in kind.
 
-| Loại | Mục đích | Chứng minh bằng gì | Gỡ được không |
+Reason 1 is about **performance**: skip it and the model is slightly worse.
+Reason 2 is about **correctness**: skip it and every number you report is **wrong**,
+and wrong in the flattering direction.
+
+This project has two leak paths, both blocked during cleaning:
+
+**a. The answer sits inside the input itself.** Task 2 predicts the salary. But
+**10.65 %** of rows restate the salary figure right there in the *benefits* field.
+Without masking, the model just reads that figure back — a pretty R² in the report,
+broken in the world.
+
+**b. The same posting is in both train and test.** Employers repost adverts many
+times: **12,808 rows (26.8 %)** are reposts. Split by row and the model scores high
+on test purely by **memorising** — and that score says nothing about generalisation.
+
+The full detail is in [note 5 — data leakage](05-ro-ri-du-lieu.md).
+
+---
+
+## The consequence: two kinds of preprocessing step
+
+The two reasons above yield a very useful classification, and it is the backbone of
+the whole project:
+
+| Kind | Purpose | Proved by | Removable |
 |---|---|---|---|
-| **Bước hiệu năng** | Làm điểm cao lên | Một dòng ablation trong [04-results.md](../04-results.md) | **Có** — không cải thiện thì gỡ |
-| **Bước đúng đắn** | Làm con số đo được có nghĩa | Không thể chứng minh bằng điểm số | **Không bao giờ** |
+| **Performance step** | Raise the score | An ablation row in [04-results.md](../archive/04-results-ml.md) | **Yes** — no improvement, no keeping |
+| **Correctness step** | Make the measured number meaningful | Cannot be proved by a score | **Never** |
 
-Trong chín bước xử lý tiếng Việt, bốn bước thuộc loại thứ hai (NFC, chuẩn dấu
-thanh, che lương, khoá gộp nhóm) và **không** bước nào trong đó làm điểm cao lên
-đáng kể. Chúng vẫn ở lại. Ba bước thuộc loại thứ nhất đo ra không giúp gì và
-**đã bị tắt**.
+Of the nine Vietnamese processing steps, four are of the second kind (NFC,
+tone-mark normalisation, salary masking, the grouping key) and **none** of them
+raises the score appreciably. They stay anyway. Three of the first kind measured as
+no help and **have been switched off**.
 
-Đây là điều phân biệt một pipeline có kỷ luật với một pipeline dài đầy nghi lễ:
-không phải "làm nhiều bước", mà là **biết mỗi bước ở đó vì lý do nào**.
-
----
-
-## Một cảnh báo ngược lại: làm sạch quá tay cũng phá
-
-Làm sạch không phải càng nhiều càng tốt. Ba ví dụ có thật trong dự án này:
-
-**Bỏ dấu tiếng Việt.** `strip_accents` là mặc định phổ biến khi làm TF-IDF cho
-tiếng Anh. Ở tiếng Việt nó phá: `má` (mẹ), `mà` (liên từ), `mả` (mộ), `mã` (mã số),
-`mạ` (mạ kim loại) là **năm từ khác nhau**. Bỏ dấu là gộp năm chiều có nghĩa
-thành một chiều vô nghĩa.
-
-**Bỏ từ dừng máy móc.** Bỏ chữ "không" sẽ biến *"không yêu cầu kinh nghiệm"*
-thành *"yêu cầu kinh nghiệm"* — **đảo ngược nghĩa**. Danh sách từ dừng của dự án
-cố ý chừa `không`, `chưa`, `trên/dưới`, `tối thiểu`.
-
-**Mở viết tắt bừa.** Mở `TP` thành `trưởng phòng` trong `"TP HCM"` tạo ra một tín
-hiệu **giả** — mô hình sẽ tưởng mọi tin ở Sài Gòn đều tuyển trưởng phòng.
-**Mở sai tệ hơn không mở**, nên các viết tắt nhập nhằng chỉ được mở khi có ngữ
-cảnh khớp.
-
-Quy tắc rút ra: **mỗi phép làm sạch là một phép gộp thông tin, và gộp là mất mát
-không lấy lại được.** Chỉ gộp khi chắc chắn hai thứ được gộp thật sự là một.
+This is what separates a disciplined pipeline from a long ritual one: not "many
+steps", but **knowing which reason each step is there for**.
 
 ---
 
-## Quay lại thực tế dự án
+## The opposite warning: over-cleaning also breaks things
 
-- [01-data-audit.md](../01-data-audit.md) — làm sạch được thực hiện thế nào
-- [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — chín bước, và bước nào sống sót
-- [note 5 — rò rỉ dữ liệu](05-ro-ri-du-lieu.md) — lý do 2, nói kỹ
+Cleaning is not better the more you do. Three real examples from this project:
+
+**Stripping Vietnamese diacritics.** `strip_accents` is a common default for
+English TF-IDF. In Vietnamese it destroys: `má` (mother), `mà` (but), `mả` (grave),
+`mã` (code), `mạ` (to plate metal) are **five different words**. Stripping the
+diacritics merges five meaningful dimensions into one meaningless one.
+
+**Mechanical stopword removal.** Dropping the word "không" turns *"không yêu cầu
+kinh nghiệm"* (no experience required) into *"yêu cầu kinh nghiệm"* (experience
+required) — **the opposite meaning**. This project's stopword list deliberately
+spares `không`, `chưa`, `trên/dưới`, `tối thiểu`.
+
+**Careless abbreviation expansion.** Expanding `TP` into `trưởng phòng` (department
+head) inside `"TP HCM"` (Ho Chi Minh City) manufactures a **false** signal — the
+model would think every posting in Saigon is hiring a department head. **A wrong
+expansion is worse than none**, so ambiguous abbreviations are expanded only when a
+context pattern matches.
+
+The rule that follows: **every cleaning operation is a merge of information, and a
+merge is an irreversible loss.** Merge only when you are certain the two things
+being merged really are one.
+
+---
+
+## Back to the project itself
+
+- [01-data-audit.md](../01-data-audit.md) — how the cleaning is actually done
+- [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — the nine steps, and which ones survived
+- [note 5 — data leakage](05-ro-ri-du-lieu.md) — reason 2, in detail

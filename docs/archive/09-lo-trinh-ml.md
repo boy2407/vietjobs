@@ -1,4 +1,4 @@
-[← Tổng quan](00-tong-quan.md) · [← Mã nguồn](08-ma-nguon.md)
+[← Tổng quan](../00-tong-quan.md) · [← Mã nguồn](../08-ma-nguon.md)
 
 # Lộ trình còn lại — xếp theo thứ tự phải làm
 
@@ -53,10 +53,10 @@ Hai cột đi thẳng vào mô hình lương ở dạng **chưa che**:
 
 | Cột | Vào mô hình lương ở đâu | Vì sao lọt |
 |---|---|---|
-| `soft_skills_text` | [features.py:223](../src/vietjobs/features.py#L223) — truyền thẳng, không qua `col()` | Không có bản `_masked` |
-| `qualifications_text` | [features.py:222](../src/vietjobs/features.py#L222) — qua `col()` nhưng không nằm trong `_MASKABLE` | Không có bản `_masked` |
+| `soft_skills_text` | [features.py:223](../../src/vietjobs/features.py#L223) — truyền thẳng, không qua `col()` | Không có bản `_masked` |
+| `qualifications_text` | [features.py:222](../../src/vietjobs/features.py#L222) — qua `col()` nhưng không nằm trong `_MASKABLE` | Không có bản `_masked` |
 
-`UNMASKED_COLUMNS` ([features.py:50](../src/vietjobs/features.py#L50)) không liệt kê
+`UNMASKED_COLUMNS` ([features.py:50](../../src/vietjobs/features.py#L50)) không liệt kê
 hai cột này, nên `tests/test_no_leak.py` **không bắt được**.
 `scripts/measure_vitext.py` chỉ đo `job_title`, `description`, `requirements_text`
 và `benefits` — nên **chưa biết** hai cột đó có nhắc lại con số lương hay không.
@@ -70,7 +70,7 @@ dòng khớp `_PAT_MILLIONS` / `_PAT_DONG` / `_PAT_USD` trong hai cột đó.
 
 Đây là ví dụ sống cho một điều đáng nhớ: **test chống rò rỉ chỉ bảo vệ được những
 cột mà người viết test nghĩ tới.** Ghi thêm ở
-[nền tảng: rò rỉ dữ liệu](nen-tang/05-ro-ri-du-lieu.md).
+[nền tảng: rò rỉ dữ liệu](../nen-tang/05-ro-ri-du-lieu.md).
 
 </details>
 
@@ -79,7 +79,7 @@ cột mà người viết test nghĩ tới.** Ghi thêm ở
 ## Ưu tiên 1 — chạy bài toán lương
 
 Code đã đủ, chỉ còn chạy và ghi kết quả. Bốn bước, đúng thứ tự. Bối cảnh ở
-[07-bai-toan-luong.md](07-bai-toan-luong.md).
+[07-bai-toan-luong.md](../07-bai-toan-luong.md).
 
 **1a. Tầng 1 — `disclosed`.** Sàn phải vượt: 71,8% tin có công bố lương, nên
 "đoán luôn là có" đạt accuracy **0,7176** và macro-F1 **0,4179**. Mô hình không vượt
@@ -108,7 +108,7 @@ gì ngoài việc chỉ ra nhóm nghề.
 trên val. Không đo độ phủ thì khoảng dự đoán chỉ là hai con số trang trí.
 
 **1e. Ghi rõ thiên lệch chọn mẫu.** Bảng tỷ lệ công bố theo ngành ở
-[07-bai-toan-luong.md](07-bai-toan-luong.md#thiên-lệch-chọn-mẫu--hạn-chế-không-sửa-được).
+[07-bai-toan-luong.md](../07-bai-toan-luong.md#selection-bias--an-unfixable-limitation).
 Mô hình sẽ ước lượng thấp cho CNTT. Đây là hạn chế cấu trúc, không sửa được bằng
 mô hình tốt hơn — phải ghi vào báo cáo.
 
@@ -121,7 +121,7 @@ macro-F1 0,6112 nghe thấp, nhưng chưa biết trần thật là bao nhiêu. C
 Nếu 40% lỗi là nhãn gốc sai thì 0,6112 tương đương khoảng 0,75 trên nhãn sạch.
 Đây là con số quý nhất trong toàn bộ báo cáo và không mô hình nào thay thế được nó.
 
-## Ưu tiên 3 — hai đòn bẩy rẻ cho phân lớp (làm trước khi nghĩ đến DL)
+## Ưu tiên 3 — hai đòn bẩy rẻ cho mốc cơ sở ML
 
 **3a. Trọng số theo khối.** SVM chỉ dùng tiêu đề đã đạt 0,5547; thêm cả 6 khối văn bản
 còn lại chỉ lên 0,5719 — **mua thêm 0,017**. Đó là dấu hiệu pha loãng: mô tả dài lấn át
@@ -133,22 +133,59 @@ Bảng trọng số theo khối ở
 rơi xuống tận 0,02 chính là mô hình đang kêu cứu vì quá nhiều chiều. Quét `min_df`,
 `max_features`, `sublinear_tf` — rẻ hơn và nhiều khả năng ăn hơn một vòng quét `C` nữa.
 
-## Ưu tiên 4 — một mốc học sâu
+## Ưu tiên 4 — chuyển trục chính sang học sâu đa nhiệm
 
-Đây là trục còn thiếu để dự án đủ cả **ML và DL**. Hai lựa chọn theo phần cứng:
+**Đổi hướng, 2026-09-08.** Đề cương nộp trường đã sửa: mô hình chính của đề tài là
+một **mạng nơ-ron đa nhiệm** chứ không còn là cụm mô hình học máy. Toàn bộ phần ML
+đã đo (101 thí nghiệm, test macro-F1 0,6112) **giữ nguyên làm mốc cơ sở** — nó là
+thứ cho phép nói mô hình học sâu có hơn hay không.
 
-| Cách | Chi phí | macro-F1 kỳ vọng |
-|---|---|---|
-| Fine-tune PhoBERT-base, tiêu đề + mô tả, 256 token | 1–2 giờ có GPU/MPS | 0,66–0,70 |
-| Embedding đóng băng + head tuyến tính | ~5 phút | 0,63–0,65 |
+Kiến trúc chốt trong đề cương:
+
+```
+tin tuyển dụng (đã che lương)
+  → PhoBERT  → vector biểu diễn
+  → vài lớp dense dùng chung
+  → nhánh A: phân lớp 16 nhóm nghề   (cross-entropy)
+  → nhánh B: ước lượng mức lương      (hồi quy, mất mát có mặt nạ)
+  → loss = w_A · loss_A + w_B · loss_B
+```
+
+Bốn ràng buộc không được vi phạm khi hiện thực:
+
+1. **Đầu vào phải là cột `*_masked`.** Quy tắc số 3 vẫn áp dụng nguyên vẹn: nhánh
+   lương đọc văn bản chưa che là đọc chính đáp án của nó. `features.resolve_column`
+   là nơi duy nhất quyết định điều đó — đường DL phải đi qua cùng chỗ đó, không
+   được tự nối thẳng vào cột thô.
+2. **Mất mát hồi quy phải có mặt nạ.** Chỉ 71,8% tin công bố lương. 28,2% còn lại
+   không có nhãn lương; với chúng `loss_B` bằng 0 và mạng chỉ học từ nhánh A.
+   Quên mặt nạ là huấn luyện mô hình đuổi theo số 0.
+3. **Giữ nguyên `SPLIT_SEED = 20260826` và ba tập đã đóng băng.** Đổi là mọi so
+   sánh với 0,6112 mất nghĩa.
+4. **`test` đã chạm một lần cho bài phân lớp.** Mọi cấu hình DL chọn trên `val`.
+
+Hai bậc hiện thực, làm theo thứ tự:
+
+| Bậc | Cách | Chi phí | macro-F1 kỳ vọng |
+|---|---|---|---|
+| 4a | PhoBERT đóng băng, chỉ huấn luyện phần dense + hai nhánh | ~5 phút | 0,63–0,65 |
+| 4b | Fine-tune PhoBERT-base, tiêu đề + mô tả, 256 token | 1–2 giờ có GPU/MPS | 0,66–0,70 |
 
 > Hai con số cột cuối là **kỳ vọng, chưa đo**. Chúng là ước lượng để lên kế hoạch,
-> không phải kết quả, và không được đưa vào [04-results.md](04-results.md) cho tới
+> không phải kết quả, và không được đưa vào [04-results.md](04-results-ml.md) cho tới
 > khi chạy thật.
+
+Làm 4a trước: nó chạy nhanh, và nếu bản đóng băng không vượt nổi 0,6112 thì phần
+lớn khả năng lỗi nằm ở đường dữ liệu chứ không ở sức mô hình — rẻ hơn nhiều để tìm
+ra ở bậc 4a so với sau hai giờ fine-tune.
 
 Bắt buộc đo kèm **độ trễ suy luận**, và báo cáo cả hai trục: điểm số *và* chi phí.
 Một mô hình hơn 0,05 macro-F1 nhưng chậm gấp 200 lần là một đánh đổi, không phải
 một chiến thắng — và trình bày được đánh đổi đó mới là điều làm báo cáo có trọng lượng.
+
+Ưu tiên 1 (chạy bài toán lương bằng LightGBM) **vẫn phải làm** — không phải để nộp,
+mà để nhánh B có mốc so sánh. Không có nó thì không ai biết mạng đa nhiệm ước lượng
+lương giỏi hay dở.
 
 ## Ưu tiên 5 — hoàn thiện hệ thống
 
@@ -178,7 +215,7 @@ một chiến thắng — và trình bày được đánh đổi đó mới là 
 
 ---
 
-**Quy tắc không đổi:** test chỉ chạm một lần ở cuối · [04-results.md](04-results.md)
+**Quy tắc không đổi:** test chỉ chạm một lần ở cuối · [04-results.md](04-results-ml.md)
 chỉ ghi thêm · bước tiền xử lý nào không cải thiện thì gỡ bỏ · **mỗi thay đổi thật
-đều phải cập nhật lại tài liệu**. Chi tiết ở [03-protocol.md](03-protocol.md) và
-[../CLAUDE.md](../CLAUDE.md).
+đều phải cập nhật lại tài liệu**. Chi tiết ở [03-protocol.md](../03-protocol.md) và
+[../CLAUDE.md](../../AGENTS.md).

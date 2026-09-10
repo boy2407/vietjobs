@@ -1,9 +1,9 @@
-[← Tổng quan](00-tong-quan.md) · [← Đặc trưng & TF-IDF](05-dac-trung-tfidf.md) · [Bài toán lương →](07-bai-toan-luong.md)
+[← Tổng quan](../00-tong-quan.md) · [← Đặc trưng & TF-IDF](05-dac-trung-tfidf.md) · [Bài toán lương →](../07-bai-toan-luong.md)
 
 # Bài toán 1 — phân lớp nghề
 
 16 lớp, lệch 27:1. **Đã xong và đã chấm test một lần: macro-F1 0,6112.**
-100 thí nghiệm ghi trong [04-results.md](04-results.md). Lựa chọn mô hình được
+101 thí nghiệm ghi trong [04-results.md](04-results-ml.md). Lựa chọn mô hình được
 kiểm lại bằng một cụm quét công bằng **11 thuật toán × 6 cấu hình** —
 [10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md).
 
@@ -89,7 +89,7 @@ Khi hoà thì thứ tách chúng ra là chi phí — **42 giây** so với 4,8 p
 Cả ba thắng mọi mô hình cây và mọi baseline văn bản cổ điển với `P > 0,975`.
 Chi tiết, kèm mục **điểm yếu của từng mô hình**, ở
 [10-so-sanh-mo-hinh.md](10-so-sanh-mo-hinh.md); các khái niệm dùng trong đó
-giải thích ở [nền tảng note 8](nen-tang/08-doc-mot-bang-so-sanh.md).
+giải thích ở [nền tảng note 8](../nen-tang/08-doc-mot-bang-so-sanh.md).
 
 **Test (chạy một lần duy nhất): macro-F1 0,6112 · accuracy 0,6527 · balanced accuracy 0,6816.**
 Test cao hơn val nên không có dấu hiệu overfit vào val.
@@ -97,7 +97,7 @@ Test cao hơn val nên không có dấu hiệu overfit vào val.
 KNN càng nhiều đặc trưng càng tệ — chỉ tiêu đề 0,5266, toàn văn 0,4059, **thấp hơn cả
 baseline từ khoá không dùng ML**. Đây là lời nguyền số chiều, ngược hẳn SVM và LogReg.
 Vì sao KNN sụp mà SVM thì không:
-[nền tảng: ma trận thưa và số chiều](nen-tang/04-ma-tran-thua-va-so-chieu.md).
+[nền tảng: ma trận thưa và số chiều](../nen-tang/04-ma-tran-thua-va-so-chieu.md).
 
 ### Cây so với tuyến tính — cùng dữ liệu, hai kết luận ngược nhau
 
@@ -150,17 +150,17 @@ Bảng không phải danh sách mô hình xếp hạng. Nó là một lập lu�
    gần 17 lần toàn bộ pipeline xử lý tiếng Việt.
 
 Bài học đắt nhất nằm ở bước 4 → 5: **thời gian bỏ vào chỉnh siêu tham số ăn đứt
-thời gian bỏ vào thêm đặc trưng.** Xem [nền tảng: chính quy hoá](nen-tang/07-chinh-quy-hoa.md)
+thời gian bỏ vào thêm đặc trưng.** Xem [nền tảng: chính quy hoá](../nen-tang/07-chinh-quy-hoa.md)
 để hiểu vì sao `C` tối ưu lại rơi xuống tận 0,02.
 
 ### Vì sao macro-F1 chứ không phải accuracy
 
 Lớp lớn nhất gấp 27 lần lớp nhỏ nhất. Baseline "đoán lớp đa số" đạt accuracy
 **0,2014** nhưng macro-F1 chỉ **0,0210** — accuracy vui vẻ che giấu một mô hình bỏ
-qua hoàn toàn 15 lớp. Chi tiết ở [03-protocol.md §4](03-protocol.md) và
-[nền tảng: đo lường và baseline](nen-tang/06-do-luong-va-baseline.md).
+qua hoàn toàn 15 lớp. Chi tiết ở [03-protocol.md §4](../03-protocol.md) và
+[nền tảng: đo lường và baseline](../nen-tang/06-do-luong-va-baseline.md).
 
-> **Về cột lệch trong [04-results.md](04-results.md):** đã sửa. Ô `Headline` từng
+> **Về cột lệch trong [04-results.md](04-results-ml.md):** đã sửa. Ô `Headline` từng
 > ngăn các metric bằng dấu `|`, làm trình render đẩy `Time` và `Commit` ra ngoài.
 > Dòng mới dùng dấu ` · ` và render đúng 11 cột; 34 dòng cũ giữ nguyên vì log là
 > append-only, nên chúng vẫn hiển thị lệch.
@@ -169,9 +169,9 @@ qua hoàn toàn 15 lớp. Chi tiết ở [03-protocol.md §4](03-protocol.md) v�
 
 ## Đọc tiếp
 
-- [Bài toán lương](07-bai-toan-luong.md) — bài toán thứ hai, chưa chạy
+- [Bài toán lương](../07-bai-toan-luong.md) — bài toán thứ hai, chưa chạy
 - [Đặc trưng & TF-IDF](05-dac-trung-tfidf.md) — ma trận 236.596 chiều dựng thế nào
-- [04-results.md](04-results.md) — 27 dòng thí nghiệm đầy đủ
-- Nền tảng: [đo lường và baseline](nen-tang/06-do-luong-va-baseline.md) ·
-  [ma trận thưa và số chiều](nen-tang/04-ma-tran-thua-va-so-chieu.md) ·
-  [chính quy hoá](nen-tang/07-chinh-quy-hoa.md)
+- [04-results.md](04-results-ml.md) — 27 dòng thí nghiệm đầy đủ
+- Nền tảng: [đo lường và baseline](../nen-tang/06-do-luong-va-baseline.md) ·
+  [ma trận thưa và số chiều](../nen-tang/04-ma-tran-thua-va-so-chieu.md) ·
+  [chính quy hoá](../nen-tang/07-chinh-quy-hoa.md)

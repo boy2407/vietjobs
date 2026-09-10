@@ -139,6 +139,32 @@ def test_segment_is_a_noop_on_empty_input():
     assert V.segment(None) == ""
 
 
+@pytest.fixture()
+def restore_segmenter():
+    """Put the process back on the default backend after a switch."""
+    yield
+    V.use_segmenter("underthesea")
+
+
+def test_use_segmenter_switches_backend(restore_segmenter):
+    """The switch must change what actually segments, not just a label.
+
+    docs/02-vietnamese-nlp.md §5 compares two backends; if the switch silently
+    kept the old one, that table would be one backend measured twice.
+    """
+    pytest.importorskip("pyvi")
+    V.use_segmenter("pyvi")
+    assert V.segmenter_name() == "pyvi"
+    assert V.segment("Nhân viên kinh doanh") == "Nhân_viên kinh_doanh"
+
+
+def test_unknown_segmenter_is_fatal(restore_segmenter):
+    """A typo in $VIETJOBS_SEGMENTER must stop the run, not fall back quietly."""
+    with pytest.raises(SystemExit):
+        V.use_segmenter("underthesa")
+        V.segmenter_available()
+
+
 # --- 2.6 Accent folding -----------------------------------------------------
 
 

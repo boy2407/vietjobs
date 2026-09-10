@@ -1,223 +1,227 @@
-[← Chính quy hoá](07-chinh-quy-hoa.md) · [Nền tảng](00-index.md)
+[← Regularisation](07-chinh-quy-hoa.md) · [Background](00-index.md) · [Semantic vectors →](09-vector-ngu-nghia.md)
 
-# 8. Đọc một bảng so sánh mô hình
+# 8. Reading a model comparison table
 
-Note này không kể kết quả. Nó dạy cách **đọc** một bảng so sánh — và cách nhận ra
-lúc nào bảng đó đang nói quá. Con số thật nằm ở
-[10-so-sanh-mo-hinh.md](../10-so-sanh-mo-hinh.md).
+This note reports no results. It teaches how to **read** a comparison table — and
+how to spot when that table is overstating things. The real numbers are in
+[10-so-sanh-mo-hinh.md](../archive/10-so-sanh-mo-hinh.md).
 
-Đây là note khó nhất trong bảy note nền tảng, vì nó không nói về mô hình mà nói
-về **cách ta đánh giá mô hình** — chỗ mà một người đã biết code vẫn có thể sai
-suốt nhiều năm mà không ai chỉ ra.
+This is the hardest of the background notes, because it is not about models but
+about **how we evaluate models** — the place where someone who already writes code
+can stay wrong for years without anyone pointing it out.
 
 ---
 
-## 1. Siêu tham số — nút vặn bạn phải tự đặt
+## 1. Hyper-parameters — the knobs you have to set yourself
 
-Khi nấu ăn, **nguyên liệu** là thứ bạn có sẵn, nhưng **nhiệt độ lò** là thứ bạn
-phải tự chọn. Không công thức nào tính ra nhiệt độ đúng từ nguyên liệu. Cách duy
-nhất là nướng thử vài nhiệt độ rồi nếm.
+When cooking, the **ingredients** are what you have, but the **oven temperature** is
+what you choose. No formula derives the right temperature from the ingredients. The
+only way is to bake at a few temperatures and taste.
 
-Mô hình học máy có hai loại số hoàn toàn khác nhau:
+A machine-learning model has two completely different kinds of number:
 
-| Loại | Ai quyết định | Ví dụ |
+| Kind | Who decides | Example |
 |---|---|---|
-| **Trọng số** | Mô hình **tự học** từ dữ liệu | Mỗi từ nặng bao nhiêu với mỗi nghề |
-| **Siêu tham số** | **Bạn** đặt trước khi mô hình bắt đầu học | `C`, `k`, số cây, độ sâu cây |
+| **Weights** | The model **learns** them from the data | How much each word weighs for each occupation |
+| **Hyper-parameters** | **You** set them before learning starts | `C`, `k`, number of trees, tree depth |
 
-Mô hình học được trọng số. Nó **không** học được siêu tham số — bạn phải đưa cho
-nó trước, rồi nó mới bắt đầu.
+The model learns weights. It **cannot** learn hyper-parameters — you have to hand
+them over first, and only then does it begin.
 
-> ⚠️ Đây là chỗ nhầm phổ biến nhất của người mới: tưởng "huấn luyện mô hình" là
-> tìm ra **mọi** con số. Không phải. Huấn luyện tìm trọng số; siêu tham số là
-> việc của bạn, và tìm chúng là một vòng lặp bên ngoài.
+> ⚠️ This is the most common beginner's confusion: thinking "training a model" finds
+> **all** the numbers. It does not. Training finds weights; hyper-parameters are your
+> job, and finding them is an outer loop.
 
 ---
 
-## 2. Một "ô" là một lần huấn luyện
+## 2. A "cell" is one training run
 
-Vì siêu tham số phải thử, ta lập một **bảng**: cột là mô hình, hàng là cấu hình.
+Because hyper-parameters have to be tried, we lay out a **table**: models as
+columns, configurations as rows.
 
-| | Cấu hình 1 | Cấu hình 2 | Cấu hình 3 |
+| | Config 1 | Config 2 | Config 3 |
 |---|---|---|---|
-| **Mô hình A** | ô | ô | ô |
-| **Mô hình B** | ô | ô | ô |
+| **Model A** | cell | cell | cell |
+| **Model B** | cell | cell | cell |
 
-**Mỗi ô = một lần huấn luyện mô hình từ đầu.** Bảng 6 mô hình × 6 cấu hình = 36 ô
-= 36 lần huấn luyện.
+**Each cell = one model trained from scratch.** A table of 6 models × 6
+configurations = 36 cells = 36 training runs.
 
-Tên chuyên môn: cái bảng gọi là **lưới siêu tham số**, chạy hết nó gọi là **quét
-lưới** (grid search).
+The technical names: the table is a **hyper-parameter grid**, and running all of it
+is a **grid search**.
 
-Đây là đơn vị để nói về công bằng: *mỗi mô hình được bao nhiêu ô?*
+This is the unit in which fairness is discussed: *how many cells does each model
+get?*
 
 ---
 
-## 3. Cùng số ô vẫn chưa công bằng
+## 3. Equal cell counts are still not fair
 
-Cho hai người mỗi người sáu lần ném phi tiêu. Người thứ nhất ném vào bảng có một
-vòng tròn; người thứ hai ném vào bảng có tám vòng chồng lên nhau ở tám hướng
-khác nhau. Sáu lần ném của người thứ nhất phủ gần hết bảng của họ. Sáu lần ném
-của người thứ hai gần như chưa chạm vào đâu cả.
+Give two people six darts each. The first throws at a board with one ring; the second
+throws at a board with eight rings stacked in eight different directions. Six throws
+cover most of the first board. Six throws have barely touched the second.
 
-Số nút vặn của mỗi thuật toán rất khác nhau:
+The number of real knobs differs enormously between algorithms:
 
-| Thuật toán | Số nút vặn thật sự | 6 ô nghĩa là gì |
+| Algorithm | Real knobs | What 6 cells means |
 |---|---|---|
-| KNN | **1** (`k`) | Quét gần hết vùng hữu ích |
-| SVM · LogReg | **1** (`C`) | Gần hết một đường cong một chiều |
-| RandomForest | ~3 | Một phần |
-| XGBoost | **~8** | Một mẩu rất nhỏ của không gian 8 chiều |
+| KNN | **1** (`k`) | Covers most of the useful range |
+| SVM · LogReg | **1** (`C`) | Most of a one-dimensional curve |
+| RandomForest | ~3 | A portion |
+| XGBoost | **~8** | A very small piece of an 8-dimensional space |
 
-Cùng sáu ô, nhưng một bên là khảo sát gần đầy đủ, một bên là bốc thăm sáu lần.
+Six cells each, but one is a near-complete survey and the other is six lottery
+tickets.
 
-**Cách nhận ra ai đã thật sự được khám phá:** nhìn **biên độ** — khoảng cách giữa
-ô tốt nhất và ô tệ nhất của cùng một mô hình. Biên độ hẹp nghĩa là sáu ô cho gần
-như cùng kết quả, tức ta **chưa di chuyển** trong không gian của nó.
+**How to spot who was actually explored:** look at the **spread** — the gap between
+that model's best and worst cell. A narrow spread means the six cells gave nearly the
+same result, i.e. we **never moved** in its space.
 
 ---
 
-## 4. Cực đại ở mép lưới = lưới bị cắt cụt
+## 4. A maximum at the grid edge = a truncated grid
 
-Bạn đo nhiệt độ trong nhà từ 8h tới 12h và thấy nóng nhất lúc 12h. Kết luận "12h
-là lúc nóng nhất trong ngày" **sai** — bạn chỉ chưa đo tới 13h.
+Measure the indoor temperature from 8am to noon and you find noon is the hottest.
+Concluding "noon is the hottest time of day" is **wrong** — you simply never measured
+1pm.
 
-Trong bảng siêu tham số cũng vậy. Nếu cấu hình thắng nằm ở **giá trị nhỏ nhất**
-hoặc **lớn nhất** mà bạn đã thử, thì rất có thể đỉnh thật nằm ngoài lưới.
+The same holds in a hyper-parameter table. If the winning configuration sits at the
+**smallest** or **largest** value you tried, the true peak is very likely outside the
+grid.
 
-| Tình huống | Đọc thế nào |
+| Situation | How to read it |
 |---|---|
-| Đỉnh nằm **giữa** lưới, hai bên đều thấp hơn | ✅ Đã tìm thấy đỉnh |
-| Đỉnh nằm ở **mép** lưới | ⚠️ Lưới cắt cụt — phải nới rộng rồi đo lại |
+| The peak is **inside** the grid, lower on both sides | ✅ The peak has been found |
+| The peak is at an **edge** of the grid | ⚠️ The grid is truncated — widen it and measure again |
 
-Đây là phép kiểm rẻ nhất bạn có, và nó chỉ tốn một cái liếc mắt.
-
----
-
-## 5. Lời nguyền của người thắng
-
-Cho 20 người mỗi người tung một đồng xu 10 lần. Người ra nhiều mặt ngửa nhất có
-thể được 9/10. Bạn có kết luận người đó tung xu giỏi không? Không — bạn đã **chọn
-người thắng sau khi nhìn kết quả**, nên kết quả của họ luôn đẹp hơn khả năng thật.
-
-Chọn cấu hình tốt nhất trên tập `val` rồi báo cáo nó **trên chính tập `val`** mắc
-đúng lỗi đó. Con số thu được **lạc quan hơn** thực tế.
-
-Tên gọi: **lời nguyền của người thắng** (winner's curse).
-
-Và độ thổi phồng **tỉ lệ với biên độ**: mô hình có sáu ô trải rộng có nhiều cơ hội
-trúng một ô may hơn mô hình có sáu ô sát nhau. Nên khi hai mô hình gần bằng nhau,
-mô hình **trải rộng hơn** đang được thổi phồng nhiều hơn — khoảng cách thật giữa
-chúng nhỏ hơn con số bạn nhìn thấy.
+This is the cheapest check you have, and it costs one glance.
 
 ---
 
-## 6. So trung vị thay vì so cực đại
+## 5. The winner's curse
 
-Đây là mẹo nghề rẻ nhất trong cả note này.
+Have 20 people each flip a coin 10 times. The one with the most heads might get 9/10.
+Do you conclude that person is a skilled flipper? No — you **picked the winner after
+looking at the results**, so their result always looks better than their true ability.
 
-**Cực đại** (ô tốt nhất) bị lời nguyền của người thắng. **Trung vị** (ô nằm giữa)
-thì không — nó bỏ qua cả may lẫn rủi.
+Selecting the best configuration on `val` and then reporting it **on that same `val`**
+makes exactly that mistake. The number you get is **more optimistic** than reality.
 
-Cách dùng: xếp hạng các mô hình **hai lần**, một lần theo cực đại, một lần theo
-trung vị.
+The name: the **winner's curse**.
 
-| Kết quả | Nghĩa là |
+And the inflation is **proportional to the spread**: a model whose six cells are
+spread out has more chances to hit a lucky one than a model whose six cells sit close
+together. So when two models are nearly equal, the **more spread-out** one is being
+inflated more — the true gap between them is smaller than the one you see.
+
+---
+
+## 6. Compare medians instead of maxima
+
+This is the cheapest trick of the trade in this whole note.
+
+The **maximum** (the best cell) suffers the winner's curse. The **median** (the middle
+cell) does not — it ignores both the luck and the misfortune.
+
+How to use it: rank the models **twice**, once by maximum and once by median.
+
+| Result | Meaning |
 |---|---|
-| Hai bảng xếp hạng **giống nhau** | Kết luận vững |
-| Hai bảng **đảo ngôi** ở vài vị trí | Ở những vị trí đó, khoảng cách **không thật** — chúng thực chất hoà |
+| The two rankings **agree** | The conclusion is solid |
+| The two rankings **swap** at some positions | At those positions the gap is **not real** — they are effectively tied |
 
-Không tốn thêm một giây tính toán nào, vì bạn đã có sẵn cả sáu con số.
+It costs no extra computation, because you already have all six numbers.
 
 ---
 
-## 7. σ so với paired bootstrap — hai câu hỏi khác nhau
+## 7. σ versus the paired bootstrap — two different questions
 
-Đây là mục quan trọng nhất, và cũng là chỗ dễ dùng sai nhất.
+This is the most important section, and also the easiest to get wrong.
 
-### Vấn đề
+### The problem
 
-Mô hình A được 0,61, mô hình B được 0,60. A có thật sự tốt hơn không, hay chênh
-lệch đó chỉ là may rủi của việc tập kiểm tra tình cờ có những tin nào?
+Model A scores 0.61, model B scores 0.60. Is A genuinely better, or is that gap just
+the luck of which postings happened to be in the evaluation set?
 
-### Cách thứ nhất — σ (độ lệch chuẩn), **kém nhạy**
+### Method one — σ (standard deviation), **the less sensitive one**
 
-Lấy lại mẫu (bootstrap): từ 7.159 tin trong tập val, bốc ngẫu nhiên **có hoàn
-lại** ra 7.159 tin, chấm điểm, lặp 1.000 lần. Độ lệch chuẩn của 1.000 điểm đó là σ.
+Resample (bootstrap): from the 7,159 postings in the dev set, draw 7,159 **with
+replacement**, score, and repeat 1,000 times. The standard deviation of those 1,000
+scores is σ.
 
-σ trả lời: *"nếu tôi có một tập val khác, điểm này dao động bao nhiêu?"*
+σ answers: *"if I had a different dev set, how much would this score move?"*
 
-Rồi quy tắc thô: chênh lệch nhỏ hơn σ thì coi là nhiễu.
+Then the crude rule: a gap smaller than σ counts as noise.
 
-### Cách thứ hai — paired bootstrap, **nhạy hơn nhiều**
+### Method two — the paired bootstrap, **far more sensitive**
 
-Dùng **cùng một** danh sách tin đã bốc cho **cả hai** mô hình, rồi lấy hiệu điểm.
-Lặp 1.000 lần, đếm xem A thắng bao nhiêu lần.
+Use **the same** drawn list of postings for **both** models, then take the difference
+of their scores. Repeat 1,000 times and count how often A wins.
 
-Kết quả là `P(A > B)`:
+The result is `P(A > B)`:
 
-| `P(A > B)` | Đọc thế nào |
+| `P(A > B)` | How to read it |
 |---|---|
-| ~0,500 | **Không phân biệt được** — hai mô hình hoà |
-| > 0,975 | A hơn B **rõ ràng** |
-| < 0,025 | B hơn A rõ ràng |
-| 0,7 – 0,9 | Nghiêng về A nhưng **chưa đủ để khẳng định** |
+| ~0.500 | **Indistinguishable** — the two models tie |
+| > 0.975 | A beats B **clearly** |
+| < 0.025 | B beats A clearly |
+| 0.7 – 0.9 | Leaning toward A but **not enough to assert it** |
 
-### Vì sao cách thứ hai nhạy hơn
+### Why the second method is more sensitive
 
-Hai mô hình cùng đọc **cùng những tin** đó, và chúng sai ở **phần lớn cùng những
-tin nhập nhằng**. Phần dao động chung ấy có mặt trong σ của **cả hai**, làm cả hai
-σ phình to.
+Both models read **the same postings**, and they are wrong on **largely the same
+ambiguous ones**. That shared variation is present in **both** σ values, inflating
+both.
 
-Khi lấy hiệu trên cùng một mẫu, phần chung **triệt tiêu**. Chỉ còn lại phần hai
-mô hình thật sự khác nhau.
+Take the difference on the same sample and the shared part **cancels**. What remains
+is only where the two models genuinely differ.
 
-Hình dung: đo chiều cao hai người bằng một cái thước cong. Đo riêng từng người,
-sai số của thước làm cả hai con số không đáng tin. Nhưng nếu bắt hai người **đứng
-cạnh nhau** rồi so, cái cong của thước không còn ảnh hưởng — bạn vẫn biết chắc ai
-cao hơn.
+A picture: measure two people's heights with a bent ruler. Measured separately, the
+ruler's error makes both numbers untrustworthy. But stand the two people **side by
+side** and compare, and the bend no longer matters — you still know for certain who is
+taller.
 
-> ⚠️ **Đừng dùng σ để so hai mô hình.** σ là thanh sai số của **một** mô hình
-> đứng một mình. Câu bạn cần hỏi là "A có hơn B **trên cùng những dòng đó** không",
-> và chỉ paired bootstrap trả lời được. Dùng σ làm ngưỡng là quá bảo thủ — nó
-> chôn cả những khác biệt thật.
+> ⚠️ **Do not use σ to compare two models.** σ is the error bar of **one** model
+> standing alone. The question you need is "does A beat B **on those same rows**", and
+> only the paired bootstrap answers it. Using σ as a threshold is too conservative — it
+> buries real differences too.
 
 ---
 
-## 8. Viết kết luận có điều kiện
+## 8. Write conditional conclusions
 
-Sau tất cả những điều trên, câu **"thuật toán X là tốt nhất cho bài toán này"**
-gần như luôn là câu nói quá. Nó bỏ qua: ngân sách tìm kiếm, cách biểu diễn đặc
-trưng, ai đặt lưới, và tập nào được dùng để chọn.
+After all of the above, the sentence **"algorithm X is the best for this problem"** is
+almost always an overstatement. It ignores: the search budget, the feature
+representation, who laid out the grid, and which split was used to select.
 
-| Đừng viết | Hãy viết |
+| Do not write | Write instead |
 |---|---|
-| "SVM là thuật toán tốt nhất" | "Dưới ngân sách *n* cấu hình mỗi thuật toán, trên biểu diễn *X*, chọn trên `val`: A và B không phân biệt được (`P = ...`), cả hai vượt nhóm C (`P > 0,975`)" |
-| "Mô hình đạt 0,61" | "0,61 trên `val`, là cấu hình tốt nhất trong 6 — con số này lạc quan; trung vị 6 ô là 0,59" |
-| Giấu ô chạy hỏng | "Hai cấu hình không hoàn thành trong 45 phút; điều đó thuộc cột chi phí" |
+| "SVM is the best algorithm" | "Under a budget of *n* configurations per algorithm, on representation *X*, selecting on `val`: A and B are indistinguishable (`P = ...`), and both beat group C (`P > 0.975`)" |
+| "The model reaches 0.61" | "0.61 on `val`, the best of 6 configurations — this number is optimistic; the median of the 6 cells is 0.59" |
+| Hiding the runs that failed | "Two configurations did not finish within 45 minutes; that belongs in the cost column" |
 
-Nghe có vẻ dè dặt, nhưng nó **mạnh hơn**. Người chấm đánh giá cao người biết giới
-hạn kết quả của mình — vì đó là dấu hiệu bạn hiểu mình đã đo cái gì, chứ không
-phải chỉ chạy được code.
+It sounds more cautious, but it is **stronger**. Reviewers value someone who knows the
+limits of their own result — because that is the sign you understand what you measured
+rather than merely having got the code to run.
 
 ---
 
-## Bảng tra nhanh
+## Quick lookup
 
-| Thấy cái này | Nghĩ ngay tới |
+| When you see this | Think of |
 |---|---|
-| Hai mô hình chênh nhau rất ít | Xem `P(A > B)`, đừng xem σ (mục 7) |
-| Một mô hình có biên độ 6 ô rất hẹp | Ta chưa khám phá không gian của nó (mục 3) |
-| Cấu hình thắng ở giá trị nhỏ nhất/lớn nhất đã thử | Lưới cắt cụt (mục 4) |
-| Xếp hạng đổi khi so trung vị | Khoảng cách không thật (mục 6) |
-| Con số đẹp bất thường | Có phải đã chọn trên chính tập dùng để báo cáo? (mục 5) |
-| "Mô hình này không có `class_weight`" | Với lớp lệch, đó là bất lợi thật, không phải chi tiết nhỏ |
+| Two models very close together | Look at `P(A > B)`, not σ (section 7) |
+| One model's 6 cells have a very narrow spread | We never explored its space (section 3) |
+| The winning configuration is at the smallest/largest value tried | A truncated grid (section 4) |
+| The ranking changes when comparing medians | The gap is not real (section 6) |
+| An unusually pretty number | Was it selected on the very split it is reported on? (section 5) |
+| "This model has no `class_weight`" | With skewed classes that is a real disadvantage, not a detail |
 
 ---
 
-## Quay lại thực tế dự án
+## Back to the project itself
 
-- [10-so-sanh-mo-hinh.md](../10-so-sanh-mo-hinh.md) — bảng so sánh thật, đọc bằng đúng những quy tắc trên
-- [03-protocol.md](../03-protocol.md) §7 — quy tắc quyết định chính thức của dự án
-- [note 6 — đo lường và baseline](06-do-luong-va-baseline.md) — macro-F1 và vì sao accuracy nói dối
-- [note 7 — chính quy hoá](07-chinh-quy-hoa.md) — `C` là siêu tham số điển hình
+- [10-so-sanh-mo-hinh.md](../archive/10-so-sanh-mo-hinh.md) — the real comparison table, read with exactly these rules
+- [03-protocol.md](../03-protocol.md) §7 — the project's official decision rules
+- [note 6 — metrics and baselines](06-do-luong-va-baseline.md) — macro-F1 and why accuracy lies
+- [note 7 — regularisation](07-chinh-quy-hoa.md) — `C`, the archetypal hyper-parameter

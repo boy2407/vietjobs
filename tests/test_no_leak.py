@@ -12,6 +12,7 @@ from __future__ import annotations
 import pytest
 
 from vietjobs import config as C
+from vietjobs import dataset as D
 from vietjobs import features as F
 from vietjobs import vitext as V
 
@@ -94,16 +95,16 @@ def test_char_channel_reads_unsegmented_text(segment):
 # also never appears in the intersection. These three tests close that class of
 # bug, and pin down the measurement that cleared docs/09-lo-trinh.md Ưu tiên 0b.
 
-_SPLIT = C.PROCESSED_DIR / "splits" / "train.parquet"
-_needs_data = pytest.mark.skipif(
-    not _SPLIT.exists(), reason="cần data/processed/splits/train.parquet"
-)
+_SPLIT = D.split_path("train")
+_needs_data = pytest.mark.skipif(not _SPLIT.exists(), reason=f"cần {_SPLIT}")
 
 
 def _schema() -> set[str]:
-    import pyarrow.parquet as pq
+    """Column names only — the CSV header, without parsing 34k rows."""
+    import csv
 
-    return set(pq.read_schema(_SPLIT).names)
+    with _SPLIT.open(encoding="utf-8", newline="") as fh:
+        return set(next(csv.reader(fh)))
 
 
 @_needs_data
@@ -142,7 +143,9 @@ def test_skill_columns_carry_no_pay_figures():
     import pandas as pd
 
     cols = ["soft_skills_text", "qualifications_text", "technical_skills_text"]
-    df = pd.read_parquet(_SPLIT, columns=cols)
+    # na_filter=False for the same reason load_split uses it: an empty skills
+    # field must stay an empty string, not become NaN.
+    df = pd.read_csv(_SPLIT, usecols=cols, na_filter=False, dtype=str)
     pats = (V._PAT_MILLIONS, V._PAT_DONG, V._PAT_USD)
     for c in cols:
         hits = sum(bool(p.search(t)) for t in df[c].fillna("") for p in pats)

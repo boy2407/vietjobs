@@ -22,11 +22,9 @@ SOURCES=(
   "docs/00-tong-quan.md:01-suon-tong-the"
   "docs/01-data-audit.md:02-bon-ban-sao-van-ban"
   "docs/02-vietnamese-nlp.md:03-xu-ly-tieng-viet"
-  "docs/05-dac-trung-tfidf.md:04-dac-trung-tfidf"
-  "docs/06-mo-hinh-phan-lop.md:05-mo-hinh-phan-lop"
-  "docs/07-bai-toan-luong.md:06-bai-toan-luong"
-  "docs/08-ma-nguon.md:07-ma-nguon"
-  "docs/10-so-sanh-mo-hinh.md:08-so-sanh-mo-hinh"
+  "docs/06-baseline-dl.md:04-kien-truc-hoc-sau"
+  "docs/07-bai-toan-luong.md:05-bai-toan-luong"
+  "docs/08-ma-nguon.md:06-ma-nguon"
 )
 
 NAMES=()

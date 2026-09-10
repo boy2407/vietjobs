@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import pandas as pd  # noqa: E402
 
+from vietjobs import dataset as D  # noqa: E402
 from vietjobs import vitext as V  # noqa: E402
 
 TEXT_COLS = ["job_title", "description", "requirements_text", "benefits"]
@@ -112,8 +113,7 @@ def main() -> None:
 
     # 9 — grouping key
     groups = pd.concat(
-        [pd.read_parquet(ROOT / f"data/processed/splits/{s}.parquet")["group_id"]
-         for s in ("train", "val", "test")]
+        [D.load_split(s)["group_id"] for s in ("train", "dev", "test")]
     )
     vc = groups.value_counts()
     dup = len(groups) - vc.size

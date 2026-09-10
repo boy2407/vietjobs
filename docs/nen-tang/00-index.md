@@ -1,56 +1,76 @@
-[← Tổng quan](../00-tong-quan.md)
+[← Overview](../00-tong-quan.md)
 
-# Nền tảng — dành cho người mới vào ML/DL
+# Background — for newcomers to ML/DL
 
-Tám note giải thích **khái niệm**, không chứa kết quả thí nghiệm. Chúng không phải
-cập nhật sau mỗi lần chạy mô hình — đó là lý do chúng nằm riêng ở đây.
+Nine notes explaining **concepts**; they contain no experiment results. They do not
+have to be updated after every model run — which is exactly why they sit apart
+here.
 
-Mọi ví dụ lấy từ chính kho dữ liệu VietJobs, không lấy ví dụ sách giáo khoa.
+Notes 1–8 were written during the TF-IDF phase, closed on 2026-09-08. They are
+**not deleted**: to understand why the main track is now PhoBERT, you have to
+understand what it replaced. [Note 9](09-vector-ngu-nghia.md) is the bridge between
+the two phases — a newcomer should read note 1, then 9, and come back to 2–8 when
+depth is needed.
+
+Every example is taken from the VietJobs corpus itself, not from a textbook.
 
 ---
 
-## Đọc theo thứ tự này
+## Read in this order
 
-| # | Note | Đọc xong hiểu được gì | Ghép với |
+| # | Note | What you will understand | Pairs with |
 |---|---|---|---|
-| 1 | [Vì sao phải làm sạch dữ liệu](01-vi-sao-phai-lam-sach.md) | Lý do thật không phải "rác vào rác ra". Là **xẻ chiều** và **rò rỉ** | [01-data-audit](../01-data-audit.md) |
-| 2 | [TF-IDF là gì](02-tf-idf-la-gi.md) | Chữ biến thành số thế nào. Vì sao phải chuẩn hoá L2. Có ma trận in đầy đủ và ví dụ tính tay | [05-dac-trung-tfidf](../05-dac-trung-tfidf.md) |
-| 3 | [n-gram và ranh giới từ](03-ngram-va-ranh-gioi-tu.md) | Vì sao tiếng Việt làm hỏng giả định "khoảng trắng tách từ" | [02-vietnamese-nlp](../02-vietnamese-nlp.md) |
-| 4 | [Ma trận thưa và số chiều](04-ma-tran-thua-va-so-chieu.md) | 236.596 chiều nghĩa là gì. Vì sao KNN sụp mà SVM thì không | [06-mo-hinh-phan-lop](../06-mo-hinh-phan-lop.md) |
-| 5 | [Rò rỉ dữ liệu](05-ro-ri-du-lieu.md) | Ba loại rò rỉ, và vì sao **không loại nào báo lỗi** | [03-protocol](../03-protocol.md) |
-| 6 | [Đo lường và baseline](06-do-luong-va-baseline.md) | Vì sao accuracy nói dối khi lớp lệch 27:1 | [04-results](../04-results.md) |
-| 7 | [Chính quy hoá](07-chinh-quy-hoa.md) | `C` là gì. Vì sao `C` tối ưu = 0,02 là mô hình đang kêu cứu | [07-bai-toan-luong](../07-bai-toan-luong.md) |
-| 8 | [Đọc một bảng so sánh mô hình](08-doc-mot-bang-so-sanh.md) | Siêu tham số · "ô" là gì · vì sao cùng số ô vẫn chưa công bằng · lời nguyền của người thắng · σ so với paired bootstrap | [10-so-sanh-mo-hinh](../10-so-sanh-mo-hinh.md) |
+| 1 | [Why clean the data at all](01-vi-sao-phai-lam-sach.md) | The real reason is not "garbage in, garbage out". It is **dimension splitting** and **leakage** | [01-data-audit](../01-data-audit.md) |
+| 2 | [What TF-IDF is](02-tf-idf-la-gi.md) | How words become numbers. Why L2 normalisation is required. With the full matrix printed and a worked example | [05-dac-trung-tfidf](../archive/05-dac-trung-tfidf.md) |
+| 3 | [n-grams and word boundaries](03-ngram-va-ranh-gioi-tu.md) | Why Vietnamese breaks the "whitespace separates words" assumption | [02-vietnamese-nlp](../02-vietnamese-nlp.md) |
+| 4 | [Sparse matrices and dimensionality](04-ma-tran-thua-va-so-chieu.md) | What 236,596 dimensions means. Why KNN collapses and SVM does not | [06-mo-hinh-phan-lop](../archive/06-mo-hinh-phan-lop.md) |
+| 5 | [Data leakage](05-ro-ri-du-lieu.md) | Three kinds of leak, and why **none of them raises an error** | [03-protocol](../03-protocol.md) |
+| 6 | [Metrics and baselines](06-do-luong-va-baseline.md) | Why accuracy lies when the classes are skewed 27:1 | [04-results](../archive/04-results-ml.md) |
+| 7 | [Regularisation](07-chinh-quy-hoa.md) | What `C` is. Why an optimal `C` of 0.02 is a model calling for help | [07-bai-toan-luong](../07-bai-toan-luong.md) |
+| 8 | [Reading a model comparison table](08-doc-mot-bang-so-sanh.md) | Hyper-parameters · what a "cell" is · why equal cell counts are still not fair · the winner's curse · σ versus the paired bootstrap | [10-so-sanh-mo-hinh](../archive/10-so-sanh-mo-hinh.md) |
+| **9** | [**Semantic vectors**](09-vector-ngu-nghia.md) | Why counting was abandoned. Subwords · context · 768 dense dimensions · frozen versus fine-tuned | [02-vietnamese-nlp](../02-vietnamese-nlp.md) · [06-baseline-dl](../06-baseline-dl.md) |
 
 ---
 
-## Một câu tóm tắt cho bảy note đầu
+## One sentence summarising notes 1–8 — and the sentence that replaces it
 
-> Học máy trên văn bản là bài toán **đếm chuỗi ký tự rồi tìm trọng số**.
-> Mọi bước tiền xử lý chỉ có một việc: làm cho phép đếm đó đếm đúng thứ ta muốn đếm.
+> **Notes 1–8:** machine learning on text is the problem of **counting character
+> sequences and then finding weights**. Every preprocessing step has exactly one
+> job: make that counting count the thing we meant to count.
 
-Bốn hệ quả, mỗi hệ quả là một note ở trên:
+> **Note 9:** stop counting — place each posting at **a point in a 768-dimensional
+> space**, so that two postings in the same occupation land near each other even
+> when they share no words at all.
 
-1. Cùng một khái niệm viết hai cách → bị đếm thành hai thứ → tín hiệu yếu đi (note 1, 3).
-2. Đếm rồi phải cân trọng số, vì "xuất hiện nhiều" ≠ "quan trọng" (note 2).
-3. Đếm ra rất nhiều chiều thì hình học không gian đổi tính chất (note 4).
-4. Nếu vô tình đếm cả đáp án vào đầu vào thì mọi con số đo được đều vô nghĩa (note 5, 6, 7).
+The second sentence is the current track. The first still has to be understood,
+because the four consequences below explain exactly what counting **cannot** do —
+and that is the reason the second sentence exists.
+
+Four consequences, one note each above:
+
+1. One concept written two ways → counted as two things → a weaker signal (notes 1, 3).
+2. Once counted, the counts have to be weighted, because "appears often" ≠ "matters" (note 2).
+3. Counting produces very many dimensions, and the geometry of the space changes character (note 4).
+4. If the answer is accidentally counted into the input, every measured number is meaningless (notes 5, 6, 7).
 
 ---
 
-## Ba điều nên gạt bỏ ngay từ đầu
+## Three ideas to discard right away
 
-**"Nhiều đặc trưng hơn thì tốt hơn."** Sai. Trong dự án này, KNN dùng toàn văn
-(0,4059) **tệ hơn** KNN chỉ dùng tiêu đề (0,5307), và tệ hơn cả baseline không dùng
-học máy (0,4321). Xem [note 4](04-ma-tran-thua-va-so-chieu.md).
+**"More features is better."** False. In this project, KNN over the full text
+(0.4059) is **worse** than KNN over the title alone (0.5307), and worse than the
+baseline that uses no machine learning at all (0.4321). See
+[note 4](04-ma-tran-thua-va-so-chieu.md).
 
-**"Tiền xử lý nhiều thì mô hình tốt hơn."** Sai. Chín bước xử lý tiếng Việt trong
-dự án này cộng lại đóng góp **+0,0017** macro-F1. Một dòng chỉnh siêu tham số đóng
-góp **+0,0287** — gấp gần 17 lần. Xem
-[02-vietnamese-nlp §4](../02-vietnamese-nlp.md#4-ablation--bước-nào-thật-sự-đáng-giữ).
+**"More preprocessing makes a better model."** False. The nine Vietnamese
+processing steps in this project contribute **+0.0017** macro-F1 in total. One
+hyper-parameter line contributes **+0.0287** — nearly 17× more. See
+[02-vietnamese-nlp §5](../02-vietnamese-nlp.md#5-the-closed-tracks-ablation--evidence-not-direction).
 
-**"Điểm cao là mô hình tốt."** Không nhất thiết. Điểm cao thường là dấu hiệu của
-rò rỉ trước khi nó là dấu hiệu của mô hình tốt. Xem [note 5](05-ro-ri-du-lieu.md).
+**"A high score means a good model."** Not necessarily. A high score is usually a
+sign of leakage before it is a sign of a good model. See
+[note 5](05-ro-ri-du-lieu.md).
 
-Ba điều này không phải ý kiến. Chúng là kết luận **đo được** trong chính dự án
-này, và mỗi kết luận có một dòng trong [04-results.md](../04-results.md) đứng sau.
+These three are not opinions. They are **measured** conclusions from this project,
+and each has a row in [04-results.md](../archive/04-results-ml.md) standing behind
+it.

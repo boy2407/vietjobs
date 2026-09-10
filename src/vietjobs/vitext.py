@@ -23,6 +23,7 @@ import ast
 import functools
 import hashlib
 import json
+import os
 import re
 import unicodedata
 
@@ -151,20 +152,69 @@ def expand_abbreviations(text: object) -> str:
 # segmentation, TF-IDF learns one "viên" shared by nhân viên / chuyên viên /
 # nghiên cứu viên / công viên — four unrelated meanings.
 
-_SEGMENTER_STATE: dict[str, object] = {"loaded": False, "fn": None}
+_SEGMENTER_STATE: dict[str, object] = {"loaded": False, "fn": None, "name": None}
+
+#: Environment variable choosing the backend: "underthesea" (default) or "pyvi".
+#: It is read from the environment rather than set by a function call because
+#: ``segment_many`` fans out over loky worker processes, which re-import this
+#: module from scratch — a module-level global set in the parent would not
+#: survive the trip, and the workers would silently segment with the default.
+SEGMENTER_ENV = "VIETJOBS_SEGMENTER"
+
+_SEGMENTERS = ("underthesea", "pyvi")
+
+
+def _load_segmenter() -> tuple[str | None, object]:
+    """Import the backend named by $VIETJOBS_SEGMENTER. Returns ``(name, fn)``."""
+    want = (os.environ.get(SEGMENTER_ENV) or "underthesea").strip().lower()
+    if want not in _SEGMENTERS:
+        raise SystemExit(f"{SEGMENTER_ENV}={want!r}: choose one of {_SEGMENTERS}")
+    try:
+        if want == "pyvi":
+            from pyvi import ViTokenizer
+
+            return want, ViTokenizer.tokenize
+        from underthesea import word_tokenize
+
+        return want, lambda s: word_tokenize(s, format="text")
+    except ImportError:
+        return None, None
 
 
 def segmenter_available() -> bool:
-    """True if underthesea imported successfully (checked once)."""
+    """True if the configured segmenter imported successfully (checked once)."""
     if not _SEGMENTER_STATE["loaded"]:
         _SEGMENTER_STATE["loaded"] = True
-        try:
-            from underthesea import word_tokenize
-
-            _SEGMENTER_STATE["fn"] = word_tokenize
-        except Exception:
-            _SEGMENTER_STATE["fn"] = None
+        name, fn = _load_segmenter()
+        _SEGMENTER_STATE["name"], _SEGMENTER_STATE["fn"] = name, fn
     return _SEGMENTER_STATE["fn"] is not None
+
+
+def use_segmenter(name: str) -> None:
+    """Switch backend at runtime: sets $VIETJOBS_SEGMENTER and drops the cache.
+
+    Setting the variable is the point — ``segment_many`` fans out over worker
+    processes that read it on import, so a plain module-level assignment would
+    change the parent and nothing else.
+    """
+    os.environ[SEGMENTER_ENV] = name
+    _SEGMENTER_STATE.update(loaded=False, fn=None, name=None)
+    # joblib keeps its loky pool alive between calls, and a live worker already
+    # imported this module with the OLD value — it inherits the environment it
+    # was spawned with, not the current one. Without this shutdown the switch
+    # silently does nothing in the workers: two backends, byte-identical output.
+    try:
+        from joblib.externals.loky import get_reusable_executor
+
+        get_reusable_executor().shutdown(wait=True)
+    except Exception:
+        pass
+
+
+def segmenter_name() -> str | None:
+    """Which backend is in use, for the manifest and the results log."""
+    segmenter_available()
+    return _SEGMENTER_STATE["name"]  # type: ignore[return-value]
 
 
 #: Incremented whenever :func:`segment` falls back to unsegmented text.
@@ -174,7 +224,7 @@ segment_failures = 0
 def segment(text: object) -> str:
     """``"Nhân viên kinh doanh"`` -> ``"Nhân_viên kinh_doanh"``.
 
-    Falls back to the input unchanged when underthesea is unavailable or throws,
+    Falls back to the input unchanged when the backend is unavailable or throws,
     so the pipeline still runs end to end; :data:`segment_failures` counts how
     often that happened and ``dataset.py`` records it in the manifest.
     """
@@ -186,7 +236,7 @@ def segment(text: object) -> str:
         segment_failures += 1
         return s
     try:
-        return _SEGMENTER_STATE["fn"](s, format="text")  # type: ignore[operator]
+        return _SEGMENTER_STATE["fn"](s)  # type: ignore[operator]
     except Exception:
         segment_failures += 1
         return s

@@ -1,12 +1,21 @@
-[← Tổng quan](00-tong-quan.md) · [← Mô hình phân lớp](06-mo-hinh-phan-lop.md) · [Mã nguồn →](08-ma-nguon.md)
+[← Overview](00-tong-quan.md) · [← Classification models](archive/06-mo-hinh-phan-lop.md) · [Source code →](08-ma-nguon.md)
 
-# Bài toán 2 — ước lượng lương (chưa chạy)
+# Task 2 — salary estimation (the two-tier plan, never run)
 
-Code đã đủ, chưa huấn luyện. Chưa có dòng nào trong [04-results.md](04-results.md)
-cho `salary` hoặc `disclosed` — mọi con số dưới đây là **đo trước** hoặc **sàn
-phải vượt**, không phải kết quả.
+> **Update 2026-09-08.** The two-tier LightGBM architecture described below is
+> **no longer the main track**; it was never run. The salary head is now a dense
+> network on PhoBERT vectors ([06-baseline-dl.md](06-baseline-dl.md)). What stays
+> valuable in this note are **the traps of the task itself** — they are independent
+> of the model. Two numbers to remember, measured in
+> [05](05-phan-tich-du-lieu.md): only **71.8 %** of postings carry a salary label,
+> and knowing the true sector only moves MAE from **5.86** to **5.75** million.
 
-Việc phải làm, theo thứ tự: [09-lo-trinh.md — Ưu tiên 1](09-lo-trinh.md#ưu-tiên-1--chạy-bài-toán-lương).
+The code is in place, nothing was trained. There is no row in
+[04-results.md](archive/04-results-ml.md) for `salary` or `disclosed` — every
+number below is a **prior measurement** or a **floor to beat**, not a result.
+
+The work items, in order:
+[09-lo-trinh.md — Priority 1](archive/09-lo-trinh-ml.md#ưu-tiên-1--chạy-bài-toán-lương).
 
 ---
 
@@ -19,88 +28,93 @@ Việc phải làm, theo thứ tự: [09-lo-trinh.md — Ưu tiên 1](09-lo-trin
   'nodeTextColor':'#141F1D','titleColor':'#141F1D'}}}%%
 flowchart TD
     classDef default fill:#FFFFFF,stroke:#54625E,stroke-width:1.5px,color:#141F1D
-    IN["Tin tuyển dụng<br/>văn bản ĐÃ CHE số lương"]
-    T1["<b>Tầng 1 — có công bố lương không?</b><br/>LogisticRegression nhị phân<br/>CalibratedClassifierCV"]
-    D{"p > 0,5?"}
-    T2["<b>Tầng 2 — hồi quy</b><br/>trên 71,8% tin có công bố<br/>target = log1p mức lương giữa"]
-    Q["LightGBM phân vị<br/>alpha 0,1 và 0,9"]
-    OUT1["ước lượng + khoảng<br/>triệu VND/tháng"]
-    OUT2["ước lượng + CẢNH BÁO<br/>tin Thoả thuận, độ tin cậy thấp"]
+    IN["Job posting<br/>text with salary figures MASKED"]
+    T1["<b>Tier 1 — is a salary disclosed?</b><br/>binary LogisticRegression<br/>CalibratedClassifierCV"]
+    D{"p > 0.5?"}
+    T2["<b>Tier 2 — regression</b><br/>on the 71.8% that disclose<br/>target = log1p of the midpoint"]
+    Q["LightGBM quantile<br/>alpha 0.1 and 0.9"]
+    OUT1["estimate + interval<br/>million VND/month"]
+    OUT2["estimate + WARNING<br/>'negotiable' posting, low confidence"]
 
     IN --> T1 --> D
-    D -->|có| T2
-    D -->|không| T2
+    D -->|yes| T2
+    D -->|no| T2
     T2 --> Q
-    Q -->|"p cao"| OUT1
-    Q -->|"p thấp"| OUT2
+    Q -->|"high p"| OUT1
+    Q -->|"low p"| OUT2
 
     classDef todo fill:#F8EDE2,stroke:#9E5C22,stroke-width:2px,color:#9E5C22
     class T1,T2,Q todo
 ```
 
-Chia 2 tầng vì **28,2% tin ghi "Thoả thuận"** thay vì con số. Vứt bỏ 28% dữ liệu là
-lãng phí, nên tầng 1 học xem tin có công bố lương không, tầng 2 ước lượng mức.
+Two tiers because **28.2 % of postings say "Thoả thuận" ("negotiable")** instead
+of a figure. Throwing away 28 % of the data is wasteful, so tier 1 learns whether
+a posting discloses a salary and tier 2 estimates the amount.
 
 ---
 
-## Vì sao bài này khó hơn bài phân lớp
+## Why this task is harder than classification
 
-Ba lý do, không lý do nào sửa được bằng mô hình tốt hơn:
+Three reasons, and none of them is fixable with a better model:
 
-**1. Đầu vào bị cố ý làm nghèo đi.** Phân lớp nghề đọc bản thô, bài lương chỉ
-được đọc bản **đã che số lương**. Đó là bắt buộc — `salary_*` chính là nhãn, và
-**10,65 %** dòng nhắc lại con số lương trong ô phúc lợi
-([02-vietnamese-nlp.md](02-vietnamese-nlp.md#3-chín-bước--làm-gì-vì-sao-đo-được-gì) bước 4).
-Không che thì mô hình đọc chính đáp án của mình.
+**1. The input is deliberately impoverished.** Occupation classification reads the
+raw text; the salary task may only read the **salary-masked** copy. That is
+mandatory — `salary_*` is the label, and **10.65 %** of rows restate the salary
+figure in the benefits field
+([02-vietnamese-nlp.md](02-vietnamese-nlp.md#3-the-nine-steps--what-why-and-what-is-measurable),
+step 4). Without masking, the model reads its own answer key.
 
-**2. Nhãn chỉ có ở một phần dữ liệu, và phần đó không ngẫu nhiên.** Xem mục
-thiên lệch chọn mẫu bên dưới.
+**2. The label exists on only part of the data, and that part is not random.** See
+the selection-bias section below.
 
-**3. Đích là số thực có đuôi dài**, không phải nhãn rời rạc. Đó là lý do đích
-hồi quy là `log1p(salary_mid)` chứ không phải `salary_mid`
-([01-data-audit.md §5](01-data-audit.md#5-nhãn--dựng-và-sửa)).
+**3. The target is a real number with a long tail**, not a discrete label. That is
+why the regression target is `log1p(salary_mid)` and not `salary_mid`
+([01-data-audit.md §5](01-data-audit.md#5-labels--building-and-repairing)).
 
 ---
 
-## Bẫy đã biết trước
+## Traps known in advance
 
-`LinearRegression` thuần **sẽ hỏng**. Đã đo trên tiêu đề, p/n = 0,22 — điều kiện
-thuận lợi nhất cho bình phương tối thiểu:
+Plain `LinearRegression` **will break**. Measured on titles, with p/n = 0.22 — the
+most favourable possible condition for least squares:
 
-| Mô hình | R² train | R² val | MAE val |
+| Model | R² train | R² dev | MAE dev |
 |---|---|---|---|
-| LinearRegression thuần | 0,718 | **0,081** | **6,00 tr** |
-| Ridge alpha=1 | 0,657 | **0,507** | **4,25 tr** |
+| Plain LinearRegression | 0.718 | **0.081** | **6.00 M** |
+| Ridge alpha=1 | 0.657 | **0.507** | **4.25 M** |
 
-MAE 6,00 triệu còn tệ hơn baseline "trung vị theo nhóm nghề" (5,54 tr) — tức tệ hơn
-không dùng mô hình nào. Kế hoạch: chạy LinearRegression ở 4 cấu hình và **báo cáo cả
-thất bại**, vì đó là mục có giá trị nhất trong báo cáo.
+An MAE of 6.00 million is worse than the "median per occupation group" baseline
+(5.54 M) — i.e. worse than using no model at all. The plan: run LinearRegression in
+4 configurations and **report the failure too**, because that is the most valuable
+entry in the report.
 
-Đọc hai dòng này cho kỹ: R² train tụt (0,718 → 0,657) mà R² val **tăng gấp sáu lần**
-(0,081 → 0,507). Đó là định nghĩa của quá khớp, và là toàn bộ lý do chính quy hoá
-tồn tại — [nền tảng: chính quy hoá](nen-tang/07-chinh-quy-hoa.md).
+Read those two rows closely: R² on train drops (0.718 → 0.657) while R² on dev
+**rises sixfold** (0.081 → 0.507). That is the definition of overfitting, and the
+entire reason regularisation exists —
+[background: regularisation](nen-tang/07-chinh-quy-hoa.md).
 
 ---
 
-## Thiên lệch chọn mẫu — hạn chế không sửa được
+## Selection bias — an unfixable limitation
 
-Tỷ lệ công bố lương khác nhau rõ rệt theo ngành:
+The salary disclosure rate differs markedly by sector:
 
-| Ngành | Tỷ lệ công bố |
+| Sector | Disclosure rate |
 |---|---|
-| công_nghệ_thông_tin | 0,615 — thấp nhất |
-| nhóm_nghề_khác | 0,568 |
-| du_lịch_nhà_hàng · giáo_dục | 0,764 — cao nhất |
+| công_nghệ_thông_tin (IT) | 0.615 — the lowest |
+| nhóm_nghề_khác (other) | 0.568 |
+| du_lịch_nhà_hàng · giáo_dục (tourism, education) | 0.764 — the highest |
 
-Mô hình lương chỉ học trên tin **có** công bố. CNTT vừa công bố ít nhất vừa trả cao,
-nên mô hình sẽ **ước lượng thấp cho CNTT**. Đây là hạn chế cấu trúc, không sửa được
-bằng mô hình tốt hơn — phải ghi vào báo cáo.
+The salary model learns only on postings that **do** disclose. IT both discloses
+least often and pays most, so the model will **underestimate IT**. This is a
+structural limitation, not something a better model fixes — it has to go into the
+report.
 
 ---
 
-## Đọc tiếp
+## Read next
 
-- [09-lo-trinh.md — Ưu tiên 1](09-lo-trinh.md#ưu-tiên-1--chạy-bài-toán-lương) — bốn bước phải chạy, đúng thứ tự
-- [Đặc trưng & TF-IDF](05-dac-trung-tfidf.md) — vì sao bài này đọc cột `*_masked`
-- [Làm sạch dữ liệu](01-data-audit.md#5-nhãn--dựng-và-sửa) — nhãn lương được dựng thế nào
-- Nền tảng: [chính quy hoá](nen-tang/07-chinh-quy-hoa.md) · [rò rỉ dữ liệu](nen-tang/05-ro-ri-du-lieu.md)
+- [Roadmap](09-lo-trinh.md) — what the salary head still lacks, ordered by value
+- [Vietnamese processing §4](02-vietnamese-nlp.md#4-which-steps-the-phobert-path-actually-runs) — why this task reads the `*_masked` columns
+- [Data cleaning](01-data-audit.md#5-labels--building-and-repairing) — how the salary labels are built
+- Background: [regularisation](nen-tang/07-chinh-quy-hoa.md) · [data leakage](nen-tang/05-ro-ri-du-lieu.md)

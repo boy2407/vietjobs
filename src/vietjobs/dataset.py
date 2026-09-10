@@ -2,12 +2,12 @@
 
     python -m vietjobs.dataset build
 
-Writes ``data/processed/splits/{train,val,test}.parquet`` plus a manifest with
+Writes ``data/processed/splits/{train,dev,test}.csv`` plus a manifest with
 row counts, the source-file hash and the split seed. Re-running against the same
 raw file reproduces the splits exactly.
 
 Word segmentation (vitext 2.4) is expensive, so it runs HERE, once, and the
-result is cached in the parquet files as ``*_seg`` columns. Nothing in the
+result is cached in the CSV files as ``*_seg`` columns. Nothing in the
 training loop ever calls the segmenter.
 """
 from __future__ import annotations
@@ -45,6 +45,34 @@ def load_raw(path=C.RAW_CSV) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"{path} not found — see data/README.md")
     return pd.read_csv(path, dtype=str, keep_default_na=False, na_values=[""])
+
+
+def derive_salary(df: pd.DataFrame) -> pd.DataFrame:
+    """The five salary columns, from the two raw bounds. No text, no segmenter.
+
+    Split out of ``clean`` so that ``scripts/analyze_data.py`` can describe the
+    raw corpus without paying for preprocessing — and, more to the point, so the
+    arithmetic behind every salary number in docs/05 is the same arithmetic the
+    model trains on. Two copies of this would drift apart silently (rule 4).
+    """
+    smin = pd.to_numeric(df["salary_min"], errors="coerce").fillna(0.0)
+    smax = pd.to_numeric(df["salary_max"], errors="coerce").fillna(0.0)
+    lo, hi = np.minimum(smin, smax), np.maximum(smin, smax)  # a few rows have min > max
+    one_sided = (lo == 0) & (hi > 0)                          # only one bound published
+    lo = lo.where(~one_sided, hi)
+
+    mid = (lo + hi) / 2.0
+    disclosed = (mid > 0).astype(int)
+    return pd.DataFrame({
+        "salary_min": lo,
+        "salary_max": hi,
+        "salary_mid": mid,
+        "salary_disclosed": disclosed,
+        "salary_is_range": ((hi > lo) & (lo > 0)).astype(int),
+        "salary_mid_log": np.where(disclosed == 1, np.log1p(mid), np.nan),
+        # Flagged, not dropped — the tail is real (p99 = 50.0, max = 500 triệu).
+        "salary_extreme": (mid >= C.SALARY_EXTREME_THRESHOLD).astype(int),
+    }, index=df.index)
 
 
 # ---------------------------------------------------------------------------
@@ -114,22 +142,8 @@ def clean(df: pd.DataFrame, *, segment: bool = True, verbose: bool = True) -> pd
     # --- targets -------------------------------------------------------------
     out["category"] = df["category"].map(V.normalize_unicode)
 
-    smin = pd.to_numeric(df["salary_min"], errors="coerce").fillna(0.0)
-    smax = pd.to_numeric(df["salary_max"], errors="coerce").fillna(0.0)
-    lo, hi = np.minimum(smin, smax), np.maximum(smin, smax)  # a few rows have min > max
-    one_sided = (lo == 0) & (hi > 0)                          # only one bound published
-    lo = lo.where(~one_sided, hi)
-
-    out["salary_min"] = lo
-    out["salary_max"] = hi
-    out["salary_mid"] = (lo + hi) / 2.0
-    out["salary_disclosed"] = (out["salary_mid"] > 0).astype(int)
-    out["salary_is_range"] = ((hi > lo) & (lo > 0)).astype(int)
-    out["salary_mid_log"] = np.where(
-        out["salary_disclosed"] == 1, np.log1p(out["salary_mid"]), np.nan
-    )
-    # Flagged, not dropped — the tail is real (p99 = 52.5, max = 500 triệu).
-    out["salary_extreme"] = (out["salary_mid"] >= 100).astype(int)
+    for col, values in derive_salary(df).items():
+        out[col] = values
 
     # --- grouping key: reposts must not straddle splits ---------------------
     out["group_id"] = [
@@ -172,13 +186,14 @@ def clean(df: pd.DataFrame, *, segment: bool = True, verbose: bool = True) -> pd
 def group_stratified_split(
     df: pd.DataFrame, seed: int = C.SPLIT_SEED, fractions: dict | None = None
 ) -> pd.Series:
-    """Assign every row to train/val/test.
+    """Assign every row to one of ``fractions``' buckets — one draw, one level.
 
-    Group-disjoint: all rows sharing a ``group_id`` land in one split. Reposted
+    Group-disjoint: all rows sharing a ``group_id`` land in one bucket. Reposted
     ads are common here, and a row-level split would put the same posting in
     both train and test, inflating every score.
 
-    Stratified by ``category`` so the 196-row classes survive into val and test.
+    Stratified by ``category`` so the smallest classes survive into every bucket.
+    Callers wanting the project's two-stage scheme use :func:`two_stage_split`.
     """
     fractions = fractions or C.SPLIT_FRACTIONS
     rng = np.random.default_rng(seed)
@@ -206,18 +221,49 @@ def group_stratified_split(
     return df["group_id"].map(assignment)
 
 
+def two_stage_split(
+    df: pd.DataFrame,
+    seed: int = C.SPLIT_SEED,
+    test_fraction: float = C.SPLIT_TEST_FRACTION,
+    dev_fraction: float = C.SPLIT_DEV_FRACTION,
+) -> pd.Series:
+    """train:test = 8:2, then that train pool split again into train:dev = 9:1.
+
+    Two draws, not one three-way draw. The point is that stage 2 can be redrawn
+    — a different dev slice, a k-fold over the pool — without a single row of
+    ``test`` moving, which is what makes ``test`` usable exactly once at the end.
+
+    Both stages are group-disjoint and stratified by ``category``; stage 2 gets
+    ``seed + 1`` so the two draws do not share a permutation.
+    """
+    stage1 = group_stratified_split(
+        df, seed=seed, fractions={"train": 1.0 - test_fraction, "test": test_fraction}
+    )
+    pool = df[stage1 == "train"]
+    stage2 = group_stratified_split(
+        pool, seed=seed + 1, fractions={"train": 1.0 - dev_fraction, "dev": dev_fraction}
+    )
+    out = stage1.copy()
+    out.loc[stage2.index] = stage2
+    return out
+
+
+def split_path(name: str, out_dir=C.SPLIT_DIR):
+    return out_dir / f"{name}{C.SPLIT_SUFFIX}"
+
+
 def build(raw_path=C.RAW_CSV, out_dir=C.SPLIT_DIR, seed=C.SPLIT_SEED, segment=True) -> dict:
     print(f"reading {raw_path} ...", flush=True)
     raw = load_raw(raw_path)
     print(f"  {len(raw):,} rows. cleaning{' + segmenting' if segment else ''} ...", flush=True)
     df = clean(raw, segment=segment)
-    df["split"] = group_stratified_split(df, seed=seed)
+    df["split"] = two_stage_split(df, seed=seed)
 
     out_dir.mkdir(parents=True, exist_ok=True)
     counts = {}
-    for split in ("train", "val", "test"):
+    for split in C.SPLIT_NAMES:
         part = df[df["split"] == split].drop(columns=["split"]).reset_index(drop=True)
-        part.to_parquet(out_dir / f"{split}.parquet", index=False)
+        part.to_csv(split_path(split, out_dir), index=False)
         counts[split] = {
             "rows": int(len(part)),
             "groups": int(part["group_id"].nunique()),
@@ -236,25 +282,78 @@ def build(raw_path=C.RAW_CSV, out_dir=C.SPLIT_DIR, seed=C.SPLIT_SEED, segment=Tr
         "dropped_exact_duplicates": int(df.attrs.get("dropped_exact_duplicates", 0)),
         "unique_groups": int(df["group_id"].nunique()),
         "split_seed": seed,
+        "split_scheme": "two-stage: train:test = 8:2, then train:dev = 9:1",
         "split_fractions": C.SPLIT_FRACTIONS,
+        "split_test_fraction": C.SPLIT_TEST_FRACTION,
+        "split_dev_fraction": C.SPLIT_DEV_FRACTION,
         "groups_straddling_splits": straddling,
         "segmented": bool(segment),
         "segmenter_available": V.segmenter_available(),
+        "segmenter": V.segmenter_name(),
         "segment_failures": df.attrs.get("segment_failures"),
         "segment_seconds": df.attrs.get("segment_seconds"),
         "splits": counts,
         "salary_unit": C.SALARY_UNIT,
+        # CSV carries no types. Without this map, load_split would have to guess,
+        # and guessing is exactly what turns an empty cell into a missing one.
+        "column_dtypes": {c: str(t) for c, t in df.drop(columns=["split"]).dtypes.items()},
     }
     C.MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     C.MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
     return manifest
 
 
+# ---------------------------------------------------------------------------
+# Reading a split back
+# ---------------------------------------------------------------------------
+#
+# The splits are CSV, which stores no types and — worse — cannot tell an empty
+# cell from a missing one. Both are written as two adjacent commas, and pandas
+# reads both back as NaN by default. On this corpus that silently rewrites
+# 4,524 cells of the dev split alone: "this posting lists no language
+# requirement" and "this field was never filled in" become the same value.
+#
+# So the reader never guesses. ``na_filter=False`` keeps every field a string
+# exactly as written, and the numeric columns are cast back from the dtype map
+# the build recorded in the manifest.
+
+
+def _column_dtypes(out_dir=C.SPLIT_DIR) -> dict:
+    manifest = C.MANIFEST if out_dir == C.SPLIT_DIR else out_dir.parent / C.MANIFEST.name
+    if not manifest.exists():
+        raise FileNotFoundError(
+            f"{manifest} missing — it holds the column types the CSV cannot. "
+            "Run `python -m vietjobs.dataset build`."
+        )
+    types = json.loads(manifest.read_text(encoding="utf-8")).get("column_dtypes")
+    if not types:
+        raise KeyError(
+            f"{manifest} has no 'column_dtypes' — it predates the CSV splits. "
+            "Run `python -m vietjobs.dataset build`."
+        )
+    return types
+
+
 def load_split(name: str, out_dir=C.SPLIT_DIR) -> pd.DataFrame:
-    path = out_dir / f"{name}.parquet"
+    path = split_path(name, out_dir)
     if not path.exists():
         raise FileNotFoundError(f"{path} missing — run `python -m vietjobs.dataset build`")
-    return pd.read_parquet(path)
+
+    types = _column_dtypes(out_dir)
+    df = pd.read_csv(path, na_filter=False, dtype=str)
+
+    unknown = [c for c in df.columns if c not in types]
+    if unknown:
+        raise KeyError(f"{path} has columns absent from the manifest: {unknown}")
+
+    for col, dtype in types.items():
+        if col not in df.columns or dtype in ("str", "object", "string"):
+            continue
+        # errors="coerce" is what restores NaN for the genuinely missing values —
+        # salary_mid_log is NaN on every posting that published no pay.
+        num = pd.to_numeric(df[col], errors="coerce")
+        df[col] = num.astype(dtype) if num.notna().all() else num
+    return df
 
 
 def main() -> None:

@@ -104,3 +104,4 @@ Selection uses `val`. `test` is scored once, at the end.
 | cat-SW-centroid-4 | 09-04 07:30 | category | centroid(shrink_threshold=0.5) | full | province | val | 7159 | macroF1=0.3198±0.0056 · acc=0.3505 · balAcc=0.3967 · F1@15=0.3385 | 18.0s | 0c01c772+dirty |
 | cat-SW-centroid-5 | 09-04 07:31 | category | centroid(shrink_threshold=1.0) | full | province | val | 7159 | macroF1=0.3196±0.0056 · acc=0.3502 · balAcc=0.3965 · F1@15=0.3383 | 18.2s | 0c01c772+dirty |
 | cat-SW-centroid-6 | 09-04 07:31 | category | centroid(shrink_threshold=2.0) | full | province | val | 7159 | macroF1=0.3182±0.0056 · acc=0.3482 · balAcc=0.3955 · F1@15=0.3368 | 17.8s | 0c01c772+dirty |
+| cat-SEG-pyvi | 09-07 03:28 | category | svm(C=0.02) | full | segment+province | val | 7159 | macroF1=0.5982 · acc=0.6386 · balAcc=0.6630 · F1@15=0.6300 | 28.9s | 128ce9f4+dirty |

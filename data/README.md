@@ -1,11 +1,11 @@
 # Data
 
-`data/` nằm trong `.gitignore`. Không có gì trong này được commit.
+`data/` is in `.gitignore`. Nothing inside it is committed.
 
-## Lấy dữ liệu thô
+## Getting the raw data
 
-Bộ dữ liệu là `dinhieufam/VietJobs` trên Hugging Face Hub — khoảng 103 MB,
-**48.092 dòng**, 18 cột. Tải về `data/raw/VietJobs.csv`.
+The dataset is `dinhieufam/VietJobs` on the Hugging Face Hub — about 103 MB,
+**48,092 rows**, 18 columns. Download it to `data/raw/VietJobs.csv`.
 
 ```bash
 pip install -r requirements.txt
@@ -19,40 +19,40 @@ shutil.copy(p, 'data/raw/VietJobs.csv')
 print('ok')"
 ```
 
-> `scripts/download_data.sh` được nhắc trong bản README cũ nhưng **chưa tồn tại**.
-> Đoạn lệnh trên là cách tải thật đang dùng; thư mục `data/raw/.cache/huggingface/`
-> là dấu vết của lần tải đó.
+> `scripts/download_data.sh` was mentioned in an older README but **does not
+> exist**. The snippet above is the download that is actually used; the directory
+> `data/raw/.cache/huggingface/` is the trace it leaves.
 
-Kiểm tra đúng file bằng băm đã chốt trong manifest:
+Check you have the right file against the hash fixed in the manifest:
 
 ```bash
 shasum -a 256 data/raw/VietJobs.csv
 # 85862b06fda4e814fe0c1d8622f173d189c92758345f77df16d1232d0c49d477
 ```
 
-## Dựng splits
+## Building the splits
 
 ```bash
-python -m vietjobs.dataset build          # ~26 phút, phần lớn là tách từ
-python -m vietjobs.dataset build --no-segment   # nhanh, để gỡ lỗi
+python -m vietjobs.dataset build                # ~26 minutes, mostly segmentation
+python -m vietjobs.dataset build --no-segment   # fast, for debugging
 ```
 
-## Bố cục
+## Layout
 
-| Đường dẫn | Sinh bởi | Nội dung |
+| Path | Produced by | Contents |
 |---|---|---|
-| `data/raw/VietJobs.csv` | tải từ Hub | Bản gốc, không đụng vào |
-| `data/processed/splits/` | `python -m vietjobs.dataset build` | `train/val/test.parquet` — đóng băng, không nhóm nào lọt giữa hai tập |
-| `data/processed/manifest.json` | `python -m vietjobs.dataset build` | Số dòng, băm sha256, seed chia tập, thống kê từng tập |
-| `data/interim/` | — | Chỗ để file tạm, hiện đang trống |
+| `data/raw/VietJobs.csv` | downloaded from the Hub | The original, never touched |
+| `data/processed/splits/` | `python -m vietjobs.dataset build` | `train/dev/test.parquet` — frozen, no group straddling two splits |
+| `data/processed/manifest.json` | `python -m vietjobs.dataset build` | Row counts, the sha256, the split seed, per-split statistics |
+| `data/interim/` | — | A place for temporary files, currently empty |
 
-Kích thước sau khi dựng: train 33.396 dòng · val 7.159 · test 7.152.
+Sizes after the build: train 34,354 rows · dev 3,812 · test 9,541.
 
-## Splits là hợp đồng
+## The splits are a contract
 
-Ba file parquet là hợp đồng cho **mọi** thí nghiệm. **Không dựng lại với seed khác**
-sau khi đã huấn luyện mô hình đầu tiên — làm vậy là mọi dòng trong
-`docs/04-results.md` mất khả năng so sánh với nhau.
+The three parquet files are the contract for **every** experiment. **Do not rebuild
+them with a different seed** once the first model has been trained — doing so makes
+every row in `docs/04-results.md` incomparable with every other.
 
-Chi tiết: [`docs/03-protocol.md`](../docs/03-protocol.md).
-Vì sao làm sạch như vậy: [`docs/01-data-audit.md`](../docs/01-data-audit.md).
+Details: [`docs/03-protocol.md`](../docs/03-protocol.md).
+Why the cleaning works this way: [`docs/01-data-audit.md`](../docs/01-data-audit.md).

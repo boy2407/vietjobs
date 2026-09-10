@@ -1,175 +1,187 @@
-[← n-gram và ranh giới từ](03-ngram-va-ranh-gioi-tu.md) · [Nền tảng](00-index.md) · [Rò rỉ dữ liệu →](05-ro-ri-du-lieu.md)
+[← n-grams and word boundaries](03-ngram-va-ranh-gioi-tu.md) · [Background](00-index.md) · [Data leakage →](05-ro-ri-du-lieu.md)
 
-# 4. Ma trận thưa và số chiều
+# 4. Sparse matrices and dimensionality
 
-Dự án này dựng một ma trận **236.596 chiều** trên **33.396 mẫu** huấn luyện.
-Note này giải thích con số đó nghĩa là gì, vì sao nó lưu được trong bộ nhớ, và
-vì sao nó làm KNN sụp đổ trong khi SVM vẫn sống.
+> **A note from the closed track.** The 236,596-dimensional matrix belongs to
+> TF-IDF. PhoBERT produces a **768-dimensional dense** vector — nearly 310× fewer
+> dimensions and not an empty cell in it. Read this note to see why switching to
+> dense vectors is a change of kind, not a matter of taste
+> ([note 9](09-vector-ngu-nghia.md)).
+
+This project builds a **236,596-dimensional** matrix over **33,396** training
+samples. This note explains what that number means, why it fits in memory, and why
+it makes KNN collapse while SVM survives.
 
 ---
 
-## 1. "236.596 chiều" nghĩa là gì
+## 1. What "236,596 dimensions" means
 
-Mỗi tin tuyển dụng biến thành một **dãy 236.596 số**. Mỗi vị trí trong dãy tương
-ứng với một đặc trưng cụ thể: một từ, một cặp từ, một tỉnh, một cột đếm.
+Each job posting becomes a **list of 236,596 numbers**. Each position in the list
+corresponds to one specific feature: a word, a word pair, a province, a count
+column.
 
 ```
-tin #1  =  [0, 0, 0.42, 0, 0, 0, 0.31, 0, ... , 0, 0.07, 0]
-            ↑            ↑                          ↑
-        "kế toán"    "kinh doanh"              experience_months
+posting #1  =  [0, 0, 0.42, 0, 0, 0, 0.31, 0, ... , 0, 0.07, 0]
+                ↑            ↑                          ↑
+            "kế toán"    "kinh doanh"              experience_months
 ```
 
-236.596 chiều đến từ đâu — cộng lại đúng bằng tổng:
+Where the 236,596 dimensions come from — they add up exactly:
 
-| Khối | Chiều |
+| Block | Dimensions |
 |---|---|
-| mô tả | 103.459 |
-| yêu cầu | 65.737 |
-| phúc lợi | 29.936 |
-| kỹ năng kỹ thuật | 14.163 |
-| kỹ năng mềm | 10.747 |
-| tiêu đề | 6.835 |
-| bằng cấp | 5.626 |
-| one-hot (tỉnh, hợp đồng, kinh nghiệm) | 57 |
-| ngoại ngữ | 22 |
-| số | 14 |
-| **tổng** | **236.596** |
+| description | 103,459 |
+| requirements | 65,737 |
+| benefits | 29,936 |
+| technical skills | 14,163 |
+| soft skills | 10,747 |
+| title | 6,835 |
+| qualifications | 5,626 |
+| one-hot (province, contract, experience) | 57 |
+| languages | 22 |
+| numeric | 14 |
+| **total** | **236,596** |
 
 ---
 
-## 2. Thưa — chỉ 492 ô khác 0
+## 2. Sparse — only 492 non-zero cells
 
-Một tin tuyển dụng dùng vài trăm từ, không dùng hai trăm nghìn từ. Nên hầu hết
-các ô trong dãy là **số 0**.
+A job posting uses a few hundred words, not two hundred thousand. So most cells in
+the list are **zero**.
 
-Trung bình mỗi dòng chỉ có **492 ô khác 0**:
+On average each row has only **492 non-zero cells**:
 
 ```
-492 / 236.596  =  0,21 %      →  99,79 % ma trận là số 0
+492 / 236,596  =  0.21 %      →  99.79 % of the matrix is zero
 ```
 
-Ví dụ nhỏ hơn, kiểm chứng được: tiêu đề "Nhân viên kinh doanh" chỉ kích hoạt
-**7 ô** trên 6.835 chiều của khối tiêu đề — bảng ở
-[note 2](02-tf-idf-la-gi.md#6-ví-dụ-tính-tay--trên-dữ-liệu-thật).
+A smaller, verifiable example: the title "Nhân viên kinh doanh" activates only
+**7 cells** out of the title block's 6,835 dimensions — the table in
+[note 2](02-tf-idf-la-gi.md#6-a-worked-example--on-the-real-data).
 
-### Lưu thưa hay lưu đặc — con số
+### Sparse or dense storage — the numbers
 
-| Cách lưu | Cần bao nhiêu |
+| Storage | Required |
 |---|---|
-| **Đặc** — lưu đủ 236.596 × 33.396 số thực 8 byte | ~**63 GB** |
-| **Thưa** — chỉ lưu (dòng, cột, giá trị) của ô khác 0 | ~**130 MB** |
+| **Dense** — store all 236,596 × 33,396 eight-byte floats | ~**63 GB** |
+| **Sparse** — store only (row, column, value) for non-zero cells | ~**130 MB** |
 
-Chênh nhau khoảng **480 lần**. Đó là lý do dự án ép `sparse_threshold=1.0` và
-dùng `MaxAbsScaler` chứ không phải `StandardScaler` — `StandardScaler` trừ trung
-bình, phép đó biến mọi số 0 thành khác 0 và **phá tính thưa** ngay lập tức.
-Chi tiết ở [05-dac-trung-tfidf.md §6–7](../05-dac-trung-tfidf.md#6-khối-số--vì-sao-log1p-rồi-maxabsscaler).
+A factor of roughly **480×**. That is why the project forces
+`sparse_threshold=1.0` and uses `MaxAbsScaler` instead of `StandardScaler` —
+`StandardScaler` subtracts the mean, which turns every zero into a non-zero and
+**destroys sparsity** immediately. Details in
+[05-dac-trung-tfidf.md §6–7](../archive/05-dac-trung-tfidf.md#6-khối-số--vì-sao-log1p-rồi-maxabsscaler).
 
 ---
 
-## 3. Tỷ lệ p/n — chỉ số quan trọng nhất bạn nên nhớ
+## 3. The p/n ratio — the most important number to remember
 
 ```
-p = số chiều (đặc trưng)     = 236.596
-n = số mẫu huấn luyện        =  33.396
-p / n                        =       7,1
+p = number of dimensions (features)  = 236,596
+n = number of training samples       =  33,396
+p / n                                =       7.1
 ```
 
-**Có nhiều đặc trưng gấp 7 lần số ví dụ để học.**
+**There are 7× more features than examples to learn from.**
 
-Vì sao điều đó nguy hiểm: với `p > n`, luôn tồn tại một tổ hợp trọng số khớp
-**hoàn hảo** dữ liệu huấn luyện — kể cả khi nhãn hoàn toàn ngẫu nhiên. Mô hình
-không cần *học quy luật*, nó chỉ cần *nhớ*. Và cái nó nhớ không tổng quát hoá
-sang tin mới.
+Why that is dangerous: with `p > n`, there always exists a combination of weights
+that fits the training data **perfectly** — even if the labels are entirely random.
+The model does not need to *learn a rule*, it only needs to *memorise*. And what it
+memorises does not generalise to new postings.
 
-Bảng p/n trong dự án này:
+The p/n table for this project:
 
-| Cấu hình | p | n | p/n | Ghi chú |
+| Configuration | p | n | p/n | Note |
 |---|---|---|---|---|
-| `scope=full` | 236.596 | 33.396 | **7,1** | Cấu hình thật |
-| `scope=title` | 6.835 | 33.396 | 0,20 | |
-| `scope=structured` | ~60 | 23.965 | 0,0025 | Sân chơi công bằng duy nhất cho `LinearRegression` thuần |
+| `scope=full` | 236,596 | 33,396 | **7.1** | The real configuration |
+| `scope=title` | 6,835 | 33,396 | 0.20 | |
+| `scope=structured` | ~60 | 23,965 | 0.0025 | The only fair playing field for plain `LinearRegression` |
 
-Đây là lý do `LinearRegression` không chính quy hoá **chắc chắn hỏng** ở
-`scope=full`, và vì sao dự án tạo hẳn `scope=structured` để đo nó cho công bằng —
-[note 7](07-chinh-quy-hoa.md).
+This is why unregularised `LinearRegression` is **guaranteed to break** at
+`scope=full`, and why the project created `scope=structured` specifically to
+measure it fairly — [note 7](07-chinh-quy-hoa.md).
 
 ---
 
-## 4. Lời nguyền số chiều — vì sao KNN sụp
+## 4. The curse of dimensionality — why KNN collapses
 
-Đây là kết quả gây sốc nhất trong bảng của dự án:
+This is the most shocking result in the project's table:
 
-| Mô hình | Đặc trưng | macro-F1 (val) |
+| Model | Features | macro-F1 (dev) |
 |---|---|---|
-| Baseline từ khoá, **không dùng ML** | tiêu đề | 0,4321 |
-| KNN k=15 | **chỉ tiêu đề** | 0,5307 |
-| KNN k=30 | **toàn văn** | **0,4059** ← thua cả baseline |
-| SVM C=0,02 | toàn văn | 0,6050 |
+| Keyword baseline, **no ML at all** | title | 0.4321 |
+| KNN k=15 | **title only** | 0.5307 |
+| KNN k=30 | **full text** | **0.4059** ← below the baseline |
+| SVM C=0.02 | full text | 0.6050 |
 
-**Cho KNN nhiều đặc trưng hơn làm nó tệ đi**, tệ đến mức thua một baseline không
-dùng học máy. SVM trên đúng bộ đặc trưng đó lại tốt hơn hẳn.
+**Giving KNN more features makes it worse**, so much worse that it loses to a
+baseline that uses no machine learning. SVM on exactly the same features is
+markedly better.
 
-### Vì sao
+### Why
 
-KNN dựa hoàn toàn vào **khoảng cách**: tìm k tin gần nhất, lấy nhãn đa số.
-Trong không gian rất nhiều chiều, khoảng cách mất ý nghĩa phân biệt:
+KNN relies entirely on **distance**: find the k nearest postings, take the majority
+label. In a very high-dimensional space, distance loses its discriminating power:
 
-> Khi số chiều tăng, khoảng cách từ một điểm tới **hàng xóm gần nhất** và tới
-> **hàng xóm xa nhất** hội tụ về nhau. "Gần nhất" không còn nghĩa là "giống nhất".
+> As the dimensionality grows, the distance from a point to its **nearest**
+> neighbour and to its **farthest** neighbour converge. "Nearest" stops meaning
+> "most similar".
 
-Cụ thể với văn bản: hai tin cùng ngành có thể **không dùng chung một từ nào** ngoài
-từ dừng. Với TF-IDF chuẩn hoá, chúng gần như trực giao — khoảng cách bằng nhau
-hết. KNN không có gì để bám vào.
+Concretely with text: two postings in the same sector may **share no word at all**
+apart from stopwords. Under normalised TF-IDF they are nearly orthogonal — all the
+distances are the same. KNN has nothing to hold onto.
 
-### Vì sao SVM không sụp
+### Why SVM does not collapse
 
-SVM tuyến tính không đo khoảng cách giữa các điểm. Nó tìm một **siêu phẳng** —
-một tổ hợp có trọng số của các chiều. Chiều nhiễu chỉ cần nhận trọng số gần 0
-là bị vô hiệu hoá. Thêm chiều vô dụng làm bài toán khó hơn, nhưng **không phá**
-cách nó làm việc.
+A linear SVM does not measure distances between points. It looks for a
+**hyperplane** — a weighted combination of the dimensions. A noisy dimension only
+has to receive a weight near 0 to be neutralised. Adding useless dimensions makes
+the problem harder, but does not **break** the way it works.
 
-Điều kiện để chuyện đó xảy ra: phải ép trọng số về gần 0 cho hầu hết các chiều.
-Đó chính là việc của tham số `C` — và cũng là lý do `C` tối ưu rơi xuống tận 0,02.
+The condition for that to happen: most dimensions have to be pushed toward zero
+weight. That is exactly the job of the `C` parameter — and also why the optimal `C`
+falls all the way to 0.02.
 
 ---
 
-## 5. Đọc `C = 0,02` như một triệu chứng
+## 5. Reading `C = 0.02` as a symptom
 
-`C` mặc định của `LinearSVC` là 1,0. Dự án này quét và tìm ra:
+The `LinearSVC` default for `C` is 1.0. This project swept it and found:
 
-| `C` | macro-F1 (val) |
+| `C` | macro-F1 (dev) |
 |---|---|
-| 4,0 | 0,5171 |
-| 1,0 (mặc định) | 0,5618 |
-| 0,1 | 0,5983 |
-| **0,02** | **0,6050** |
-| 0,01 | 0,5976 |
-| 0,005 | 0,5865 |
+| 4.0 | 0.5171 |
+| 1.0 (default) | 0.5618 |
+| 0.1 | 0.5983 |
+| **0.02** | **0.6050** |
+| 0.01 | 0.5976 |
+| 0.005 | 0.5865 |
 
-`C` nhỏ = chính quy hoá mạnh = ép trọng số về gần 0. `C` tối ưu thấp hơn mặc định
-**50 lần** không phải là một con số ngẫu nhiên đẹp. Nó là **mô hình đang kêu cứu
-vì quá nhiều chiều**.
+Small `C` = strong regularisation = weights pushed toward zero. An optimal `C`
+**50× below** the default is not a pretty accident. It is **the model calling for
+help because it has too many dimensions**.
 
-Cách đọc đúng: nếu phải chính quy hoá mạnh đến vậy mới chạy được, thì phần lớn
-236.596 chiều đang là nhiễu. Việc nên làm tiếp không phải quét `C` thêm một vòng
-nữa, mà là **cắt bớt chiều** — quét `min_df`, `max_features`. Ghi ở
-[09-lo-trinh.md — Ưu tiên 3b](../09-lo-trinh.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-phân-lớp-làm-trước-khi-nghĩ-đến-dl).
-
----
-
-## 6. Ba điều nên nhớ
-
-1. **Nhiều đặc trưng hơn không tự động tốt hơn.** KNN toàn văn 0,4059 so với KNN
-   chỉ tiêu đề 0,5307 là bằng chứng đo được, ngay trong dự án này.
-2. **Thuật toán khác nhau chịu số chiều khác nhau.** Đừng kết luận "bộ đặc trưng
-   này tệ" từ một thuật toán duy nhất — KNN nói tệ, SVM nói tốt, và SVM đúng.
-3. **`C` tối ưu bất thường thấp là một thông điệp**, không phải một con số phải
-   chép vào báo cáo rồi thôi.
+The right reading: if it takes that much regularisation to work at all, then most
+of the 236,596 dimensions are noise. The next thing to do is not another sweep of
+`C`, but **cutting dimensions** — sweeping `min_df` and `max_features`. Recorded in
+[09-lo-trinh.md — Priority 3b](../archive/09-lo-trinh-ml.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-mốc-cơ-sở-ml).
 
 ---
 
-## Quay lại thực tế dự án
+## 6. Three things to remember
 
-- [06-mo-hinh-phan-lop.md](../06-mo-hinh-phan-lop.md) — bậc thang kết quả đầy đủ
-- [05-dac-trung-tfidf.md](../05-dac-trung-tfidf.md) — 236.596 chiều được lắp thế nào
-- [note 7 — chính quy hoá](07-chinh-quy-hoa.md) — `C` thật ra làm gì
+1. **More features is not automatically better.** KNN on full text at 0.4059 versus
+   KNN on titles alone at 0.5307 is measured evidence, from this very project.
+2. **Different algorithms tolerate dimensionality differently.** Do not conclude
+   "this feature set is bad" from a single algorithm — KNN said bad, SVM said good,
+   and SVM was right.
+3. **An unusually low optimal `C` is a message**, not a number to copy into the
+   report and forget.
+
+---
+
+## Back to the project itself
+
+- [06-mo-hinh-phan-lop.md](../archive/06-mo-hinh-phan-lop.md) — the full results ladder
+- [05-dac-trung-tfidf.md](../archive/05-dac-trung-tfidf.md) — how the 236,596 dimensions are assembled
+- [note 7 — regularisation](07-chinh-quy-hoa.md) — what `C` actually does

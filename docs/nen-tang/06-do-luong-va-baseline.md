@@ -1,201 +1,210 @@
-[← Rò rỉ dữ liệu](05-ro-ri-du-lieu.md) · [Nền tảng](00-index.md) · [Chính quy hoá →](07-chinh-quy-hoa.md)
+[← Data leakage](05-ro-ri-du-lieu.md) · [Background](00-index.md) · [Regularisation →](07-chinh-quy-hoa.md)
 
-# 6. Đo lường và baseline
+# 6. Metrics and baselines
 
-Chọn sai thước đo thì mọi việc sau đó đều vô nghĩa — bạn sẽ tối ưu chăm chỉ về
-hướng sai. Note này giải thích vì sao dự án chọn macro-F1, và vì sao mọi mô hình
-đều phải vượt qua một cái sàn trước khi được coi là "có học được gì".
+Pick the wrong yardstick and everything afterwards is meaningless — you will
+optimise diligently in the wrong direction. This note explains why the project
+chose macro-F1, and why every model has to clear a floor before it counts as
+"having learned anything".
 
 ---
 
-## 1. Accuracy nói dối khi lớp lệch
+## 1. Accuracy lies when the classes are skewed
 
-Bài toán phân lớp nghề có 16 lớp, và chúng **rất lệch**: lớp lớn nhất gấp **27 lần**
-lớp nhỏ nhất. Ba lớp nhỏ nhất chỉ có 196–258 dòng.
+The occupation task has 16 classes, and they are **very** skewed: the largest is
+**27×** the smallest. The three smallest hold only 196–258 rows.
 
-Xét mô hình ngu nhất có thể — luôn đoán lớp đông nhất, không nhìn dữ liệu:
+Consider the dumbest possible model — always predict the largest class, never look
+at the data:
 
-| Thước đo | Điểm |
+| Metric | Score |
 |---|---|
-| **accuracy** | **0,2014** |
-| macro-F1 | **0,0210** |
-| balanced accuracy | 0,0625 |
+| **accuracy** | **0.2014** |
+| macro-F1 | **0.0210** |
+| balanced accuracy | 0.0625 |
 
-Accuracy nói "đúng 20 %". Nghe không tệ lắm. Nhưng mô hình này **bỏ qua hoàn
-toàn 15 trên 16 lớp** — nó chưa học gì cả. Macro-F1 nói đúng sự thật: 0,0210.
+Accuracy says "right 20 % of the time". That does not sound terrible. But this model
+**ignores 15 of the 16 classes entirely** — it has learned nothing. Macro-F1 tells
+the truth: 0.0210.
 
-**Vì sao chênh nhau như vậy:**
+**Why they differ so much:**
 
-- **Accuracy** = tỷ lệ dự đoán đúng trên **toàn bộ** mẫu. Lớp đông đóng góp nhiều
-  mẫu nên nó chi phối con số. Đoán đúng lớp đông là đủ để có accuracy trông được.
-- **Macro-F1** = tính F1 **cho từng lớp riêng**, rồi lấy trung bình **không trọng số**.
-  Lớp 196 dòng có tiếng nói **ngang** lớp 5.000 dòng. Bỏ rơi một lớp là mất 1/16
-  tổng điểm, bất kể lớp đó to hay nhỏ.
+- **Accuracy** = the fraction of correct predictions over **all** samples. Large
+  classes contribute many samples, so they dominate the number. Getting the large
+  class right is enough for a presentable accuracy.
+- **Macro-F1** = compute F1 **per class**, then take the **unweighted** mean. A
+  class with 196 rows has **the same** voice as one with 5,000. Abandoning one class
+  costs 1/16 of the total, regardless of its size.
 
-> **Quy tắc:** lớp càng lệch, accuracy càng dễ nói dối. Với 27:1 thì nó nói dối rất nhiều.
+> **Rule:** the more skewed the classes, the more accuracy lies. At 27:1 it lies a
+> great deal.
 
 ---
 
-## 2. Precision, recall, F1 — nhắc lại nhanh
+## 2. Precision, recall, F1 — a quick refresher
 
-Cho một lớp cụ thể, ví dụ "kế toán":
+For one specific class, say "accounting":
 
-|  | Mô hình nói "kế toán" | Mô hình nói lớp khác |
+|  | Model says "accounting" | Model says another class |
 |---|---|---|
-| **Thật sự là kế toán** | TP (đúng) | FN (bỏ sót) |
-| **Không phải kế toán** | FP (báo nhầm) | TN (đúng) |
+| **Really is accounting** | TP (correct) | FN (missed) |
+| **Is not accounting** | FP (false alarm) | TN (correct) |
 
 ```
-precision = TP / (TP + FP)    Trong những tin nó GỌI là kế toán, bao nhiêu đúng?
-recall    = TP / (TP + FN)    Trong những tin THẬT SỰ là kế toán, nó bắt được bao nhiêu?
-F1        = trung bình điều hoà của hai cái trên
+precision = TP / (TP + FP)    Of the postings it CALLS accounting, how many are?
+recall    = TP / (TP + FN)    Of the postings that REALLY are accounting, how many did it catch?
+F1        = the harmonic mean of the two
 ```
 
-**Vì sao là trung bình điều hoà, không phải trung bình cộng.** Trung bình điều hoà
-phạt nặng sự mất cân bằng:
+**Why the harmonic mean and not the arithmetic one.** The harmonic mean punishes
+imbalance heavily:
 
-| precision | recall | TB cộng | **F1** |
+| precision | recall | arithmetic mean | **F1** |
 |---|---|---|---|
-| 1,00 | 0,10 | 0,55 | **0,18** |
-| 0,55 | 0,55 | 0,55 | **0,55** |
+| 1.00 | 0.10 | 0.55 | **0.18** |
+| 0.55 | 0.55 | 0.55 | **0.55** |
 
-Một mô hình chỉ dám gọi "kế toán" khi cực chắc chắn sẽ có precision 1,00 nhưng
-bỏ sót 90 % — trung bình cộng cho nó 0,55, F1 cho nó 0,18. F1 nói đúng.
-
----
-
-## 3. Bốn thước đo dự án dùng, và mỗi cái trả lời gì
-
-| Thước đo | Trả lời câu hỏi | Vì sao có mặt |
-|---|---|---|
-| **macro-F1** | Mô hình làm tốt **đều** trên cả 16 lớp không? | Thước đo **chính** để chọn mô hình |
-| `f1_macro_no_junk` | Bỏ lớp thùng rác `nhóm_nghề_khác` ra thì sao? | Tách **nhiễu nhãn** khỏi **lỗi mô hình** |
-| `balanced_accuracy` | Recall trung bình trên các lớp | Nhạy với lớp bị bỏ rơi |
-| `accuracy` | Tỷ lệ đúng thô | Chỉ để **so với sàn**, không để chọn mô hình |
-| `top3_accuracy` | Đáp án đúng có nằm trong 3 gợi ý không? | Đúng cái người dùng thật cần |
-
-**`f1_macro_no_junk` đáng chú ý.** Lớp `nhóm_nghề_khác` là thùng rác: nó chứa
-"Nhân Viên Seo Web", "Nhân Viên Quản Trị Website" — những tin lẽ ra thuộc marketing
-và IT. Mô hình đoán sai ở đó **không phải lỗi của mô hình**, đó là nhãn gốc sai.
-Báo cáo cả hai con số giúp người đọc tách bạch hai chuyện.
-
-**`top3_accuracy` = 93 %** trong khi macro-F1 chỉ 0,61. Chênh lệch đó không phải
-mâu thuẫn — nó nói rằng mô hình gần như luôn đưa nhãn đúng vào top 3, chỉ hay
-xếp nhầm thứ tự giữa những nghề vốn nhập nhằng. Với một hệ thống gợi ý cho người
-dùng chọn, 93 % mới là con số đúng để báo cáo.
+A model that only dares say "accounting" when it is dead certain gets precision 1.00
+while missing 90 % — the arithmetic mean gives it 0.55, F1 gives it 0.18. F1 is
+right.
 
 ---
 
-## 4. Baseline — cái sàn phải vượt
+## 3. The four metrics the project uses, and what each answers
 
-Một con số đứng một mình không nói lên điều gì. **0,6112 là tốt hay tệ?**
-Không trả lời được, trừ khi biết so với cái gì.
-
-Dự án dựng ba tầng sàn cho bài phân lớp:
-
-| Tầng | Là gì | macro-F1 |
+| Metric | Question it answers | Why it is there |
 |---|---|---|
-| **Sàn 1** — ngẫu nhiên | Luôn đoán lớp đông nhất | 0,0210 |
-| **Sàn 2** — không dùng ML | Trùng từ khoá trong tiêu đề | **0,4321** |
-| Mô hình rẻ nhất | SVM chỉ đọc tiêu đề | 0,5547 |
-| Mô hình chốt | SVM C=0,02, toàn văn | 0,6050 |
+| **macro-F1** | Does the model do **evenly** well across all 16 classes? | The **headline** metric for model selection |
+| `f1_macro_no_junk` | What happens when the junk class `nhóm_nghề_khác` is dropped? | Separates **label noise** from **model error** |
+| `balanced_accuracy` | Mean recall across classes | Sensitive to abandoned classes |
+| `accuracy` | Raw correctness rate | Only for **comparing against the floor**, never for model selection |
+| `top3_accuracy` | Is the right answer among the 3 suggestions? | What a real user actually needs |
 
-**Sàn 2 mới là cái sàn thật.** Nó là câu hỏi: *"nếu không dùng học máy, chỉ viết
-vài dòng if-else khớp từ khoá, thì được bao nhiêu?"* — 0,4321.
+**`f1_macro_no_junk` is worth noting.** The class `nhóm_nghề_khác` is a junk drawer:
+it holds "Nhân Viên Seo Web", "Nhân Viên Quản Trị Website" — postings that belong in
+marketing and IT. Getting them wrong is **not the model's fault**; the original
+label is wrong. Reporting both numbers lets the reader keep the two apart.
 
-Bất kỳ mô hình học máy nào không vượt được 0,4321 là **không đáng tồn tại**: nó
-tốn thời gian huấn luyện, khó giải thích, khó bảo trì, và thua một đoạn code
-đơn giản hơn nhiều.
+**`top3_accuracy` = 93 %** while macro-F1 is only 0.61. That gap is not a
+contradiction — it says the model nearly always puts the right label in the top 3
+and merely orders the intrinsically ambiguous occupations wrongly. For a system that
+suggests options to a user, 93 % is the number to report.
 
-Trong dự án này, **hai mô hình KNN toàn văn thua sàn 2** (0,4059). Đó là một kết
-quả có ích, và nó nằm trong log — xem [note 4](04-ma-tran-thua-va-so-chieu.md).
+---
 
-Cho bài toán lương, sàn tương ứng là:
+## 4. Baselines — the floor to clear
 
-| Bài toán | Sàn phải vượt |
+A number on its own says nothing. **Is 0.6112 good or bad?** Unanswerable, unless
+you know what it is being compared against.
+
+The project builds three floor levels for classification:
+
+| Level | What it is | macro-F1 |
+|---|---|---|
+| **Floor 1** — random | Always predict the largest class | 0.0210 |
+| **Floor 2** — no ML | Keyword matching in the title | **0.4321** |
+| The cheapest model | SVM reading titles only | 0.5547 |
+| The final model | SVM C=0.02, full text | 0.6050 |
+
+**Floor 2 is the real floor.** It asks: *"if we use no machine learning, just a few
+if-else lines matching keywords, how far do we get?"* — 0.4321.
+
+Any machine-learning model that cannot beat 0.4321 **does not deserve to exist**: it
+costs training time, is hard to explain, hard to maintain, and loses to a far
+simpler piece of code.
+
+In this project, **two full-text KNN models lose to floor 2** (0.4059). That is a
+useful result, and it is in the log — see [note 4](04-ma-tran-thua-va-so-chieu.md).
+
+For the salary tasks, the corresponding floors are:
+
+| Task | Floor to clear |
 |---|---|
-| `disclosed` (có công bố lương không) | accuracy **0,7176** · macro-F1 **0,4179** — "đoán luôn là có" |
-| `salary` (mức lương) | MAE **5,54 triệu** — trung vị theo nhóm nghề |
+| `disclosed` (does it state a salary) | accuracy **0.7176** · macro-F1 **0.4179** — "always say yes" |
+| `salary` (the amount) | MAE **5.54 million** — the median per occupation group |
 
 ---
 
-## 5. Nhiễu — khi nào chênh lệch là thật
+## 5. Noise — when a difference is real
 
-Chạy hai cấu hình, một cái ra 0,6050 và một cái ra 0,6033. Cái đầu tốt hơn chứ?
+Run two configurations, one gives 0.6050 and the other 0.6033. The first is better,
+surely?
 
-**Chưa chắc.** Điểm số đo trên một tập val hữu hạn (7.159 tin) nên bản thân nó
-có dao động ngẫu nhiên. Đo dao động đó bằng **bootstrap 1.000 lần**
-(`evaluate.bootstrap_scores`, chạy trên cả 34 run của cụm so sánh):
+**Not necessarily.** The score is measured on a finite dev set (7,159 postings), so
+it has random variation of its own. That variation is measured with a **1,000-sample
+bootstrap** (`evaluate.bootstrap_scores`, run over all 34 runs of the comparison
+cluster):
 
 ```
-độ lệch chuẩn macro-F1  ≈  0,0077      (khoảng 0,0067 – 0,0087)
+macro-F1 standard deviation  ≈  0.0077      (roughly 0.0067 – 0.0087)
 ```
 
-Nghĩa là: **chênh lệch nhỏ hơn 0,0077 không phân biệt được với nhiễu.**
+Meaning: **a difference smaller than 0.0077 is indistinguishable from noise.**
 
-Áp vào bảng ablation:
+Applied to the ablation table:
 
-| So sánh | Chênh | Kết luận |
+| Comparison | Difference | Verdict |
 |---|---|---|
-| `province` 0,6050 vs `raw` 0,6033 | +0,0017 | **Trong nhiễu.** "Có lẽ giúp", P(>0) = 0,97 |
-| Bỏ từ dừng: 0,5756 vs 0,5754 | +0,0002 | **Trong nhiễu.** Không phân biệt được |
-| `C` 0,02 vs `C` 0,5: 0,6050 vs 0,5763 | +0,0287 | **Thật.** Gấp gần 4 lần σ |
+| `province` 0.6050 vs `raw` 0.6033 | +0.0017 | **Within noise.** "Probably helps", P(>0) = 0.97 |
+| Stopword removal: 0.5756 vs 0.5754 | +0.0002 | **Within noise.** Indistinguishable |
+| `C` 0.02 vs `C` 0.5: 0.6050 vs 0.5763 | +0.0287 | **Real.** Nearly 4× σ |
 
-Không có bước này thì rất dễ đi tối ưu những chênh lệch 0,001 suốt cả tuần, và
-tin rằng mình đang tiến bộ.
+Without this step it is very easy to spend a week optimising differences of 0.001
+and believe you are making progress.
 
-### σ này từng chỉ là một con số truyền miệng
+### This σ used to be a number passed by word of mouth
 
-Cho tới cụm so sánh mô hình, `docs/` viện dẫn **σ ≈ 0,009** ở năm chỗ mà **không
-có file `.py` nào trong repo tính ra nó**. Nó có lẽ được tính một lần trong REPL
-rồi chép vào tài liệu. Giá trị hiện tại (0,0077) là lần đầu nó đến từ code chạy
-lại được — và nó thấp hơn con số cũ khoảng 15%, tức quy tắc cũ **quá bảo thủ**.
+Until the model-comparison cluster, `docs/` cited **σ ≈ 0.009** in five places while
+**no `.py` file in the repository computed it**. It was probably computed once in a
+REPL and copied into the documentation. The current value (0.0077) is the first time
+it came from re-runnable code — and it is about 15 % lower than the old figure,
+meaning the old rule was **too conservative**.
 
-Bài học rộng hơn con số: **một ngưỡng quyết định mà không ai chạy lại được thì
-không phải bằng chứng, dù nó nghe rất khoa học.** Nó đã đứng ra chống đỡ ba kết
-luận "bỏ bước này đi" trong suốt bảng ablation tiếng Việt.
+The lesson is broader than the number: **a decision threshold nobody can re-derive is
+not evidence, however scientific it sounds.** It had been propping up three
+"drop this step" conclusions across the whole Vietnamese ablation table.
 
-### σ độc lập không phải cách so hai mô hình
+### An independent σ is not how to compare two models
 
-σ trả lời: *"điểm này dao động bao nhiêu nếu đổi tập val?"*
-Câu thật sự cần hỏi là: *"A có hơn B trên **cùng** những dòng đó không?"*
+σ answers: *"how much does this score move if the dev set changes?"*
+The question that actually matters is: *"does A beat B on **the same** rows?"*
 
-Hai câu khác nhau, và câu thứ hai nhạy hơn nhiều. Lý do: hai mô hình sai ở phần
-lớn cùng những tin nhập nhằng, nên nếu lấy lại **cùng** một mẫu dòng cho cả hai
-rồi trừ, phần dao động chung bị triệt tiêu. Đó là **paired bootstrap**, và nó là
-cơ sở quyết định trong
-[10-so-sanh-mo-hinh.md §4](../10-so-sanh-mo-hinh.md#4-ma-trận-phàng--cột).
+Two different questions, and the second is far more sensitive. The reason: two models
+are wrong on largely the same ambiguous postings, so if you resample **the same** set
+of rows for both and subtract, the shared variation cancels out. That is the **paired
+bootstrap**, and it is the basis for decisions in
+[10-so-sanh-mo-hinh.md §4](../archive/10-so-sanh-mo-hinh.md#4-ma-trận-phàng--cột).
 
-Ví dụ thật từ cụm đó: `logreg` 0,6072 so với `svm` 0,6050 — chênh +0,0022, nhỏ
-hơn σ nên quy tắc cũ gọi là nhiễu. Paired bootstrap cho `P(logreg > svm) = 0,685`,
-tức **vẫn không phân biệt được**, nhưng giờ ta biết điều đó bằng phép đo đúng
-chứ không phải bằng một ngưỡng thô.
+A real example from that cluster: `logreg` 0.6072 versus `svm` 0.6050 — a gap of
++0.0022, smaller than σ, so the old rule called it noise. The paired bootstrap gives
+`P(logreg > svm) = 0.685`, i.e. **still indistinguishable**, but now we know that
+from a correct measurement rather than from a crude threshold.
 
-> **Nguyên tắc:** trước khi mừng vì một cải thiện, hỏi *"nó có lớn hơn nhiễu không?"*
-> Không biết nhiễu bằng bao nhiêu thì không được phép kết luận gì.
-
----
-
-## 6. Trần — thứ chưa ai biết
-
-macro-F1 0,6112 nghe thấp. Nhưng **trần thật là bao nhiêu?**
-
-Nếu 40 % lỗi của mô hình thật ra là **nhãn gốc sai** (như những tin SEO bị dán
-nhãn `nhóm_nghề_khác`), thì 0,6112 trên nhãn bẩn tương đương khoảng 0,75 trên
-nhãn sạch — và mô hình đã gần chạm trần rồi.
-
-Chưa đo. Cách đo ghi ở
-[09-lo-trinh.md — Ưu tiên 2](../09-lo-trinh.md#ưu-tiên-2--đo-trần-nhiễu-nhãn):
-lấy 150–200 tin bị đoán sai, gán tay từng tin vào ba nhóm — *mô hình sai* ·
-*nhãn gốc sai* · *thật sự nhập nhằng*.
-
-Đây là con số quý nhất mà một báo cáo có thể có, vì nó trả lời câu hỏi mà không
-mô hình nào trả lời được: **còn bao nhiêu chỗ để cải thiện?**
+> **Principle:** before celebrating an improvement, ask *"is it larger than the
+> noise?"* If you do not know how large the noise is, you may not conclude anything.
 
 ---
 
-## Quay lại thực tế dự án
+## 6. The ceiling — the thing nobody knows yet
 
-- [03-protocol.md §4](../03-protocol.md) — định nghĩa metric chính thức của dự án
-- [06-mo-hinh-phan-lop.md](../06-mo-hinh-phan-lop.md) — bậc thang kết quả và cách đọc nó
-- [04-results.md](../04-results.md) — 27 dòng thí nghiệm
+A macro-F1 of 0.6112 sounds low. But **what is the real ceiling?**
+
+If 40 % of the model's errors are actually **wrong original labels** (like the SEO
+postings tagged `nhóm_nghề_khác`), then 0.6112 on dirty labels corresponds to about
+0.75 on clean ones — and the model would already be near its ceiling.
+
+Not measured. The method is recorded in
+[09-lo-trinh.md — Priority 2](../archive/09-lo-trinh-ml.md#ưu-tiên-2--đo-trần-nhiễu-nhãn):
+take 150–200 misclassified postings and hand-assign each to one of three buckets —
+*model error* · *wrong original label* · *genuinely ambiguous*.
+
+This is the most valuable number a report can have, because it answers the one
+question no model can answer: **how much room to improve is left?**
+
+---
+
+## Back to the project itself
+
+- [03-protocol.md §4](../03-protocol.md) — the project's official metric definitions
+- [06-mo-hinh-phan-lop.md](../archive/06-mo-hinh-phan-lop.md) — the results ladder and how to read it
+- [04-results.md](../archive/04-results-ml.md) — the experiment log

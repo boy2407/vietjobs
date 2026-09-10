@@ -26,3 +26,7 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+data/external/
+
+# Môi trường riêng cho học sâu (torch không có bánh xe cho macOS Intel + py3.14)
+.venv-dl/

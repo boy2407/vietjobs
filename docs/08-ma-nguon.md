@@ -1,8 +1,10 @@
-[← Tổng quan](00-tong-quan.md) · [← Bài toán lương](07-bai-toan-luong.md) · [Lộ trình →](09-lo-trinh.md)
+[← Overview](00-tong-quan.md) · [← Deep-learning baseline](06-baseline-dl.md) · [Roadmap →](09-lo-trinh.md)
 
-# Mã nguồn
+# Source code
 
-9 module · 2.042 dòng · 73 test xanh · 27 thí nghiệm đã ghi log.
+13 modules · 3,033 lines · 108 green tests. The main track is the
+[`dl/`](../src/vietjobs/dl/) package; the machine-learning part is kept as the
+comparison bar.
 
 ---
 
@@ -15,88 +17,121 @@
   'nodeTextColor':'#141F1D','titleColor':'#141F1D'}}}%%
 flowchart LR
     classDef default fill:#FFFFFF,stroke:#54625E,stroke-width:1.5px,color:#141F1D
-    CFG["config.py<br/>đường dẫn · seed · hằng số"]
-    VT["<b>vitext.py</b><br/>9 bước tiếng Việt"]
-    DS["dataset.py<br/>làm sạch · chia tập"]
-    FT["features.py<br/>10 khối đặc trưng"]
-    MD["models.py<br/>5 thuật toán + baseline"]
-    EV["evaluate.py<br/>metric 3 bài toán"]
-    TR["train.py<br/>CLI + log thí nghiệm"]
-    PR["predict.py<br/>facade suy luận"]
-    RES["resources/<br/>viết tắt · từ dừng · tỉnh"]
+    CFG["config.py<br/>paths · seed · constants"]
+    VT["<b>vitext.py</b><br/>9 Vietnamese steps"]
+    DS["dataset.py<br/>cleaning · splitting"]
+    FT["features.py<br/>resolve_column · ML features"]
+    EV["evaluate.py<br/>metrics for 3 tasks"]
+    RES["resources/<br/>abbreviations · stopwords · provinces"]
+    subgraph DL["src/vietjobs/dl/ — the main track"]
+      TX["text.py<br/>joins 3 fields<br/>through resolve_column"]
+      EN["encode.py<br/>frozen PhoBERT<br/>→ .npy cache"]
+      HD["heads.py<br/>dense 768→h→h/2→out"]
+      TD["train_dl.py<br/>CLI · history.jsonl"]
+    end
+    subgraph ML["the ML path — kept as the bar"]
+      MD["models.py"]
+      TR["train.py"]
+    end
+    PR["predict.py<br/>inference facade<br/>(DL not wired in)"]
 
     RES --> VT
     CFG --> VT
-    VT --> DS --> FT --> TR
+    VT --> DS --> FT
+    FT --> TX --> EN --> TD
+    HD --> TD
+    EV --> TD
+    FT --> TR
     MD --> TR
     EV --> TR
     VT --> PR
     FT --> PR
+
+    classDef todo fill:#F8EDE2,stroke:#9E5C22,stroke-width:1.5px,color:#141F1D
+    class PR todo
 ```
 
-| File | Dòng | Vai trò | Tài liệu |
+
+| File | Lines | Role | Documentation |
 |---|---|---|---|
-| [`vitext.py`](../src/vietjobs/vitext.py) | 534 | Toàn bộ xử lý tiếng Việt. Hàm thuần khiết, có test riêng từng bước | [02](02-vietnamese-nlp.md) |
-| [`dataset.py`](../src/vietjobs/dataset.py) | 275 | Làm sạch + chia tập đóng băng. Tách từ chạy **một lần** rồi cache vào parquet | [01](01-data-audit.md) |
-| [`features.py`](../src/vietjobs/features.py) | 279 | `PrepConfig` bật/tắt từng bước → mỗi cấu hình là một dòng ablation | [05](05-dac-trung-tfidf.md) |
-| [`train.py`](../src/vietjobs/train.py) | 362 | Một lần chạy = một dòng trong [04-results.md](04-results.md), không sửa dòng đã ghi | [03](03-protocol.md) |
-| [`predict.py`](../src/vietjobs/predict.py) | 260 | Dùng **đúng** code path tiền xử lý đã tạo dữ liệu train | [09](09-lo-trinh.md) |
-| [`models.py`](../src/vietjobs/models.py) | 466 | KNN · SVM · LogReg · LinearRegression · LightGBM (bắt buộc) + RandomForest · LightGBM · XGBoost cho trục so sánh thuật toán + baseline phải vượt | [06](06-mo-hinh-phan-lop.md) |
-| [`evaluate.py`](../src/vietjobs/evaluate.py) | 267 | Metric cho cả ba bài toán + bootstrap và so cặp | [03](03-protocol.md) · [10](10-so-sanh-mo-hinh.md) |
-| [`config.py`](../src/vietjobs/config.py) | 59 | Đường dẫn · `SPLIT_SEED` · nhóm cột · tên task | — |
-| [`scripts/measure_vitext.py`](../scripts/measure_vitext.py) | 125 | Đo lại bằng chứng cho bảng chín bước. Không dính vào train, chạy lúc nào cũng được | [02](02-vietnamese-nlp.md) |
-| [`scripts/sweep_category.py`](../scripts/sweep_category.py) | 362 | Chạy lưới 6×6 tuần tự trong một tiến trình, resume được, xếp theo wave | [10](10-so-sanh-mo-hinh.md) |
-| [`scripts/report_sweep.py`](../scripts/report_sweep.py) | 206 | Đọc artifact cụm → bảy bảng markdown. In ra stdout, không tự ghi vào `docs/` | [10](10-so-sanh-mo-hinh.md) |
+| [`vitext.py`](../src/vietjobs/vitext.py) | 584 | All Vietnamese processing. Pure functions, each step separately tested | [02](02-vietnamese-nlp.md) |
+| [`dataset.py`](../src/vietjobs/dataset.py) | 276 | Cleaning + the frozen split. Segmentation runs **once** and is cached into the CSV. `load_split` is the only supported reader | [01](01-data-audit.md) |
+| [`features.py`](../src/vietjobs/features.py) | 279 | `resolve_column` — the single door deciding which task reads which column. Both the DL path and the old ML path go through it | [05](05-phan-tich-du-lieu.md) |
+| [`evaluate.py`](../src/vietjobs/evaluate.py) | 267 | Metrics for all three tasks + bootstrap and paired comparison. Shared by ML and DL, so the numbers are comparable | [03](03-protocol.md) |
+| [`config.py`](../src/vietjobs/config.py) | 59 | Paths · `SPLIT_SEED` · column groups · task names | — |
+| **[`dl/text.py`](../src/vietjobs/dl/text.py)** | 40 | Joins three text fields into the PhoBERT input. No torch dependency, so its tests run on any machine | [06](06-baseline-dl.md) |
+| **[`dl/encode.py`](../src/vietjobs/dl/encode.py)** | 122 | Frozen PhoBERT → 768-dim vectors, cached to `.npy` split by the `raw`/`masked` column family | [06](06-baseline-dl.md) |
+| **[`dl/heads.py`](../src/vietjobs/dl/heads.py)** | 37 | The dense part: 768 → h → h/2 → out. Where the trunk and branches will split in the multi-task merge | [06](06-baseline-dl.md) |
+| **[`dl/train_dl.py`](../src/vietjobs/dl/train_dl.py)** | 274 | One run = one row in [04-results.md](04-results.md) + a per-epoch `history.jsonl` | [03](03-protocol.md) · [06](06-baseline-dl.md) |
+| [`scripts/analyze_data.py`](../scripts/analyze_data.py) | 415 | Eleven measurements + five figures for [05](05-phan-tich-du-lieu.md). Reads `train` only, never touches `test` | [05](05-phan-tich-du-lieu.md) |
+| [`scripts/probe_embeddings.py`](../scripts/probe_embeddings.py) | 83 | A linear probe on the PhoBERT vectors — separates "poor features" from "a broken head" | [06 §5.4](06-baseline-dl.md#54-the-first-failure-kept-as-evidence) |
+| [`scripts/measure_vitext.py`](../scripts/measure_vitext.py) | 125 | Re-measures the evidence for the nine-step table | [02](02-vietnamese-nlp.md) |
+| [`train.py`](../src/vietjobs/train.py) · [`models.py`](../src/vietjobs/models.py) | 362 · 466 | The machine-learning path. Not developed further, kept to re-run the bar | [archive/](archive/README.md) |
+| [`predict.py`](../src/vietjobs/predict.py) | 260 | The inference facade — **does not know the DL path**, see [09 Priority 5](09-lo-trinh.md#priority-5--the-system) | [09](09-lo-trinh.md) |
+| [`scripts/archive/*.py`](../scripts/archive/) | 749 | The 6×6 sweep, the cluster report, the segmenter ablation — part of the closed phase | [archive/](archive/README.md) |
 
 ---
 
-## Hai bất biến giữ cả hệ thống đứng vững
+## Three invariants that hold the whole system up
 
-**1. `vitext.py` toàn hàm thuần khiết.** Cùng đầu vào cho cùng đầu ra, không đọc
-trạng thái ngoài, không học gì từ dữ liệu. Nhờ vậy `dataset.py`, `features.py` và
-`predict.py` gọi chung một đoạn code mà không lệch kết quả. Đây là quy tắc số 4
-trong [../CLAUDE.md](../CLAUDE.md).
+**0. One door for both tracks.** The DL path does not wire itself to a raw column:
+it calls `features.resolve_column` through
+[`dl/text.py`](../src/vietjobs/dl/text.py), the same gate the machine-learning path
+used. That is why the salary-leak rule only has to be guarded in one place.
 
-**2. Chỉ có một cửa quyết định bài toán nào đọc cột nào** — `features.resolve_column`.
-Quy tắc số 3, giữ bởi [`tests/test_no_leak.py`](../tests/test_no_leak.py).
+**1. `vitext.py` is entirely pure functions.** Same input, same output, no external
+state read, nothing learned from the data. That is what lets `dataset.py`,
+`features.py` and `predict.py` call the same code without diverging. This is Rule 4
+in [../AGENTS.md](../AGENTS.md).
+
+**2. There is only one door deciding which task reads which column** —
+`features.resolve_column`. Rule 3, held by
+[`tests/test_no_leak.py`](../tests/test_no_leak.py).
 
 ---
 
-## Test
+## Tests
 
-100 test, đếm bằng `pytest --collect-only -q`:
+108 tests, counted with `pytest --collect-only -q`:
 
-| File | Test | Giữ điều gì |
+| File | Tests | What it holds |
 |---|---|---|
-| [`tests/test_vitext.py`](../tests/test_vitext.py) | 54 | Từng bước tiếng Việt, kể cả bốn ca "40 triệu người dùng" **không** được che |
-| [`tests/test_no_leak.py`](../tests/test_no_leak.py) | 22 | Bài lương không bao giờ đọc cột chưa che · **mọi tên trong lá chắn phải là cột có thật** · ba cột kỹ năng không chứa con số lương |
-| [`tests/test_train_overrides.py`](../tests/test_train_overrides.py) | 16 | `--set` thật sự tới được estimator; khoá lạ báo lỗi thay vì im lặng; ô `Headline` không chứa `\|` |
-| [`tests/test_bootstrap.py`](../tests/test_bootstrap.py) | 8 | Bootstrap tất định theo seed; hai mô hình y hệt cho hoà 0,5; so cặp nhạy hơn σ độc lập |
+| [`tests/test_vitext.py`](../tests/test_vitext.py) | 56 | Every Vietnamese step, including the four cases where "40 triệu người dùng" (40 million users) must **not** be masked · the segmenter-switch flag must actually switch segmenter |
+| [`tests/test_no_leak.py`](../tests/test_no_leak.py) | 22 | The salary tasks never read an unmasked column · **every name in the shield must be a real column** · the three skill columns contain no salary figures |
+| [`tests/test_train_overrides.py`](../tests/test_train_overrides.py) | 16 | `--set` really reaches the estimator; an unknown key errors instead of being ignored; the `Headline` cell contains no `\|` |
+| [`tests/test_dl_text.py`](../tests/test_dl_text.py) | 6 | The DL path reads the right columns: the salary tasks see only `*_masked`, classification sees raw text, and both are segmented because PhoBERT was trained on segmented text |
+| [`tests/test_bootstrap.py`](../tests/test_bootstrap.py) | 8 | The bootstrap is deterministic given the seed; two identical models tie at 0.5; the paired comparison is more sensitive than an independent σ |
 
-**Còn thiếu:** `tests/test_predict.py` — được nhắc trong docstring của
-[predict.py:67](../src/vietjobs/predict.py#L67) và trong `CLAUDE.md`, nhưng
-**chưa tồn tại**. Không có test cho `dataset.clean` và `group_stratified_split`. Xem
-[09-lo-trinh.md — Ưu tiên 0](09-lo-trinh.md#ưu-tiên-0--khoá-trainserve-skew-chặn-mọi-thứ-khác).
+**Missing:** `tests/test_predict.py` — mentioned in the docstring of
+[predict.py:67](../src/vietjobs/predict.py#L67) and in `AGENTS.md`, but it **does
+not exist**. There are no tests for `dataset.clean` or `group_stratified_split`.
+See
+[09-lo-trinh.md — Priority 0](archive/09-lo-trinh-ml.md#ưu-tiên-0--khoá-trainserve-skew-chặn-mọi-thứ-khác).
 
 ---
 
-## Lệnh hay dùng
+## Commands in regular use
 
 ```bash
-python -m vietjobs.dataset build                    # dựng lại splits (hiếm khi cần)
-python -m vietjobs.train --task category --model svm --C 0.02 --province
-python -m vietjobs.train --task disclosed --model logreg --province
-python -m vietjobs.train --task salary --model lgbm --province
-python -m vietjobs.predict --title "..." --description "..."
+python scripts/analyze_data.py                      # measure + draw the five figures for note 05
+python -m vietjobs.dl.encode   --task category --splits train dev   # embed, cached
+python -m vietjobs.dl.train_dl --task category --class-weight
+python -m vietjobs.dl.train_dl --task salary
+PYTHONPATH=src .venv-dl/bin/python scripts/probe_embeddings.py --task category   # diagnostic bar
 pytest -q
-python scripts/measure_vitext.py                    # đo lại bảng chín bước
-./scripts/render_figures.sh                         # xuất sơ đồ ra SVG/PNG
+
+# the machine-learning path — only to re-run the old bar
+python -m vietjobs.dataset build                    # rebuild the splits (rarely needed)
+python -m vietjobs.train --task category --model svm --C 0.02 --province
+python -m vietjobs.predict --title "..." --description "..."
+python scripts/measure_vitext.py                    # re-measure the nine-step table
+./scripts/render_figures.sh                         # export the diagrams to SVG/PNG
 ```
 
 ---
 
-## Đọc tiếp
+## Read next
 
-- [Lộ trình còn lại](09-lo-trinh.md) — việc phải làm, xếp theo thứ tự
-- [Giao thức thí nghiệm](03-protocol.md) — hợp đồng mà `train.py` thực thi
-- [../CLAUDE.md](../CLAUDE.md) — bốn quy tắc làm việc
+- [What is left on the roadmap](09-lo-trinh.md) — the work items, in order
+- [Experiment protocol](03-protocol.md) — the contract `train.py` and `dl/train_dl.py` both enforce
+- [../AGENTS.md](../AGENTS.md) — the working rules

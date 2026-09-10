@@ -1,113 +1,119 @@
-[← Ma trận thưa](04-ma-tran-thua-va-so-chieu.md) · [Nền tảng](00-index.md) · [Đo lường và baseline →](06-do-luong-va-baseline.md)
+[← Sparse matrices](04-ma-tran-thua-va-so-chieu.md) · [Background](00-index.md) · [Metrics and baselines →](06-do-luong-va-baseline.md)
 
-# 5. Rò rỉ dữ liệu
+# 5. Data leakage
 
-Rò rỉ (*data leakage*) là khi mô hình nhìn thấy — trực tiếp hay gián tiếp —
-thông tin lẽ ra nó không được có lúc dự đoán thật.
+Leakage is when the model sees — directly or indirectly — information it would not
+have at real prediction time.
 
-Điều làm rò rỉ nguy hiểm hơn mọi loại bug khác:
+What makes leakage more dangerous than any other kind of bug:
 
-> **Nó không báo lỗi. Nó làm điểm số ĐẸP LÊN.**
+> **It raises no error. It makes the score LOOK BETTER.**
 
-Một bug thường làm chương trình chết, hoặc làm điểm tệ đi — bạn nhìn ra ngay.
-Rò rỉ làm mọi thứ trông tuyệt vời. Bạn chỉ phát hiện ra khi đưa mô hình ra đời
-thật và nó hỏng, mà lúc đó thì báo cáo đã in xong rồi.
+An ordinary bug crashes the program or makes the score worse — you notice it
+straight away. Leakage makes everything look wonderful. You only find out when the
+model goes into the world and breaks, and by then the report is already printed.
 
 ---
 
-## Ba loại rò rỉ trong đúng dự án này
+## Three kinds of leakage in this project
 
-### Loại 1 — nhãn nằm ngay trong đầu vào
+### Kind 1 — the label is inside the input
 
-**Bài toán:** dự đoán mức lương từ nội dung tin.
-**Vấn đề:** rất nhiều tin **viết thẳng con số lương trong phần mô tả và phúc lợi**.
+**The task:** predict the salary from the posting's content.
+**The problem:** a great many postings **state the salary figure right in the
+description and the benefits**.
 
-Đo được:
+Measured:
 
-| Ô văn bản | Số dòng nhắc lại con số lương |
+| Text field | Rows restating the salary figure |
 |---|---|
-| phúc lợi | **5.081 (10,65 %)** |
-| mô tả | 250 (0,52 %) |
-| yêu cầu | 103 (0,22 %) |
-| tiêu đề | 121 (0,25 %) |
+| benefits | **5,081 (10.65 %)** |
+| description | 250 (0.52 %) |
+| requirements | 103 (0.22 %) |
+| title | 121 (0.25 %) |
 
-Không xử lý thì mô hình chỉ cần học một quy tắc: *"tìm con số đứng cạnh chữ lương,
-in nó ra"*. R² đẹp. Nhưng nó không **dự đoán** gì cả — nó **sao chép**. Với tin
-thật không ghi lương, nó vô dụng.
+Without handling, the model only has to learn one rule: *"find the number next to
+the word 'salary' and print it"*. The R² looks great. But it is not **predicting**
+anything — it is **copying**. On a real posting that does not state a salary, it is
+useless.
 
-**Cách chặn — che, không xoá:**
+**How it is blocked — mask, do not delete:**
 
 ```
 "Lương 15 - 22 triệu/tháng"   →   "Lương <SALARY>/tháng"
 ```
 
-Con số biến mất, chữ "Lương" **ở lại**. Đó là cố ý: *"tin này có nhắc tới lương"*
-là tín hiệu hợp lệ; *"lương bằng bao nhiêu"* mới là đáp án phải giấu.
+The figure disappears, the word "Lương" (salary) **stays**. That is deliberate:
+*"this posting mentions pay"* is a legitimate signal; *"how much the pay is"* is the
+answer that must be hidden.
 
-**Phần khó nhất là phân biệt tiền với số đếm:**
+**The hardest part is telling money from counts:**
 
-| Câu | Che? | Vì sao |
+| Sentence | Mask? | Why |
 |---|---|---|
-| "thu nhập 15 - 22 triệu" | ✅ | tiền |
-| "40 triệu người dùng" | ❌ | đang đếm người |
-| "500 triệu đồng doanh thu" | ❌ | đang đếm doanh thu |
-| "thưởng 5tr mỗi quý" | ✅ | tiền |
+| "thu nhập 15 - 22 triệu" (income 15–22 million) | ✅ | money |
+| "40 triệu người dùng" (40 million users) | ❌ | counting people |
+| "500 triệu đồng doanh thu" (500 million in revenue) | ❌ | counting revenue |
+| "thưởng 5tr mỗi quý" (5M bonus per quarter) | ✅ | money |
 
-Comment trong `tests/test_vitext.py:210` ghi thẳng: *"this was a real bug"*.
-Che quá tay cũng là một dạng phá dữ liệu.
+The comment in `tests/test_vitext.py:210` says it plainly: *"this was a real bug"*.
+Over-masking is also a way of destroying data.
 
-### Loại 2 — cùng một tin nằm ở cả train lẫn test
+### Kind 2 — the same posting is in both train and test
 
-Nhà tuyển dụng đăng lại một tin nhiều lần, sửa vài chữ. Đo được:
-**12.808 dòng (26,8 %)** là tin đăng lại; 47.707 dòng chỉ có **34.899 nhóm** thật sự.
+Employers repost an advert many times with a few words changed. Measured:
+**12,808 rows (26.8 %)** are reposts; the 47,707 rows contain only **34,899** truly
+distinct groups.
 
-Chia tập ngẫu nhiên **theo dòng** thì gần như chắc chắn một tin có bản ở train và
-bản gần giống ở test. Mô hình chỉ cần **thuộc lòng** là ăn điểm — và điểm đó không
-nói gì về khả năng xử lý tin nó chưa từng thấy.
+Splitting randomly **by row** almost guarantees that a posting has one copy in train
+and a near-copy in test. The model scores points purely by **memorising** — and that
+score says nothing about how it handles a posting it has never seen.
 
-**Cách chặn:** băm nội dung → `group_id`, và bắt **cả nhóm** đi cùng một tập.
+**How it is blocked:** hash the content → `group_id`, and force **the whole group**
+into one split.
 
 ```python
 straddling = int((df.groupby("group_id")["split"].nunique() > 1).sum())
 assert straddling == 0, f"{straddling} groups straddle splits — split is leaking"
 ```
 
-`assert` này không được phép tắt. Kết quả hiện tại: **0 nhóm lọt**.
+That `assert` may never be disabled. The current result: **0 straddling groups**.
 
-> Lưu ý: tin đăng lại **không bị xoá** — chúng vẫn là dữ liệu thật. Chỉ có cách
-> **chia tập** thay đổi. Xem [01-data-audit.md §2](../01-data-audit.md#2-khử-trùng-lặp--hai-tầng-hai-mục-đích-khác-nhau).
+> Note: reposts are **not deleted** — they are still real data. Only the **way the
+> split is made** changes. See
+> [01-data-audit.md §2](../01-data-audit.md#2-de-duplication--two-layers-two-different-purposes).
 
-### Loại 3 — chạm vào tập test nhiều lần
+### Kind 3 — touching the test set repeatedly
 
-Loại này tinh vi nhất vì nó không nằm trong code, nó nằm trong **quy trình làm việc**.
+This kind is the subtlest, because it is not in the code — it is in the **workflow**.
 
-Mỗi lần bạn: chấm test → thấy điểm thấp → chỉnh mô hình → chấm test lại, là một
-lần thông tin từ test chảy vào quyết định thiết kế. Làm mười lần thì test không
-còn là ước lượng không thiên lệch nữa — nó đã trở thành một tập val thứ hai, và
-bạn không còn tập nào để biết mô hình thật sự tốt đến đâu.
+Every time you score test → see a low number → adjust the model → score test again,
+information flows from test into a design decision. Do it ten times and test is no
+longer an unbiased estimate — it has become a second dev set, and you have nothing
+left to tell you how good the model really is.
 
-**Cách chặn — bằng luật, không bằng code:**
+**How it is blocked — by rule, not by code:**
 
-| Tập | Dùng để | Chạm bao nhiêu lần |
+| Split | Used for | How often it may be touched |
 |---|---|---|
-| `train` | Huấn luyện | Không giới hạn |
-| `val` | Chọn mô hình, siêu tham số, bước tiền xử lý | Không giới hạn |
-| `test` | Báo cáo con số cuối cùng | **Đúng một lần**, ở cuối |
+| `train` | Training | Unlimited |
+| `dev` | Model selection, hyper-parameters, preprocessing steps | Unlimited |
+| `test` | Reporting the final number | **Exactly once**, at the end |
 
-`train.py` từ chối `--eval test` nếu không có cờ `--confirm-test`. Cờ đó tồn tại
-để việc chạm vào test là **hành động có chủ ý**, không phải mặc định.
+`train.py` refuses `--eval test` without the `--confirm-test` flag. That flag exists
+so that touching test is **a deliberate act**, not a default.
 
-Trong 27 thí nghiệm của dự án, đúng **một** dòng chấm trên test:
+Across the project's 27 experiments, exactly **one** row was scored on test:
 `cat-FINAL-svm-C0.02-test`.
 
 ---
 
-## Cơ chế phòng thủ: một cửa duy nhất
+## The defence mechanism: a single door
 
-Loại 1 được chặn bằng một quy tắc kiến trúc, không phải bằng sự cẩn thận:
+Kind 1 is blocked by an architectural rule, not by carefulness:
 
-**Mỗi cột văn bản tồn tại ở hai bản — bản thô và bản đã che — và chỉ có MỘT hàm
-quyết định bài toán nào đọc bản nào.**
+**Every text column exists in two copies — raw and masked — and only ONE function
+decides which task reads which.**
 
 ```python
 def resolve_column(name, *, task, segmented):
@@ -115,8 +121,8 @@ def resolve_column(name, *, task, segmented):
     ...
 ```
 
-Vì sao gom vào một hàm thay vì rải `if` khắp nơi: **một cửa thì viết test được.**
-`tests/test_no_leak.py` chỉ cần một dòng để canh toàn bộ:
+Why concentrate it in one function instead of scattering `if` statements: **one
+door can be tested.** `tests/test_no_leak.py` needs a single line to guard the lot:
 
 ```python
 assert set(F.source_columns(ct)) & F.UNMASKED_COLUMNS == set()
@@ -124,45 +130,46 @@ assert set(F.source_columns(ct)) & F.UNMASKED_COLUMNS == set()
 
 ---
 
-## Bài học đắt nhất: test chỉ bảo vệ được thứ bạn nghĩ tới
+## The most expensive lesson: a test only protects what you thought of
 
-Trong lúc viết tài liệu này, đọc kỹ `features.py` thì phát hiện:
+While writing this documentation, a careful read of `features.py` turned up:
 
-**`soft_skills_text` và `qualifications_text` đi vào mô hình lương ở dạng chưa che.**
-Hai cột đó không có bản `_masked`, và **không nằm trong `UNMASKED_COLUMNS`** — nên
-`tests/test_no_leak.py` chạy xanh mà không hề kiểm tra chúng.
+**`soft_skills_text` and `qualifications_text` reach the salary model unmasked.**
+Neither column has a `_masked` copy, and neither is **in `UNMASKED_COLUMNS`** — so
+`tests/test_no_leak.py` passes green without ever checking them.
 
-Chưa biết hai cột đó có nhắc lại con số lương hay không, vì
-`scripts/measure_vitext.py` không đo chúng. Việc phải làm ghi ở
-[09-lo-trinh.md — Ưu tiên 0b](../09-lo-trinh.md#ưu-tiên-0b--đóng-lỗ-hổng-che-lương-chưa-được-test-phủ).
+Whether those two columns restate salary figures is still unknown, because
+`scripts/measure_vitext.py` does not measure them. The work item is recorded in
+[09-lo-trinh.md — Priority 0b](../archive/09-lo-trinh-ml.md#ưu-tiên-0b--xong-không-phải-rò-rỉ).
 
-Đây là ví dụ sống cho điều đáng nhớ nhất trong cả note này:
+This is a living example of the most memorable thing in this note:
 
-> Một test chống rò rỉ **không** chứng minh rằng không có rò rỉ.
-> Nó chỉ chứng minh rằng những đường rò rỉ **người viết test đã nghĩ ra** đang bị chặn.
+> A leak test does **not** prove there is no leak.
+> It only proves that the leak paths **the test's author thought of** are blocked.
 >
-> Danh sách kiểu `UNMASKED_COLUMNS` là danh sách **cho phép sai sót**: quên thêm
-> một cột vào đó thì test im lặng bỏ qua cột ấy. Một thiết kế an toàn hơn sẽ đảo
-> ngược mặc định — liệt kê những cột **được phép** đọc, và từ chối mọi cột khác.
+> A list like `UNMASKED_COLUMNS` is a list that **permits omissions**: forget to add
+> a column and the test silently skips it. A safer design would invert the default —
+> list the columns that are **allowed** to be read, and reject everything else.
 
 ---
 
-## Danh sách kiểm tra khi bạn nghi có rò rỉ
+## A checklist for when you suspect a leak
 
-1. **Điểm cao bất thường?** Nghi ngờ trước, ăn mừng sau. Rò rỉ luôn giống một
-   mô hình xuất sắc.
-2. **Đặc trưng nào mạnh nhất?** Nếu đặc trưng số một là thứ mà lúc dự đoán thật
-   bạn *chưa thể có*, đó là rò rỉ.
-3. **Đặc trưng này có tồn tại lúc dự đoán không?** Câu hỏi vàng cho mọi cột.
-4. **Có bản sao gần giống giữa train và test không?** Băm nội dung rồi đếm.
-5. **Đã chạm test mấy lần rồi?** Nếu phải nghĩ để nhớ, thì đã quá nhiều.
-6. **Cột nào KHÔNG nằm trong danh sách kiểm tra của test?** — bài học ở trên.
+1. **Unusually high score?** Suspect first, celebrate later. Leakage always looks
+   like an excellent model.
+2. **Which feature is strongest?** If the top feature is something you *cannot have*
+   at real prediction time, that is a leak.
+3. **Does this feature exist at prediction time?** The golden question for every
+   column.
+4. **Are there near-duplicates between train and test?** Hash the content and count.
+5. **How many times have you touched test?** If you have to think about it, too many.
+6. **Which columns are NOT in the test's checklist?** — the lesson above.
 
 ---
 
-## Quay lại thực tế dự án
+## Back to the project itself
 
-- [03-protocol.md](../03-protocol.md) — hợp đồng train/val/test đầy đủ
-- [01-data-audit.md](../01-data-audit.md#3-bốn-bản-sao-của-mỗi-cột-văn-bản) — bốn bản sao của mỗi cột
-- [05-dac-trung-tfidf.md](../05-dac-trung-tfidf.md#1-resolve_column--cửa-duy-nhất) — `resolve_column` và lỗ hổng chưa vá
-- [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — bước 4 (che lương) và bước 9 (khoá gộp nhóm)
+- [03-protocol.md](../03-protocol.md) — the full train/dev/test contract
+- [01-data-audit.md](../01-data-audit.md#3-four-copies-of-every-text-column) — the four copies of every column
+- [05-dac-trung-tfidf.md](../archive/05-dac-trung-tfidf.md#1-resolve_column--cửa-duy-nhất) — `resolve_column` and the unpatched hole
+- [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — step 4 (salary masking) and step 9 (the grouping key)

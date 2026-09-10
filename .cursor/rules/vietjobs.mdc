@@ -1,0 +1,23 @@
+---
+description: Mandatory rules for the VietJobs project
+alwaysApply: true
+---
+
+The full rules are in [AGENTS.md](mdc:AGENTS.md) — read that file before changing
+anything. Five things not to forget:
+
+1. **Living documentation.** Every real change updates the right note in `docs/`
+   in the same working session (the mapping table is in AGENTS.md, Rule 1).
+2. **Experiment protocol.** Never change `SPLIT_SEED = 20260826`; `test` is
+   touched once, behind `--confirm-test`; `docs/04-results.md` is append-only.
+3. **Leak prevention.** The `salary`/`disclosed` tasks read only `*_masked`
+   columns, through `features.resolve_column`. Adding a text column means
+   updating `_MASKABLE` and `UNMASKED_COLUMNS`.
+4. **One code path.** `predict.build_frame` must match the column layout of
+   `dataset.clean`.
+5. **English Markdown.** Every `.md` in the repo — `docs/`, `README.md`,
+   `AGENTS.md`, `.claude/skills/*/SKILL.md` — is written in English (Rule 6).
+
+Every number written down must be measurable, with a source (`manifest.json`,
+`metrics.json`, or a row in `04-results.md`). `pytest -q` must be green before a
+commit.

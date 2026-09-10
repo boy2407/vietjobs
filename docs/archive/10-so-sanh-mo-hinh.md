@@ -1,4 +1,4 @@
-[← Tổng quan](00-tong-quan.md) · [← Mô hình phân lớp](06-mo-hinh-phan-lop.md) · [Lộ trình →](09-lo-trinh.md)
+[← Tổng quan](../00-tong-quan.md) · [← Mô hình phân lớp](06-mo-hinh-phan-lop.md) · [Lộ trình →](09-lo-trinh-ml.md)
 
 # So sánh mô hình — cụm quét công bằng
 
@@ -10,7 +10,7 @@ chín giá trị `C` rồi lấy cái tốt nhất, còn ba mô hình cây mỗi
 cấu hình do người viết đoán.
 
 > **Chưa quen các khái niệm bên dưới?** Đọc
-> [nền tảng: đọc một bảng so sánh](nen-tang/08-doc-mot-bang-so-sanh.md) trước —
+> [nền tảng: đọc một bảng so sánh](../nen-tang/08-doc-mot-bang-so-sanh.md) trước —
 > nó giải thích "ô", siêu tham số, lời nguyền của người thắng, và vì sao
 > `P(A > B)` mới là con số để quyết định chứ không phải σ.
 
@@ -77,7 +77,7 @@ những tin nhập nhằng, phần phương sai chung bị triệt tiêu và ph�
 
 ## 3. Tái lập — sáu trên sáu
 
-Ô #1 của sáu họ đầu lặp lại một dòng đã có trong [04-results.md](04-results.md).
+Ô #1 của sáu họ đầu lặp lại một dòng đã có trong [04-results.md](04-results-ml.md).
 Lệch một chữ số là cả cụm đáng ngờ.
 
 | Mô hình | mỏ neo (dòng cũ) | đo lại | lệch |
@@ -222,7 +222,7 @@ Mỗi mục dựa trên số đo trong chính cụm này, không dựa trên lý
 | `svm_plain` (`class_weight=None`) | 0,5927 | 0,5763 | **0,6560** |
 
 Bỏ `class_weight` làm **accuracy tăng** 0,0115 và **balanced accuracy giảm**
-0,0950. Đó chính là hành vi mà [nền tảng note 6](nen-tang/06-do-luong-va-baseline.md)
+0,0950. Đó chính là hành vi mà [nền tảng note 6](../nen-tang/06-do-luong-va-baseline.md)
 cảnh báo: mô hình bỏ rơi lớp hiếm để làm đẹp con số tổng. Nếu dự án chọn mô hình
 bằng accuracy thì `svm_plain` đã thắng — và 15 nghề hiếm sẽ mờ dần khỏi hệ thống.
 
@@ -341,21 +341,21 @@ không phải timeout: `sklearn.NearestCentroid` làm đặc ma trận đánh gi
 
 - **Mọi con số "tốt nhất" đều là ước lượng lạc quan.** Muốn con số không thiên vị
   phải chấm trên tập chưa từng dùng để chọn — mà `test` đã chạm một lần rồi
-  ([03-protocol.md](03-protocol.md) §2). **Không được lấy `test` ra "kiểm chứng".**
+  ([03-protocol.md](../03-protocol.md) §2). **Không được lấy `test` ra "kiểm chứng".**
 - **6 ô cho `centroid` (1 nút vặn) không tương đương 6 ô cho `xgb` (8 nút vặn).**
   Bằng nhau về *số cấu hình* không phải bằng nhau về *độ phủ*. Bảng 6 đo đúng
   chênh lệch đó.
 - **Lưới `xgb` bị cắt cụt** — cực đại nằm ở mép. Ba ô ở `depth=3`,
   `colsample=0,05` sẽ trả lời dứt điểm.
-- **Chưa có mô hình học sâu.** PhoBERT là [Ưu tiên 4](09-lo-trinh.md).
+- **Chưa có mô hình học sâu.** PhoBERT là [Ưu tiên 4](09-lo-trinh-ml.md).
 - Cụm chạy trên không gian **236.596 chiều chưa cắt**. `C` tối ưu rơi tận 0,02
-  vẫn là triệu chứng thừa chiều — [Ưu tiên 3b](09-lo-trinh.md) còn nguyên.
+  vẫn là triệu chứng thừa chiều — [Ưu tiên 3b](09-lo-trinh-ml.md) còn nguyên.
 
 ---
 
 ## Đọc tiếp
 
-- [nền tảng: đọc một bảng so sánh](nen-tang/08-doc-mot-bang-so-sanh.md) — khái niệm dùng trong note này
+- [nền tảng: đọc một bảng so sánh](../nen-tang/08-doc-mot-bang-so-sanh.md) — khái niệm dùng trong note này
 - [06-mo-hinh-phan-lop.md](06-mo-hinh-phan-lop.md) — bậc thang kết quả và mô hình chốt
-- [04-results.md](04-results.md) — toàn bộ dòng thí nghiệm
-- [03-protocol.md](03-protocol.md) §7 — quy tắc quyết định
+- [04-results.md](04-results-ml.md) — toàn bộ dòng thí nghiệm
+- [03-protocol.md](../03-protocol.md) §7 — quy tắc quyết định

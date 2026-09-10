@@ -1,14 +1,14 @@
-[← Tổng quan](00-tong-quan.md) · [← Xử lý tiếng Việt](02-vietnamese-nlp.md) · [Mô hình phân lớp →](06-mo-hinh-phan-lop.md)
+[← Tổng quan](../00-tong-quan.md) · [← Xử lý tiếng Việt](../02-vietnamese-nlp.md) · [Mô hình phân lớp →](06-mo-hinh-phan-lop.md)
 
 # Đặc trưng và TF-IDF
 
 Từ 50 cột đã sạch đến ma trận thưa **236.596 chiều** nuôi cả hai bài toán.
 Đây là chỗ chữ biến thành số.
 
-Code: [`features.py`](../src/vietjobs/features.py) — toàn bộ 268 dòng.
+Code: [`features.py`](../../src/vietjobs/features.py) — toàn bộ 268 dòng.
 
 > Chưa biết TF-IDF hoạt động thế nào? Đọc
-> [nền tảng: TF-IDF là gì](nen-tang/02-tf-idf-la-gi.md) trước — có ví dụ tính tay.
+> [nền tảng: TF-IDF là gì](../nen-tang/02-tf-idf-la-gi.md) trước — có ví dụ tính tay.
 
 ---
 
@@ -40,7 +40,7 @@ Bốn ca, đọc từ trái sang phải:
 lương đọc chính đáp án của mình, báo cáo R² đẹp, rồi hỏng ngoài đời. Một cửa duy
 nhất thì viết test được; mười nhánh `if` rải khắp code thì không.
 
-[`tests/test_no_leak.py`](../tests/test_no_leak.py) giữ nó bằng 7 test, chạy
+[`tests/test_no_leak.py`](../../tests/test_no_leak.py) giữ nó bằng 7 test, chạy
 trên mọi tổ hợp `scope × segment × task`. Test cốt lõi chỉ có một dòng:
 
 ```python
@@ -51,7 +51,7 @@ assert set(F.source_columns(ct)) & F.UNMASKED_COLUMNS == set()
 > `soft_skills_text` và `qualifications_text` đi vào mô hình lương ở dạng
 > **chưa che** và **không** nằm trong `UNMASKED_COLUMNS`, nên test không bắt.
 > Chưa đo xem hai cột đó có nhắc lại con số lương hay không. Việc phải làm ghi
-> ở [09-lo-trinh.md — Ưu tiên 0](09-lo-trinh.md#ưu-tiên-0b--đóng-lỗ-hổng-che-lương-chưa-được-test-phủ).
+> ở [09-lo-trinh.md — Ưu tiên 0](09-lo-trinh-ml.md#ưu-tiên-0b--xong-không-phải-rò-rỉ).
 
 ---
 
@@ -72,10 +72,10 @@ xử lý gì", và mỗi bước phải tự kiếm chỗ đứng bằng một d
 Cách làm ngược lại — bật hết rồi tin rằng nó giúp — là cách để có một pipeline
 dài đầy nghi lễ mà không ai biết bước nào thật sự đóng góp. Kết quả đo được:
 ba trong bốn bước bị gỡ. Xem
-[02-vietnamese-nlp.md §4](02-vietnamese-nlp.md#4-ablation--bước-nào-thật-sự-đáng-giữ).
+[02-vietnamese-nlp.md §4](../02-vietnamese-nlp.md#5-the-closed-tracks-ablation--evidence-not-direction).
 
 `tag()` biến cấu hình thành nhãn ngắn (`raw`, `segment+province`) đi thẳng vào
-run id và vào cột `Prep` của [04-results.md](04-results.md). Mỗi cấu hình là
+run id và vào cột `Prep` của [04-results.md](04-results-ml.md). Mỗi cấu hình là
 một dòng, truy ngược được.
 
 ---
@@ -189,7 +189,7 @@ Title Case không bao giờ khớp tin viết thường.
 Đây là tham số quan trọng nhất trong cả file, và là lý do bước tách từ đo ra
 **không giúp gì**: bigram `nhân viên` đã bắt đúng cái mà `nhân_viên` định bắt.
 Bộ vectơ hoá giải sẵn bài toán mà bước 5 định giải. Chi tiết ở
-[nền tảng: n-gram và ranh giới từ](nen-tang/03-ngram-va-ranh-gioi-tu.md).
+[nền tảng: n-gram và ranh giới từ](../nen-tang/03-ngram-va-ranh-gioi-tu.md).
 
 *Bỏ đi (chỉ `(1,1)`):* token `viên` gộp chung nhân viên / chuyên viên / kỹ thuật
 viên / giáo viên — bốn nghề khác nhau đổ vào một chiều.
@@ -262,7 +262,7 @@ sinh `nha`, `han`, `nhan`, `vie`, `ien`, `vien`… Vì nó đọc bản đã g�
 Kênh này **bổ sung**, không thay thế kênh từ. Kênh từ giữ nghĩa của dấu; kênh ký
 tự bắc cầu cho những tin không có dấu.
 
-**Nó cố ý đọc bản chưa tách từ** ([features.py:213](../src/vietjobs/features.py#L213)):
+**Nó cố ý đọc bản chưa tách từ** ([features.py:213](../../src/vietjobs/features.py#L213)):
 
 ```python
 raw_title = resolve_column("job_title", task=task, segmented=False)
@@ -316,7 +316,7 @@ chỉ chia cho giá trị tuyệt đối lớn nhất, nên số 0 vẫn là s�
 Ở đây không được phép: 236.596 × 33.396 số thực 8 byte là khoảng **63 GB**.
 
 Ma trận thật chỉ có **492 ô khác 0 mỗi dòng** — đặc 0,2 phần nghìn. Lưu thưa là
-khoảng 130 MB. Xem [nền tảng: ma trận thưa và số chiều](nen-tang/04-ma-tran-thua-va-so-chieu.md).
+khoảng 130 MB. Xem [nền tảng: ma trận thưa và số chiều](../nen-tang/04-ma-tran-thua-va-so-chieu.md).
 
 `remainder="drop"` cũng quan trọng: **cột nào không được liệt kê thì bị vứt.**
 Đây là mặc định an toàn — thêm một cột mới vào parquet không tự động cho nó chảy
@@ -336,7 +336,7 @@ vào mô hình, và bốn cột lương thô (`salary`, `salary_min`, `salary_ma
 Hai điều dễ hiểu nhầm:
 
 **`scope="title"` không có khối số và khối one-hot.** Điều kiện ở
-[features.py:228](../src/vietjobs/features.py#L228) chỉ nhận `full` và `structured`.
+[features.py:228](../../src/vietjobs/features.py#L228) chỉ nhận `full` và `structured`.
 Nên dòng `cat-P0b-svm-title` 0,5547 là điểm của **chỉ chữ trong tiêu đề**, không
 kèm tỉnh, không kèm số năm kinh nghiệm. So sánh nó với `cat-P1-svm-raw` 0,5719
 (toàn văn) là so sánh hai thứ khác nhau về cả chữ lẫn cấu trúc.
@@ -346,7 +346,7 @@ huấn luyện, tỷ lệ p/n ≈ 0,0025 — đây là sân chơi công bằng *
 `LinearRegression` không chính quy hoá. Chạy hồi quy tuyến tính thuần trên 236.596
 chiều rồi kết luận "nó tệ" là không công bằng: nó tệ vì bị đặt vào tình huống
 không giải được. Có `scope=structured` thì kết luận mới có sức nặng.
-Xem [nền tảng: chính quy hoá](nen-tang/07-chinh-quy-hoa.md).
+Xem [nền tảng: chính quy hoá](../nen-tang/07-chinh-quy-hoa.md).
 
 Tuỳ chọn `svd=N` bọc thêm `TruncatedSVD` để nén ma trận thưa xuống `N` chiều đặc —
 dùng cho ablation số chiều của KNN và cho cấu hình `LinearRegression` thứ tư.
@@ -378,15 +378,15 @@ chúng nặng gấp khoảng 10 lần một chiều văn bản trung bình.**
 Đó là bằng chứng đo được cho một điều dễ nói mà khó tin: vài đặc trưng cấu trúc
 làm cẩn thận có sức nặng ngang hàng chục nghìn chiều văn bản. Và nó gợi thẳng ra
 hai việc tiếp theo — nhân trọng số khối tiêu đề, và cắt bớt chiều văn bản —
-ghi ở [09-lo-trinh.md — Ưu tiên 3](09-lo-trinh.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-phân-lớp-làm-trước-khi-nghĩ-đến-dl).
+ghi ở [09-lo-trinh.md — Ưu tiên 3](09-lo-trinh-ml.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-mốc-cơ-sở-ml).
 
 ---
 
 ## Đọc tiếp
 
 - [Mô hình phân lớp](06-mo-hinh-phan-lop.md) — ma trận này được dùng thế nào
-- [Bài toán lương](07-bai-toan-luong.md) — cũng ma trận này, cột đã che
-- [Xử lý tiếng Việt](02-vietnamese-nlp.md) — chuyện xảy ra trước khi vào TF-IDF
-- Nền tảng: [TF-IDF là gì](nen-tang/02-tf-idf-la-gi.md) ·
-  [n-gram và ranh giới từ](nen-tang/03-ngram-va-ranh-gioi-tu.md) ·
-  [ma trận thưa và số chiều](nen-tang/04-ma-tran-thua-va-so-chieu.md)
+- [Bài toán lương](../07-bai-toan-luong.md) — cũng ma trận này, cột đã che
+- [Xử lý tiếng Việt](../02-vietnamese-nlp.md) — chuyện xảy ra trước khi vào TF-IDF
+- Nền tảng: [TF-IDF là gì](../nen-tang/02-tf-idf-la-gi.md) ·
+  [n-gram và ranh giới từ](../nen-tang/03-ngram-va-ranh-gioi-tu.md) ·
+  [ma trận thưa và số chiều](../nen-tang/04-ma-tran-thua-va-so-chieu.md)

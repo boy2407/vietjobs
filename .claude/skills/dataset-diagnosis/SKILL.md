@@ -1,28 +1,31 @@
 ---
 name: dataset-diagnosis
-description: "Soi bộ dữ liệu VietJobs bằng mười phép đo chạy thật trên splits đã đóng băng — lệch lớp, nhóm đăng lại mâu thuẫn nhãn, trần nhiễu nhãn, ô rỗng, phủ từ vựng, độ tách lớp, lớp rác, lỗ hổng che lương, thiên lệch chọn mẫu, lệch địa lý — rồi xếp hạng thành bảng phát hiện kèm hành động làm sạch. Use this skill when the user asks what is wrong with the data, why the ceiling is low, whether the labels are trustworthy, what to clean or relabel, or invokes /dataset-diagnosis."
+description: "Examine the VietJobs dataset with ten measurements run for real on the frozen splits — class skew, repost groups with conflicting labels, the label-noise ceiling, empty fields, vocabulary coverage, class separability, the junk class, salary-masking holes, selection bias, geographic skew — then rank them into a findings table with the cleaning action each implies. Use this skill when the user asks what is wrong with the data, why the ceiling is low, whether the labels are trustworthy, what to clean or relabel, or invokes /dataset-diagnosis."
 trigger: "Use this skill when the user asks about dataset quality, label noise, class imbalance, duplicates, missing fields, vocabulary coverage, selection bias, or what data cleaning to do next, or invokes /dataset-diagnosis."
 version: 1
 ---
 
-# Dataset diagnosis — biến điểm yếu của dữ liệu thành việc phải làm
+# Dataset diagnosis — turning the data's weaknesses into work items
 
-Mô hình đứng yên ở một mức điểm có hai lý do khác hẳn nhau: mô hình chưa đủ, hoặc
-dữ liệu không cho phép hơn. Skill này trả lời vế thứ hai bằng số đo, để không ai
-tốn một buổi tinh chỉnh cho một trần mà dữ liệu đã chốt sẵn.
+A model stalling at some score has two entirely different explanations: the model is
+not good enough, or the data does not allow more. This skill answers the second with
+measurements, so nobody spends a session tuning against a ceiling the data has
+already fixed.
 
-Khác với [`model-diagnosis`](../model-diagnosis/SKILL.md): skill đó soi **một run
-đã huấn luyện**. Skill này soi **dữ liệu**, chạy được kể cả khi chưa có mô hình nào.
-Vài kết luận phải đọc chéo giữa hai skill — chỗ nào cần thì nói rõ.
+Different from [`model-diagnosis`](../model-diagnosis/SKILL.md): that skill examines
+**one trained run**. This one examines **the data**, and runs even when no model
+exists yet. A few conclusions have to be cross-read between the two skills — this
+note says where.
 
 ---
 
-## Luật số 1 — không con số nào được viết ra mà chưa chạy lệnh sinh ra nó
+## Rule 1 — no number is written down before the command that produced it has run
 
-Mỗi ô trong bảng kết quả phải có khối sinh ra nó ở cột kế bên. Chạy không được thì
-viết **chưa đo**. Không có "khoảng 30 %", không có "phần lớn".
+Every cell in the results table has the block that produced it in the next column.
+If it cannot be run, write **not measured**. No "about 30 %", no "most of them".
 
-Mọi đoạn mã dưới đây chạy nguyên văn từ gốc repo, qua Bash, sau phần mở đầu chung:
+Every snippet below runs verbatim from the repo root, through Bash, after this
+shared preamble:
 
 ```python
 import sys; sys.path.insert(0, 'src')
@@ -32,36 +35,38 @@ from sklearn.preprocessing import normalize
 from sklearn.metrics import f1_score
 from vietjobs import config as C, vitext as V
 tr = pd.read_parquet('data/processed/splits/train.parquet')
-va = pd.read_parquet('data/processed/splits/val.parquet')
+dv = pd.read_parquet('data/processed/splits/dev.parquet')
 ```
 
-## Luật số 2 — chỉ chẩn đoán trên `train`
+## Rule 2 — diagnose on `train` only
 
-`val` chỉ dùng khi câu hỏi **là** về tổng quát hoá (A3, A5). `test` không bao giờ,
-trừ đúng một ngoại lệ: đếm tần suất regex để đóng lỗ rò rỉ (A8), vì phép đếm đó
-không nhìn nhãn và không dẫn tới lựa chọn mô hình nào.
+`dev` is used only when the question **is** about generalisation (A3, A5). `test`
+never, with exactly one exception: counting regex frequencies to close a leak (A8),
+because that count does not look at labels and does not lead to any model choice.
 
-**Không dựng lại splits.** `SPLIT_SEED = 20260826` bị khoá và tách từ tốn khoảng
-26 phút. Mọi đề xuất làm sạch là đề xuất cho **lần dựng lại tương lai**, và phải
-kèm dòng cảnh báo: làm việc đó sẽ vô hiệu hoá toàn bộ `docs/04-results.md`.
+**Never rebuild the splits.** `SPLIT_SEED = 20260826` is locked and segmentation
+costs roughly 26 minutes. Every cleaning proposal is a proposal for **some future
+rebuild**, and must carry the warning line: doing it invalidates all of
+`docs/04-results.md`.
 
-## Luật số 3 — một phát hiện gồm ba phần
+## Rule 3 — a finding has three parts
 
-Số đo được · khối tái lập · hành động kèm chi phí. Thiếu vế thứ ba thì đó là một
-thống kê, không phải một phát hiện — để nó ở mục "đã kiểm tra và sạch".
+The measurement · the reproduction block · the action with its cost. Without the
+third part it is a statistic, not a finding — put it under "checked and clean".
 
-Và **một phép đo chưa đủ để xếp hạng cao**. Chỉ nâng một phát hiện lên mức đáng làm
-ngay khi có hai chỉ dấu độc lập trỏ cùng một chỗ — ví dụ A6 cho cosine cao *và*
-`metrics.top_confusions` của run tốt nhất trùng đúng cặp lớp đó.
+And **one measurement is not enough to rank something highly**. Only raise a finding
+to do-this-now when two independent indicators point at the same place — for
+instance A6 giving a high cosine *and* the best run's `metrics.top_confusions`
+naming exactly that class pair.
 
 ---
 
-## Mười khối chẩn đoán
+## The ten diagnostic blocks
 
-Chạy theo thứ tự. A8 rẻ nhất và gỡ chặn nhiều nhất — chạy trước nếu đang vướng
-bài toán lương.
+Run them in order. A8 is the cheapest and unblocks the most — run it first if the
+salary task is what is stuck.
 
-### A1 · Lệch lớp theo **nhóm**, không theo dòng
+### A1 · Class skew by **group**, not by row
 
 ```python
 g = tr.groupby("category").agg(rows=("group_id","size"), groups=("group_id","nunique"))
@@ -69,11 +74,12 @@ g["dup_x"] = (g.rows / g.groups).round(2)
 print(g.sort_values("rows").to_string(), g.rows.max()/g.rows.min(), g.groups.max()/g.groups.min())
 ```
 
-Dòng đăng lại không phải mẫu độc lập. Ngưỡng: `groups < 300` cho một lớp → lớp đó
-không đủ mẫu để F1 ổn định, σ của nó chi phối macro-F1. `dup_x` lệch nhau giữa các
-lớp quá 1,15 → `class_weight="balanced"` đang cân theo **dòng**, tức là cân sai.
+Repost rows are not independent samples. Threshold: `groups < 300` for a class →
+that class has too few samples for a stable F1, and its σ dominates macro-F1. A
+`dup_x` differing by more than 1.15 across classes → `class_weight="balanced"` is
+balancing by **row**, i.e. balancing wrongly.
 
-### A2 · Nhóm đăng lại có mâu thuẫn nhãn — khối quan trọng nhất
+### A2 · Repost groups with conflicting labels — the most important block
 
 ```python
 sz = tr.groupby("group_id").size(); nc = tr.groupby("group_id")["category"].nunique()
@@ -82,29 +88,32 @@ print((sz > 1).sum(), (nc > 1).sum(), tr.group_id.isin(multi).mean())
 print(tr[tr.group_id == multi[0]][["job_title","category"]].to_string())
 ```
 
-`group_id` là băm của tiêu đề + mô tả + yêu cầu sau khi gấp dấu. Cùng một văn bản
-mang nhiều nhãn nghĩa là bài toán **thực chất đa nhãn** bị ép về đơn nhãn.
+`group_id` is the hash of title + description + requirements after accent folding.
+The same text carrying several labels means the problem is **really multi-label**
+and has been forced into single-label.
 
-Ngưỡng: quá 5 % nhóm nhiều dòng bị đa nhãn → không phải nhiễu ngẫu nhiên. Quá 50 %
-dòng nằm trong nhóm đa nhãn → macro-F1 đơn nhãn **đang đo sai bài toán**; hành động
-rẻ là báo cáo thêm *top-1-in-set accuracy*, hành động đắt là chuyển đích sang đa
-nhãn — và việc đó phải là **trục thứ hai**, không thay trục cũ.
+Threshold: over 5 % of multi-row groups being multi-label → not random noise. Over
+50 % of rows sitting in a multi-label group → single-label macro-F1 **is measuring
+the wrong problem**; the cheap action is to also report *top-1-in-set accuracy*, the
+expensive one is to move the target to multi-label — and that must be a **second
+axis**, not a replacement for the first.
 
-### A3 · Trần nhiễu nhãn tính được trong ba giây
+### A3 · The label-noise ceiling, computable in three seconds
 
 ```python
-maj = va.groupby("group_id")["category"].agg(lambda s: s.mode().iat[0])
-oracle = va["group_id"].map(maj)
-print((oracle == va.category).mean(),
-      f1_score(va.category, oracle, average="macro", zero_division=0))
+maj = dv.groupby("group_id")["category"].agg(lambda s: s.mode().iat[0])
+oracle = dv["group_id"].map(maj)
+print((oracle == dv.category).mean(),
+      f1_score(dv.category, oracle, average="macro", zero_division=0))
 ```
 
-Đây là cận trên của **mọi** hàm văn bản → nhãn xác định, tính bằng "đoán nhãn đa số
-trong nhóm cùng văn bản". Ngưỡng: trần dưới 0,95 → ghi con số này cạnh mọi macro-F1.
-Dùng nó để **chặn** việc đuổi theo vài phần trăm bằng mô hình lớn hơn, không dùng để
-tự khen. Chạy khối này **trước** khi bỏ hai giờ gán tay ở Ưu tiên 2.
+This is the upper bound of **any** deterministic text → label function, computed as
+"predict the majority label within the group of identical text". Threshold: a ceiling
+below 0.95 → record this number next to every macro-F1. Use it to **stop** the chase
+for a few percent with a bigger model, not to congratulate yourself. Run this block
+**before** spending two hours hand-labelling.
 
-### A4 · Ô rỗng và độ dài theo từng cột
+### A4 · Empty fields and length per column
 
 ```python
 for c in ["job_title","description","requirements_text","qualifications_text",
@@ -113,25 +122,27 @@ for c in ["job_title","description","requirements_text","qualifications_text",
     print(c, f"{(L==0).mean():.2%}", L.quantile(.1), L.median(), L.quantile(.9))
 ```
 
-Ngưỡng: rỗng quá 60 % → khối TF-IDF của cột đó gần như hằng số; **gỡ khối, đo lại**,
-theo đúng quy tắc gỡ bước ở `docs/03-protocol.md`. Rỗng 10–60 % → cột đếm `n_*` đang
-trộn "thiếu" với "có nhưng bằng 0"; thêm cờ `has_*`.
+Threshold: over 60 % empty → that column's TF-IDF block is nearly constant; **drop
+the block and re-measure**, following the removal rule in `docs/03-protocol.md`.
+10–60 % empty → the `n_*` count column is conflating "missing" with "present but
+zero"; add a `has_*` flag.
 
-### A5 · Phủ từ vựng train → val
+### A5 · Vocabulary coverage, train → dev
 
 ```python
 cv = CountVectorizer(min_df=3).fit(tr.job_title + " " + tr.description)
 an, vocab = cv.build_analyzer(), set(cv.vocabulary_)
 r = [(sum(w not in vocab for w in an(t)), len(an(t)))
-     for t in (va.job_title + " " + va.description)]
+     for t in (dv.job_title + " " + dv.description)]
 print(sum(a for a, _ in r) / sum(b for _, b in r))
 ```
 
-Ngưỡng: quá 5 % → từ vựng là nút thắt, đáng thử `min_df=1`, char n-gram hoặc
-embedding. **Dưới 1 % → OOV không phải nguyên nhân**, và phát hiện ở đây là một
-**loại trừ**: ghi vào bảng để không ai đề xuất PhoBERT với lý do "OOV tiếng Việt".
+Threshold: over 5 % → the vocabulary is the bottleneck, and `min_df=1`, character
+n-grams or embeddings are worth trying. **Under 1 % → OOV is not the cause**, and the
+finding here is an **exclusion**: record it so nobody proposes PhoBERT with the
+reason "Vietnamese OOV".
 
-### A6 · Độ tách lớp — cosine giữa tâm lớp
+### A6 · Class separability — cosine between class centroids
 
 ```python
 X = TfidfVectorizer(min_df=3, ngram_range=(1,2), sublinear_tf=True).fit_transform(tr.job_title)
@@ -142,40 +153,43 @@ print(sorted(((S[i,j], labs[i], labs[j]) for i in range(len(labs))
               for j in range(i+1, len(labs))), reverse=True)[:8])
 ```
 
-Ngưỡng: cosine trên 0,80 → hai lớp **không tách được bằng tiêu đề**. Bắt buộc đối
-chiếu với `metrics.top_confusions` của run tốt nhất; trùng cặp thì đó là lỗi phân
-loại học (taxonomy), không phải lỗi mô hình → đề xuất gộp lớp hoặc ghi trần.
-0,65–0,80 → ứng viên cho một đặc trưng phân biệt riêng. Dưới 0,50 → lớp tách tốt,
-F1 thấp ở đây là lỗi mô hình chứ không phải lỗi dữ liệu.
+Threshold: cosine above 0.80 → the two classes are **not separable from the title**.
+Cross-check against the best run's `metrics.top_confusions` is mandatory; if the same
+pair appears, this is a taxonomy error, not a model error → propose merging the
+classes or recording the ceiling. 0.65–0.80 → a candidate for a dedicated
+discriminating feature. Below 0.50 → the classes separate well, and a low F1 here is
+a model error, not a data error.
 
-### A7 · Thành phần lớp rác
+### A7 · What the junk class is made of
 
 ```python
 j = tr[tr.category == C.JUNK_CATEGORY]; print(len(j), j.job_title.head(20).tolist())
 ```
 
-Ngưỡng: F1 của lớp này (đọc `metrics.per_class` trong `artifacts/<run>/metrics.json`)
-dưới 0,25 **và** quá 30 % tiêu đề mẫu gán được tay vào một lớp khác → **nó là nhãn
-sai, không phải một lớp**. Khi đó `f1_macro_no_junk` — đã có sẵn trong mọi
-`metrics.json` — là con số phải dẫn.
+Threshold: this class's F1 (read `metrics.per_class` in
+`artifacts/<run>/metrics.json`) below 0.25 **and** over 30 % of the sampled titles
+being hand-assignable to another class → **it is a wrong label, not a class**. In
+that case `f1_macro_no_junk` — already present in every `metrics.json` — is the number
+to lead with.
 
-### A8 · Lỗ hổng che lương — `docs/09-lo-trinh.md` Ưu tiên 0b
+### A8 · Salary-masking holes
 
 ```python
 al = pd.concat([pd.read_parquet(f'data/processed/splits/{s}.parquet')
-                for s in ("train", "val", "test")])
+                for s in ("train", "dev", "test")])
 for c in ["soft_skills_text","qualifications_text","technical_skills_text","languages_text"]:
     hit = al[c].fillna("").map(lambda t: bool(V._PAT_MILLIONS.search(t)
                                or V._PAT_DONG.search(t) or V._PAT_USD.search(t)))
     print(c, int(hit.sum()), f"{hit.mean():.4%}")
 ```
 
-Ngưỡng đã ghi sẵn trong lộ trình: **bằng 0 → đóng lại**, chỉ cần thêm hai cột vào
-`UNMASKED_COLUMNS` (`src/vietjobs/features.py`) cho chắc. **Khác 0 → rò rỉ thật**:
-phải dựng bản `_masked`, thêm vào `_MASKABLE`, và mọi số bài toán lương chạy trước
-đó phải bỏ. Đây là khối gỡ chặn cả Ưu tiên 1 — chạy nó trước.
+The thresholds are already written into the roadmap: **zero → close it**, just add
+the two columns to `UNMASKED_COLUMNS` (`src/vietjobs/features.py`) for safety.
+**Non-zero → a real leak**: a `_masked` copy has to be built, added to `_MASKABLE`,
+and every salary number produced before that has to be discarded. This block unblocks
+the whole salary task — run it first.
 
-### A9 · Phân bố lương và thiên lệch chọn mẫu
+### A9 · Salary distribution and selection bias
 
 ```python
 d = tr.groupby("category").salary_disclosed.agg(["mean","size"]).sort_values("mean")
@@ -183,58 +197,61 @@ s = tr.loc[tr.salary_disclosed == 1, "salary_mid"]
 print(d.to_string(), d["mean"].max() - d["mean"].min(), s.median(), s.quantile(.9), s.max())
 ```
 
-Ngưỡng: chênh lệch tỷ lệ công bố giữa các lớp quá 0,10 → **thiên lệch chọn mẫu
-thật**, không sửa được bằng mô hình tốt hơn. Bảng này phải vào
-`docs/07-bai-toan-luong.md` **trước** khi chạy dòng nào của bài toán lương, và mọi
-MAE phải báo cáo kèm `evaluate.slice_report` theo `category`.
+Threshold: a disclosure-rate gap between classes above 0.10 → **real selection
+bias**, which a better model cannot fix. This table must go into
+`docs/07-bai-toan-luong.md` **before** any salary-task run, and every MAE must be
+reported with `evaluate.slice_report` by `category`.
 
-### A10 · Lệch địa lý
+### A10 · Geographic skew
 
 ```python
 p = tr.province.value_counts(); print(p.size, p.head(8).to_dict(), tr.is_major_city.mean())
 ```
 
-Ngưỡng: số giá trị `province` nhiều hơn 63 → `normalize_province` chưa gom hết; liệt
-kê 20 giá trị hiếm nhất và sửa bảng trong `resources/`. Rẻ, và bảng ablation
-`--province` đang đo trên một ánh xạ chưa sạch. Top-2 tỉnh quá 75 % → one-hot
-`province` gần như một cờ nhị phân; ghi là **hạn chế phạm vi**, không phải phát hiện
-mới.
+Threshold: more than 63 distinct `province` values → `normalize_province` is not
+collapsing everything; list the 20 rarest values and fix the table in `resources/`.
+Cheap, and the `--province` ablation table is currently measured on an unclean
+mapping. The top 2 provinces above 75 % → the `province` one-hot is nearly a binary
+flag; record that as a **scope limitation**, not a new finding.
 
 ---
 
-## Khuôn kết quả
+## Result template
 
 ```markdown
-## Soi dữ liệu — <ngày> · <n> dòng train · manifest <sha8>
+## Dataset diagnosis — <date> · <n> train rows · manifest <sha8>
 
-| # | Phát hiện | Số đo | Khối | Hành động kéo theo | Chi phí | Chặn gì |
+| # | Finding | Measurement | Block | Action it implies | Cost | What it blocks |
 |---|---|---|---|---|---|---|
 
-**Ba việc đáng làm trước:** ...
-**Đã kiểm tra và sạch:** <giả thuyết + số bác bỏ nó>
-**Phải chờ dựng lại splits:** <khối riêng, không trộn vào bảng chính>
+**The three worth doing first:** ...
+**Checked and clean:** <hypothesis + the number that refutes it>
+**Waiting on a split rebuild:** <a separate block, not mixed into the main table>
 ```
 
-Xếp hạng đúng thứ tự này: (1) phát hiện nào **chặn** một hạng mục trong
-`docs/09-lo-trinh.md` lên đầu, bất kể độ lớn — kể cả khi số đo bằng 0; (2) rồi tới
-biên độ ước tính chia cho chi phí; (3) cuối bảng, tách riêng, mục **đã loại trừ**.
+Rank in exactly this order: (1) findings that **block** a work item in
+`docs/09-lo-trinh.md` go first, whatever their size — including when the measurement
+is zero; (2) then estimated effect divided by cost; (3) at the bottom, kept separate,
+the **ruled out** section.
 
-Cột "Chi phí" chỉ nhận bốn giá trị: `<5 phút` · `~1 giờ máy` · `~1 buổi người` ·
-`dựng lại splits`.
+The "Cost" column takes four values only: `<5 min` · `~1 machine-hour` ·
+`~1 person-session` · `rebuild the splits`.
 
-Mục **đã loại trừ** là bắt buộc. Bác bỏ một giả thuyết bằng số đo là kết quả, không
-phải chỗ trống — đúng tinh thần "ghi cả thất bại" của `CLAUDE.md`.
+The **ruled out** section is mandatory. Refuting a hypothesis with a measurement is a
+result, not an empty space — exactly the "record the failures too" spirit of
+`AGENTS.md`.
 
-## Tránh
+## Avoid
 
-- **Dựng lại splits.** Luật 2. Không chạy `python -m vietjobs.dataset build`.
-- **Chạm `test.parquet`** ngoài đúng ngoại lệ A8.
-- **Đo trên toàn bộ dữ liệu rồi kết luận cho `train`.** Luôn nói rõ đo trên tập nào.
-- **Báo một tỷ lệ mà không kèm mẫu số.** "88 %" của 8.659 khác hẳn "88 %" của 12.
-- **Đề xuất xoá dòng mà không kèm hai con số:** bao nhiêu dòng bị xoá, và bao nhiêu
-  phần trăm lớp nhỏ nhất bị xoá theo.
-- **Kết luận từ một phép đo.** Luật 3.
-- **Tự ý ghi vào `docs/`.** In markdown ra stdout, đúng lệ của
-  `scripts/measure_vitext.py` và `scripts/report_sweep.py`. Thấy nội dung đáng đưa
-  vào note thì hỏi một dòng ở cuối, và khi làm thì theo Quy tắc số 1 trong
-  `CLAUDE.md`.
+- **Rebuilding the splits.** Rule 2. Do not run `python -m vietjobs.dataset build`.
+- **Touching `test.parquet`** outside the single A8 exception.
+- **Measuring on all the data and concluding for `train`.** Always name the split.
+- **Reporting a percentage without its denominator.** "88 %" of 8,659 is nothing like
+  "88 %" of 12.
+- **Proposing to delete rows without two numbers:** how many rows are deleted, and
+  what percentage of the smallest class goes with them.
+- **Concluding from a single measurement.** Rule 3.
+- **Writing into `docs/` on your own initiative.** Print markdown to stdout, the way
+  `scripts/measure_vitext.py` and `scripts/archive/report_sweep.py` do. If something
+  deserves to go into a note, ask in one line at the end, and when you do it, follow
+  Rule 1 in `AGENTS.md`.
