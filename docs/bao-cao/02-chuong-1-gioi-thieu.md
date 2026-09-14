@@ -18,14 +18,14 @@ một ngành nghề riêng. Người đăng tin chọn "khác" vì nhanh hơn l�
 là **nhiễu nhãn**, và nó không tự bộc lộ: mô hình học từ dữ liệu này sẽ học luôn cả
 thói quen chọn nhầm của người đăng.
 
-**Thứ hai, gần một phần ba tin không công bố mức lương.** Đo trên tập huấn luyện,
-tỷ lệ tin có công bố lương là **71,8 %**, tức **28,2 %** số tin để trống. Người tìm
-việc vì vậy không có mặt bằng tham chiếu, còn về mặt kỹ thuật thì nhãn của bài toán
-hồi quy chỉ tồn tại trên bảy phần mười dữ liệu.
+**Thứ hai, gần một phần ba tin không công bố mức lương.** Đo trên tệp gốc (47.707
+tin), tỷ lệ tin có công bố lương là **71,5 %**, tức **28,5 %** số tin để trống. Người
+tìm việc vì vậy không có mặt bằng tham chiếu, còn về mặt kỹ thuật thì nhãn của bài
+toán hồi quy chỉ tồn tại trên bảy phần mười dữ liệu.
 
 **Thứ ba, việc thiếu nhãn lương không xảy ra ngẫu nhiên.** Tỷ lệ công bố lương trải
-từ **56,8 %** đến **76,4 %** tuỳ ngành, và tương quan Pearson giữa tỷ lệ này với
-logarit cỡ lớp là **0,670** (p = 0,0045). Nói cách khác, ngành càng ít tin thì càng
+từ **58,6 %** đến **76,5 %** tuỳ ngành, và tương quan Pearson giữa tỷ lệ này với
+logarit cỡ lớp là **0,610** (p = 0,0122). Nói cách khác, ngành càng ít tin thì càng
 ít công bố lương. Những ngành nhỏ chịu phạt hai lần: ít mẫu để học ra lớp, lại càng
 ít nhãn hơn nữa cho nhánh hồi quy.
 
@@ -134,7 +134,7 @@ ngành nghề cùng mức lương của vị trí tuyển dụng.
 ### 1.4.2. Phạm vi nghiên cứu
 
 **Về dữ liệu.** Bộ dữ liệu gồm **48.092** tin thô, sau khi loại trùng khớp hoàn toàn
-còn **47.707** tin, thuộc **16 nhóm ngành nghề**, trong đó **71,8 %** tin có công bố
+còn **47.707** tin, thuộc **16 nhóm ngành nghề**, trong đó **71,5 %** tin có công bố
 mức lương. Đơn vị lương là **triệu VND/tháng**.
 
 > ✍️ **CẦN VIẾT TAY** — mục phạm vi còn thiếu **nguồn thu thập dữ liệu** và **mốc

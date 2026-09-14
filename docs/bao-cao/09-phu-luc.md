@@ -9,16 +9,29 @@
 Tên lớp giữ nguyên như trong dữ liệu gốc (đây là **dữ liệu**, không phải văn bản báo
 cáo, nên không dịch và không sửa chính tả).
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** — bảng đầy đủ 16 dòng phải sinh lại từ
-> `artifacts/eda/summary.json` (`class_counts`) sau khi chạy lại
-> `scripts/analyze_data.py` trên lược đồ chia hiện tại. Bốn dòng đã biết:
+> **Nguồn số liệu:** `docs/figures/eda/eda-02-lech-lop.png` và
+> `eda-03-tan-xa-co-lop.png` — đo trên **tệp gốc** sau khử trùng lặp, 47.707 dòng
+> (`AGENTS.md` Rule 8). Bảng này không phụ thuộc lược đồ chia.
 
-| Nhóm ngành nghề | Số tin (train, lược đồ v1) | Tỷ lệ |
+| Nhóm ngành nghề | Số tin | Tỷ lệ |
 |---|---|---|
-| `kinh_doanh_bán_hàng_chăm_sóc_khách_hàng` | 5.330 | 16,0 % |
-| `nông_nghiệp_năng_lượng_môi_trường` | 197 | 0,6 % |
-| `nhóm_nghề_khác` | 250 | 0,7 % |
-| … 13 nhóm còn lại | | |
+| `kinh_doanh_bán_hàng_chăm_sóc_khách_hàng` | 8.213 | 17,2 % |
+| `sản_xuất_lao_động_phổ_thông_cơ_khí` | 6.341 | 13,3 % |
+| `marketing_truyền_thông_quảng_cáo_nội_dung` | 5.947 | 12,5 % |
+| `tài_chính_kế_toán_ngân_hàng_bảo_hiểm` | 5.454 | 11,4 % |
+| `du_lịch_nhà_hàng_khách_sạn_dịch_vụ` | 4.198 | 8,8 % |
+| `thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí` | 3.406 | 7,1 % |
+| `nhân_sự_hành_chính_pháp_chế_tư_vấn` | 3.210 | 6,7 % |
+| `xây_dựng_kiến_trúc_bất_động_sản` | 2.809 | 5,9 % |
+| `công_nghệ_thông_tin_kỹ_thuật_số` | 1.903 | 4,0 % |
+| `logistics_vận_tải_chuỗi_cung_ứng` | 1.811 | 3,8 % |
+| `kỹ_thuật_điện_điện_tử_viễn_thông` | 1.236 | 2,6 % |
+| `giáo_dục_đào_tạo_nghiên_cứu` | 1.165 | 2,4 % |
+| `y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học` | 963 | 2,0 % |
+| `ngôn_ngữ_dịch_thuật` | 384 | 0,8 % |
+| `nhóm_nghề_khác` | 345 | 0,7 % |
+| `nông_nghiệp_năng_lượng_môi_trường` | 322 | 0,7 % |
+| **Tổng** | **47.707** | 100 % |
 
 ---
 

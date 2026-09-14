@@ -91,9 +91,22 @@ Expected, exactly:
 
 | Split | Rows | Groups | Fingerprint |
 |---|---|---|---|
-| `train` | 34,354 | 22,026 | `1ec048522c9e10f1` |
-| `dev` | 3,812 | 3,728 | `fbff00bcbcd06ee4` |
-| `test` | 9,541 | 9,145 | `8176be328df584b9` |
+| `train` | 34,354 | 22,026 | `ccba7eed74f114a2` |
+| `dev` | 3,812 | 3,728 | `47d11b1bd266e180` |
+| `test` | 9,541 | 9,145 | `a47b8825a83ea000` |
+
+> **2026-09-10:** these fingerprints changed from an earlier printing of this
+> table (`1ec048522c9e10f1` / `fbff00bcbcd06ee4` / `8176be328df584b9`). Row and
+> group counts were already identical, but group *membership* differed across
+> machines with different numpy/pandas versions — `group_stratified_split`
+> sorted candidate groups by size with `sort_values(..., ascending=False)`,
+> whose default `kind="quicksort"` does not guarantee tie order, and numpy's
+> tie-break behaviour for equal-size groups is not guaranteed stable across
+> versions. Fixed by forcing `kind="stable"`, so tie order now depends only on
+> the seeded shuffle from `block.sample(...)`, which `numpy.random.RandomState`
+> guarantees to reproduce identically across versions. No experiment had been
+> run against the old fingerprints yet, so nothing downstream needed
+> re-measuring — this table is simply the first correct printing.
 
 Then check `processed/manifest.json` agrees on the four fields that matter:
 

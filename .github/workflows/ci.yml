@@ -1,0 +1,13 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt && pip install -e .
+      - run: pytest -q
+      - name: thesis markers left
+        run: echo "⛔ $(grep -o '⛔' -r docs/bao-cao | wc -l) · ✍️ $(grep -o '✍️' -r docs/bao-cao | wc -l)" >> "$GITHUB_STEP_SUMMARY"

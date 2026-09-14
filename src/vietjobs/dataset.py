@@ -211,9 +211,16 @@ def group_stratified_split(
         targets = {k: v * total for k, v in fractions.items()}
         filled: defaultdict[str, float] = defaultdict(float)
         # Largest groups first — they are hardest to place without overshoot.
-        for gid, n in block.sort_values("n", ascending=False)[["group_id", "n"]].itertuples(
-            index=False
-        ):
+        # kind="stable" (mergesort) is required for cross-machine reproducibility:
+        # the default "quicksort" does not preserve tie order, and its tie-break
+        # behaviour is not guaranteed identical across numpy versions, so two
+        # machines with the same seed could silently draw different group
+        # assignments for groups of equal size. Ties are broken by shuffle order
+        # from block.sample() above, which numpy's RandomState.permutation
+        # guarantees to reproduce exactly across versions.
+        for gid, n in block.sort_values(
+            "n", ascending=False, kind="stable"
+        )[["group_id", "n"]].itertuples(index=False):
             pick = max(fractions, key=lambda k: targets[k] - filled[k])
             assignment[gid] = pick
             filled[pick] += n

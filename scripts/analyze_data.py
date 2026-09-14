@@ -397,12 +397,14 @@ def fig_completeness(plt, comp: pd.DataFrame, n_rows: int, out: list) -> None:
 
 
 def fig_imbalance(plt, cats: pd.DataFrame, shape: dict, n_rows: int, out: list) -> None:
-    """02 — lệch lớp: cột ngang cho "ngành nào", Lorenz cho "lệch đến mức nào"."""
-    fig, axes = plt.subplots(1, 2, figsize=(13.6, 5.6),
-                             gridspec_kw={"width_ratios": [1.8, 1]})
+    """02a/02b — lệch lớp: cột ngang cho "ngành nào", Lorenz cho "lệch đến mức nào".
 
-    ax = axes[0]
+    Tách ra làm 2 hình riêng để dễ đưa vào báo cáo.
+    """
     c = cats.sort_values("n")
+
+    # 02a — Số lượng tin mỗi lớp (barh)
+    fig, ax = plt.subplots(figsize=(8.5, 6.5))
     bars = ax.barh(c["category"], c["n"], color=INK, alpha=0.88)
     bars[list(c["category"]).index(C.JUNK_CATEGORY)].set_color(ACCENT)
     for y, (n, sh) in enumerate(zip(c["n"], c["share"])):
@@ -413,12 +415,16 @@ def fig_imbalance(plt, cats: pd.DataFrame, shape: dict, n_rows: int, out: list) 
                label="chia đều 16 lớp = {:,.0f}".format(uniform).replace(",", "."))
     ax.set_xlim(0, c["n"].max() * 1.24)
     ax.set_xlabel("Số tin tuyển dụng")
-    ax.set_title("Hình 02 · Lệch lớp {:.1f} : 1 trên {:,} tin".format(
+    ax.set_title("Lệch lớp {:.1f} : 1 trên {:,} tin".format(
                      cats["n"].max() / cats["n"].min(), n_rows).replace(",", ".") +
                  f"\ncam = lớp gom '{C.JUNK_CATEGORY}'", loc="left")
     ax.legend(loc="lower right", fontsize=8)
+    fig.tight_layout()
+    p = FIG_DIR / "eda-02a-lech-lop.png"
+    fig.savefig(p, dpi=200); plt.close(fig); out.append(str(p))
 
-    ax = axes[1]
+    # 02b — Đường Lorenz (sự không cân bằng)
+    fig, ax = plt.subplots(figsize=(6.5, 5.5))
     n = np.sort(cats["n"].to_numpy())[::-1]
     cum = np.concatenate([[0], np.cumsum(n) / n.sum()]) * 100
     xs = np.arange(len(n) + 1) / len(n) * 100
@@ -434,20 +440,21 @@ def fig_imbalance(plt, cats: pd.DataFrame, shape: dict, n_rows: int, out: list) 
     ax.set_title(f"Đường Lorenz — Gini {shape['gini']:.3f}, "
                  f"dốc Zipf {shape['zipf_slope']:.2f}", loc="left")
     ax.legend(loc="lower right", fontsize=8)
-
     fig.tight_layout()
-    p = FIG_DIR / "eda-02-lech-lop.png"
+    p = FIG_DIR / "eda-02b-lorenz.png"
     fig.savefig(p, dpi=200); plt.close(fig); out.append(str(p))
 
 
 def fig_class_scatter(plt, mpl, cats: pd.DataFrame, shape: dict, df: pd.DataFrame,
                       out: list) -> None:
-    """03 — tán xạ cỡ lớp: 16 điểm nằm thành dải thế nào, và dải ấy kéo theo gì."""
-    c = cats.sort_values("n")
-    fig, axes = plt.subplots(1, 2, figsize=(13.6, 5.8),
-                             gridspec_kw={"width_ratios": [1.35, 1]})
+    """03a/03b — tán xạ cỡ lớp: 16 điểm nằm thành dải thế nào, và dải ấy kéo theo gì.
 
-    ax = axes[0]
+    Tách ra làm 2 hình riêng để dễ đưa vào báo cáo.
+    """
+    c = cats.sort_values("n")
+
+    # 03a — Scatter cỡ lớp (số tin mỗi ngành)
+    fig, ax = plt.subplots(figsize=(7.5, 6.5))
     ax.set_xscale("log")
     ax.set_xlim(220, 34000)
     ys = np.arange(len(c))
@@ -467,12 +474,16 @@ def fig_class_scatter(plt, mpl, cats: pd.DataFrame, shape: dict, df: pd.DataFram
     ax.get_xaxis().set_major_formatter(mpl.ticker.ScalarFormatter())
     ax.get_xaxis().set_minor_formatter(mpl.ticker.NullFormatter())
     ax.set_xlabel("Số tin — trục log")
-    ax.set_title("Hình 03 · Cỡ lớp trải thành một dải liên tục\n"
+    ax.set_title("Cỡ lớp trải thành một dải liên tục\n"
                  f"dốc Zipf {shape['zipf_slope']:.2f} — không có ngưỡng tự nhiên "
                  "để cắt lớp hiếm", loc="left")
     ax.legend(loc="lower right", fontsize=8)
+    fig.tight_layout()
+    p = FIG_DIR / "eda-03a-co-lop.png"
+    fig.savefig(p, dpi=200); plt.close(fig); out.append(str(p))
 
-    ax = axes[1]
+    # 03b — Scatter: tỷ lệ công bố lương vs cỡ lớp
+    fig, ax = plt.subplots(figsize=(6.5, 5.5))
     ax.set_xscale("log")
     ax.scatter(cats["n"], cats["disclosure_rate"] * 100, s=78,
                color=[ACCENT if k == C.JUNK_CATEGORY else INK for k in cats["category"]],
@@ -487,12 +498,11 @@ def fig_class_scatter(plt, mpl, cats: pd.DataFrame, shape: dict, df: pd.DataFram
     ax.set_title("Lớp càng nhỏ càng ít công bố lương\n"
                  f"Pearson(log n, tỷ lệ) = {shape['size_vs_disclosure_pearson_logn']:.3f} "
                  f"(p = {shape['size_vs_disclosure_p']:.4f})", loc="left")
-
     fig.tight_layout()
     fig.canvas.draw()                      # cần renderer để đo bề rộng chữ
     place_labels(ax, cats["n"], cats["disclosure_rate"] * 100,
                  [short_label(k) for k in cats["category"]], fig.canvas.get_renderer())
-    p = FIG_DIR / "eda-03-tan-xa-co-lop.png"
+    p = FIG_DIR / "eda-03b-cong-bo-luong.png"
     fig.savefig(p, dpi=200); plt.close(fig); out.append(str(p))
 
 
@@ -550,11 +560,14 @@ def fig_salary_by_category(plt, mpl, df: pd.DataFrame, var: dict, out: list) -> 
 
 
 def fig_salary_shape(plt, df: pd.DataFrame, sal: dict, out: list) -> None:
-    """05 — vì sao nhãn hồi quy là log1p, và cái đuôi to đến đâu."""
-    s = df.loc[(df["salary_disclosed"] == 1) & df["salary_mid"].notna(), "salary_mid"]
-    fig, axes = plt.subplots(1, 3, figsize=(14.2, 4.3))
+    """05a/05b/05c — vì sao nhãn hồi quy là log1p, và cái đuôi to đến đâu.
 
-    ax = axes[0]
+    Tách ra làm 3 hình riêng để dễ đưa vào báo cáo.
+    """
+    s = df.loc[(df["salary_disclosed"] == 1) & df["salary_mid"].notna(), "salary_mid"]
+
+    # 05a — Thang thô
+    fig, ax = plt.subplots(figsize=(6.5, 4.5))
     ax.hist(s[s <= 100], bins=70, color=INK, alpha=0.88)
     ax.axvline(sal["median"], color=ACCENT, lw=1.8, label=f"trung vị {sal['median']:.1f}")
     ax.axvline(sal["mean"], color=ACCENT, ls="--", lw=1.8,
@@ -564,14 +577,23 @@ def fig_salary_shape(plt, df: pd.DataFrame, sal: dict, out: list) -> None:
     ax.set_title(f"Thang thô — skew {sal['skew']:.2f}, kurtosis {sal['kurtosis']:.0f}\n"
                  "(cắt hiển thị ở 100)", loc="left")
     ax.legend(fontsize=8)
+    fig.tight_layout()
+    p = FIG_DIR / "eda-05a-thang-tho.png"
+    fig.savefig(p, dpi=200); plt.close(fig); out.append(str(p))
 
-    ax = axes[1]
+    # 05b — Sau log1p
+    fig, ax = plt.subplots(figsize=(6.5, 4.5))
     ax.hist(np.log1p(s), bins=70, color=INK, alpha=0.88)
     ax.set_xlabel("log1p(salary_mid)")
+    ax.set_ylabel("Số tin")
     ax.set_title(f"Sau log1p — skew {sal['skew_log1p']:.2f}\n"
                  "gần đối xứng: đây là nhãn nhánh hồi quy học", loc="left")
+    fig.tight_layout()
+    p = FIG_DIR / "eda-05b-sau-log1p.png"
+    fig.savefig(p, dpi=200); plt.close(fig); out.append(str(p))
 
-    ax = axes[2]
+    # 05c — Đuôi trên rào IQR
+    fig, ax = plt.subplots(figsize=(6.5, 4.5))
     tail = s[s > sal["fence_high"]]
     ax.hist(tail, bins=60, color=ACCENT, alpha=0.85)
     ax.set_yscale("log")
@@ -586,11 +608,8 @@ def fig_salary_shape(plt, df: pd.DataFrame, sal: dict, out: list) -> None:
                  f"\ntrong đó {sal['n_implausible_high']} tin > "
                  f"{C.SALARY_IMPLAUSIBLE_HIGH:.0f} gần chắc sai đơn vị", loc="left")
     ax.legend(fontsize=8)
-
-    fig.suptitle("Hình 05 · Phân bố lương: một đuôi phải rất dài",
-                 x=0.006, ha="left", fontsize=11)
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
-    p = FIG_DIR / "eda-05-phan-bo-luong.png"
+    fig.tight_layout()
+    p = FIG_DIR / "eda-05c-duoi-iqr.png"
     fig.savefig(p, dpi=200); plt.close(fig); out.append(str(p))
 
 

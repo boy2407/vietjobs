@@ -58,7 +58,7 @@ Ngày 2026-09-09 lược đồ chia dữ liệu đổi từ 70/15/15 sang hai t�
 | Thứ đã đo trước 2026-09-09 | Còn dùng được không |
 |---|---|
 | Toàn bộ 10 dòng trong [04-results.md](../04-results.md) | **Không** — đo trên tập dev cũ (7.159 dòng), tập dev mới chỉ có 3.812 dòng |
-| Phân tích dữ liệu trong [05](../05-phan-tich-du-lieu.md) (`artifacts/eda/summary.json`, `n_rows = 33.396`) | **Không** — đo trên tập train cũ, tập train mới có 34.354 dòng |
+| Phân tích dữ liệu trong [05](../05-phan-tich-du-lieu.md) | **Có, toàn bộ — đã đo lại 12/09/2026 (T1.1)**. Mọi con số mô tả đo trên **tệp gốc 47.707 dòng** (`AGENTS.md` Rule 8), nên không phụ thuộc lược đồ chia. Cả bảy hình đã sinh lại, kể cả hình 07 (độ dài token); `summary.json` đã sinh lại đầy đủ; các **mốc cơ sở** ở §3.6.6 đã đo lại trên lược đồ v2 |
 | Mốc học máy `test macro-F1 0,6112` trong [archive/](../archive/README.md) | **Không** — đo trên lược đồ chia cũ |
 | Số liệu làm sạch và chia dữ liệu trong `manifest.json` | **Có** — manifest đã được sinh lại theo lược đồ mới |
 
@@ -140,14 +140,12 @@ báo lỗi nếu số khối mermaid trong một file không khớp danh sách `
 | Phân bố lương | `figures/eda/eda-05-phan-bo-luong.png` | 3 | ✅ |
 | Tỷ lệ công bố lương | `figures/eda/eda-06-cong-bo-luong.png` | 3 | ✅ |
 | Tán xạ cỡ lớp | `figures/eda/eda-03-tan-xa-co-lop.png` | 3 | ✅ |
+| Độ đầy của 18 trường | `figures/eda/eda-01-do-day-truong.png` | 3 | ✅ |
 
-Cả 11 hình đã render (`./scripts/render_figures.sh`, 2026-09-09). Chạy lại lệnh đó
-mỗi khi sửa một sơ đồ mermaid trong `docs/`.
+Cả 12 hình đã render (`./scripts/render_figures.sh`). Chạy lại lệnh đó mỗi khi sửa
+một sơ đồ mermaid trong `docs/`.
 
-**Một hình còn thừa.** `scripts/analyze_data.py` sinh ra **sáu** hình, nhưng
-`docs/05-phan-tich-du-lieu.md` chỉ mô tả năm. Hình chưa được dùng và chưa được mô tả
-ở đâu là `figures/eda/eda-01-do-day-truong.png`.
-
-> ✍️ **CẦN VIẾT TAY** — mở hình đó ra xem nó đo gì, rồi quyết định: hoặc thêm một mục
-> vào §3.6 của chương 3 kèm mô tả đúng, hoặc ghi rõ vì sao không đưa vào báo cáo.
-> Không đoán nội dung hình.
+**Không còn hình thừa.** `scripts/analyze_data.py` sinh ra **bảy** hình, cả bảy đã có
+mặt trong §3.6 của chương 3 — `eda-01-do-day-truong.png` đo tỷ lệ điền của 18 trường
+và đã trở thành Hình 3.4 (mục 3.6.1); `eda-07-do-dai-token.png` (độ dài token, cái giá
+của việc cắt ở 256) đã sinh ngày 12/09/2026 (T1.1) và trở thành Hình 3.10 (mục 3.6.8).

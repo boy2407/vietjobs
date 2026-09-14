@@ -26,8 +26,11 @@ Evidence: [`data/processed/manifest.json`](../data/processed/manifest.json).
 | Salary unit | million VND/month | `manifest.salary_unit` |
 
 The sha256 in the manifest has exactly one job: if the raw file changes, every
-number in [04-results.md](archive/04-results-ml.md) loses its comparability and
-we have to know that immediately, not three weeks later.
+number in [archive/04-results-ml.md](archive/04-results-ml.md) loses its
+comparability and we have to know that immediately, not three weeks later. The
+same hash anchors the descriptive analysis, which is measured on this file rather
+than on a split ([AGENTS.md Rule 8](../AGENTS.md#rule-8--data-analysis-is-measured-on-the-original-file),
+[05](05-phan-tich-du-lieu.md)).
 
 The eighteen original columns fall into four groups:
 

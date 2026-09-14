@@ -13,8 +13,8 @@ The bars to beat, measured on the same splits with the same seed:
 |---|---|---|
 | Occupation classification | test macro-F1 **0.6112** (LinearSVC + TF-IDF) | [archive/04-results-ml.md](archive/04-results-ml.md) |
 | Occupation classification — floors | majority **0.0210** · keyword rules **0.4321** | [archive/06-mo-hinh-phan-lop.md](archive/06-mo-hinh-phan-lop.md) |
-| Salary estimation | dev MAE **5.86 million** (predict the median) | [05-phan-tich-du-lieu.md](05-phan-tich-du-lieu.md#6-the-most-important-finding-the-sector-says-almost-nothing-about-the-salary) |
-| Salary disclosed or not | accuracy **0.7117** (always predict "yes") | same source |
+| Salary estimation *(lược đồ v1)* | dev MAE **5.86 million** (predict the median) | [05 §7](05-phan-tich-du-lieu.md#7-the-floors--decision-numbers-fitted-on-train-scored-on-dev) |
+| Salary disclosed or not *(lược đồ v1)* | accuracy **0.7117** (always predict "yes") | same source |
 
 ---
 
@@ -49,7 +49,8 @@ This is the remaining step with the highest expected value: the frozen version
 already matches the TF-IDF bar **without using the encoder's ability to adapt at
 all**. The measured hardware constraint: this machine is Intel x86_64, with **no
 MPS/CUDA**, and `torch` no longer publishes wheels for macOS Intel after 2.2.2.
-Frozen embedding of 33,396 postings takes ~20 minutes at ~30 postings/s. A full
+Frozen embedding of the v1 `train` split (33,396 postings) took ~20 minutes at ~30
+postings/s; the v2 `train` has 34,354. A full
 fine-tune on this machine is not realistic — it needs a Colab/Kaggle GPU, and then
 `data/processed/splits/` has to be copied there together with `manifest.json` to
 keep the splits identical.
@@ -64,7 +65,7 @@ loss = w_A · loss_A + w_B · loss_B
 
 Two constraints that may not be violated:
 
-1. **`loss_B` must be masked.** 28.2 % of postings have no salary label; for them
+1. **`loss_B` must be masked.** 28.5 % of postings have no salary label; for them
    `loss_B` is 0, not a label of 0.
 2. **The salary branch still reads the `*_masked` columns.** Once the two heads
    share a trunk, that trunk has to read the masked copy — meaning the multi-task
@@ -73,15 +74,19 @@ Two constraints that may not be violated:
 
 Expectations should be low: the sector explains only **3.2 %** of the log-salary
 variance
-([05 §6](05-phan-tich-du-lieu.md#6-the-most-important-finding-the-sector-says-almost-nothing-about-the-salary)),
+([05 §8](05-phan-tich-du-lieu.md#8-the-most-important-finding-the-sector-says-almost-nothing-about-the-salary)),
 so the "two heads help each other" story has very little to share. The value of the
 multi-task version most likely lies in **one model instead of two**, not in the
 score.
 
 ## Priority 4 — data, the items the analysis pointed at
 
-- [ ] The 116 edge-case salaries (103 postings < 2 million, 13 postings > 200 million)
-- [ ] Measure the selection bias: the disclosure rate spans 56.8 % → 74.6 % by sector
+- [ ] Re-run `scripts/analyze_data.py` on the original file so `artifacts/eda/summary.json`
+      stops disagreeing with the figures, and add `--tokens` for figure 07 — the cost
+      of truncating at 256 tokens has never been measured
+- [ ] The salary edge cases: 15 postings > 200 million, plus the sub-2-million group
+      (count pending the re-run)
+- [ ] Measure the selection bias: the disclosure rate spans 58.6 % → 76.5 % by sector
 - [ ] `UNMASKED_COLUMNS` is still a hand-written list — `soft_skills_text` and
       `qualifications_text` slipped through it once; the DL path currently reads
       only three text fields so it is not affected, but adding a field means

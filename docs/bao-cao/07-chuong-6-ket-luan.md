@@ -81,10 +81,10 @@ vọng cao nhất còn lại.
 | 5 | Nhánh hồi quy **không dám ra đuôi phải**: MAE 25,58 ở dải > 30 triệu so với 3,70 ở dải dưới | Trung bình |
 | 6 | Lớp `nhóm_nghề_khác` có F1 = 0,000 | Trung bình — là quyết định về nhãn, không phải về mô hình |
 | 7 | **Trần nhiễu nhãn chưa được đo** — không biết mô hình còn cách trần bao xa | Trung bình |
-| 8 | 116 tin lương ở hai biên (103 tin < 2 triệu, 13 tin > 200 triệu) chưa xử lý | Thấp về số lượng, cao về vị trí — nằm đúng chỗ hại MAE nhất |
+| 8 | Các tin lương ở hai biên chưa xử lý (15 tin > 200 triệu; nhóm < 2 triệu ⛔ chưa đo lại trên tệp gốc) | Thấp về số lượng, cao về vị trí — nằm đúng chỗ hại MAE nhất |
 | 9 | Danh sách cột được bảo vệ khỏi rò rỉ vẫn là **danh sách viết tay** | Thấp hiện tại, cao nếu thêm trường văn bản mới |
 | 10 | Thiếu kiểm thử cho `predict.py`, `dataset.clean`, `group_stratified_split` | Trung bình |
-| 11 | Mẫu hồi quy đã bị **chọn lọc**: chỉ học trên 71,8 % tin có nhãn, và tỷ lệ này phụ thuộc ngành | Chưa đo được ảnh hưởng |
+| 11 | Mẫu hồi quy đã bị **chọn lọc**: chỉ học trên 71,5 % tin có nhãn, và tỷ lệ này phụ thuộc ngành | Chưa đo được ảnh hưởng |
 
 ---
 
@@ -114,7 +114,7 @@ phẩm, nạp đúng bộ chuẩn hoá. Kèm theo là bảng đo độ trễ suy
 
 Hai ràng buộc không được vi phạm:
 
-1. **`loss_B` phải được che.** 28,2 % tin không có nhãn lương; với chúng `loss_B` bằng
+1. **`loss_B` phải được che.** 28,5 % tin không có nhãn lương; với chúng `loss_B` bằng
    0, chứ không phải nhãn bằng 0.
 2. **Nhánh lương vẫn phải đọc cột đã che số lương.** Khi hai nhánh dùng chung một
    thân, cái thân đó buộc phải đọc bản đã che — nghĩa là bản đa nhiệm chạy trên họ
@@ -125,7 +125,7 @@ Hai ràng buộc không được vi phạm:
 
 - Đo trần nhiễu nhãn: lấy mẫu 100 tin, gán nhãn tay, đo độ đồng thuận.
 - Quyết định số phận lớp `nhóm_nghề_khác`: gộp hay bỏ, không phải cố học nó.
-- Xử lý 116 tin lương ở hai biên.
+- Xử lý các tin lương ở hai biên (15 tin > 200 triệu, cộng nhóm < 2 triệu).
 - Đo thiên lệch chọn mẫu của nhánh hồi quy.
 
 ### 6.3.6. Ưu tiên 6 — cải thiện đuôi phải của nhánh lương

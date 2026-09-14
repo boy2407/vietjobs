@@ -22,17 +22,18 @@ loại cảm xúc) nằm ở ba đặc điểm của dữ liệu:
   thuộc kinh doanh hay thuộc du lịch — nhà hàng — khách sạn? Cả hai câu trả lời đều
   bảo vệ được.
 - **Phân bố lớp lệch nặng.** Trong bộ dữ liệu của đề tài, tỷ lệ giữa lớp lớn nhất và
-  lớp nhỏ nhất là **27,1 : 1**.
+  lớp nhỏ nhất là **25,5 : 1**.
 
 ### 2.1.2. Ước lượng mức lương từ văn bản
 
 Ước lượng mức lương là bài toán **hồi quy trên đầu vào văn bản**. Ba đặc thù:
 
-- **Nhãn khuyết không ngẫu nhiên.** Chỉ 71,8 % tin có nhãn lương, và tỷ lệ khuyết
+- **Nhãn khuyết không ngẫu nhiên.** Chỉ 71,5 % tin có nhãn lương, và tỷ lệ khuyết
   phụ thuộc vào ngành nghề. Mô hình hồi quy vì vậy học trên một mẫu đã bị chọn lọc.
-- **Phân bố lệch phải rất nặng.** Độ lệch (skewness) của lương thô là **11,84**.
-- **Nhãn tự nó đã là xấp xỉ.** **93,0 %** tin công bố một *khoảng* lương chứ không
-  phải một con số; nhãn hồi quy là trung điểm của khoảng đó.
+- **Phân bố lệch phải rất nặng.** Độ lệch (skewness) của lương thô là **11,90**.
+- **Nhãn tự nó đã là xấp xỉ.** Phần lớn tin công bố một *khoảng* lương chứ không phải
+  một con số; nhãn hồi quy là trung điểm của khoảng đó. (Tỷ lệ chính xác: ⛔ chưa đo
+  lại trên tệp gốc.)
 
 ---
 
@@ -106,10 +107,10 @@ nên một điểm ngoại lệ đóng góp gradient rất lớn. Hàm mất má
 sai số nhỏ theo bình phương và phần sai số lớn theo tuyến tính, nhờ đó vừa mượt
 quanh 0 vừa không để ngoại lệ chi phối.
 
-**Lý do chọn Huber cho đề tài.** Lương có độ lệch 11,84 và giá trị lớn nhất trong
-tập huấn luyện là 350 triệu. Với MSE, mười ba tin trên 200 triệu sẽ kéo toàn bộ
-gradient. Kết hợp thêm phép biến đổi `log1p` trên nhãn, độ lệch giảm từ **11,84**
-xuống **0,12** — gần như đối xứng.
+**Lý do chọn Huber cho đề tài.** Lương có độ lệch 11,90 và giá trị lớn nhất trong tệp
+gốc là 500 triệu. Với MSE, mười lăm tin trên 200 triệu sẽ kéo toàn bộ gradient. Kết
+hợp thêm phép biến đổi `log1p` trên nhãn, độ lệch giảm từ **11,90** xuống **0,10** —
+gần như đối xứng.
 
 ---
 

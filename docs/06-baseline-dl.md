@@ -49,8 +49,8 @@ block.
 | **Freeze PhoBERT first** | The frozen level runs in minutes, the fine-tuned level in hours. If the frozen version cannot beat the TF-IDF bar of **0.6112**, the fault most likely lies in the data path — far cheaper to discover here |
 | **Word-segmented input** | PhoBERT was pre-trained on segmented text ("nhân_viên kinh_doanh"). Feeding unsegmented text means feeding the wrong distribution. The opposite of the TF-IDF verdict, where segmentation was **mildly harmful** ([02 §6](02-vietnamese-nlp.md#6-where-the-two-segmenters-differ--and-why-the-question-reopens)) — one step, two opposite verdicts, because they are two different models |
 | **Mean pooling, not the `<s>` vector** | Without fine-tuning, PhoBERT's `<s>` vector was never trained for any task; averaging the tokens retains more lexical signal |
-| **Cache the vectors to `.npy`** | Frozen weights ⇒ the vectors do not change between epochs. Embedding 33,396 postings takes ~20 minutes on CPU; an epoch over cached vectors takes seconds |
-| **Huber for the regression, not MSE** | Salary is heavily right-skewed (skew **11.84**, max 350 million — [05 §3](05-phan-tich-du-lieu.md)). MSE lets 13 outliers drag the whole gradient |
+| **Cache the vectors to `.npy`** | Frozen weights ⇒ the vectors do not change between epochs. Embedding the 33,396 postings of the v1 `train` split took ~20 minutes on CPU; an epoch over cached vectors takes seconds |
+| **Huber for the regression, not MSE** | Salary is heavily right-skewed (skew **11.90**, max 500 million on the original file — [05 §4](05-phan-tich-du-lieu.md#4-salary-distribution--a-long-tail-and-that-is-why-log1p)). MSE lets a handful of outliers drag the whole gradient |
 
 The two cache families are kept apart — `raw` for classification, `masked` for
 salary. That is not an implementation detail: mixing the two files is a **silent
@@ -66,8 +66,8 @@ salary leak**, a model reading its own answer key.
 | Classification — absolute floor | macro-F1 **0.0210** (always predict the largest class) | [archive/04-results-ml.md](archive/04-results-ml.md) |
 | Classification — meaningful floor | macro-F1 **0.4321** (keyword rules) | as above |
 | Classification — **the real bar** | test macro-F1 **0.6112** · dev 0.6049 (TF-IDF + LinearSVC) | as above |
-| Salary — **the real bar** | dev MAE **5.86 million** (predict the median, 13.0, for everything) | [05 §6](05-phan-tich-du-lieu.md) |
-| Salary — the "knows the sector" ceiling | dev MAE **5.75 million** (given the true sector label) | as above |
+| Salary — **the real bar** *(lược đồ v1)* | dev MAE **5.86 million** (predict the median, 13.0, for everything) | [05 §7](05-phan-tich-du-lieu.md#7-the-floors--decision-numbers-fitted-on-train-scored-on-dev) |
+| Salary — the "knows the sector" ceiling *(lược đồ v1)* | dev MAE **5.75 million** (given the true sector label) | as above |
 
 The last number is the most striking: the sector label **says almost nothing about
 salary** (eta² = 0.032). If the regression head only reaches around 5.8 million, it

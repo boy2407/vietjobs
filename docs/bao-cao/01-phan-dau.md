@@ -126,7 +126,7 @@ luận này xây dựng một hệ thống tự động đọc nội dung một 
 và trả về hai kết quả: **nhóm ngành nghề** của tin đó và **mức lương ước lượng**.
 
 Dữ liệu gồm 48.092 tin thô, sau khi loại trùng còn **47.707 tin** thuộc **16 nhóm
-ngành nghề**, trong đó **71,8 %** tin có công bố mức lương. Dữ liệu được chia theo
+ngành nghề**, trong đó **71,5 %** tin có công bố mức lương. Dữ liệu được chia theo
 **nhóm tin trùng lặp gần** chứ không theo dòng, thành ba tập 34.354 / 3.812 / 9.541
 tin, với **0 nhóm nào bị tách qua hai tập**.
 

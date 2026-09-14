@@ -30,3 +30,8 @@ data/external/
 
 # Môi trường riêng cho học sâu (torch không có bánh xe cho macOS Intel + py3.14)
 .venv-dl/
+
+
+# Google Drive sync
+.tmp.driveupload
+.drive

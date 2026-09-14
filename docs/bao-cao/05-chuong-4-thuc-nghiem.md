@@ -318,7 +318,8 @@ huấn luyện — và khoảng chênh đó nhỏ hơn khoảng tin cậy của 
 | Hạng mục | Vì sao còn thiếu |
 |---|---|
 | Chạy lại toàn bộ trên lược đồ chia mới | Lược đồ đổi ngày 2026-09-09 |
-| Chạy lại phân tích khám phá dữ liệu | `summary.json` còn ghi 33.396 dòng |
+| Chạy lại phân tích khám phá dữ liệu | Bảy hình đã sinh lại trên tệp gốc 47.707 dòng, nhưng `summary.json` còn ghi 33.396 dòng — các đại lượng chỉ có trong JSON đang mang dấu `⛔` ở §3.6 |
+| Sinh hình 07 — độ dài token | Cần `--tokens` trong `.venv-dl`; cái giá của việc cắt ở 256 token chưa được đo |
 | Bài toán `disclosed` | Chưa có lần chạy nào |
 | Mô hình **đa nhiệm** | Theo lộ trình, chỉ hợp nhất sau khi hai nhánh có số riêng |
 | Tinh chỉnh PhoBERT | Máy hiện tại không có GPU/MPS; cần Colab hoặc Kaggle |

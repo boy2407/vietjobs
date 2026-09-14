@@ -60,12 +60,14 @@ wrap them in new `try/except` blocks: `vitext.py` already handles that.
 
 | Path | What it is |
 |---|---|
+| `TASKS.md` | **The work board** — read it first in every session: active task, dependencies, evidence, log. [docs/09-lo-trinh.md](docs/09-lo-trinh.md) is the strategy; this is the operations |
 | `src/vietjobs/` | 8 shared modules. Role of each file: [docs/08-ma-nguon.md](docs/08-ma-nguon.md) |
 | `src/vietjobs/dl/` | The main track: `text.py` (input) · `encode.py` (PhoBERT) · `heads.py` (dense) · `train_dl.py` (CLI) |
 | `tests/` | 5 test files. `pytest -q` runs all of them — it works even without torch |
 | `scripts/` | Measurement and reporting — not a library, never imported back into `src/` |
 | `docs/archive/`, `scripts/archive/` | The closed machine-learning phase. **Do not edit** |
 | `docs/` | The living map of the project (see Rule 1) |
+| `hoc-tap/` | **Personal study notes, written in Vietnamese** — how the two deep-learning pipelines work, for a reader with no DL background. Outside Rule 1, Rule 6 and Rule 7: it holds no result numbers, nobody updates it after a run, and it is never cited in the thesis |
 | `resources/` | Abbreviations, stopwords, province list — Vietnamese data, committed |
 | `data/`, `artifacts/` | **Never committed** (already in `.gitignore`) |
 
@@ -84,7 +86,7 @@ After **every** real change, update it in the same working session:
 |---|---|
 | Finished a training run | `04-results.md` (automatic, append-only) + the results table in `06-baseline-dl.md` + the status cell in `00-tong-quan.md` |
 | Changed the network architecture / default hyper-parameters | `06-baseline-dl.md` — diagram + the "five decisions" table |
-| Added a data measurement, changed a figure | `05-phan-tich-du-lieu.md` + re-run `python scripts/analyze_data.py` |
+| Added a data measurement, changed a figure | `05-phan-tich-du-lieu.md` + re-run `python scripts/analyze_data.py` — measured on the **original file**, see Rule 8 |
 | Changed a preprocessing step | `02-vietnamese-nlp.md` — the nine-step table, the ablation table, the diagram (dashed for a removed step) |
 | Changed the cleaning / splitting | `01-data-audit.md` |
 | Changed how a run is logged | `03-protocol.md` §3b |
@@ -183,7 +185,9 @@ predictions.
 
 1. **All `.md` in this repository is English**: `docs/` (including
    `docs/nen-tang/`), `README.md`, this file, and every `SKILL.md` under
-   `.claude/skills/`. Body text, headings, table cells, mermaid diagram labels
+   `.claude/skills/`. Two exceptions, both deliberate: `docs/bao-cao/` (the thesis
+   manuscript, see item 6) and `hoc-tap/` (personal study notes — outside the
+   documentation tree, never cited, see §2). Body text, headings, table cells, mermaid diagram labels
    and code comments inside fenced blocks — all of it.
 2. **Numbers follow English convention**: decimal point and thousands comma
    (`0.6112`, `47,707`), not `0,6112` / `47.707`.
@@ -254,6 +258,62 @@ Six absolutes:
 Adding a chapter file means editing **three** places: the status table in
 `docs/bao-cao/00-index.md`, the table above, and the table of contents in
 `docs/00-tong-quan.md`.
+
+---
+
+## Rule 8 — data analysis is measured on the original file
+
+Every **descriptive** number about the dataset is measured on
+`data/raw/VietJobs.csv` after exact de-duplication — **47,707 rows** — and never
+on a split. `scripts/analyze_data.py` is the only producer of those numbers.
+
+| Kind of number | Measured on | Examples |
+|---|---|---|
+| **Descriptive** — what the dataset *is* | the **original file**, after `drop_duplicates()` | class skew, salary distribution and its tails, disclosure rate, field completeness, text length, eta² |
+| **Decision** — what to *build* | `train` and `dev` only | the no-model floors, the `--max-len` choice, hyper-parameters, model selection |
+
+Three reasons the descriptive numbers belong on the original file:
+
+1. A chapter describing the data has to describe **the corpus as collected**. A
+   reader needs to know what the dataset is before knowing how it was split.
+2. The raw file **does not move when the split scheme changes**. Every descriptive
+   number measured this way survived the 2026-09-09 re-split; every number
+   measured on the old `train` did not.
+3. It keeps Rule 5 intact without pretending `test` does not exist. `test` is not
+   *read* as a split here — the original file is read as one corpus, and no number
+   from it selects a model or a hyper-parameter.
+
+Four obligations that come with it:
+
+1. **Every table and every figure states its scope**, in the caption or in the
+   first line of the section: *original file (47,707)* or *fitted on `train`,
+   scored on `dev`*. A number with no scope is a number nobody can check.
+2. **The text and the figure beside it come from the same run** of
+   `scripts/analyze_data.py`. If the figures were regenerated and the prose was
+   not, the page contradicts itself — that is worse than being stale, because both
+   numbers look measured.
+3. **When a figure is regenerated, `docs/05-phan-tich-du-lieu.md` and
+   `docs/bao-cao/04-chuong-3-phuong-phap.md` §3.6 are rewritten in the same
+   working session** — they are the two places that quote those figures.
+4. **A descriptive number that cannot be re-measured yet gets `⛔`**, never a
+   leftover value from an older scope. Decision numbers measured under the old
+   split scheme carry `(lược đồ v1)` as Rule 7 item 3 requires.
+
+---
+
+## Rule 9 — figures are split small for report readability
+
+1. **Each subplot gets its own PNG file** (not one wide figure with three panels).
+   A single multi-panel figure is hard to resize and cite in `docs/bao-cao/`.
+2. **Naming convention**: if a logical group has sub-figures, use `-05a-`, `-05b-`,
+   `-05c-` instead of cramming them into `-05-`. The number stays the same; the
+   suffix shows the split.
+3. **Size**: each individual figure ~6–7 inches wide, readable at 100% on print.
+   The report can then cite `eda-05a`, `eda-05b`, and `eda-05c` side by side or in
+   sequence without rescaling artefacts.
+4. **Examples**: salary shape (now `-05a-thang-tho`, `-05b-sau-log1p`, `-05c-duoi-iqr`)
+   replaces the old three-column layout. Any other multi-panel figure added should
+   follow this pattern.
 
 ---
 
