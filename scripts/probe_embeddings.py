@@ -35,6 +35,7 @@ def main() -> None:
     ap.add_argument("--standardize", action="store_true")
     ap.add_argument("--C", type=float, default=1.0)
     ap.add_argument("--no-log", action="store_true", help="không ghi vào 04-results.md")
+    ap.add_argument("--run-id", default=None)
     args = ap.parse_args()
 
     from sklearn.linear_model import LogisticRegression, Ridge
@@ -69,14 +70,14 @@ def main() -> None:
         model = "ridge-probe(alpha=1.0)"
 
     seconds = time.time() - t0
-    run_id = f"probe-{args.task[:3]}{'-std' if args.standardize else ''}"
+    run_id = args.run_id or f"probe-{args.task[:3]}{'-std' if args.standardize else ''}"
     print(f"[{run_id}] {headline}  ({seconds:.0f}s)")
 
     if not args.no_log:
         with C.RESULTS_LOG.open("a", encoding="utf-8") as fh:
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "
                      f"| {args.task} | {model} on phobert-frozen | title+desc+req "
-                     f"| segment{'+std' if args.standardize else ''} | val | {m['n']} "
+                     f"| segment{'+std' if args.standardize else ''} | dev | {m['n']} "
                      f"| {headline} | {seconds:.1f}s | probe |\n")
 
 

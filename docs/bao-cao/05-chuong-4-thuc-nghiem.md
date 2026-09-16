@@ -108,20 +108,24 @@ nó chỉ đang đoán trung vị theo một đường vòng.
 | Lần chạy | Cấu hình | macro-F1 | acc | balAcc | top-3 | epoch tốt nhất |
 |---|---|---|---|---|---|---|
 | *mốc ngây thơ* | luôn đoán lớp đa số | *0,0214* | *0,2062* | — | — | — |
+| `probe-cat-s2` | LogReg trên **cùng** bộ vectơ | 0,5898 | 0,6388 | 0,5969 | 0,9258 | — |
 | **`dl-cat-s2`** | lr 3e-4 + cắt gradient + chuẩn hoá | **0,6025** | 0,6511 | 0,6199 | **0,9318** | 16/24 |
 | `dl-cat-s2-cw` | như trên + cân bằng lớp | 0,5710 | 0,5976 | **0,6931** | 0,9208 | 15/23 |
 | *mốc TF-IDF + LinearSVC* | `cat-SW-svm-1` — **lược đồ v1**, chưa đo lại | *0,6050 ± 0,0071* | *0,6445* | *0,6713* | — | — |
 
 > **Nguồn số liệu:** `artifacts/dl-cat-s2/metrics.json`, `artifacts/dl-cat-s2-cw/metrics.json`,
-> hai dòng `dl-cat-s2` / `dl-cat-s2-cw` trong [04-results.md](../04-results.md), và mốc
-> ngây thơ từ `artifacts/eda/summary.json` (T1.1).
+> ba dòng `dl-cat-s2` / `dl-cat-s2-cw` / `probe-cat-s2` trong [04-results.md](../04-results.md),
+> và mốc ngây thơ từ `artifacts/eda/summary.json` (T1.1).
 
 `f1_macro_no_junk` — macro-F1 khi loại lớp `nhóm_nghề_khác` (48 dòng) — là **0,6454**
 cho `dl-cat-s2` và 0,5958 cho `dl-cat-s2-cw`. Riêng lớp này đã kéo con số tổng xuống
 0,043; xử lý lớp này thế nào là một quyết định riêng (T2.2).
 
-Tầng dò tuyến tính (`probe-cat`) chưa được chạy lại trên lược đồ này (T1.5), nên
-bảng trên còn thiếu tầng giữa của hệ ba tầng mốc.
+Mạng dense chỉ hơn tầng dò tuyến tính **0,0127** macro-F1 trên cùng bộ vectơ (0,6025
+so với 0,5898) — gần đúng khoảng cách 0,0120 đo được ở lược đồ v1. Phần lớn tín hiệu
+mà mô hình tuyến tính khai thác được, mạng phi tuyến cũng khai thác được; năng lực
+tính toán thêm chỉ mua được một khoảng cải thiện nhỏ và ổn định, không phải một mức
+khác biệt về chất.
 
 **Bảng 4.5b: Kết quả phân loại ngành nghề (lược đồ v1, dev 7.159 tin — lịch sử, không
 so sánh được với Bảng 4.5)**
@@ -166,13 +170,21 @@ dẫn tới cấu hình `dl-cat-s2` ở trên.
 |---|---|---|---|---|---|
 | *mốc* | đoán trung vị 13,0 cho mọi tin | *5,70* | — | *−0,059* | — |
 | *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,57* | — | *−0,022* | — |
+| `probe-sal-s2` | Ridge trên vectơ PhoBERT | 4,42 | 2,77 | 0,466 | 48,0 % |
 | **`dl-sal-s2`** | dense(256), lr 3e-4, chuẩn hoá | **4,15** | **2,50** | **0,512** | **51,6 %** |
 
-> **Nguồn số liệu:** `artifacts/dl-sal-s2/metrics.json` và dòng `dl-sal-s2` trong
-> [04-results.md](../04-results.md); hai mốc lấy từ `artifacts/eda/summary.json` (T1.1).
+> **Nguồn số liệu:** `artifacts/dl-sal-s2/metrics.json` và hai dòng `dl-sal-s2` /
+> `probe-sal-s2` trong [04-results.md](../04-results.md); hai mốc lấy từ
+> `artifacts/eda/summary.json` (T1.1).
 
-Tầng dò tuyến tính (`probe-sal`) chưa được chạy lại trên lược đồ này (T1.5), nên
-bảng trên còn thiếu tầng giữa của hệ ba tầng mốc.
+**Kết quả tầng dò tuyến tính đảo ngược kết luận cũ ở lược đồ v1.** Ở v1, Ridge trên
+cùng bộ vectơ (`probe-sal`) cho MAE **6,60** — *tệ hơn cả đoán trung vị* — nên kết
+luận khi đó là tín hiệu lương có nằm trong vectơ nhưng chỉ ở dạng phi tuyến. Ở v2,
+`probe-sal-s2` đạt R² **0,466**, đã gần bằng mạng dense (0,512), và rõ ràng vượt
+mốc. Hai giả thuyết khả dĩ, chưa kiểm chứng: tập dev v2 (2.698 tin có nhãn lương,
+chia theo nhóm) có thể vốn "dễ" hơn hoặc ít nhiễu hơn tập `val` cũ; hoặc kết luận
+"phi tuyến" trước đây thực ra là hệ quả của cách chia dữ liệu v1. Phân tích lỗi
+kiểu §4.4 (cũ) trên lược đồ v2 (T1.7/T2.x) sẽ trả lời câu hỏi này.
 
 **Bảng 4.6b: Kết quả ước lượng mức lương (lược đồ v1, dev 5.095 tin — lịch sử, không
 so sánh được với Bảng 4.6)**

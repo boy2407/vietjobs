@@ -111,6 +111,7 @@ numbers.
 | Run | Configuration | macro-F1 | acc | balAcc | top-3 | best epoch |
 |---|---|---|---|---|---|---|
 | *floor* | always predict the majority class | *0.0214* | *0.2062* | — | — | — |
+| `probe-cat-s2` | LogReg on the **same** vectors | 0.5898 | 0.6388 | 0.5969 | 0.9258 | — |
 | **`dl-cat-s2`** | lr 3e-4 + clipping + standardisation | **0.6025** | 0.6511 | 0.6199 | **0.9318** | 16/24 |
 | `dl-cat-s2-cw` | as above + class weighting | 0.5710 | 0.5976 | **0.6931** | 0.9208 | 15/23 |
 | *TF-IDF + LinearSVC bar* | `cat-SW-svm-1` — **scheme v1**, not re-measured | *0.6050 ± 0.0071* | *0.6445* | *0.6713* | — | — |
@@ -119,8 +120,10 @@ numbers.
 `dl-cat-s2` and 0.5958 for `dl-cat-s2-cw`. That single 48-sample class costs the
 headline number 0.043; what to do with it is its own decision (T2.2).
 
-The linear probe has not been re-run on this scheme yet (T1.5), so the middle tier
-of the three-tier baseline is missing from this table.
+The dense head gains only **0.0127** macro-F1 over the linear probe on the same
+vectors (0.6025 vs 0.5898) — in line with the v1 gap of 0.0120. Most of the
+signal a linear model can extract, the non-linear head extracts too; the extra
+capacity buys a small, consistent margin, not a different regime.
 
 **Split scheme v1 — scored on `val`, 7,159 postings. History, not comparable with
 the table above.**
@@ -158,6 +161,7 @@ These are the current numbers.
 |---|---|---|---|---|---|
 | *bar* | predict the median, 13.0, for everything | *5.70* | — | *−0.059* | — |
 | *"knows the sector" ceiling* | the sector median, using the true label | *5.57* | — | *−0.022* | — |
+| `probe-sal-s2` | Ridge on the PhoBERT vectors | 4.42 | 2.77 | 0.466 | 48.0 % |
 | **`dl-sal-s2`** | dense(256), lr 3e-4, standardised | **4.15** | **2.50** | **0.512** | **51.6 %** |
 
 The regression head **beats the bar by 1.55 million (−27.2 %)**: R² on the log
@@ -166,8 +170,15 @@ of the text that the sector label alone does not provide ([05 §6](05-phan-tich-
 This is a clearer margin than the scheme-v1 result below (−17.6 %) — the smaller,
 group-disjoint v2 split still lets the same architecture generalise better here.
 
-The linear probe (`probe-sal`) has not been re-run on this scheme yet (T1.5), so
-the middle tier of the three-tier baseline is missing from this table.
+**The linear probe result reverses the v1 finding.** On v1, Ridge on the same
+vectors (`probe-sal`) scored **worse than predicting the median** (MAE 6.60) —
+the conclusion then was that the salary signal exists in the vectors but only in
+a non-linear form. On v2, `probe-sal-s2` reaches R² **0.466**, already most of the
+way to the dense head's 0.512, and clearly better than the bar. Two candidate
+explanations, neither confirmed: the v2 dev split (2,698 disclosed-salary rows,
+group-disjoint) may simply be an easier or less noisy slice than the old `val`;
+or the earlier "not linear" conclusion was itself an artefact of the v1 split.
+Re-deriving §5.3-style error analysis on v2 (T1.7/T2.x) would settle which.
 
 **Split scheme v1 — scored on `val`, 5,095 postings. History, not comparable with
 the table above.**
