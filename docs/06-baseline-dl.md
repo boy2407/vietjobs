@@ -151,26 +151,42 @@ depends on the real application; the default is off.
 
 ### 5.2 Salary estimation
 
+**Split scheme v2 — scored on `dev`, 2,698 postings with a disclosed salary.**
+These are the current numbers.
+
+| Run | Method | MAE (million) | MedAE | R²(log) | within ±20 % |
+|---|---|---|---|---|---|
+| *bar* | predict the median, 13.0, for everything | *5.70* | — | *−0.059* | — |
+| *"knows the sector" ceiling* | the sector median, using the true label | *5.57* | — | *−0.022* | — |
+| **`dl-sal-s2`** | dense(256), lr 3e-4, standardised | **4.15** | **2.50** | **0.512** | **51.6 %** |
+
+The regression head **beats the bar by 1.55 million (−27.2 %)**: R² on the log
+scale goes from negative to **0.512**, meaning the model reads salary signal out
+of the text that the sector label alone does not provide ([05 §6](05-phan-tich-du-lieu.md)).
+This is a clearer margin than the scheme-v1 result below (−17.6 %) — the smaller,
+group-disjoint v2 split still lets the same architecture generalise better here.
+
+The linear probe (`probe-sal`) has not been re-run on this scheme yet (T1.5), so
+the middle tier of the three-tier baseline is missing from this table.
+
+**Split scheme v1 — scored on `val`, 5,095 postings. History, not comparable with
+the table above.**
+
 | Run | Method | MAE (million) | MedAE | R²(log) | within ±20 % |
 |---|---|---|---|---|---|
 | *bar* | predict the median, 13.0, for everything | *5.86* | — | *−0.063* | — |
 | *"knows the sector" ceiling* | the sector median, using the true label | *5.75* | — | *−0.032* | — |
 | `probe-sal` | Ridge on the PhoBERT vectors | 6.60 | 3.26 | −0.004 | 42.1 % |
-| **`dl-sal-v2`** | dense(256), 40 epochs | **4.83** | **2.86** | **0.381** | **47.1 %** |
+| `dl-sal-v2` | dense(256), 40 epochs | 4.83 | 2.86 | 0.381 | 47.1 % |
 | `dl-sal-v3-long` | same configuration, patience 15 | 4.88 | 2.86 | 0.357 | 45.9 % |
 
-The regression head **beats the bar by 1.03 million (−17.6 %)** and is the clearest
-result of the whole round: R² on the log scale goes from negative to **0.381**,
-meaning the model genuinely reads salary signal out of the text — which the sector
-label does not provide ([05 §6](05-phan-tich-du-lieu.md)).
+Two v1 runs of the same configuration gave 4.83 and 4.88: **run-to-run variation is
+around 0.05 million**, so do not read a smaller difference alone as an improvement.
 
-Two runs of the same configuration give 4.83 and 4.88: **run-to-run variation is
-around 0.05 million**, so do not read a smaller difference as an improvement.
-
-Worth noting: Ridge on the same vectors gives **6.60** — *worse than predicting the
-median*. Same features, same labels; the difference is that the dense block
-standardises its input and learns a non-linearity. The signal is in the vectors,
-but not in a linear form.
+Worth noting from v1: Ridge on the same vectors gave **6.60** — *worse than
+predicting the median*. Same features, same labels; the difference is that the
+dense block standardises its input and learns a non-linearity. The signal is in
+the vectors, but not in a linear form. This has not been re-checked on v2 (T1.5).
 
 ### 5.3 Where it is wrong
 

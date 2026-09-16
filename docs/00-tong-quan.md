@@ -77,7 +77,7 @@ flowchart LR
 | **Data analysis** | **done, 2026-09-12 (T1.1)** | Scope is the **original file**, 47,707 rows (Rule 8). All 7 figures regenerated, including figure 07 (token length) — skew 25.5 : 1 · disclosure 71.5 % · eta² = 0.032 · `max_len=256` keeps 91.5 % of tokens. `summary.json` fully regenerated; no-model floors re-measured on the v2 splits | [05](05-phan-tich-du-lieu.md) |
 | PhoBERT embeddings | **done, 2026-09-13 (T1.2)** | re-encoded on split scheme v2: `artifacts/embeddings/{train,dev}-{raw,masked}-len256.npy`, shapes (34354, 768) / (3812, 768) | [06](06-baseline-dl.md) |
 | **Classification baseline (DL)** | **done, 2026-09-15 (T1.3)** | `dl-cat-s2` macroF1=0.6025 · top3=0.9318; `dl-cat-s2-cw` macroF1=0.5710 · balAcc=0.6931 — both on split scheme v2 `dev` (3,812 rows) | [06](06-baseline-dl.md#51-occupation-classification) |
-| **Salary baseline (DL)** | **stale** | `dl-sal-v2` scored MAE 4.83 on the *old* dev — must be re-run against the new splits | [06](06-baseline-dl.md#52-salary-estimation) |
+| **Salary baseline (DL)** | **done, 2026-09-16 (T1.4)** | `dl-sal-s2` MAE=4.15tr · R2log=0.512 · ±20%=51.6% on split scheme v2 `dev` (2,698 disclosed-salary rows) | [06](06-baseline-dl.md#52-salary-estimation) |
 | PhoBERT fine-tuning | not run | this machine has no GPU/MPS | [09](09-lo-trinh.md#priority-2--fine-tune-phobert-old-level-4b) |
 | Multi-task | not run | comes after both heads have their own numbers | [09](09-lo-trinh.md#priority-3--merge-into-multi-task) |
 | `predict.py` system | skeleton done | the DL path is not wired in yet | [09](09-lo-trinh.md#priority-5--the-system) |

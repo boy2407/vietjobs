@@ -21,3 +21,4 @@ Selection uses `val`. `test` is scored once, at the end.
 | probe-sal | 09-08 22:29 | salary | ridge-probe(alpha=1.0) on phobert-frozen | title+desc+req | segment | val | 5095 | MAE=6.60tr · MedAE=3.26tr · R2log=-0.004 · ±20%=42.1% | 0.8s | probe |
 | dl-cat-s2 | 09-15 14:22 | category | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 3812 | macroF1=0.6025 · acc=0.6511 · balAcc=0.6199 · top3=0.9318 | 15.0s | 12a847c1 |
 | dl-cat-s2-cw | 09-15 14:23 | category | phobert-frozen+dense(h=256,cw) | title+desc+req | segment | dev | 3812 | macroF1=0.5710 · acc=0.5976 · balAcc=0.6931 · top3=0.9208 | 13.7s | 12a847c1+dirty |
+| dl-sal-s2 | 09-16 06:25 | salary | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 2698 | MAE=4.15tr · MedAE=2.50tr · R2log=0.512 · ±20%=51.6% | 16.0s | 70ab8518 |

@@ -8,8 +8,8 @@
 > **các con số v1 không so sánh được với con số đo từ nay về sau**. Chúng được giữ
 > lại vì hai lý do: mạch lập luận và các bài học chẩn đoán vẫn đúng, và chúng là
 > mốc để đối chiếu khi các lần chạy mới hoàn tất. §4.3 (phân loại ngành nghề) đã
-> được chạy lại trên lược đồ v2 ngày 2026-09-15 (T1.3); phần còn lại của chương —
-> §4.4 ước lượng lương, các bảng phân tích lỗi §4.6–§4.8 — vẫn ở lược đồ v1. Danh
+> được chạy lại trên lược đồ v2 ngày 2026-09-15 (T1.3), §4.4 (ước lượng lương) chạy
+> lại ngày 2026-09-16 (T1.4); các bảng phân tích lỗi §4.6–§4.8 vẫn ở lược đồ v1. Danh
 > sách việc phải chạy lại ở [09-lo-trinh.md](../09-lo-trinh.md).
 >
 > Mỗi bảng còn ở lược đồ v1 được đánh dấu **(lược đồ v1)**; bảng đã chạy lại được
@@ -160,30 +160,41 @@ dẫn tới cấu hình `dl-cat-s2` ở trên.
 
 ## 4.4. Kết quả bài toán ước lượng mức lương
 
-**Bảng 4.6: Kết quả ước lượng mức lương (lược đồ v1, dev 5.095 tin có nhãn lương)**
+**Bảng 4.6: Kết quả ước lượng mức lương (lược đồ v2, dev 2.698 tin có nhãn lương)**
+
+| Lần chạy | Phương pháp | MAE (triệu) | MedAE | R²(log) | trong ±20 % |
+|---|---|---|---|---|---|
+| *mốc* | đoán trung vị 13,0 cho mọi tin | *5,70* | — | *−0,059* | — |
+| *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,57* | — | *−0,022* | — |
+| **`dl-sal-s2`** | dense(256), lr 3e-4, chuẩn hoá | **4,15** | **2,50** | **0,512** | **51,6 %** |
+
+> **Nguồn số liệu:** `artifacts/dl-sal-s2/metrics.json` và dòng `dl-sal-s2` trong
+> [04-results.md](../04-results.md); hai mốc lấy từ `artifacts/eda/summary.json` (T1.1).
+
+Tầng dò tuyến tính (`probe-sal`) chưa được chạy lại trên lược đồ này (T1.5), nên
+bảng trên còn thiếu tầng giữa của hệ ba tầng mốc.
+
+**Bảng 4.6b: Kết quả ước lượng mức lương (lược đồ v1, dev 5.095 tin — lịch sử, không
+so sánh được với Bảng 4.6)**
 
 | Lần chạy | Phương pháp | MAE (triệu) | MedAE | R²(log) | trong ±20 % |
 |---|---|---|---|---|---|
 | *mốc* | đoán trung vị 13,0 cho mọi tin | *5,86* | — | *−0,063* | — |
 | *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,75* | — | *−0,032* | — |
 | `probe-sal` | Ridge trên vectơ PhoBERT | 6,60 | 3,26 | −0,004 | 42,1 % |
-| **`dl-sal-v2`** | dense(256), 40 epoch | **4,83** | **2,86** | **0,381** | **47,1 %** |
+| `dl-sal-v2` | dense(256), 40 epoch | 4,83 | 2,86 | 0,381 | 47,1 % |
 | `dl-sal-v3-long` | cùng cấu hình, patience 15 | 4,88 | 2,86 | 0,357 | 45,9 % |
 
 ### 4.4.1. Nhận xét
 
-Nhánh hồi quy **vượt mốc 1,03 triệu (−17,6 %)** và là kết quả rõ ràng nhất của cả
-vòng thực nghiệm: R² trên thang logarit đi từ **âm** lên **0,381**, nghĩa là mô hình
-thực sự đọc được tín hiệu lương từ văn bản — thứ mà nhãn ngành nghề không cung cấp
-(eta² = 0,032).
+Trên lược đồ v2, nhánh hồi quy **vượt mốc 1,55 triệu (−27,2 %)** — biên độ rõ hơn cả
+con số v1 (−17,6 %): R² trên thang logarit đi từ **âm** lên **0,512**, nghĩa là mô
+hình đọc được tín hiệu lương từ văn bản mà nhãn ngành nghề không cung cấp
+(eta² = 0,032, đo trên tệp gốc).
 
-Hai lần chạy cùng cấu hình cho 4,83 và 4,88: **dao động giữa các lần chạy vào khoảng
-0,05 triệu**, nên không được đọc một chênh lệch nhỏ hơn thế thành cải thiện.
-
-**Một quan sát đáng giá hơn cả con số:** Ridge trên **cùng bộ vectơ** cho **6,60** —
-*tệ hơn cả việc đoán trung vị*. Cùng đặc trưng, cùng nhãn; khác biệt duy nhất là khối
-dense có chuẩn hoá đầu vào và học được phi tuyến. Kết luận: **tín hiệu có nằm trong
-vectơ, nhưng không nằm ở dạng tuyến tính.**
+Ridge trên cùng bộ vectơ (`probe-sal`, Bảng 4.6b) từng cho **6,60** trên lược đồ v1 —
+*tệ hơn cả việc đoán trung vị*. Kết luận cũ — tín hiệu nằm trong vectơ nhưng không ở
+dạng tuyến tính — chưa được kiểm tra lại trên lược đồ v2 (T1.5).
 
 ---
 
@@ -330,15 +341,15 @@ huấn luyện — và khoảng chênh đó nhỏ hơn khoảng tin cậy của 
 
 ## 4.8. Tổng hợp: đối chiếu kết quả với mốc
 
-**Bảng 4.12: Tổng hợp đối chiếu (hai dòng phân loại đã cập nhật lược đồ v2 ngày
-2026-09-15; các dòng còn lại vẫn ở lược đồ v1, xem đầu chương)**
+**Bảng 4.12: Tổng hợp đối chiếu (phân loại cập nhật lược đồ v2 ngày 2026-09-15, lương
+cập nhật lược đồ v2 ngày 2026-09-16; các dòng còn lại vẫn ở lược đồ v1, xem đầu chương)**
 
 | Bài toán | Mốc ngây thơ | Mốc học máy | Kết quả học sâu | Kết luận |
 |---|---|---|---|---|
 | Phân loại (macro-F1) *(lược đồ v2)* | 0,0214 | *0,6050 ± 0,0071 (lược đồ v1)* | **0,6025** | Chưa phân biệt được với mốc học máy |
 | Phân loại (top-3) *(lược đồ v2)* | — | 0,8631 *(lược đồ v1)* | **0,9318** | **Vượt rõ** |
-| Lương (MAE, triệu) | 5,86 | — | **4,83** | **Vượt mốc 17,6 %** |
-| Lương (R² log) | −0,063 | — | **0,381** | Từ âm lên dương — đọc được tín hiệu thật |
+| Lương (MAE, triệu) *(lược đồ v2)* | 5,70 | — | **4,15** | **Vượt mốc 27,2 %** |
+| Lương (R² log) *(lược đồ v2)* | −0,059 | — | **0,512** | Từ âm lên dương — đọc được tín hiệu thật |
 | `disclosed` (acc) | 0,7117 | — | *chưa chạy* | ⛔ |
 
 ### 4.8.1. Những gì chưa làm

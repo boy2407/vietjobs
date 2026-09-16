@@ -4,13 +4,13 @@
 
 > **Update 2026-09-08.** The two-tier LightGBM architecture described below is
 > **no longer the main track**; it was never run. The salary head is now a dense
-> network on PhoBERT vectors ([06-baseline-dl.md](06-baseline-dl.md)). What stays
-> valuable in this note are **the traps of the task itself** — they are independent
-> of the model. Two numbers to remember, measured in
+> network on PhoBERT vectors ([06-baseline-dl.md](06-baseline-dl.md)), re-run on
+> split scheme v2 as of 2026-09-16 (T1.4; see [06 §5.2](06-baseline-dl.md#52-salary-estimation)).
+> What stays valuable in this note are **the traps of the task itself** — they are
+> independent of the model. Two numbers to remember, measured in
 > [05](05-phan-tich-du-lieu.md): only **71.5 %** of postings carry a salary label
 > (on the original file, 34,093 of 47,707), and knowing the true sector only moves
-> MAE from **5.86** to **5.75** million (on the v1 `dev` split, still to be
-> re-measured).
+> MAE from **5.70** to **5.57** million (re-measured on the v2 `dev` split, T1.1).
 
 The code is in place, nothing was trained. There is no row in
 [04-results.md](archive/04-results-ml.md) for `salary` or `disclosed` — every
