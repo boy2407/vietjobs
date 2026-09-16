@@ -2,15 +2,18 @@
 
 # CHƯƠNG 4. THỰC NGHIỆM VÀ ĐÁNH GIÁ
 
-> ⛔ **CHƯA CÓ SỐ LIỆU CUỐI CÙNG.** Toàn bộ kết quả trong chương này đo trên **lược
-> đồ chia dữ liệu phiên bản 1** (70/15/15, tập dev 7.159 dòng). Ngày 2026-09-09 lược
-> đồ đổi sang hai tầng 8:2 rồi 9:1 (tập dev còn 3.812 dòng), nên **không con số nào
-> dưới đây so sánh được với con số đo từ nay về sau**. Chúng được giữ lại vì hai lý
-> do: mạch lập luận và các bài học chẩn đoán vẫn đúng, và chúng là mốc để đối chiếu
-> khi các lần chạy mới hoàn tất. Danh sách việc phải chạy lại ở
-> [09-lo-trinh.md](../09-lo-trinh.md).
+> ⛔ **CHƯA CÓ SỐ LIỆU CUỐI CÙNG.** Phần lớn kết quả trong chương này vẫn đo trên
+> **lược đồ chia dữ liệu phiên bản 1** (70/15/15, tập dev 7.159 dòng). Ngày
+> 2026-09-09 lược đồ đổi sang hai tầng 8:2 rồi 9:1 (tập dev còn 3.812 dòng), nên
+> **các con số v1 không so sánh được với con số đo từ nay về sau**. Chúng được giữ
+> lại vì hai lý do: mạch lập luận và các bài học chẩn đoán vẫn đúng, và chúng là
+> mốc để đối chiếu khi các lần chạy mới hoàn tất. §4.3 (phân loại ngành nghề) đã
+> được chạy lại trên lược đồ v2 ngày 2026-09-15 (T1.3); phần còn lại của chương —
+> §4.4 ước lượng lương, các bảng phân tích lỗi §4.6–§4.8 — vẫn ở lược đồ v1. Danh
+> sách việc phải chạy lại ở [09-lo-trinh.md](../09-lo-trinh.md).
 >
-> Mỗi bảng bị ảnh hưởng đều được đánh dấu **(lược đồ v1)**.
+> Mỗi bảng còn ở lược đồ v1 được đánh dấu **(lược đồ v1)**; bảng đã chạy lại được
+> đánh dấu **(lược đồ v2)**.
 
 ---
 
@@ -100,7 +103,28 @@ nó chỉ đang đoán trung vị theo một đường vòng.
 
 ## 4.3. Kết quả bài toán phân loại ngành nghề
 
-**Bảng 4.5: Kết quả phân loại ngành nghề (lược đồ v1, dev 7.159 tin)**
+**Bảng 4.5: Kết quả phân loại ngành nghề (lược đồ v2, dev 3.812 tin)**
+
+| Lần chạy | Cấu hình | macro-F1 | acc | balAcc | top-3 | epoch tốt nhất |
+|---|---|---|---|---|---|---|
+| *mốc ngây thơ* | luôn đoán lớp đa số | *0,0214* | *0,2062* | — | — | — |
+| **`dl-cat-s2`** | lr 3e-4 + cắt gradient + chuẩn hoá | **0,6025** | 0,6511 | 0,6199 | **0,9318** | 16/24 |
+| `dl-cat-s2-cw` | như trên + cân bằng lớp | 0,5710 | 0,5976 | **0,6931** | 0,9208 | 15/23 |
+| *mốc TF-IDF + LinearSVC* | `cat-SW-svm-1` — **lược đồ v1**, chưa đo lại | *0,6050 ± 0,0071* | *0,6445* | *0,6713* | — | — |
+
+> **Nguồn số liệu:** `artifacts/dl-cat-s2/metrics.json`, `artifacts/dl-cat-s2-cw/metrics.json`,
+> hai dòng `dl-cat-s2` / `dl-cat-s2-cw` trong [04-results.md](../04-results.md), và mốc
+> ngây thơ từ `artifacts/eda/summary.json` (T1.1).
+
+`f1_macro_no_junk` — macro-F1 khi loại lớp `nhóm_nghề_khác` (48 dòng) — là **0,6454**
+cho `dl-cat-s2` và 0,5958 cho `dl-cat-s2-cw`. Riêng lớp này đã kéo con số tổng xuống
+0,043; xử lý lớp này thế nào là một quyết định riêng (T2.2).
+
+Tầng dò tuyến tính (`probe-cat`) chưa được chạy lại trên lược đồ này (T1.5), nên
+bảng trên còn thiếu tầng giữa của hệ ba tầng mốc.
+
+**Bảng 4.5b: Kết quả phân loại ngành nghề (lược đồ v1, dev 7.159 tin — lịch sử, không
+so sánh được với Bảng 4.5)**
 
 | Lần chạy | Cấu hình | macro-F1 | acc | balAcc | top-3 | epoch tốt nhất |
 |---|---|---|---|---|---|---|
@@ -108,24 +132,29 @@ nó chỉ đang đoán trung vị theo một đường vòng.
 | `dl-cat-h256-cw` | như trên + cân bằng lớp | 0,0747 | 0,1904 | 0,1117 | 0,3519 | 3/11 — **phân kỳ** |
 | `probe-cat` | LogReg trên **cùng** bộ vectơ | 0,5867 | 0,6423 | 0,5782 | 0,9225 | — |
 | `dl-cat-v2-nostd` | lr 3e-4 + cắt gradient · không chuẩn hoá | 0,5934 | 0,6466 | 0,5917 | 0,9250 | 31/39 |
-| **`dl-cat-v2`** | lr 3e-4 + cắt gradient + chuẩn hoá | **0,5987** | 0,6493 | 0,6048 | **0,9257** | 14/22 |
+| `dl-cat-v2` | lr 3e-4 + cắt gradient + chuẩn hoá | 0,5987 | 0,6493 | 0,6048 | 0,9257 | 14/22 |
 | `dl-cat-v2-cw` | như trên + cân bằng lớp | 0,5637 | 0,5913 | **0,6687** | 0,9012 | 6/14 |
 | *mốc TF-IDF + LinearSVC* | `cat-SW-svm-1` | *0,6050 ± 0,0071* | *0,6445* | *0,6713* | — | — |
 
 ### 4.3.1. Nhận xét
 
-**Khoảng cách tới mốc cũ là 0,0063 — nhỏ hơn một nửa khoảng tin cậy ±0,0071 của
-chính mốc đó.** Hai mô hình **chưa phân biệt được** ở mức tin cậy này. Nói "PhoBERT
-thua TF-IDF" là đọc sai bảng; nói đúng là "chưa đủ bằng chứng để phân biệt".
+**Trên lược đồ v2, `dl-cat-s2` thấp hơn mốc TF-IDF + LinearSVC (đo trên lược đồ v1)
+0,0025** — nhỏ hơn khoảng tin cậy ±0,0071 của chính mốc đó, nhưng mốc này chưa được
+đo lại trên `dev` mới nên đây chỉ là so sánh tham khảo, không phải một phép kiểm định
+phân biệt được hai mô hình. Việc đo lại mốc học máy nằm ngoài phạm vi nhiệm vụ này.
 
-**Nhưng ở độ chính xác top-3 thì PhoBERT hơn rõ:** **0,9257** so với **0,8631** của
-TF-IDF + LogReg (LinearSVC không cho xác suất nên không có top-3). Với một sản phẩm
-gợi ý ba ngành nghề cho người đăng tin chọn, đây là khác biệt có ý nghĩa thực tế,
-và nó không hiện ra trong độ đo top-1.
+**Độ chính xác top-3 trên lược đồ v2 là 0,9318**, tương đương con số 0,9257 đo ở lược
+đồ v1 — mô hình vẫn đưa đúng ngành vào top ba đáng tin cậy hơn nhiều so với đoán
+đúng top-1.
 
-**`--class-weight` là một phép đánh đổi, không phải một cải thiện:** macro-F1 giảm
-0,035 trong khi balanced accuracy tăng 0,064. Nó kéo mô hình về phía các lớp nhỏ,
-đúng như thiết kế. Chọn cấu hình nào phụ thuộc vào ứng dụng thật; mặc định để tắt.
+**`--class-weight` vẫn là một phép đánh đổi, không phải một cải thiện, trên lược đồ
+v2:** macro-F1 giảm 0,0315 (0,6025 → 0,5710) trong khi balanced accuracy tăng 0,0733
+(0,6199 → 0,6931). Nó kéo mô hình về phía các lớp nhỏ, đúng như thiết kế. Chọn cấu
+hình nào phụ thuộc vào ứng dụng thật; mặc định để tắt.
+
+Run `dl-cat-h256` (Bảng 4.5b, macro-F1 0,0420) vẫn được giữ lại như một bằng chứng:
+đó là lần chạy phân kỳ vì thiếu chuẩn hoá và cắt gradient, và chính bài học đó đã
+dẫn tới cấu hình `dl-cat-s2` ở trên.
 
 ---
 
@@ -301,12 +330,13 @@ huấn luyện — và khoảng chênh đó nhỏ hơn khoảng tin cậy của 
 
 ## 4.8. Tổng hợp: đối chiếu kết quả với mốc
 
-**Bảng 4.12: Tổng hợp đối chiếu (lược đồ v1)**
+**Bảng 4.12: Tổng hợp đối chiếu (hai dòng phân loại đã cập nhật lược đồ v2 ngày
+2026-09-15; các dòng còn lại vẫn ở lược đồ v1, xem đầu chương)**
 
 | Bài toán | Mốc ngây thơ | Mốc học máy | Kết quả học sâu | Kết luận |
 |---|---|---|---|---|
-| Phân loại (macro-F1) | 0,0210 | **0,6050 ± 0,0071** | 0,5987 | Chưa phân biệt được với mốc học máy |
-| Phân loại (top-3) | — | 0,8631 | **0,9257** | **Vượt rõ** |
+| Phân loại (macro-F1) *(lược đồ v2)* | 0,0214 | *0,6050 ± 0,0071 (lược đồ v1)* | **0,6025** | Chưa phân biệt được với mốc học máy |
+| Phân loại (top-3) *(lược đồ v2)* | — | 0,8631 *(lược đồ v1)* | **0,9318** | **Vượt rõ** |
 | Lương (MAE, triệu) | 5,86 | — | **4,83** | **Vượt mốc 17,6 %** |
 | Lương (R² log) | −0,063 | — | **0,381** | Từ âm lên dương — đọc được tín hiệu thật |
 | `disclosed` (acc) | 0,7117 | — | *chưa chạy* | ⛔ |

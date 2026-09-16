@@ -75,8 +75,8 @@ flowchart LR
 | Vietnamese processing | done | segmentation, 0 failures over 48k postings; PhoBERT **requires** segmented text | [02](02-vietnamese-nlp.md) |
 | Splitting | **redone 2026-09-09** | `train:test` = 8:2, then `train:dev` = 9:1 → 34,354 / 3,812 / 9,541 · 0 groups leaking, all 16 classes in all three | [01](01-data-audit.md#7-splitting--by-group-not-by-row) |
 | **Data analysis** | **done, 2026-09-12 (T1.1)** | Scope is the **original file**, 47,707 rows (Rule 8). All 7 figures regenerated, including figure 07 (token length) — skew 25.5 : 1 · disclosure 71.5 % · eta² = 0.032 · `max_len=256` keeps 91.5 % of tokens. `summary.json` fully regenerated; no-model floors re-measured on the v2 splits | [05](05-phan-tich-du-lieu.md) |
-| PhoBERT embeddings | **stale** | the cache was built on the old splits and moved to `artifacts/embeddings-scheme-v1/`; must be re-encoded | [06](06-baseline-dl.md) |
-| **Classification baseline (DL)** | **stale** | `dl-cat-v2` scored 0.5987 on the *old* 70/15/15 dev — not comparable with anything measured from here on; must be re-run | [06](06-baseline-dl.md#51-occupation-classification) |
+| PhoBERT embeddings | **done, 2026-09-13 (T1.2)** | re-encoded on split scheme v2: `artifacts/embeddings/{train,dev}-{raw,masked}-len256.npy`, shapes (34354, 768) / (3812, 768) | [06](06-baseline-dl.md) |
+| **Classification baseline (DL)** | **done, 2026-09-15 (T1.3)** | `dl-cat-s2` macroF1=0.6025 · top3=0.9318; `dl-cat-s2-cw` macroF1=0.5710 · balAcc=0.6931 — both on split scheme v2 `dev` (3,812 rows) | [06](06-baseline-dl.md#51-occupation-classification) |
 | **Salary baseline (DL)** | **stale** | `dl-sal-v2` scored MAE 4.83 on the *old* dev — must be re-run against the new splits | [06](06-baseline-dl.md#52-salary-estimation) |
 | PhoBERT fine-tuning | not run | this machine has no GPU/MPS | [09](09-lo-trinh.md#priority-2--fine-tune-phobert-old-level-4b) |
 | Multi-task | not run | comes after both heads have their own numbers | [09](09-lo-trinh.md#priority-3--merge-into-multi-task) |

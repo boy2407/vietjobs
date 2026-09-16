@@ -19,3 +19,5 @@ Selection uses `val`. `test` is scored once, at the end.
 | dl-sal-v3-long | 09-08 22:11 | salary | phobert-frozen+dense(h=256) | title+desc+req | segment | val | 5095 | MAE=4.88tr · MedAE=2.86tr · R2log=0.357 · ±20%=45.9% | 1997.0s | 128ce9f4+dirty |
 | probe-cat | 09-08 22:29 | category | logreg-probe(C=1.0) on phobert-frozen | title+desc+req | segment | val | 7159 | macroF1=0.5867 · acc=0.6423 · balAcc=0.5782 · top3=0.9225 | 1079.0s | probe |
 | probe-sal | 09-08 22:29 | salary | ridge-probe(alpha=1.0) on phobert-frozen | title+desc+req | segment | val | 5095 | MAE=6.60tr · MedAE=3.26tr · R2log=-0.004 · ±20%=42.1% | 0.8s | probe |
+| dl-cat-s2 | 09-15 14:22 | category | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 3812 | macroF1=0.6025 · acc=0.6511 · balAcc=0.6199 · top3=0.9318 | 15.0s | 12a847c1 |
+| dl-cat-s2-cw | 09-15 14:23 | category | phobert-frozen+dense(h=256,cw) | title+desc+req | segment | dev | 3812 | macroF1=0.5710 · acc=0.5976 · balAcc=0.6931 · top3=0.9208 | 13.7s | 12a847c1+dirty |

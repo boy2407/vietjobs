@@ -95,11 +95,35 @@ Details in [03-protocol.md §3b](03-protocol.md#3b-what-deep-learning-logs-on-to
 
 ## 5. Results
 
-Everything is scored on `val` (7,159 postings for classification; the 5,095
-postings with a disclosed salary for the regression). Every row has a `run_id` in
-[04-results.md](04-results.md) and a directory `artifacts/<run_id>/`.
+The split scheme changed on 2026-09-09 (`train:test` = 8:2, then `train:dev` = 9:1
+→ 34,354 / 3,812 / 9,541). **Numbers measured before that date are not comparable
+with numbers measured after it**, so each table below says which scheme it belongs
+to. Scheme v2 scores on `dev` (3,812 postings for classification); scheme v1 scored
+on what was then called `val` (7,159 postings for classification; 5,095 for the
+regression). Every row has a `run_id` in [04-results.md](04-results.md) and a
+directory `artifacts/<run_id>/`.
 
 ### 5.1 Occupation classification
+
+**Split scheme v2 — scored on `dev`, 3,812 postings.** These are the current
+numbers.
+
+| Run | Configuration | macro-F1 | acc | balAcc | top-3 | best epoch |
+|---|---|---|---|---|---|---|
+| *floor* | always predict the majority class | *0.0214* | *0.2062* | — | — | — |
+| **`dl-cat-s2`** | lr 3e-4 + clipping + standardisation | **0.6025** | 0.6511 | 0.6199 | **0.9318** | 16/24 |
+| `dl-cat-s2-cw` | as above + class weighting | 0.5710 | 0.5976 | **0.6931** | 0.9208 | 15/23 |
+| *TF-IDF + LinearSVC bar* | `cat-SW-svm-1` — **scheme v1**, not re-measured | *0.6050 ± 0.0071* | *0.6445* | *0.6713* | — | — |
+
+`f1_macro_no_junk` — macro-F1 with `nhóm_nghề_khác` excluded — is **0.6454** for
+`dl-cat-s2` and 0.5958 for `dl-cat-s2-cw`. That single 48-sample class costs the
+headline number 0.043; what to do with it is its own decision (T2.2).
+
+The linear probe has not been re-run on this scheme yet (T1.5), so the middle tier
+of the three-tier baseline is missing from this table.
+
+**Split scheme v1 — scored on `val`, 7,159 postings. History, not comparable with
+the table above.**
 
 | Run | Configuration | macro-F1 | acc | balAcc | top-3 | best epoch |
 |---|---|---|---|---|---|---|
@@ -111,15 +135,19 @@ postings with a disclosed salary for the regression). Every row has a `run_id` i
 | `dl-cat-v2-cw` | as above + class weighting | 0.5637 | 0.5913 | **0.6687** | 0.9012 | 6/14 |
 | *TF-IDF + LinearSVC bar* | `cat-SW-svm-1` | *0.6050 ± 0.0071* | *0.6445* | *0.6713* | — | — |
 
-**The gap to the old bar is 0.0063 — less than half that bar's own ±0.0071
-confidence interval.** The two models are not yet distinguishable. But at top-3
-PhoBERT is clearly ahead: **0.9257** against 0.8631 for TF-IDF + LogReg (LinearSVC
-gives no probabilities, hence no top-3). For a product that suggests three
-occupations, that is a meaningful difference.
+**On scheme v2, `dl-cat-s2` is 0.0025 below the scheme-v1 TF-IDF + LinearSVC bar** —
+smaller than the bar's own ±0.0071 confidence interval, and that bar was never
+re-measured on this scheme, so this comparison is directional only, not a
+distinguishing test. Re-measuring the bar on `dev` is out of this task's scope.
 
-`--class-weight` is a **trade, not an improvement**: macro-F1 drops 0.035 while
-balanced accuracy rises 0.064. It pulls the model toward the small classes, exactly
-as designed. Which one to pick depends on the real application; the default is off.
+Top-3 accuracy on v2 is **0.9318**, in line with the v1 figure of 0.9257 — the
+model still puts the right class in its top three far more reliably than it gets
+the top-1 exactly right.
+
+`--class-weight` is again a **trade, not an improvement** on v2: macro-F1 drops
+0.0315 (0.6025 → 0.5710) while balanced accuracy rises 0.0733 (0.6199 → 0.6931). It
+pulls the model toward the small classes, exactly as designed. Which one to pick
+depends on the real application; the default is off.
 
 ### 5.2 Salary estimation
 
