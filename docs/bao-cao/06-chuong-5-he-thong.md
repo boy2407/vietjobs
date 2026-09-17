@@ -84,7 +84,7 @@ Nhờ vậy quy tắc chống rò rỉ lương chỉ phải canh ở một chỗ
 | `tests/test_vitext.py` | 56 | Từng bước xử lý tiếng Việt, gồm bốn trường hợp "40 triệu người dùng" **không được** che |
 | `tests/test_no_leak.py` | 22 | Hai bài toán lương không bao giờ đọc cột chưa che; mọi tên trong danh sách bảo vệ phải là cột có thật |
 | `tests/test_train_overrides.py` | 16 | Tham số ghi đè thật sự tới được bộ ước lượng; khoá lạ báo lỗi thay vì bị bỏ qua |
-| `tests/test_dl_text.py` | 6 | Đường học sâu đọc đúng cột: bài toán lương chỉ thấy `*_masked` |
+| `tests/test_dl_text.py` | 8 | Đường học sâu đọc đúng cột: bài toán lương chỉ thấy `*_masked`; đầu vào không bị lọc stopword, không bị viết thường |
 | `tests/test_bootstrap.py` | 8 | Bootstrap tất định theo hạt giống; hai mô hình giống hệt hoà ở 0,5 |
 
 ### 5.3.1. Những kiểm thử còn thiếu — nói thẳng

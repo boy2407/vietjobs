@@ -160,10 +160,14 @@ Ba nhóm mục đích:
 - **Chặn rò rỉ** — bước 4 và 9. Không để mô hình nhìn thấy đáp án, dù đáp án nằm
   trong chính đầu vào (bước 4) hay nằm ở tập kiểm tra (bước 9).
 
-**Thứ tự trong `preprocess` là cố định và có lý do:** NFC → dấu thanh → viết tắt →
-che lương → tách từ → từ dừng. Che lương phải chạy **sau** khi mở rộng viết tắt (vì
-`8tr` phải thành một con số trước khi che được) và **trước** khi tách từ (vì
-`<SALARY>` không được phép bị tách).
+**Thứ tự hiệu dụng trong `dataset.clean` là cố định và có lý do:** NFC → dấu thanh →
+viết tắt → che lương → tách từ. Bốn bước đầu chạy trong một lời gọi
+`V.preprocess(tone=True, abbrev=True, mask=…)`; tách từ là một lượt riêng
+(`segment_many`) chạy ngay sau, không phải bước thứ năm bên trong `preprocess`.
+Che lương phải chạy **sau** khi mở rộng viết tắt (vì `8tr` phải thành một con số
+trước khi che được) và **trước** khi tách từ (vì `<SALARY>` không được phép bị
+tách). Từ dừng có tham số riêng trong `preprocess` (`drop_stopwords`) nhưng không
+lời gọi nào trong dự án bật nó — xem §3.3.3.
 
 ### 3.3.3. Hai bước bị gỡ bỏ, và vì sao đó là kết quả chứ không phải thiếu sót
 
@@ -184,10 +188,15 @@ trái ngược. Đây là một bài học phương pháp luận đáng ghi lạ
 
 - **Không bóc thẻ HTML.** Kho dữ liệu này không có thẻ HTML nào. Thêm một bước không
   có gì để làm là thêm một chỗ cho lỗi ẩn nấp.
-- **Không chuyển chữ thường.** Bộ tách đơn vị con của PhoBERT phân biệt hoa thường,
+- **Không chuyển chữ thường ba cột đi vào PhoBERT** (`job_title`, `description`,
+  `requirements_text`). Bộ tách đơn vị con của PhoBERT phân biệt hoa thường,
   nên giữ nguyên là đúng. Việc này còn cho phép đếm cột `n_acronyms` — số token viết
   hoa toàn bộ trong tiêu đề (`SEO`, `IT`, `PHP`, `QA`, `HR`). Đây là tín hiệu ngành
   nghề rất mạnh và gần như miễn phí; chuyển chữ thường sớm là xoá sạch đặc trưng này.
+  Đây không phải quy tắc cho toàn bộ `vitext.py`: các cột gộp từ danh sách bằng
+  `join_list_field` (`benefits_text`, `technical_skills_text`,
+  `qualifications_text`, `soft_skills_text`, `languages_text`) bị viết thường,
+  nhưng không cột nào trong số đó nằm trong `FIELDS` của `dl/text.py`.
 
 ---
 
@@ -228,7 +237,7 @@ Cột phúc lợi được che riêng vì nó nhắc lại con số lương nhi�
 **Điểm quan trọng đối với nhánh học sâu:** bộ đệm vectơ PhoBERT được tách thành hai
 họ tệp riêng trong `artifacts/embeddings/` — họ `raw` cho phân loại và họ `masked`
 cho lương. Trộn hai tệp này là một vụ rò rỉ lương âm thầm. Ràng buộc được giữ bằng
-`tests/test_no_leak.py` (22 kiểm thử) và `tests/test_dl_text.py` (6 kiểm thử).
+`tests/test_no_leak.py` (22 kiểm thử) và `tests/test_dl_text.py` (8 kiểm thử).
 
 **Một hạn chế cần nói thẳng:** danh sách cột được bảo vệ (`UNMASKED_COLUMNS`) hiện
 vẫn là **danh sách viết tay**, nên bộ kiểm thử chỉ canh được những cột mà người viết
@@ -555,8 +564,8 @@ bố lương, mà việc công bố lương lại tương quan với cỡ lớp 
 > `PYTHONPATH=src .venv-dl/bin/python scripts/analyze_data.py --tokens` trên
 > `train` + `dev` của lược đồ v2 (38.166 tin), tokenizer `vinai/phobert-base-v2`.
 
-Đây là một **con số quyết định** (Rule 8): nó chỉ có ý nghĩa để chọn `--max-len`,
-không mô tả kho dữ liệu nói chung, nên được đo trên `train`+`dev`, không phải tệp gốc.
+Đây là một **con số quyết định** (Rule 8): nó chỉ có ý nghĩa cho bước nhúng, không mô
+tả kho dữ liệu nói chung, nên được đo trên `train`+`dev`, không phải tệp gốc.
 
 **Bảng 3.18: Độ dài chuỗi (số token) và cái giá của việc cắt**
 
@@ -569,14 +578,29 @@ không mô tả kho dữ liệu nói chung, nên được đo trên `train`+`dev
 | `max_len` | Tỷ lệ tin bị cắt | Tỷ lệ token còn giữ được |
 |---|---|---|
 | 128 | 77,6 % | 62,2 % |
-| **256 (mặc định hiện tại)** | **19,8 %** | **91,5 %** |
-| 512 | 1,1 % | 99,5 % |
+| **256 (trần cứng của PhoBERT)** | **19,8 %** | **91,5 %** |
+| 512 | *1,1 %* | *99,5 %* |
 
-`max_len=256` cắt gần một phần năm số tin, nhưng vẫn giữ lại **91,5 %** tổng khối
-lượng token — phần bị mất chủ yếu nằm ở đuôi mô tả dài, không phải ở tiêu đề hay các
-câu đầu của yêu cầu công việc, đúng như thứ tự ghép trường đã chọn trong
-[`dl/text.py`](../../src/vietjobs/dl/text.py). Đây là số đo đầu tiên xác nhận lựa
-chọn `--max-len 256` chứ không còn là một giả định.
+**256 không phải một siêu tham số được chọn, mà là trần cứng của kiến trúc.**
+`vinai/phobert-base-v2` khai báo `max_position_embeddings = 258`, tức chỉ 256 vị trí
+thực sự dùng được; đưa vào chuỗi dài hơn thì mô hình **báo lỗi `IndexError`** chứ
+không phải chạy kém đi (đo trực tiếp ngày 2026-09-16: 256 token chạy bình thường, 300
+và 512 token đều sập). Vì vậy dòng `512` trong bảng trên chỉ là một phép **giả định**,
+in nghiêng, trả lời câu hỏi "nếu dùng một mô hình có cửa sổ dài hơn thì được gì" — nó
+không phải một lựa chọn khả thi với PhoBERT-base.
+
+Đọc đúng của bảng này là **cái giá bắt buộc phải trả khi chọn PhoBERT-base**, không
+phải căn cứ biện minh cho một tham số: gần một phần năm số tin bị cắt mất phần đuôi,
+đổi lại vẫn giữ được **91,5 %** tổng khối lượng token. Phần bị mất chủ yếu nằm ở đuôi
+mô tả dài, không phải ở tiêu đề hay các câu đầu của yêu cầu công việc, đúng như thứ tự
+ghép trường đã chọn trong [`dl/text.py`](../../src/vietjobs/dl/text.py) — đây mới là
+quyết định thật sự của người làm, và nó có tác dụng giảm nhẹ cái giá trên.
+
+Chỉ có một lựa chọn thật sự còn lại là giữa 128 và 256, và bảng trả lời dứt khoát:
+hạ xuống 128 để chạy nhanh hơn sẽ cắt tới 77,6 % số tin và vứt đi gần 38 % lượng
+token. Muốn đọc được phần văn bản hiện đang bị mất thì phải đổi sang mô hình có cửa
+sổ dài hơn, hoặc chia tin thành nhiều đoạn rồi gộp vectơ — cả hai đều nằm ngoài phạm
+vi mức cơ sở.
 
 ---
 

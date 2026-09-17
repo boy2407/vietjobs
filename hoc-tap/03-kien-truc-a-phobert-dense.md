@@ -85,7 +85,11 @@ Hai chi tiết quan trọng:
 rỗng cho đủ độ dài của tin dài nhất trong batch.
 
 **Vì sao cần.** Một batch phải là một khối chữ nhật để tính toán theo lô. Còn giới hạn
-256 là đánh đổi thời gian: chi phí của kiến trúc Transformer tăng nhanh theo độ dài.
+256 không phải một lựa chọn — nó là **trần cứng** của `phobert-base-v2`
+(`max_position_embeddings = 258`, tức 256 vị trí dùng được, hai vị trí còn lại
+dành cho `<s>`/`</s>`); một chuỗi dài hơn làm mô hình báo `IndexError`, không
+phải chạy chậm hơn. Chi phí thời gian của Transformer tăng nhanh theo độ dài chỉ
+là một hệ quả đi kèm, không phải lý do chọn con số này.
 
 Đây chính là lý do tiêu đề được đặt lên đầu chuỗi ở [bài 2](02-hai-bai-toan-va-doan-duong-chung.md#2-đoạn-đường-chung--từ-tin-tuyển-dụng-thành-một-chuỗi).
 

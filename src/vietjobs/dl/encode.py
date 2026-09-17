@@ -15,6 +15,7 @@ Trộn nhầm hai file này là rò rỉ lương im lặng — xem ``dl/text.py`
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from pathlib import Path
 
@@ -62,7 +63,10 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
     import torch
     from transformers import AutoModel, AutoTokenizer
 
-    tok = AutoTokenizer.from_pretrained(MODEL_NAME)
+    # PhoBERT chỉ có tokenizer "chậm"; ghim use_fast=False để một bản
+    # transformers sau này không đổi tokenizer âm thầm — cache .npy sẽ lệch
+    # mà không có lỗi nào. Lớp tokenizer thật được ghi vào sidecar .json.
+    tok = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=False)
     model = AutoModel.from_pretrained(MODEL_NAME).eval().to(pick_device(device))
     dev = next(model.parameters()).device
 
@@ -98,8 +102,34 @@ def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32
     emb = encode_texts(texts, max_len=max_len, batch=batch, device=device)
     path.parent.mkdir(parents=True, exist_ok=True)
     np.save(path, emb)
+    _write_sidecar(path, split=split, task=task, max_len=max_len, n=len(texts))
     print(f"  -> {path}  {emb.shape}")
     return emb
+
+
+def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int) -> None:
+    """Ghi ``<cache>.json`` cạnh file ``.npy``: đúng những gì đã tạo ra các vector.
+
+    Một cache ``.npy`` không tự nói nó được nhúng bằng tokenizer nào, cắt ở đâu,
+    đọc cột nào. Sidecar là bằng chứng để so sánh hai cache với nhau; cache cũ
+    không có sidecar vẫn đọc được bình thường.
+    """
+    from transformers import AutoTokenizer
+
+    tok = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=False)
+    info = {
+        "model": MODEL_NAME,
+        "tokenizer_class": type(tok).__name__,
+        "add_special_tokens": True,
+        "max_len": max_len,
+        "pooling": "masked_mean",
+        "split": split,
+        "family": family(task),
+        "columns": T.columns_for(task),
+        "n": n,
+    }
+    path.with_suffix(".json").write_text(
+        json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def main() -> None:
