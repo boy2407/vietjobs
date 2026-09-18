@@ -7,7 +7,10 @@ The full rules are in [AGENTS.md](mdc:AGENTS.md) — read that file before chang
 anything. Five things not to forget:
 
 1. **Living documentation.** Every real change updates the right note in `docs/`
-   in the same working session (the mapping table is in AGENTS.md, Rule 1).
+   in the same working session (the mapping table is in AGENTS.md, Rule 1), and
+   `docs/bao-cao/` tells the five contents of each finished task (Rule 10) —
+   only work that was run, told once; plans stay in `TASKS.md` and
+   `docs/09-lo-trinh.md` (Rule 11).
 2. **Experiment protocol.** Never change `SPLIT_SEED = 20260826`; `test` is
    touched once, behind `--confirm-test`; `docs/04-results.md` is append-only.
 3. **Leak prevention.** The `salary`/`disclosed` tasks read only `*_masked`

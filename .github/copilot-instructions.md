@@ -8,6 +8,12 @@ a change. In summary:
   `docs/00-tong-quan.md`.
 - **Living documentation:** every real change comes with an update to the matching
   note in `docs/` (the mapping table is in `AGENTS.md`).
+- **Complete report:** every finished task is described in `docs/bao-cao/` with
+  what was run, the model, data handling, Vietnamese processing, and the
+  preprocessing analysis behind it (Rule 10).
+- **Only what was done:** the report and `docs/` describe work that was run,
+  once and without excess; plans live only in `TASKS.md` and
+  `docs/09-lo-trinh.md` (Rule 11).
 - **Experiment protocol:** `SPLIT_SEED = 20260826` is immutable; the `test` split
   is touched once, behind `--confirm-test`; `docs/04-results.md` is append-only.
 - **Leak prevention:** the two salary tasks read only `*_masked` columns, decided

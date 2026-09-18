@@ -118,10 +118,7 @@ The classic **∩**-shaped curve. Both ends are bad, with a peak in the middle:
 ### Three things worth noting besides the peak
 
 **a. The optimal `C` is 50× below the default.** This is not a pretty accident — it
-is a **symptom**. It says most of the 236,596 dimensions are noise. The next thing to
-do is not another `C` sweep but **cutting dimensions** — sweeping `min_df` and
-`max_features`. Recorded in
-[09-lo-trinh.md — Priority 3b](../archive/09-lo-trinh-ml.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-mốc-cơ-sở-ml).
+is a **symptom**. It says most of the 236,596 dimensions are noise.
 
 **b. Stronger regularisation runs FASTER.** `C=0.02` takes 27.8 s, `C=4.0` takes
 313.6 s — **11× faster** and a higher score. A tighter constraint makes the
@@ -171,7 +168,7 @@ test: the model is deliberately spending recall on the rare classes.
 
 ## Back to the project itself
 
-- [07-bai-toan-luong.md](../07-bai-toan-luong.md#traps-known-in-advance) — the `LinearRegression` vs `Ridge` table
+- [07-bai-toan-luong.md](../07-bai-toan-luong.md#cạm-bẫy-đã-đo-hồi-quy-tuyến-tính-không-chính-quy-hoá) — the `LinearRegression` vs `Ridge` table
 - [06-mo-hinh-phan-lop.md](../archive/06-mo-hinh-phan-lop.md) — the full results ladder
 - [note 4 — sparse matrices and dimensionality](04-ma-tran-thua-va-so-chieu.md) — why p/n = 7.1 is a problem
 - [04-results.md](../archive/04-results-ml.md) — every `C`-sweep row

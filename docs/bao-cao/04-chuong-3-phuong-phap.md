@@ -23,15 +23,14 @@ Quy trình gồm sáu khâu nối tiếp:
 | 1 | Làm sạch, loại trùng | `dataset.py` | 47.707 dòng |
 | 2 | Xử lý tiếng Việt, tách từ | `vitext.py` | 9 cột đã tách từ |
 | 3 | Chia tập theo nhóm | `dataset.py` | 34.354 / 3.812 / 9.541 |
-| 4 | Phân tích khám phá | `scripts/analyze_data.py` | 5 hình + `summary.json` |
+| 4 | Phân tích khám phá | `scripts/analyze_data.py` | 11 hình + `summary.json` |
 | 5 | Biểu diễn bằng PhoBERT | `dl/encode.py` | vectơ 768 chiều, lưu đệm |
 | 6 | Huấn luyện phần dày đặc | `dl/train_dl.py` | mô hình + `metrics.json` |
 
 Một quyết định kiến trúc bao trùm cả sáu khâu: **các khâu 1–3 chạy một lần và kết
 quả được ghi xuống đĩa**, các khâu 5–6 đọc lại kết quả đó. Lý do là chi phí: riêng
 việc tách từ cho 47.707 tin mất **780,3 giây** (13 phút), với **0 lỗi**. Nếu tách từ
-nằm trong vòng lặp huấn luyện thì 27 lần thí nghiệm sẽ tiêu gần 6 giờ chỉ để tính đi
-tính lại đúng một kết quả.
+nằm trong vòng lặp huấn luyện thì mỗi lần chạy phải trả lại đúng 13 phút đó.
 
 ---
 
@@ -121,82 +120,35 @@ Thang logarit nói được điều đó, thang tuyến tính thì không.
 
 ## 3.3. Xử lý ngôn ngữ tiếng Việt
 
-![Chuỗi xử lý tiếng Việt](../figures/03-xu-ly-tieng-viet.png)
+PhoBERT cắt văn bản thành **đơn vị con BPE** rồi tra trong bảng nhúng đã học từ một
+kho văn bản đã chuẩn hoá và đã tách từ. Văn bản lệch khỏi phân bố đó không gây lỗi,
+nó chỉ vỡ thành những mảnh hiếm và cho vectơ kém hơn. Vì vậy mọi bước dưới đây nhằm
+đưa văn bản của đề tài về đúng dạng PhoBERT đã học.
 
-**Hình 3.2: Chín bước xử lý tiếng Việt và nơi từng bước được gọi**
+Mô hình đọc đúng ba cột: `job_title`, `description`, `requirements_text` (bài lương
+đọc bản `*_masked` của cùng ba cột, §3.4). Mỗi cột đi qua các bước sau, theo đúng thứ
+tự trong mã nguồn (Hình 3.2, Bảng 3.6).
 
-### 3.3.1. Nguyên lý — vì sao phải chuẩn hoá cho PhoBERT
+![Đường văn bản từ tin thô tới PhoBERT](../figures/03-xu-ly-tieng-viet.png)
 
-PhoBERT không đếm từ; nó cắt văn bản thành **đơn vị con BPE** rồi tra trong một bảng
-nhúng. Bảng đó học từ một kho văn bản có phân bố cụ thể. Mọi bước chuẩn hoá dưới đây
-tồn tại vì đúng một lý do: **kéo văn bản của đề tài về gần phân bố mà PhoBERT đã
-học**.
+**Hình 3.2: Các giai đoạn xử lý văn bản từ tin thô tới vectơ PhoBERT**
 
-Lệch phân bố không sinh ra thông báo lỗi. Nó chỉ làm vỡ chuỗi đơn vị con thành những
-mảnh hiếm, và vectơ ngữ nghĩa thu được nhạt đi mà không có dấu hiệu nào trên màn
-hình.
+**Bảng 3.6: Các bước xử lý văn bản trước khi vào PhoBERT**
 
-### 3.3.2. Chín bước và ba nhóm mục đích
+| # | Bước | Ví dụ | Nơi chạy |
+|---|---|---|---|
+| 1 | Chuẩn hoá Unicode NFC, bỏ ký tự điều khiển và dấu đầu dòng, gộp khoảng trắng | `e` + hai dấu tổ hợp → `ế` | `dataset.clean` → `vitext.preprocess` |
+| 2 | Chuẩn hoá vị trí dấu thanh | `hòa` = `hoà` · `thúy` = `thuý` | như trên (`tone=True`) |
+| 3 | Mở rộng từ viết tắt | `NV` → `nhân viên` · `BHXH` → `bảo hiểm xã hội` | như trên (`abbrev=True`) |
+| 4 | Che con số lương — chỉ bản `*_masked` | `18 triệu` → `<SALARY>` | như trên (`mask=True`) |
+| 5 | Tách từ (`underthesea`) | `nhân viên` → `nhân_viên` | `vitext.segment_many`, ra cột `*_seg` |
+| 6 | Ghép ba trường, tiêu đề đứng trước | `tiêu đề . mô tả . yêu cầu` | `dl/text.py` |
+| 7 | Tách đơn vị con BPE, cắt ở 256 token | — | `dl/encode.py` (tokenizer của `vinai/phobert-base-v2`) |
 
-**Bảng 3.6: Chín bước xử lý tiếng Việt**
-
-| # | Bước | Ví dụ | Mục đích | Trạng thái |
-|---|---|---|---|---|
-| 1 | Chuẩn hoá Unicode NFC | gộp dấu tổ hợp, bỏ ký tự đầu dòng, gộp khoảng trắng | Gộp biến thể | dùng |
-| 2 | Chuẩn hoá vị trí dấu thanh | `hòa` = `hoà` · `thúy` = `thuý` | Gộp biến thể | dùng |
-| 3 | Mở rộng từ viết tắt | `NV` → `nhân viên` · `BHXH` → `bảo hiểm xã hội` | Gộp biến thể | dùng |
-| 4 | Che con số lương | `18 triệu` → `<SALARY>` | Chặn rò rỉ | dùng |
-| 5 | Tách từ | `nhân viên` → `nhân_viên` | Khớp phân bố tiền huấn luyện | **bắt buộc** |
-| 6 | Kênh bỏ dấu | `nhân viên` → `nhan vien` | — | **đã gỡ** |
-| 7 | Chuẩn hoá tỉnh thành | `hà đông` → `hà nội` | Gộp biến thể | dùng (tạo cột mới) |
-| 8 | Loại từ dừng | bỏ `và`, `của`, `các` | — | **đã gỡ** |
-| 9 | Khoá gom nhóm | băm nội dung → `group_id` | Chặn rò rỉ | dùng |
-
-Ba nhóm mục đích:
-
-- **Gộp biến thể về một cách viết** — bước 1, 2, 3, 7. Một cách viết lạ là một chuỗi
-  đơn vị con lạ.
-- **Khớp phân bố tiền huấn luyện** — bước 5.
-- **Chặn rò rỉ** — bước 4 và 9. Không để mô hình nhìn thấy đáp án, dù đáp án nằm
-  trong chính đầu vào (bước 4) hay nằm ở tập kiểm tra (bước 9).
-
-**Thứ tự hiệu dụng trong `dataset.clean` là cố định và có lý do:** NFC → dấu thanh →
-viết tắt → che lương → tách từ. Bốn bước đầu chạy trong một lời gọi
-`V.preprocess(tone=True, abbrev=True, mask=…)`; tách từ là một lượt riêng
-(`segment_many`) chạy ngay sau, không phải bước thứ năm bên trong `preprocess`.
-Che lương phải chạy **sau** khi mở rộng viết tắt (vì `8tr` phải thành một con số
-trước khi che được) và **trước** khi tách từ (vì `<SALARY>` không được phép bị
-tách). Từ dừng có tham số riêng trong `preprocess` (`drop_stopwords`) nhưng không
-lời gọi nào trong dự án bật nó — xem §3.3.3.
-
-### 3.3.3. Hai bước bị gỡ bỏ, và vì sao đó là kết quả chứ không phải thiếu sót
-
-Theo Quy tắc 2 của giao thức thực nghiệm, **bước nào không có dòng đo chứng minh
-đóng góp thì bị gỡ**. Hai bước đã bị gỡ, và cả hai đảo ngược kết luận khi trục mô
-hình chuyển từ TF-IDF sang PhoBERT:
-
-- **Bước 6 — bỏ dấu.** Bước này sinh ra để nuôi kênh n-gram ký tự của TF-IDF. Khi
-  chuyển sang PhoBERT thì không còn kênh nào để nuôi, nên bước này mất chỗ đứng.
-- **Bước 8 — loại từ dừng.** Từ dừng chính là các hư từ mà một mô hình ngữ cảnh cần
-  để hiểu câu. Xoá chúng là phá vỡ phân bố tiền huấn luyện.
-
-Ngược lại, **bước 5 (tách từ) đổi kết luận từ "có hại nhẹ" sang "bắt buộc"** — vì
-TF-IDF và PhoBERT là hai mô hình khác nhau, cùng một bước có thể cho hai kết luận
-trái ngược. Đây là một bài học phương pháp luận đáng ghi lại hơn cả con số.
-
-### 3.3.4. Hai việc `vitext.py` cố tình **không** làm
-
-- **Không bóc thẻ HTML.** Kho dữ liệu này không có thẻ HTML nào. Thêm một bước không
-  có gì để làm là thêm một chỗ cho lỗi ẩn nấp.
-- **Không chuyển chữ thường ba cột đi vào PhoBERT** (`job_title`, `description`,
-  `requirements_text`). Bộ tách đơn vị con của PhoBERT phân biệt hoa thường,
-  nên giữ nguyên là đúng. Việc này còn cho phép đếm cột `n_acronyms` — số token viết
-  hoa toàn bộ trong tiêu đề (`SEO`, `IT`, `PHP`, `QA`, `HR`). Đây là tín hiệu ngành
-  nghề rất mạnh và gần như miễn phí; chuyển chữ thường sớm là xoá sạch đặc trưng này.
-  Đây không phải quy tắc cho toàn bộ `vitext.py`: các cột gộp từ danh sách bằng
-  `join_list_field` (`benefits_text`, `technical_skills_text`,
-  `qualifications_text`, `soft_skills_text`, `languages_text`) bị viết thường,
-  nhưng không cột nào trong số đó nằm trong `FIELDS` của `dl/text.py`.
+Thứ tự này là bắt buộc. Che lương chạy **sau** mở rộng viết tắt, vì `8tr` phải thành
+một con số trước khi che được. Che lương chạy **trước** tách từ, vì `<SALARY>` không
+được bị tách. Văn bản giữ nguyên chữ hoa, vì tokenizer của PhoBERT phân biệt hoa
+thường. Cái giá của việc cắt ở 256 token được đo ở §3.6.8.
 
 ---
 
@@ -241,9 +193,10 @@ cho lương. Trộn hai tệp này là một vụ rò rỉ lương âm thầm. R
 
 **Một hạn chế cần nói thẳng:** danh sách cột được bảo vệ (`UNMASKED_COLUMNS`) hiện
 vẫn là **danh sách viết tay**, nên bộ kiểm thử chỉ canh được những cột mà người viết
-nghĩ ra. Hai cột `soft_skills_text` và `qualifications_text` từng lọt qua danh sách
-này. Đường học sâu hiện chỉ đọc ba trường văn bản nên chưa bị ảnh hưởng, nhưng đây là
-một việc còn tồn đọng, không phải một vấn đề đã đóng.
+nghĩ ra. Ba cột không có trong danh sách — `soft_skills_text`, `qualifications_text`,
+`technical_skills_text` — đã được đo: **0** dòng chứa con số lương, và phép đo đó là
+một kiểm thử thường trực trong `tests/test_no_leak.py`. Đường học sâu chỉ đọc ba
+trường văn bản ở §3.3.
 
 ---
 
@@ -279,11 +232,11 @@ chung một hoán vị. Hạt giống `SPLIT_SEED = 20260826` không đổi.
 
 **Bảng 3.8: Kết quả phân chia tập dữ liệu**
 
-| Tập | Số dòng | Tỷ lệ | Số nhóm | Tin có công bố lương | Số lớp |
-|---|---|---|---|---|---|
-| train | 34.354 | 72,01 % | 22.026 | 24.669 | 16 |
-| dev | 3.812 | 7,99 % | 3.728 | 2.705 | 16 |
-| test | 9.541 | 20,00 % | 9.145 | 6.719 | 16 |
+| Tập | Số dòng | Tỷ lệ | Tin có công bố lương | Số lớp |
+|---|---|---|---|---|
+| train | 34.354 | 72,01 % | 24.669 | 16 |
+| dev | 3.812 | 7,99 % | 2.705 | 16 |
+| test | 9.541 | 20,00 % | 6.719 | 16 |
 
 `groups_straddling_splits` = **0**, và hàm `build()` có một câu lệnh `assert` kiểm
 tra điều đó. Câu lệnh này không bao giờ được phép tắt đi. Tỷ lệ thực tế lệch không
@@ -327,8 +280,7 @@ Quy ước này là bắt buộc, xem `AGENTS.md` Rule 8.
 
 Lý do đặt phần mô tả trên tệp gốc: một chương mô tả dữ liệu phải mô tả kho dữ liệu
 **như nó vốn có**, và tệp gốc **không đổi khi lược đồ chia thay đổi** — nhờ vậy mọi
-con số mô tả dưới đây sống sót qua lần chia lại ngày 09/09/2026, trong khi những con
-số cũ đo trên tập `train` của lược đồ v1 thì không.
+con số mô tả dưới đây sống sót qua lần chia lại ngày 09/09/2026.
 
 > **Đã đo lại toàn bộ, 12/09/2026** (T1.1). `artifacts/eda/summary.json` được
 > sinh lại bằng lệnh trên, kèm `--tokens` trong `.venv-dl`, và mốc cơ sở ở mục
@@ -467,9 +419,6 @@ hồi quy học `log1p(salary_mid)` và mọi báo cáo đều quy đổi ngư�
 | Đã bị `clean` đánh dấu `salary_extreme` (≥ 100) | **99** | Thấp hơn 2.204 tin trên hàng rào IQR — bộ lọc **chưa phủ hết** các tin đáng ngờ |
 | Tỷ lệ tin công bố một *khoảng* thay vì một con số | **92,9 %** | `salary_mid` là trung điểm của khoảng, nên bản thân nhãn đã là xấp xỉ |
 
-Đây là một việc còn tồn đọng: các tin ở hai biên chưa được xử lý. Chúng ít nhưng nằm
-đúng chỗ gây hại nhiều nhất cho MAE.
-
 ### 3.6.5. Nhãn lương chỉ tồn tại trên 71,5 % dữ liệu
 
 ![Tỷ lệ công bố lương](../figures/eda/eda-06-cong-bo-luong.png)
@@ -492,9 +441,9 @@ Cỡ lớp gắn chặt với **việc nhãn lương có tồn tại hay không*
 vậy chịu phạt hai lần: ít tin để học ra lớp, lại còn ít nhãn hơn nữa cho nhánh hồi
 quy. Ba hệ quả:
 
-1. Nhánh hồi quy chỉ có nhãn cho 7 tin trong 10. Khi hợp nhất đa nhiệm, `loss_B`
-   **bắt buộc phải được che**: **28,5 %** còn lại đóng góp 0 vào hàm mất mát, chứ
-   không phải đóng góp một nhãn bằng 0.
+1. Nhánh hồi quy chỉ có nhãn cho 7 tin trong 10. Mạng lương vì vậy chỉ học và chấm
+   trên các tin có công bố lương; **28,5 %** còn lại bị loại khỏi bài toán này, không
+   được gán nhãn 0.
 2. Bài toán `disclosed` có mốc đa số xấp xỉ chính tỷ lệ công bố. Mô hình nào không
    vượt được mốc đó là vô dụng; giá trị chính xác trên `dev` ở mục 3.6.6.
 3. Việc công bố lương **phụ thuộc ngành**, nên bỏ qua 28,5 % còn lại không phải một
@@ -507,16 +456,14 @@ nên nó phải được đo ở đúng nơi mô hình được đo: học trên
 không bao giờ chạm `test`.
 
 > **Đo lại trên lược đồ chia v2** (`train` 34.354 / `dev` 3.812 / `test` 9.541),
-> 12/09/2026. Các dòng dưới đây thay thế con số v1; kết quả học sâu ở Chương 4
-> được chấm dưới v1 sẽ được chạy lại ở T1.3/T1.4 và mang nhãn `(lược đồ v1)` cho
-> đến lúc đó.
+> 12/09/2026.
 
 **Bảng 3.16: Mốc cơ sở không dùng mô hình**
 
 | Quy tắc dự đoán | Kết quả |
 |---|---|
-| Lương — đoán trung vị tập train (13,0) cho mọi tin | MAE **5,70** triệu · R² −0,059 |
-| Lương — **biết trước ngành nghề thật**, đoán trung vị ngành đó | MAE **5,57** triệu · R² −0,022 |
+| Lương — đoán trung vị tập train (13,0) cho mọi tin | MAE **5,70** triệu · RMSE **10,52** triệu · R² −0,059 |
+| Lương — **biết trước ngành nghề thật**, đoán trung vị ngành đó | MAE **5,57** triệu · RMSE **10,33** triệu · R² −0,022 |
 | Ngành nghề — luôn đoán lớp lớn nhất | accuracy 0,2062 · macro-F1 **0,0214** |
 | Công bố lương — luôn đoán "có" | accuracy **0,7078** |
 
@@ -539,17 +486,13 @@ công bố của tệp gốc:
 | Trung vị toàn corpus | 13,5 |
 
 Các mốc cơ sở ở mục 3.6.6 dẫn tới cùng kết luận từ phía kia: biết 100 % nhãn ngành
-nghề chỉ kéo MAE từ 5,70 xuống 5,57 triệu, tức giảm **2,3 %**. Ba kết luận, và cả ba
-định hình phần còn lại của đề tài:
+nghề chỉ kéo MAE từ 5,70 xuống 5,57 triệu, tức giảm **2,3 %**. Hai kết luận:
 
 1. **Mốc của nhánh hồi quy là mốc đoán trung vị**, không phải 0. Mô hình rơi đúng vào
    mốc ấy là mô hình chưa học được gì.
 2. Tín hiệu lương nằm trong **chi tiết của tin đăng** — cấp bậc, số năm kinh nghiệm,
-   ngoại ngữ, địa điểm — chứ không nằm ở nhãn ngành. Đây đúng là thứ PhoBERT có cơ
-   hội đọc được mà TF-IDF ở mức ngành thì không.
-3. **Kỳ vọng cho mô hình đa nhiệm phải hạ xuống.** Phần tín hiệu dùng chung đo được
-   chỉ là 3,2 %. Vì vậy lộ trình xây hai mạng riêng trước, lấy số của từng mạng, rồi
-   mới hợp nhất — nếu bản hợp nhất kém hơn thì đã biết vì sao.
+   ngoại ngữ, địa điểm — chứ không nằm ở nhãn ngành. Đây đúng là thứ một biểu diễn
+   theo ngữ cảnh như PhoBERT có cơ hội đọc được.
 
 Cần đọc con số 3,2 % kèm thiên lệch chọn mẫu ở mục 3.6.5: nó được đo trên tập đã công
 bố lương, mà việc công bố lương lại tương quan với cỡ lớp (r = 0,610).
@@ -598,17 +541,15 @@ quyết định thật sự của người làm, và nó có tác dụng giảm 
 
 Chỉ có một lựa chọn thật sự còn lại là giữa 128 và 256, và bảng trả lời dứt khoát:
 hạ xuống 128 để chạy nhanh hơn sẽ cắt tới 77,6 % số tin và vứt đi gần 38 % lượng
-token. Muốn đọc được phần văn bản hiện đang bị mất thì phải đổi sang mô hình có cửa
-sổ dài hơn, hoặc chia tin thành nhiều đoạn rồi gộp vectơ — cả hai đều nằm ngoài phạm
-vi mức cơ sở.
+token.
 
 ---
 
-## 3.7. Kiến trúc mô hình đề xuất
+## 3.7. Kiến trúc mô hình
 
 ![Kiến trúc học sâu](../figures/04-kien-truc-hoc-sau.png)
 
-**Hình 3.10: Kiến trúc PhoBERT đóng băng + khối kết nối đầy đủ + hai nhánh đầu ra**
+**Hình 3.11: Hai mạng riêng: PhoBERT đóng băng + khối kết nối đầy đủ + một nhánh đầu ra**
 
 ### 3.7.1. Luồng dữ liệu
 
@@ -619,24 +560,23 @@ tin tuyển dụng (tiêu đề · mô tả · yêu cầu, đã tách từ)
    → gộp trung bình có mặt nạ → vectơ 768 chiều
    → lưu đệm .npy (tính một lần)
    → LayerNorm → 768→256 → GELU → dropout → 256→128 → GELU
-   → nhánh A: 128 → 16 lớp   (cross-entropy)
-   → nhánh B: 128 → 1        (Huber trên log1p)
+   → mạng phân loại: 128 → 16 lớp   (cross-entropy)
+   → mạng lương:     128 → 1        (Huber trên log1p)
 ```
 
-Ở mức cơ sở, **nhánh A và nhánh B nằm trong hai mạng riêng biệt**, mỗi mạng có khối
-dày đặc của mình. Hình 3.10 vẽ chúng cạnh nhau để chỉ ra chỗ thân và nhánh sẽ tách ra
-khi hợp nhất đa nhiệm — chỗ đó chính là khối `dense`.
+Hai bài toán là **hai mạng riêng biệt**, mỗi mạng có khối dày đặc và bộ đệm vectơ
+của mình (họ `raw` cho phân loại, họ `masked` cho lương).
 
 ### 3.7.2. Năm quyết định thiết kế và lý do đo được của từng quyết định
 
-**Bảng 3.18: Năm quyết định kiến trúc**
+**Bảng 3.19: Năm quyết định kiến trúc**
 
 | Quyết định | Lý do |
 |---|---|
-| **Đóng băng PhoBERT trước** | Mức đóng băng chạy trong vài phút, mức tinh chỉnh chạy hàng giờ. Nếu bản đóng băng không vượt nổi mốc TF-IDF 0,6112 thì lỗi nhiều khả năng nằm ở đường dữ liệu — phát hiện ở mức rẻ tiền hơn nhiều |
+| **Đóng băng PhoBERT** | Vectơ tính một lần rồi lưu đệm; các lần huấn luyện phần dày đặc đọc lại vectơ đó thay vì chạy lại PhoBERT |
 | **Đầu vào đã tách từ** | PhoBERT được tiền huấn luyện trên văn bản tách từ. Đưa văn bản chưa tách là đưa sai phân bố |
 | **Gộp trung bình, không dùng vectơ `<s>`** | Khi không tinh chỉnh, vectơ `<s>` của PhoBERT chưa từng được huấn luyện cho nhiệm vụ nào; lấy trung bình các token giữ lại nhiều tín hiệu từ vựng hơn |
-| **Lưu đệm vectơ ra `.npy`** | Trọng số đóng băng ⇒ vectơ không đổi giữa các epoch. Nhúng 33 nghìn tin mất khoảng 20 phút trên CPU; một epoch trên vectơ đã đệm chỉ mất vài giây |
+| **Lưu đệm vectơ ra `.npy`** | Trọng số đóng băng ⇒ vectơ không đổi giữa các epoch. Nhúng 34.354 tin `train` chỉ làm một lần (T1.2); mọi lần huấn luyện sau đọc lại tệp đệm |
 | **Huber cho hồi quy, không dùng MSE** | Lương lệch phải nặng (độ lệch 11,90, max 500 triệu trên tệp gốc). MSE để một nhúm điểm ngoại lệ kéo toàn bộ gradient |
 
 ### 3.7.3. Chuẩn hoá đầu vào — quyết định cứu cả nhánh phân loại
@@ -682,11 +622,12 @@ Báo cáo kèm theo:
 Mọi con số được **quy đổi về triệu VND/tháng** trước khi báo cáo. Một MAE trong không
 gian logarit không phải con số ai hành động được.
 
-**Bảng 3.19: Các độ đo của bài toán hồi quy**
+**Bảng 3.20: Các độ đo của bài toán hồi quy**
 
 | Độ đo | Ý nghĩa |
 |---|---|
 | MAE | Sai số tuyệt đối trung bình |
+| RMSE | Căn bậc hai của sai số bình phương trung bình — phạt nặng các lỗi lớn |
 | MedAE | Sai số tuyệt đối trung vị — bền với ngoại lệ hơn MAE |
 | R² (log) | Hệ số xác định, tính trên thang `log1p` |
 | ±20 % | Tỷ lệ tin có dự đoán nằm trong ±20 % giá trị thật |

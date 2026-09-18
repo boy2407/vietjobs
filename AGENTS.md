@@ -61,6 +61,7 @@ wrap them in new `try/except` blocks: `vitext.py` already handles that.
 | Path | What it is |
 |---|---|
 | `TASKS.md` | **The work board** — read it first in every session: active task, dependencies, evidence, log. [docs/09-lo-trinh.md](docs/09-lo-trinh.md) is the strategy; this is the operations |
+| `tasks/` | Detail sheets for board sections that outgrew `TASKS.md` (one file per section, TASKS.md §3 Rule 7). `TASKS.md` keeps the pointer; status lives in the sheet |
 | `src/vietjobs/` | 8 shared modules. Role of each file: [docs/08-ma-nguon.md](docs/08-ma-nguon.md) |
 | `src/vietjobs/dl/` | The main track: `text.py` (input) · `encode.py` (PhoBERT) · `heads.py` (dense) · `train_dl.py` (CLI) |
 | `tests/` | 5 test files. `pytest -q` runs all of them — it works even without torch |
@@ -87,11 +88,12 @@ After **every** real change, update it in the same working session:
 | Finished a training run | `04-results.md` (automatic, append-only) + the results table in `06-baseline-dl.md` + the status cell in `00-tong-quan.md` |
 | Changed the network architecture / default hyper-parameters | `06-baseline-dl.md` — diagram + the "five decisions" table |
 | Added a data measurement, changed a figure | `05-phan-tich-du-lieu.md` + re-run `python scripts/analyze_data.py` — measured on the **original file**, see Rule 8 |
-| Changed a preprocessing step | `02-vietnamese-nlp.md` — the nine-step table, the ablation table, the diagram (dashed for a removed step) |
+| Changed a preprocessing step | `02-vietnamese-nlp.md` — the nine-step table, the ablation table, the diagram (only the steps on the path into PhoBERT, Rule 11) |
 | Changed the cleaning / splitting | `01-data-audit.md` |
 | Changed how a run is logged | `03-protocol.md` §3b |
 | Added / changed / removed a module in `src/` | `08-ma-nguon.md` — diagram + file-role table + line and test counts |
 | Completed a work item | The status table in `00-tong-quan.md` + `09-lo-trinh.md` |
+| Re-ran the external evaluation, or reviewed/changed the 60 → 16 crosswalk | `10-danh-gia-ngoai.md` — the result tables + the crosswalk status line at the top |
 | Changed the model / system architecture | The mermaid diagram in the matching note |
 | **Any of the above** | **Also the matching chapter in `docs/bao-cao/` — see Rule 7** |
 
@@ -117,7 +119,10 @@ reader.
   The reader must understand *why* a step was taken, *what measured it*, and
   *what the measurement said*.
 - **Record the failures too.** A step that was measured and did not help stays in
-  the table with the verdict "dropped" — that is evidence, not junk.
+  the ablation table of `02-vietnamese-nlp.md` with the verdict "dropped" — that
+  is evidence, not junk. It is not retold elsewhere (Rule 11).
+- **Only what was done** (Rule 11). Plans live in `TASKS.md` and
+  `09-lo-trinh.md`, nowhere else.
 - Short sentences, one idea per sentence. Decimal point (0.6112).
 
 ## Rule 2 — experiment protocol
@@ -143,9 +148,10 @@ vector cache keeps the `raw` and `masked` families in separate files under
 **raises no error** — it quietly produces a model that reads its own answer key.
 
 Warning: `UNMASKED_COLUMNS` is a **hand-written list**, so the test only guards
-the columns whoever wrote it thought of. `soft_skills_text` and
-`qualifications_text` are known to slip through — see `docs/09-lo-trinh.md`
-Priority 4. Adding a new text column means updating `_MASKABLE` **and**
+the columns whoever wrote it thought of. `soft_skills_text`,
+`qualifications_text` and `technical_skills_text` are not in it; they were
+measured to hold **0** salary figures (`docs/archive/09-lo-trinh-ml.md`,
+Ưu tiên 0b), and `tests/test_no_leak.py` now keeps that check. Adding a new text column means updating `_MASKABLE` **and**
 `UNMASKED_COLUMNS`.
 
 ## Rule 4 — training and inference share one code path
@@ -181,36 +187,46 @@ predictions.
    purpose; the smallest class has 25 rows there, so read `f1_macro_no_junk`
    next to any per-class number and confirm on `test` at the end.
 
-## Rule 6 — every Markdown file is written in English
+## Rule 6 — language is per file, not per repository
 
-1. **All `.md` in this repository is English**: `docs/` (including
-   `docs/nen-tang/`), `README.md`, this file, and every `SKILL.md` under
-   `.claude/skills/`. Two exceptions, both deliberate: `docs/bao-cao/` (the thesis
-   manuscript, see item 6) and `hoc-tap/` (personal study notes — outside the
-   documentation tree, never cited, see §2). Body text, headings, table cells, mermaid diagram labels
-   and code comments inside fenced blocks — all of it.
-2. **Numbers follow English convention**: decimal point and thousands comma
-   (`0.6112`, `47,707`), not `0,6112` / `47.707`.
-3. **Vietnamese stays only where it is data or a quotation**: sample postings,
-   examples of raw text, class names as they appear in the dataset, entries in
-   `resources/`, and identifiers in the code. Gloss such a quotation in English
-   when its meaning carries the argument.
+1. **`docs/00-tong-quan.md` through `docs/09-lo-trinh.md` (the ten numbered
+   top-level notes) are written in Vietnamese**, translated from English on
+   2026-09-16. **Everything else stays English**: `docs/nen-tang/`,
+   `docs/archive/`, `README.md`, this file, and every `SKILL.md` under
+   `.claude/skills/`. Two further notes were already Vietnamese before this
+   change: `docs/bao-cao/` (the thesis manuscript, see item 6) and `hoc-tap/`
+   (personal study notes — outside the documentation tree, never cited, see §2).
+   In whichever language a file uses, translate all of it: body text, headings,
+   table cells, mermaid diagram labels, and code comments inside fenced blocks.
+   Code itself — commands, identifiers, file paths — is never translated.
+2. **Numbers in the ten Vietnamese notes follow Vietnamese convention**:
+   decimal comma, thousands dot (`0,6112`, `47.707`), matching
+   `docs/bao-cao/` — including when a sentence quotes a result that lives in
+   `04-results.md` under the English convention; only the log rows themselves
+   stay as originally measured (see item 5). English-language files
+   (`docs/nen-tang/`, `docs/archive/`, `README.md`, this file, `SKILL.md`) keep
+   English convention: decimal point, thousands comma.
+3. **English stays only where it is a code identifier, file path, column name,
+   commit hash, or a literal quotation** (sample postings, raw text examples,
+   class names as they appear in the dataset, entries in `resources/`). Gloss
+   such a quotation in Vietnamese when its meaning carries the argument.
 4. **Filenames do not change.** The note slugs (`00-tong-quan.md`,
    `05-phan-tich-du-lieu.md`, …) are wired into `scripts/render_figures.sh`, into
    the cross-links between notes, and into the git history. Translate the
-   content, keep the path. Heading anchors *do* move with the translation, so a
+   content, keep the path. Heading anchors *do* move with a translation, so a
    `file.md#heading` link must be updated in the same session as the heading it
    points at.
-5. `docs/04-results.md` and `docs/archive/` are frozen (Rule 2 item 3, and the
-   layout table above). A row already written stays exactly as it was written,
-   Vietnamese included; only new rows follow this rule.
-6. **Exception — `docs/bao-cao/` is written in Vietnamese.** That directory is the
-   thesis manuscript, submitted to a Vietnamese university and read by the
-   supervisor; English there would have to be translated back before submission.
-   It follows Vietnamese number convention (decimal comma, thousands dot:
-   `0,6112`, `47.707`) — the opposite of item 2 — because the printed report must
-   match the university template. Every other `.md` in the repository stays
-   English. See Rule 7.
+5. **`docs/04-results.md`'s log table and all of `docs/archive/` are frozen**
+   (Rule 2 item 3, and the layout table above). The RunID rows already written —
+   text and number formatting both — stay exactly as written; only the prose
+   around the table (e.g. the log's opening paragraph) follows item 1. New rows
+   appended to `04-results.md` keep the log's existing English-convention,
+   code-like format (`macroF1=0.6112`) regardless of item 2, since that format is
+   what scripts and other docs parse and quote from.
+6. **`docs/bao-cao/` is written in Vietnamese** for an unrelated reason: it is
+   the thesis manuscript, submitted to a Vietnamese university and read by the
+   supervisor, so it must match the university template independently of the
+   choice made in item 1. See Rule 7.
 
 ---
 
@@ -231,7 +247,7 @@ session**, exactly as Rule 1 requires for `docs/`:
 | Changed cleaning, splitting, or preprocessing | `04-chuong-3-phuong-phap.md` §3.2–§3.5 |
 | Re-ran the data analysis | `04-chuong-3-phuong-phap.md` §3.6 |
 | Added / changed a module in `src/` | `06-chuong-5-he-thong.md` §5.2 |
-| Completed a roadmap item | `07-chuong-6-ket-luan.md` §6.1 + the plan table in `09-phu-luc.md` |
+| Completed a roadmap item | `07-chuong-6-ket-luan.md` §6.1 (and drop the item from §6.3) |
 | Read a paper worth citing | `08-tai-lieu-tham-khao.md` **and** Table 2.1 in `03-chuong-2-tong-quan.md` |
 
 Six absolutes:
@@ -249,11 +265,13 @@ Six absolutes:
    plausible-sounding sentence.
 4. **Report failures too.** The diverged run at macro-F1 0.042 stays in the report
    with its cause — it is evidence, and it is what stops the same mistake twice.
+   This covers runs that were done and failed; steps never run, or removed
+   preprocessing steps, are not retold in the report (Rule 11).
 5. **The report reuses figures already in `docs/figures/`**; it does not define new
    mermaid blocks, because `scripts/render_figures.sh` matches blocks by position
    and aborts when a file's count disagrees with its `SOURCES` entry.
 6. **Both marker types must be gone before submission.** `⛔` and `✍️` are the
-   to-do list; the final checklist is in `09-phu-luc.md` Phụ lục F.
+   to-do list; the final checklist is in `09-phu-luc.md` Phụ lục E.
 
 Adding a chapter file means editing **three** places: the status table in
 `docs/bao-cao/00-index.md`, the table above, and the table of contents in
@@ -317,6 +335,86 @@ Four obligations that come with it:
 
 ---
 
+## Rule 10 — the report describes every task completely
+
+When a task in `TASKS.md` moves to `done`, the matching chapter in `docs/bao-cao/`
+must let a reader **reproduce that run without opening `TASKS.md` or
+`04-results.md`**. Rule 7 says *when* and *where* to edit the manuscript; this
+rule says *what* the manuscript must contain. A results table with a number and
+a one-line remark is not a description of a run.
+
+Five things every run must be told:
+
+1. **What was run** — the task ID (`T1.3`), the `run_id`, the exact command and
+   environment (`.venv` / `.venv-dl`, device), the date, which splits were read
+   and which one was scored (`eval=dev`, n rows).
+2. **What the model is** — the architecture and every hyper-parameter that
+   deviates from the default (lr, hidden size, patience, class weighting, loss),
+   which embedding family was loaded (`raw` / `masked`, `len256`), the best
+   epoch. For a floor or a probe, the exact estimator.
+3. **How the data was handled** — the de-duplication tiers, the salary-label
+   repair, the split scheme (`v2`: 8:2 then 9:1, seed 20260826), the row count
+   per split, and which columns the task reads (`*_masked` for the salary tasks,
+   Rule 3).
+4. **How the Vietnamese text was processed** — which of the nine `vitext` steps
+   were on, which were dropped and the ablation number proving it, the
+   tokenizer / word segmentation PhoBERT expects, and `--max-len 256` with its
+   measured cost (19.8 % of postings truncated, 91.5 % of tokens kept).
+5. **What the preprocessing analysis said** — the EDA measurement behind each
+   choice above (class skew, disclosure rate, salary tails, token length…), its
+   scope stated as Rule 8 requires, and the no-model floor the run is compared
+   against.
+
+| Required content | Where it lives in `docs/bao-cao/` |
+|---|---|
+| 1 — what was run | `05-chuong-4-thuc-nghiem.md` §4.1.3 (per-run record) + the results table in §4.3 / §4.4 |
+| 2 — the model | `04-chuong-3-phuong-phap.md` §3.7; per-run deviations in the §4.3 / §4.4 prose |
+| 3 — data handling | `04-chuong-3-phuong-phap.md` §3.2, §3.4, §3.5 |
+| 4 — Vietnamese processing | `04-chuong-3-phuong-phap.md` §3.3 |
+| 5 — preprocessing analysis | `04-chuong-3-phuong-phap.md` §3.6 + §3.8 (metric and floor) |
+
+Two obligations that come with it:
+
+1. **Each item is written in the three beats** fixed in `docs/bao-cao/00-index.md`
+   §4 — principle → how it is applied here → why it deviates from the default,
+   with the number that justifies it. An item that cannot be measured yet gets
+   a one-line `> ⛔ **CHƯA CÓ SỐ LIỆU** (task ID)`, never a generic sentence
+   (Rule 11).
+2. **A task is not `done` while any of the five is missing** from its chapter.
+   This is part of the definition of done in §4 below.
+
+Changing this list means editing **three** places: this rule, §7 of
+`docs/bao-cao/00-index.md`, and item 5 of `TASKS.md` §3.
+
+---
+
+## Rule 11 — the report tells only what was done, and tells it once
+
+1. **`docs/bao-cao/` and the numbered notes in `docs/` describe only work that
+   was actually run.** A step that was never run is not written as method,
+   architecture, system, or result — no "proposed", "sẽ", "dự kiến" prose in
+   the body, no diagram node for something that does not exist.
+2. **Work still to do is kept**, but only in the places made for it:
+   `TASKS.md`, `docs/09-lo-trinh.md`, the objectives in `02-chuong-1` §1.2 and
+   the future-work section `07-chuong-6` §6.3. Inside any other section, a
+   missing number is a **one-line** `⛔` marker naming its task ID — never a
+   paragraph describing the undone step. Move a to-do item to one of those
+   places before deleting it from a note.
+3. **Done work is written without excess.** Describe the steps that ran on the
+   path the model actually reads, in order, once. Do not list steps that were
+   removed or deliberately not done (their ablation evidence lives in
+   `docs/02-vietnamese-nlp.md` and `docs/archive/`), do not repeat what another
+   section already says (link to it), do not restate a table in prose.
+   A run that failed is still a run that was done: it stays (Rule 7 item 4).
+4. **Example:** bao-cao §3.3 lists only NFC → tone marks → abbreviations →
+   salary mask → word segmentation → field join, on the three columns PhoBERT
+   reads — not the removed steps, not columns PhoBERT never reads.
+
+Changing this rule means editing **three** places: this rule, §8 of
+`docs/bao-cao/00-index.md`, and item 6 of `TASKS.md` §3.
+
+---
+
 ## 3. Code style
 
 - Plain Python, `from __future__ import annotations`, with type hints.
@@ -336,7 +434,8 @@ Four obligations that come with it:
 
 1. `pytest -q` is green.
 2. The real change is reflected in the right file under `docs/` (the Rule 1
-   table).
+   table), and the matching `docs/bao-cao/` chapter tells the five contents of
+   Rule 10.
 3. Every number written down traces back to `manifest.json`, `metrics.json`, or a
    row in `04-results.md`.
 4. `test` was not touched unless `--confirm-test` was given and it was the final

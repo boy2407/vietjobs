@@ -32,24 +32,14 @@ loại cảm xúc) nằm ở ba đặc điểm của dữ liệu:
   phụ thuộc vào ngành nghề. Mô hình hồi quy vì vậy học trên một mẫu đã bị chọn lọc.
 - **Phân bố lệch phải rất nặng.** Độ lệch (skewness) của lương thô là **11,90**.
 - **Nhãn tự nó đã là xấp xỉ.** Phần lớn tin công bố một *khoảng* lương chứ không phải
-  một con số; nhãn hồi quy là trung điểm của khoảng đó. (Tỷ lệ chính xác: ⛔ chưa đo
-  lại trên tệp gốc.)
+  một con số; nhãn hồi quy là trung điểm của khoảng đó. Trên tệp gốc, **92,9 %** tin
+  có lương công bố một khoảng (Bảng 3.14).
 
 ---
 
 ## 2.2. Cơ sở lý thuyết
 
-### 2.2.1. Biểu diễn văn bản: từ đếm từ đến vectơ ngữ cảnh
-
-**Nguyên lý của TF-IDF.** Cách biểu diễn văn bản cổ điển là túi từ có trọng số
-TF-IDF: mỗi văn bản thành một vectơ thưa, mỗi chiều là một từ, giá trị bằng tần suất
-từ đó trong văn bản nhân với nghịch đảo logarit số văn bản chứa nó. Ý tưởng: một từ
-xuất hiện nhiều trong văn bản này nhưng hiếm trong toàn bộ kho thì mang nhiều thông
-tin phân biệt.
-
-**Hạn chế.** TF-IDF không biết hai từ khác nhau có thể cùng nghĩa, và hoàn toàn
-không đọc được thứ tự từ. "Nhân viên quản lý nhà hàng" và "Quản lý nhân viên nhà
-hàng" cho hai vectơ giống hệt nhau.
+### 2.2.1. Biểu diễn văn bản bằng vectơ ngữ cảnh
 
 **Vectơ ngữ cảnh.** Kiến trúc Transformer [1] và mô hình BERT [2] thay đổi điều
 này: mỗi từ nhận một vectơ **phụ thuộc vào các từ xung quanh nó**. Cùng một từ ở
@@ -85,25 +75,15 @@ bố mà PhoBERT đã học.
 chia sẻ tín hiệu, phần thân chung buộc phải học biểu diễn tổng quát hơn, và mỗi
 nhiệm vụ đóng vai trò chính quy hoá cho nhiệm vụ kia.
 
-**Cách áp dụng trong đề tài.** Vectơ PhoBERT đi qua khối kết nối đầy đủ dùng chung
-rồi tách thành hai nhánh; hàm mất mát tổng là tổ hợp có trọng số của hai hàm mất
-mát thành phần. Với những tin không công bố lương, phần mất mát của nhánh hồi quy
-được **che đi** — đóng góp bằng 0, chứ không phải một nhãn bằng 0. Việc cân bằng
-trọng số giữa hai nhánh là một vấn đề đã có lời giải học được, chẳng hạn dựa trên
-độ bất định đồng biến [8].
-
-**Điểm cần thận trọng — và đây là đóng góp riêng của đề tài.** Lập luận "hai nhánh
-hỗ trợ nhau" chỉ đứng vững nếu hai nhãn thực sự chia sẻ tín hiệu. Đề tài đo trực
-tiếp phần chia sẻ đó bằng phân rã phương sai và thu được eta² = **0,032**: ngành
-nghề chỉ giải thích 3,2 % biến thiên của log-lương. Vì vậy kỳ vọng đặt vào mô hình
-đa nhiệm được hạ xuống ngay từ đầu, và lộ trình được thiết kế là **xây hai mạng
-riêng trước, lấy số của từng mạng, rồi mới hợp nhất** — để nếu bản hợp nhất kém
-hơn thì đã biết kém hơn cái gì.
+**Điều đề tài đã đo.** Lập luận "hai nhiệm vụ hỗ trợ nhau" chỉ đứng vững nếu hai
+nhãn thực sự chia sẻ tín hiệu. Đề tài đo trực tiếp phần chia sẻ đó bằng phân rã
+phương sai và thu được eta² = **0,032**: ngành nghề chỉ giải thích 3,2 % biến thiên
+của log-lương (§3.6.7). Hai bài toán được giải bằng hai mạng riêng (§3.7).
 
 ### 2.2.4. Hàm mất mát cho dữ liệu lệch phải
 
 **Nguyên lý.** Sai số bình phương trung bình (MSE) phạt sai số theo bình phương,
-nên một điểm ngoại lệ đóng góp gradient rất lớn. Hàm mất mát Huber [9] xử lý phần
+nên một điểm ngoại lệ đóng góp gradient rất lớn. Hàm mất mát Huber [8] xử lý phần
 sai số nhỏ theo bình phương và phần sai số lớn theo tuyến tính, nhờ đó vừa mượt
 quanh 0 vừa không để ngoại lệ chi phối.
 
@@ -151,7 +131,7 @@ gần như đối xứng.
 | 2 | | | | |
 | 3 | | | | |
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** — bảng để trống cho tới khi §2.3.1 và §2.3.2 được viết.
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T6.1)
 > Mẫu báo cáo của trường đều có bảng này (xem `Bảng 2.1` trong quyển mẫu), nên nó
 > không được bỏ.
 
@@ -162,15 +142,14 @@ gần như đối xứng.
 ### 2.4.1. Khoảng trống nghiên cứu
 
 Ba khoảng trống dưới đây rút ra từ **chính dữ liệu của đề tài**, nên chúng đứng
-vững độc lập với kết quả khảo sát tài liệu ở §2.3, và §2.3 sẽ bổ sung thêm bằng
-chứng cho chúng.
+vững độc lập với kết quả khảo sát tài liệu ở §2.3.
 
 **Khoảng trống 1 — mức trần thực tế của bài toán hiếm khi được đo.** Các công trình
 dự đoán lương thường báo cáo sai số của mô hình mà không báo cáo sai số của quy tắc
 ngây thơ tương ứng. Trong đề tài này, chỉ cần đoán trung vị cho mọi tin đã đạt MAE
-**5,86 triệu**; biết trước 100 % nhãn ngành nghề cũng chỉ hạ xuống **5,75 triệu**,
-tức cải thiện **1,8 %**. Nếu không công bố hai con số này, một mô hình đạt 5,8 triệu
-trông như một kết quả, trong khi thực chất nó chưa học được gì.
+**5,70 triệu**; biết trước 100 % nhãn ngành nghề cũng chỉ hạ xuống **5,57 triệu**,
+tức cải thiện **2,3 %** (học trên `train`, chấm trên `dev`). Nếu không công bố hai con
+số này, một mô hình đạt 5,6 triệu trông như một kết quả, trong khi thực chất nó chưa học được gì.
 
 **Khoảng trống 2 — rò rỉ dữ liệu qua tin đăng lại.** Nhà tuyển dụng đăng lại tin
 rất nhiều: **12.808 dòng (26,8 %)** trong bộ dữ liệu là tin đăng lại, nhóm lớn nhất
@@ -191,10 +170,10 @@ nhắm vào một khoảng trống và đều kiểm chứng được:
 
 | # | Đề xuất | Nhắm vào | Kiểm chứng bằng |
 |---|---|---|---|
-| 1 | Hệ thống **mốc cơ sở ba tầng**: mốc ngây thơ không mô hình, mốc dò tuyến tính trên chính vectơ, mốc học máy TF-IDF | Khoảng trống 1 | Bảng mốc ở Chương 4 |
+| 1 | Hệ thống **mốc cơ sở hai tầng**: mốc ngây thơ không mô hình, mốc dò tuyến tính trên chính vectơ | Khoảng trống 1 | Bảng mốc ở Chương 4 |
 | 2 | **Chia dữ liệu theo nhóm tin trùng lặp gần**, kèm khẳng định không nhóm nào bị tách | Khoảng trống 2 | `groups_straddling_splits = 0` trong `manifest.json` |
 | 3 | **Che số lương** trong văn bản đầu vào của bài toán lương, qua một cửa duy nhất trong mã nguồn | Khoảng trống 3 | Bộ kiểm thử `tests/test_no_leak.py` |
-| 4 | **Đo phần tín hiệu dùng chung trước khi hợp nhất đa nhiệm**, thay vì giả định nó tồn tại | Kỳ vọng của §2.2.3 | eta² = 0,032 |
+| 4 | **Đo phần tín hiệu ngành nghề dùng chung với lương**, thay vì giả định nó tồn tại | §2.2.3 | eta² = 0,032 |
 
 Bốn quyết định này chuyển đề tài từ "xây một mô hình và báo cáo điểm số" sang "xây
 một quy trình mà mỗi bước đều có bằng chứng đo được" — đúng tinh thần của Quy tắc 2
@@ -204,7 +183,7 @@ bỏ**.
 > **Nguồn số liệu:** `manifest.json` (`unique_groups` = 34.899,
 > `groups_straddling_splits` = 0) · [01-data-audit.md §2 và §3](../01-data-audit.md)
 > (26,8 % đăng lại, 10,65 % phúc lợi có số lương) ·
-> [05-phan-tich-du-lieu.md §6](../05-phan-tich-du-lieu.md) (5,86 · 5,75 · eta² 0,032).
+> [05-phan-tich-du-lieu.md](../05-phan-tich-du-lieu.md) §7 (5,70 · 5,57, `artifacts/eda/summary.json`) · §8 (eta² 0,032).
 
 ---
 

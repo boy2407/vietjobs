@@ -1,36 +1,36 @@
-# VietJobs — project skeleton
+# VietJobs — khung sườn dự án
 
-The overall map: from the raw CSV to a prediction system. Every number in this
-document is measured directly, not estimated.
+Bản đồ tổng thể: từ file CSV thô đến hệ thống dự đoán. Mọi con số trong tài
+liệu này đều được đo trực tiếp, không phải ước lượng.
 
-> Mermaid renders natively in VS Code (Ctrl+Shift+V) and on GitHub. Nothing to
-> install.
+> Mermaid hiển thị trực tiếp trong VS Code (Ctrl+Shift+V) và trên GitHub.
+> Không cần cài đặt gì thêm.
 
-> **Living documentation.** This vault must be updated right after every real
-> change — a new experiment, a new module, a completed work item. The rules are
-> in [../AGENTS.md](../AGENTS.md).
+> **Tài liệu sống.** Kho tài liệu này phải được cập nhật ngay sau mỗi thay đổi
+> thực sự — một thí nghiệm mới, một module mới, một hạng mục công việc hoàn
+> thành. Các quy tắc nằm trong [../AGENTS.md](../AGENTS.md).
 
-> **Track change, 2026-09-08.** The main model of this thesis is a **deep network
-> on PhoBERT representations**, solving the two tasks separately first and only
-> then merging them into a multi-task model. The whole machine-learning track
-> (101 experiments, test macro-F1 **0.6112**) is closed and moved to
-> [archive/](archive/README.md) — it is the **bar to beat**, not junk.
+> **Thay đổi hướng đi, 2026-09-08.** Mô hình chính của luận văn này là một
+> **mạng sâu trên biểu diễn PhoBERT**, hiện giải hai tác vụ bằng hai mạng riêng
+> biệt. Toàn bộ nhánh machine learning (101 thí
+> nghiệm, test macro-F1 **0,6112**) đã đóng lại và chuyển sang
+> [archive/](archive/README.md) — đây là **mốc cần vượt qua**, không phải rác.
 
 ---
 
-## Where to start
+## Bắt đầu từ đâu
 
-| Who you are | Read in this order |
+| Bạn là ai | Đọc theo thứ tự này |
 |---|---|
-| **New to ML/DL** | [nen-tang/](nen-tang/00-index.md) first → then [01](01-data-audit.md) → [05](05-phan-tich-du-lieu.md) → [06](06-baseline-dl.md) |
-| **Know ML, want to understand the project** | [01](01-data-audit.md) → [05](05-phan-tich-du-lieu.md) → [06](06-baseline-dl.md) → [09](09-lo-trinh.md) |
-| **Want to change the code** | [08](08-ma-nguon.md) → [03](03-protocol.md) → [09](09-lo-trinh.md) |
-| **Want to see results** | [04-results.md](04-results.md) → [06](06-baseline-dl.md) · the old benchmark is in [archive/](archive/README.md) |
-| **Want to write the thesis report** | [bao-cao/](bao-cao/00-index.md) — the control panel says which chapter is done and which is waiting on a measurement |
+| **Mới với ML/DL** | [nen-tang/](nen-tang/00-index.md) trước → rồi đến [01](01-data-audit.md) → [05](05-phan-tich-du-lieu.md) → [06](06-baseline-dl.md) |
+| **Đã biết ML, muốn hiểu dự án** | [01](01-data-audit.md) → [05](05-phan-tich-du-lieu.md) → [06](06-baseline-dl.md) → [09](09-lo-trinh.md) |
+| **Muốn thay đổi code** | [08](08-ma-nguon.md) → [03](03-protocol.md) → [09](09-lo-trinh.md) |
+| **Muốn xem kết quả** | [04-results.md](04-results.md) → [06](06-baseline-dl.md) · benchmark cũ nằm trong [archive/](archive/README.md) |
+| **Muốn viết báo cáo luận văn** | [bao-cao/](bao-cao/00-index.md) — bảng điều khiển cho biết chương nào đã xong và chương nào đang chờ số liệu đo |
 
 ---
 
-## 1. The overall skeleton
+## 1. Khung sườn tổng thể
 
 ```mermaid
 %%{init:{'theme':'base','themeVariables':{
@@ -41,82 +41,79 @@ document is measured directly, not estimated.
   'nodeTextColor':'#141F1D','titleColor':'#141F1D'}}}%%
 flowchart LR
     classDef default fill:#FFFFFF,stroke:#54625E,stroke-width:1.5px,color:#141F1D
-    RAW["<b>VietJobs.csv</b><br/>48,092 postings<br/>18 columns"]
-    CLEAN["<b>1 · Clean</b><br/>dataset.py<br/>→ 47,707 rows"]
-    VI["<b>2 · Vietnamese</b><br/>vitext.py<br/>segment for PhoBERT"]
-    SPLIT["<b>3 · Split</b><br/>by group · 8:2 then 9:1<br/>34,354/3,812/9,541"]
-    EDA["<b>4 · Analyse</b><br/>analyze_data.py · on the raw file<br/>skew 25.5:1 · eta² 0.032"]
-    ENC["<b>5 · Embed</b><br/>frozen PhoBERT<br/>768 dims · cached"]
-    A["<b>TASK 1</b><br/>Occupation · 16 classes<br/>dense → softmax<br/>─────────<br/>dev macro-F1 <b>0.5987</b><br/>old bar 0.6050<br/><i>scheme v1 — re-run due</i>"]
-    B["<b>TASK 2</b><br/>Salary estimation<br/>dense → huber<br/>─────────<br/>dev MAE <b>4.83M</b><br/>bar 5.86M<br/><i>scheme v1 — re-run due</i>"]
-    MT["<b>MULTI-TASK</b><br/>shared trunk → 2 heads<br/>joint masked loss<br/>─────────<br/>not done"]
-    SYS["<b>predict.py</b><br/>raw description<br/>→ occupation + salary"]
+    RAW["<b>VietJobs.csv</b><br/>48,092 tin tuyển dụng<br/>18 cột"]
+    CLEAN["<b>1 · Làm sạch</b><br/>dataset.py<br/>→ 47,707 dòng"]
+    VI["<b>2 · Tiếng Việt</b><br/>vitext.py<br/>tách từ cho PhoBERT"]
+    SPLIT["<b>3 · Chia tách</b><br/>theo nhóm · 8:2 rồi 9:1<br/>34,354/3,812/9,541"]
+    EDA["<b>4 · Phân tích</b><br/>analyze_data.py · trên file thô<br/>độ lệch 25.5:1 · eta² 0.032"]
+    ENC["<b>5 · Nhúng</b><br/>PhoBERT đóng băng<br/>768 chiều · đã cache"]
+    A["<b>TASK 1</b><br/>Ngành nghề · 16 lớp<br/>dense → softmax<br/>─────────<br/>dev macro-F1 <b>0.6025</b><br/>mốc học máy 0.6050 (v1)<br/><i>lược đồ v2 — T1.3</i>"]
+    B["<b>TASK 2</b><br/>Ước lượng lương<br/>dense → huber<br/>─────────<br/>dev MAE <b>4.15M</b><br/>mốc 5.70M<br/><i>lược đồ v2 — T1.4</i>"]
 
     RAW --> CLEAN --> VI --> SPLIT --> EDA --> ENC
-    ENC --> A --> MT
-    ENC --> B --> MT
-    MT --> SYS
+    ENC --> A
+    ENC --> B
 
     classDef done fill:#E2F0EC,stroke:#0E6B5B,stroke-width:2px,color:#0E6B5B
-    classDef todo fill:#F8EDE2,stroke:#9E5C22,stroke-width:2px,color:#9E5C22
     classDef ok fill:#FFFFFF,stroke:#0E6B5B,stroke-width:1.5px,color:#141F1D
     classDef data fill:#EFF3F1,stroke:#54625E,stroke-width:1.5px,color:#141F1D
     class RAW data
     class CLEAN,VI,SPLIT,ENC ok
     class EDA,A,B done
-    class MT,SYS todo
 ```
 
-**Green = done and measured. Orange = no number yet.**
+**Xanh lá = đã đo, có dòng kết quả.**
 
-| Stage | Status | Evidence | Detail |
+| Giai đoạn | Trạng thái | Bằng chứng | Chi tiết |
 |---|---|---|---|
-| Cleaning | done | `manifest.json` — 47,707 rows, 385 duplicates dropped | [01](01-data-audit.md) |
-| Vietnamese processing | done | segmentation, 0 failures over 48k postings; PhoBERT **requires** segmented text | [02](02-vietnamese-nlp.md) |
-| Splitting | **redone 2026-09-09** | `train:test` = 8:2, then `train:dev` = 9:1 → 34,354 / 3,812 / 9,541 · 0 groups leaking, all 16 classes in all three | [01](01-data-audit.md#7-splitting--by-group-not-by-row) |
-| **Data analysis** | **done, 2026-09-12 (T1.1)** | Scope is the **original file**, 47,707 rows (Rule 8). All 7 figures regenerated, including figure 07 (token length) — skew 25.5 : 1 · disclosure 71.5 % · eta² = 0.032 · `max_len=256` keeps 91.5 % of tokens. `summary.json` fully regenerated; no-model floors re-measured on the v2 splits | [05](05-phan-tich-du-lieu.md) |
-| PhoBERT embeddings | **done, 2026-09-13 (T1.2)** | re-encoded on split scheme v2: `artifacts/embeddings/{train,dev}-{raw,masked}-len256.npy`, shapes (34354, 768) / (3812, 768) | [06](06-baseline-dl.md) |
-| **Classification baseline (DL)** | **done, 2026-09-15 (T1.3)** | `dl-cat-s2` macroF1=0.6025 · top3=0.9318; `dl-cat-s2-cw` macroF1=0.5710 · balAcc=0.6931 — both on split scheme v2 `dev` (3,812 rows) | [06](06-baseline-dl.md#51-occupation-classification) |
-| **Salary baseline (DL)** | **done, 2026-09-16 (T1.4)** | `dl-sal-s2` MAE=4.15tr · R2log=0.512 · ±20%=51.6% on split scheme v2 `dev` (2,698 disclosed-salary rows) | [06](06-baseline-dl.md#52-salary-estimation) |
-| PhoBERT fine-tuning | not run | this machine has no GPU/MPS | [09](09-lo-trinh.md#priority-2--fine-tune-phobert-old-level-4b) |
-| Multi-task | not run | comes after both heads have their own numbers | [09](09-lo-trinh.md#priority-3--merge-into-multi-task) |
-| `predict.py` system | skeleton done | the DL path is not wired in yet | [09](09-lo-trinh.md#priority-5--the-system) |
+| Làm sạch | đã xong | `manifest.json` — 47.707 dòng, đã loại 385 bản trùng | [01](01-data-audit.md) |
+| Xử lý tiếng Việt | đã xong | tách từ, 0 lỗi trên 48 nghìn tin tuyển dụng; PhoBERT **yêu cầu bắt buộc** văn bản đã tách từ | [02](02-vietnamese-nlp.md) |
+| Chia tách | **làm lại 2026-09-09** | `train:test` = 8:2, sau đó `train:dev` = 9:1 → 34.354 / 3.812 / 9.541 · 0 nhóm bị rò rỉ, đủ 16 lớp trong cả ba tập | [01](01-data-audit.md#7-chia-tách-dữ-liệu--theo-nhóm-không-theo-dòng) |
+| **Phân tích dữ liệu** | **đã xong, 2026-09-12 (T1.1)** | Phạm vi là **file gốc**, 47.707 dòng (Quy tắc 8). Cả 7 hình đã được tạo lại, bao gồm hình 07 (độ dài token) — độ lệch 25,5 : 1 · tỉ lệ công khai lương 71,5 % · eta² = 0,032 · `max_len=256` giữ lại 91,5 % số token. `summary.json` được tạo lại toàn bộ; các mốc sàn không mô hình đã đo lại trên các tập chia v2 | [05](05-phan-tich-du-lieu.md) |
+| Vector nhúng PhoBERT | **đã xong, 2026-09-13 (T1.2)** | đã mã hóa lại trên lược đồ chia v2: `artifacts/embeddings/{train,dev}-{raw,masked}-len256.npy`, shape (34354, 768) / (3812, 768) | [06](06-baseline-dl.md) |
+| **Baseline phân lớp (DL)** | **đã xong, 2026-09-15 (T1.3)** | `dl-cat-s2` macroF1=0.6025 · top3=0.9318; `dl-cat-s2-cw` macroF1=0.5710 · balAcc=0.6931 — cả hai trên lược đồ chia v2, tập `dev` (3.812 dòng) | [06](06-baseline-dl.md#51-phân-lớp-nghề-nghiệp) |
+| **Baseline ước lượng lương (DL)** | **đã xong, 2026-09-16 (T1.4)** | `dl-sal-s2` MAE=4.15tr · RMSE=8.29tr · R2log=0.512 · ±20%=51.6% trên lược đồ chia v2, tập `dev` (2.698 dòng có công khai lương) | [06](06-baseline-dl.md#52-ước-lượng-lương) |
+| **Đánh giá chéo trên tập ngoài** | **đã chạy, 2026-09-17 (T7.3) — số tham khảo** | `dl-cat-s2` trên VietJobs-37K sau khử trùng (< 2 %) và ánh xạ 60 → 16: Gold-1000 strict macroF1=0.3977 [0.353, 0.443] · top3=0.8204 (n=529); test 37K strict macroF1=0.4525. Bảng ánh xạ còn `draft` | [10](10-danh-gia-ngoai.md) |
+
+Việc còn lại: [09-lo-trinh.md](09-lo-trinh.md) và [../TASKS.md](../TASKS.md).
 
 ---
 
-## 2. Table of contents — each note answers one question
+## 2. Mục lục — mỗi ghi chú trả lời một câu hỏi
 
-| Note | Which question it answers | When to update it |
+| Ghi chú | Trả lời câu hỏi gì | Khi nào cần cập nhật |
 |---|---|---|
-| [01-data-audit.md](01-data-audit.md) | Where the raw data is dirty, how it is cleaned, how it is split | `clean()` or the splitting changes |
-| [02-vietnamese-nlp.md](02-vietnamese-nlp.md) | Vietnamese processing · nine steps · which ones PhoBERT actually needs | A preprocessing step is added/removed · a new ablation row |
-| [03-protocol.md](03-protocol.md) | The rules of the game: seed, touching test, logging, metrics | Almost never — this is the contract |
-| [04-results.md](04-results.md) | Every experiment run (restarted 2026-09-08) | **Every** training run (automatic, append-only) |
-| [05-phan-tich-du-lieu.md](05-phan-tich-du-lieu.md) | Skew, distributions, boundaries · salary spread by sector · the model-free bar | Cleaning changes, or a new measurement is added |
-| [06-baseline-dl.md](06-baseline-dl.md) | The PhoBERT → dense architecture · both baselines · learning curves | A better DL configuration finishes |
-| [07-bai-toan-luong.md](07-bai-toan-luong.md) | The salary task · the traps known in advance | The salary head finishes a run |
-| [08-ma-nguon.md](08-ma-nguon.md) | Which module does what, and how they depend on each other | A module in `src/` is added/changed/removed |
-| [09-lo-trinh.md](09-lo-trinh.md) | What is left to do, in which order | A work item is completed |
-| [archive/](archive/README.md) | The closed machine-learning track · 101 experiments · the 0.6112 bar | **Do not edit** — it is the record of a phase |
-| [nen-tang/](nen-tang/00-index.md) | Background concepts for newcomers | Rarely — the background notes **hold no result numbers** |
-| [bao-cao/](bao-cao/00-index.md) | **The thesis manuscript** — six chapters, written in Vietnamese, assembled into the final Word document | **Every** real change — see [../AGENTS.md](../AGENTS.md) Rule 7 |
+| [01-data-audit.md](01-data-audit.md) | Dữ liệu thô bẩn ở đâu, được làm sạch thế nào, được chia tách ra sao | `clean()` thay đổi hoặc cách chia tách thay đổi |
+| [02-vietnamese-nlp.md](02-vietnamese-nlp.md) | Xử lý tiếng Việt · chín bước · đường văn bản vào PhoBERT | Một bước tiền xử lý được thêm/bỏ · có dòng ablation mới |
+| [03-protocol.md](03-protocol.md) | Luật chơi: seed, việc đụng vào test, ghi log, các chỉ số | Gần như không bao giờ — đây là hợp đồng |
+| [04-results.md](04-results.md) | Mọi lượt chạy thí nghiệm (khởi động lại từ 2026-09-08) | **Mọi** lượt huấn luyện (tự động, chỉ thêm không sửa) |
+| [05-phan-tich-du-lieu.md](05-phan-tich-du-lieu.md) | Độ lệch, phân phối, ranh giới · độ trải rộng lương theo ngành · mốc sàn không mô hình | Việc làm sạch thay đổi, hoặc có phép đo mới được thêm vào |
+| [06-baseline-dl.md](06-baseline-dl.md) | Kiến trúc PhoBERT → dense · cả hai baseline · đường cong học | Một cấu hình DL tốt hơn hoàn tất |
+| [07-bai-toan-luong.md](07-bai-toan-luong.md) | Tác vụ lương · cạm bẫy đã đo · thiên lệch chọn mẫu | Đầu ra lương hoàn tất một lượt chạy |
+| [08-ma-nguon.md](08-ma-nguon.md) | Module nào làm việc gì, và chúng phụ thuộc lẫn nhau ra sao | Một module trong `src/` được thêm/sửa/xóa |
+| [09-lo-trinh.md](09-lo-trinh.md) | Còn những việc gì phải làm, theo thứ tự nào | Một hạng mục công việc hoàn thành |
+| [10-danh-gia-ngoai.md](10-danh-gia-ngoai.md) | Mô hình có tổng quát hóa sang tin tuyển dụng của người khác không · VietJobs-37K · khử trùng · ánh xạ 60 → 16 · hai quy ước chấm | Chạy lại `scripts/eval_external.py`, hoặc bảng ánh xạ được duyệt/sửa |
+| [archive/](archive/README.md) | Nhánh machine learning đã đóng · 101 thí nghiệm · mốc 0,6112 | **Không được sửa** — đây là bản ghi của một giai đoạn |
+| [nen-tang/](nen-tang/00-index.md) | Khái niệm nền tảng cho người mới | Hiếm khi — các ghi chú nền tảng **không chứa số liệu kết quả** |
+| [bao-cao/](bao-cao/00-index.md) | **Bản thảo luận văn** — sáu chương, viết bằng tiếng Việt, được ghép thành file Word cuối cùng | **Mọi** thay đổi thực sự — xem [../AGENTS.md](../AGENTS.md) Quy tắc 7 |
 
 ---
 
-## 3. Where to read a number correctly
+## 3. Đọc số liệu đúng chỗ nào
 
-| Source | What it holds |
+| Nguồn | Nội dung |
 |---|---|
-| [`data/processed/manifest.json`](../data/processed/manifest.json) | Row counts, group counts, the size of each split, the seed, the sha256 of the raw file |
-| [`artifacts/eda/summary.json`](../artifacts/eda/summary.json) | Every number in [05](05-phan-tich-du-lieu.md) — regenerate with `python scripts/analyze_data.py` |
-| [04-results.md](04-results.md) | One row per training run — append-only |
-| `artifacts/<run_id>/metrics.json` | The full metric set of one run |
-| `artifacts/<run_id>/history.jsonl` | One row per epoch — the learning curves live here |
+| [`data/processed/manifest.json`](../data/processed/manifest.json) | Số dòng, số nhóm, kích thước từng tập chia, seed, sha256 của file thô |
+| [`artifacts/eda/summary.json`](../artifacts/eda/summary.json) | Mọi con số trong [05](05-phan-tich-du-lieu.md) — tạo lại bằng `python scripts/analyze_data.py` |
+| [04-results.md](04-results.md) | Mỗi dòng ứng với một lượt huấn luyện — chỉ thêm không sửa |
+| `artifacts/<run_id>/metrics.json` | Toàn bộ tập chỉ số của một lượt chạy |
+| `artifacts/<run_id>/history.jsonl` | Mỗi dòng ứng với một epoch — đường cong học nằm ở đây |
 
 ---
 
-**The rules that do not change:** test is touched once, at the end ·
-[04-results.md](04-results.md) is append-only · a preprocessing step that does
-not improve anything gets removed · **every real change updates this vault
-again, and the thesis chapter that reports it** ([bao-cao/](bao-cao/00-index.md)).
-Details in [03-protocol.md](03-protocol.md) and [../AGENTS.md](../AGENTS.md).
+**Những quy tắc không thay đổi:** test chỉ được đụng vào một lần, ở cuối cùng ·
+[04-results.md](04-results.md) chỉ thêm không sửa · một bước tiền xử lý không
+cải thiện được gì thì bị loại bỏ · **mọi thay đổi thực sự đều cập nhật lại kho
+tài liệu này, và cả chương luận văn báo cáo nó**
+([bao-cao/](bao-cao/00-index.md)). Chi tiết trong
+[03-protocol.md](03-protocol.md) và [../AGENTS.md](../AGENTS.md).

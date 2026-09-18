@@ -80,11 +80,10 @@ nhiệm vụ nhiều khả năng nằm ở **một mô hình duy nhất thay vì
 
 ## Ưu tiên 4 — dữ liệu, các việc mà phân tích đã chỉ ra
 
-- [ ] Chạy lại `scripts/analyze_data.py` trên tệp gốc để `artifacts/eda/summary.json`
-      không còn lệch với các hình, và thêm `--tokens` cho hình 07 — cái giá của việc
-      cắt ở 256 token chưa từng được đo
-- [ ] Các trường hợp biên của lương: 15 tin > 200 triệu, cộng nhóm dưới 2 triệu
-      (số lượng chờ chạy lại để có)
+- [x] Chạy lại `scripts/analyze_data.py` trên tệp gốc, có `--tokens` cho hình 07 —
+      xong 2026-09-12 (T1.1)
+- [ ] Các trường hợp biên của lương: 15 tin > 200 triệu và 132 tin dưới 2 triệu,
+      gần như chắc chắn sai đơn vị
 - [ ] Đo thiên lệch chọn mẫu: tỷ lệ công bố lương trải từ 58,6 % → 76,5 % tùy ngành
 - [x] **Đánh giá chéo bài `category` trên tập ngoài VietJobs-37K** — chạy ngày
       2026-09-17 (T7.3): Gold-1000 strict macro-F1 0,3977 so với 0,6025 trên `dev`.
@@ -92,15 +91,17 @@ nhiệm vụ nhiều khả năng nằm ở **một mô hình duy nhất thay vì
       Xem [10](10-danh-gia-ngoai.md)
 - [ ] Kiểm tra chéo bài `salary` — 37K không có lương, nên làm theo nguồn (topcv ↔
       careerviet) hoặc theo thời gian ngay trong `VietJobs.csv`, chỉ chia lại
-      `train`/`dev` ([10 §6](10-danh-gia-ngoai.md#6-còn-thiếu-kiểm-tra-chéo-cho-bài-lương))
+      `train`/`dev`, không chạm `test`
 - [ ] Hướng nghiên cứu ngành–lương cho luận văn: (a) R² log của mô hình chỉ dùng
       nhãn ngành / chỉ dùng văn bản / cả hai — khoảng cách là phần ngành giải thích
       được; (b) phương sai lương trong ngành so với giữa ngành; (c) thiên lệch công
       bố lương theo ngành (mục ngay trên) làm lệch kết luận "ngành X lương cao hơn"
-- [ ] `UNMASKED_COLUMNS` vẫn là danh sách viết tay — `soft_skills_text` và
-      `qualifications_text` từng lọt qua nó; đường học sâu hiện chỉ đọc ba trường
-      văn bản nên chưa bị ảnh hưởng, nhưng thêm một trường nghĩa là phải cập nhật cả
-      hai danh sách
+- [ ] `UNMASKED_COLUMNS` vẫn là danh sách viết tay — thêm một trường văn bản nghĩa
+      là phải cập nhật cả `_MASKABLE` lẫn `UNMASKED_COLUMNS`
+- [ ] Quyết định xử lý `languages_required` (chỉ điền ở 25,6 % số dòng): dùng làm chỉ
+      báo thiếu dữ liệu có ghi chú rõ ràng, hoặc loại bỏ
+- [ ] Thiên lệch chọn mẫu còn tương quan với **kích thước lớp** (r = 0,610), không chỉ
+      với ngành — đo cùng mục thiên lệch chọn mẫu ở trên
 - [ ] **Bộ tách từ lệch với nguồn PhoBERT** — dự án dùng underthesea/pyvi, PhoBERT
       được VinAI tách từ bằng RDRSegmenter của VnCoreNLP. Hai bộ tách *trong* dự án
       đã bất đồng trên 84,8 % description ([02 §6](02-vietnamese-nlp.md#6-hai-bộ-tách-từ-khác-nhau-ở-đâu--và-vì-sao-câu-hỏi-mở-lại));
@@ -109,7 +110,7 @@ nhiệm vụ nhiều khả năng nằm ở **một mô hình duy nhất thay vì
       bước này luôn bật, nên câu hỏi "chọn bộ nào" lại mở ra
 - [ ] **2.148 title (4,50 %) viết không dấu chưa có đường xử lý nào** — kênh bỏ dấu
       cũ (bước 6) từng bắt được chúng cho TF-IDF; với BPE của PhoBERT, "Nhan Vien"
-      bị băm thành các mảnh hiếm ([02 §4](02-vietnamese-nlp.md#4-luồng-phobert-thực-sự-chạy-những-bước-nào))
+      bị băm thành các mảnh hiếm ([02 §3](02-vietnamese-nlp.md#3-chín-bước--làm-gì-vì-sao-và-điều-gì-đo-được), bước 6)
 
 ## Ưu tiên 5 — hệ thống
 

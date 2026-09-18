@@ -4,21 +4,18 @@ Occupation classification and salary estimation from Vietnamese job postings.
 48,092 raw postings → 47,707 clean rows → 16 occupation classes, split by group
 and frozen.
 
-**Main track:** a deep network on **PhoBERT** representations — the two tasks
-separately first (occupation classification, salary estimation), the multi-task
-merge second.
+**Main track:** a deep network on frozen **PhoBERT** representations — one network
+per task (occupation classification, salary estimation).
 
-**Where it stands**, scored on `dev`, on the same splits and the same seed as every
-older bar:
+**Where it stands**, scored on `dev` (split scheme v2, 3,812 rows):
 
 | Task | Deep-learning baseline | Bar to beat |
 |---|---|---|
-| Occupation classification | macro-F1 **0.5987** · top-3 **0.9257** | 0.6050 ± 0.0071 — TF-IDF + LinearSVC ([archive/](docs/archive/README.md)) |
-| Salary estimation | MAE **4.83 million** · R²log **0.381** | 5.86 million — predict the median ([docs/05](docs/05-phan-tich-du-lieu.md)) |
+| Occupation classification | macro-F1 **0.6025** · top-3 **0.9318** (`dl-cat-s2`) | 0.6050 ± 0.0071 — TF-IDF + LinearSVC, scheme v1 ([archive/](docs/archive/README.md)) |
+| Salary estimation | MAE **4.15 million** · R²log **0.512** (`dl-sal-s2`, 2,698 rows) | 5.70 million — predict the median ([docs/05](docs/05-phan-tich-du-lieu.md)) |
 
-The salary head beats its bar by 17.6 %. The classification head is 0.0063 below
-its bar — less than half that bar's own confidence interval, i.e. **not
-distinguishable yet**. The details, including the first run that diverged, are in
+The salary head beats its bar by 27.2 %. The classification head is 0.0025 below
+its bar — inside that bar's own confidence interval, i.e. **not distinguishable**. The details, including the first run that diverged, are in
 [docs/06](docs/06-baseline-dl.md).
 
 ## Install
@@ -111,9 +108,6 @@ types live in `manifest.json`, not in the CSV:
 from vietjobs import dataset as D
 df = D.load_split("dev")      # (3812, 50)
 ```
-
-Do **not** rebuild the splits with a different seed — that makes every row in
-`docs/04-results.md` incomparable (Rule 2 in [AGENTS.md](AGENTS.md)).
 
 ## Run
 

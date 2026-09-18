@@ -1,82 +1,82 @@
-[← Overview](00-tong-quan.md) · [Vietnamese processing →](02-vietnamese-nlp.md)
+[← Tổng quan](00-tong-quan.md) · [Xử lý tiếng Việt →](02-vietnamese-nlp.md)
 
-# Data and cleaning
+# Dữ liệu và làm sạch
 
-From `VietJobs.csv` to three frozen CSV files. This all happens **before**
-any model exists — and it is where most of the fatal mistakes happen, because
-they raise no error.
+Từ `VietJobs.csv` đến ba tệp CSV đã cố định. Toàn bộ việc này diễn ra **trước**
+khi có bất kỳ mô hình nào tồn tại — và đây là nơi hầu hết các lỗi chí mạng xảy
+ra, bởi vì chúng không hề báo lỗi.
 
-Code: [`dataset.py`](../src/vietjobs/dataset.py) — `clean()` and
+Mã nguồn: [`dataset.py`](../src/vietjobs/dataset.py) — `clean()` và
 `group_stratified_split()`.
-Evidence: [`data/processed/manifest.json`](../data/processed/manifest.json).
+Bằng chứng: [`data/processed/manifest.json`](../data/processed/manifest.json).
 
-> Not sure why cleaning is needed? Read
-> [background: why clean at all](nen-tang/01-vi-sao-phai-lam-sach.md) first.
+> Chưa rõ vì sao cần làm sạch dữ liệu? Hãy đọc
+> [nền tảng: vì sao phải làm sạch](nen-tang/01-vi-sao-phai-lam-sach.md) trước.
 
 ---
 
-## 1. The source
+## 1. Nguồn dữ liệu
 
-| Attribute | Value | Source |
+| Thuộc tính | Giá trị | Nguồn |
 |---|---|---|
-| File | `data/raw/VietJobs.csv` | `manifest.source_file` |
-| Rows | **48,092** | `manifest.source_rows` |
-| Columns | **18** | the CSV header |
+| Tệp | `data/raw/VietJobs.csv` | `manifest.source_file` |
+| Số dòng | **48.092** | `manifest.source_rows` |
+| Số cột | **18** | tiêu đề của tệp CSV |
 | sha256 | `85862b06fda…c49d477` | `manifest.source_sha256` |
-| Salary unit | million VND/month | `manifest.salary_unit` |
+| Đơn vị lương | triệu VNĐ/tháng | `manifest.salary_unit` |
 
-The sha256 in the manifest has exactly one job: if the raw file changes, every
-number in [archive/04-results-ml.md](archive/04-results-ml.md) loses its
-comparability and we have to know that immediately, not three weeks later. The
-same hash anchors the descriptive analysis, which is measured on this file rather
-than on a split ([AGENTS.md Rule 8](../AGENTS.md#rule-8--data-analysis-is-measured-on-the-original-file),
+sha256 trong manifest chỉ có đúng một nhiệm vụ: nếu tệp gốc thay đổi, mọi con số
+trong [archive/04-results-ml.md](archive/04-results-ml.md) sẽ mất tính so sánh
+được, và ta phải biết điều đó ngay lập tức, chứ không phải ba tuần sau. Cùng một
+hash này cũng neo giữ phần phân tích mô tả, vốn được đo trên tệp này chứ không
+phải trên một tập chia tách ([AGENTS.md Quy tắc 8](../AGENTS.md#rule-8--data-analysis-is-measured-on-the-original-file),
 [05](05-phan-tich-du-lieu.md)).
 
-The eighteen original columns fall into four groups:
+Mười tám cột gốc được chia thành bốn nhóm:
 
-| Group | Columns | What they are for |
+| Nhóm | Các cột | Dùng để làm gì |
 |---|---|---|
-| Free text | `job_title` · `description` · `requirements_text` | The main signal, feeding PhoBERT |
-| Lists | `qualifications` · `technical_skills` · `soft_skills` · `benefits` | Both text and a count column |
-| Structured | `location` · `country` · `languages_required` · `experience_required` · `contract_type` · `working_hours` | One-hot and numeric columns |
-| **Labels** | `category` · `salary` · `salary_min` · `salary_max` · `salary_avg` | The answer key. The four salary columns **never** enter the feature matrix |
+| Văn bản tự do | `job_title` · `description` · `requirements_text` | Tín hiệu chính, đưa vào PhoBERT |
+| Danh sách | `qualifications` · `technical_skills` · `soft_skills` · `benefits` | Vừa là văn bản, vừa là một cột đếm |
+| Có cấu trúc | `location` · `country` · `languages_required` · `experience_required` · `contract_type` · `working_hours` | Các cột one-hot và số |
+| **Nhãn** | `category` · `salary` · `salary_min` · `salary_max` · `salary_avg` | Đáp án chuẩn. Bốn cột lương **không bao giờ** được đưa vào ma trận đặc trưng |
 
-`load_raw` reads **every column as a string** (`dtype=str`) and treats only the
-empty string as missing (`keep_default_na=False`). The reason: letting pandas
-infer types is letting it silently turn `"01"` into `1`, and `"NA"` (a real
-sector code) into a missing value. Forcing strings and parsing them ourselves is
-slower but has no surprises.
+`load_raw` đọc **mọi cột dưới dạng chuỗi** (`dtype=str`) và chỉ coi chuỗi rỗng
+là giá trị thiếu (`keep_default_na=False`). Lý do: để pandas tự suy luận kiểu
+dữ liệu nghĩa là để nó âm thầm biến `"01"` thành `1`, và biến `"NA"` (một mã
+ngành có thật) thành giá trị thiếu. Ép kiểu chuỗi rồi tự phân tích tuy chậm hơn
+nhưng không có bất ngờ nào.
 
 ---
 
-## 2. De-duplication — two layers, two different purposes
+## 2. Loại trùng lặp — hai tầng, hai mục đích khác nhau
 
-This is the easiest thing in the whole pipeline to confuse, so let us be explicit:
+Đây là điều dễ gây nhầm lẫn nhất trong toàn bộ pipeline, nên hãy nói rõ ràng:
 
-| Layer | Function | What it does | Result |
+| Tầng | Hàm | Nó làm gì | Kết quả |
 |---|---|---|---|
-| **1. Exact duplicates** | `df.drop_duplicates()` | **Deletes** rows identical across all 18 columns | 48,092 → **47,707** (**385** dropped) |
-| **2. Near-duplicate grouping** | `V.group_key()` | **Deletes nothing.** Only assigns a shared id to near-identical postings | 47,707 rows → **34,899 groups** |
+| **1. Trùng lặp hoàn toàn** | `df.drop_duplicates()` | **Xóa** các dòng giống hệt nhau trên toàn bộ 18 cột | 48.092 → **47.707** (loại bỏ **385** dòng) |
+| **2. Gom nhóm gần trùng lặp** | `V.group_key()` | **Không xóa gì cả.** Chỉ gán một id chung cho các tin đăng gần giống nhau | 47.707 dòng → **34.899 nhóm** |
 
-**Layer 1 deletes, layer 2 does not.** Why they differ:
+**Tầng 1 xóa, tầng 2 thì không.** Vì sao chúng khác nhau:
 
-- Rows identical across all 18 columns are a **data-entry fault**, not
-  information. Keeping them just makes the model count one posting twice — that
-  reweights the data at random and adds nothing.
-- *Near*-identical postings ("Sales staff" reposted the following week with one
-  benefit sentence edited) are **still real data**. Deleting them throws away
-  samples. But letting them land in two different splits is a leak. So: keep
-  them, and force the whole group into one split — see
-  [section 7](#7-splitting--by-group-not-by-row).
+- Các dòng giống hệt nhau trên toàn bộ 18 cột là một **lỗi nhập liệu**, không
+  phải thông tin. Giữ lại chúng chỉ khiến mô hình đếm một tin đăng hai lần —
+  điều đó tái trọng số dữ liệu một cách ngẫu nhiên và không thêm được gì cả.
+- Các tin đăng *gần* giống nhau ("Nhân viên bán hàng" được đăng lại tuần sau đó
+  với một câu phúc lợi được sửa) **vẫn là dữ liệu thật**. Xóa chúng đi là vứt
+  bỏ mẫu dữ liệu. Nhưng để chúng rơi vào hai tập chia tách khác nhau lại là rò
+  rỉ dữ liệu. Vì vậy: giữ lại chúng, và buộc toàn bộ nhóm vào cùng một tập chia
+  tách — xem [mục 7](#7-chia-tách-dữ-liệu--theo-nhóm-không-theo-dòng).
 
-**12,808 rows (26.8 %)** are reposts. The largest group has 33 rows.
+**12.808 dòng (26,8 %)** là tin đăng lại. Nhóm lớn nhất có 33 dòng.
 
 ---
 
-## 3. Four copies of every text column
+## 3. Bốn bản sao cho mỗi cột văn bản
 
-This is the mechanism that enforces **Rule 3 — leak prevention**. Each text
-column exists in up to four forms, built once inside `clean()`:
+Đây là cơ chế thực thi **Quy tắc 3 — ngăn rò rỉ dữ liệu**. Mỗi cột văn bản tồn
+tại dưới tối đa bốn dạng, được xây dựng một lần bên trong `clean()`:
 
 ```mermaid
 %%{init:{'theme':'base','themeVariables':{
@@ -87,14 +87,14 @@ column exists in up to four forms, built once inside `clean()`:
   'nodeTextColor':'#141F1D','titleColor':'#141F1D'}}}%%
 flowchart LR
     classDef default fill:#FFFFFF,stroke:#54625E,stroke-width:1.5px,color:#141F1D
-    RAW["description<br/>(raw cell in the CSV)"]
-    A["<b>description</b><br/>NFC · tone marks · abbreviations"]
-    B["<b>description_seg</b><br/>+ word segmentation"]
-    C["<b>description_masked</b><br/>+ salary figures masked"]
-    D["<b>description_masked_seg</b><br/>masked + segmented"]
+    RAW["description<br/>(ô dữ liệu thô trong CSV)"]
+    A["<b>description</b><br/>NFC · dấu thanh · viết tắt"]
+    B["<b>description_seg</b><br/>+ tách từ"]
+    C["<b>description_masked</b><br/>+ che số liệu lương"]
+    D["<b>description_masked_seg</b><br/>đã che + đã tách từ"]
 
-    T1["TASK 1<br/>occupation class"]
-    T2["TASK 2<br/>salary · disclosed"]
+    T1["NHIỆM VỤ 1<br/>nhóm nghề"]
+    T2["NHIỆM VỤ 2<br/>lương · công khai"]
 
     RAW --> A --> B
     A --> C --> D
@@ -111,235 +111,248 @@ flowchart LR
     class C,D safe
 ```
 
-**Orange = may still contain a salary figure. Green = masked.**
+**Cam = có thể vẫn chứa số liệu lương. Xanh lá = đã được che.**
 
-| Copy | Built by | Who may read it |
+| Bản sao | Được tạo bởi | Ai được phép đọc |
 |---|---|---|
-| `<name>` | `preprocess(tone, abbrev, mask=False)` | occupation classification only |
-| `<name>_seg` | + segmentation | occupation classification only |
-| `<name>_masked` | `preprocess(..., mask=True)` | the salary tasks only |
-| `<name>_masked_seg` | masked + segmented | the salary tasks only |
+| `<name>` | `preprocess(tone, abbrev, mask=False)` | chỉ phân lớp nhóm nghề |
+| `<name>_seg` | + tách từ | chỉ phân lớp nhóm nghề |
+| `<name>_masked` | `preprocess(..., mask=True)` | chỉ các nhiệm vụ lương |
+| `<name>_masked_seg` | đã che + đã tách từ | chỉ các nhiệm vụ lương |
 
-Why build all four up front instead of computing them on demand: **so that
-choosing a copy becomes a table lookup, not an `if` branch scattered across the
-code.** The single place that decides is `features.resolve_column` — see
-[08-ma-nguon.md](08-ma-nguon.md#three-invariants-that-hold-the-whole-system-up).
-One door can be tested; ten `if` branches cannot.
+Vì sao xây dựng cả bốn bản sao ngay từ đầu thay vì tính theo yêu cầu: **để việc
+chọn một bản sao trở thành một phép tra bảng, chứ không phải một nhánh `if`
+rải rác khắp mã nguồn.** Nơi duy nhất đưa ra quyết định này là
+`features.resolve_column` — xem
+[08-ma-nguon.md](08-ma-nguon.md#ba-bất-biến-giữ-cho-toàn-hệ-thống-đứng-vững).
+Một cánh cửa thì có thể kiểm thử được; mười nhánh `if` thì không.
 
-Four columns get masked: `job_title`, `description`, `requirements_text` (through
-`preprocess`) and `benefits_text` (calling `V.mask_salary` directly — benefits
-restate the salary more often than anything else, in **10.65 %** of rows).
+Bốn cột được che: `job_title`, `description`, `requirements_text` (thông qua
+`preprocess`) và `benefits_text` (gọi trực tiếp `V.mask_salary` — phúc lợi nhắc
+lại mức lương thường xuyên hơn bất kỳ cột nào khác, ở **10,65 %** số dòng).
 
 ---
 
-## 4. List-shaped columns — one raw column, two features
+## 4. Các cột dạng danh sách — một cột thô, hai đặc trưng
 
-The four columns `qualifications`, `technical_skills`, `soft_skills` and
-`benefits` are stored in the CSV as the **repr of a Python list**:
+Bốn cột `qualifications`, `technical_skills`, `soft_skills` và `benefits` được
+lưu trong CSV dưới dạng **biểu diễn repr của một list Python**:
 
 ```
-"['Cao đẳng', 'Đại học']"     # "College", "University"
+"['Cao đẳng', 'Đại học']"     # "Cao đẳng", "Đại học"
 ```
 
-That is a string, not a list. `parse_list_field` uses `ast.literal_eval` and
-falls back to `strip("[]").split(",")` when the string is malformed — real data
-always has a few broken rows, and a pipeline that dies on one broken row is a
-useless pipeline.
+Đó là một chuỗi, không phải một list. `parse_list_field` dùng
+`ast.literal_eval` và chuyển sang phương án dự phòng
+`strip("[]").split(",")` khi chuỗi bị lỗi định dạng — dữ liệu thật luôn có vài
+dòng bị hỏng, và một pipeline chết ngay khi gặp một dòng hỏng là một pipeline
+vô dụng.
 
-Each column yields **two** quite different features:
+Mỗi cột tạo ra **hai** đặc trưng khá khác nhau:
 
-| Feature | Example | Question it answers |
+| Đặc trưng | Ví dụ | Câu hỏi mà nó trả lời |
 |---|---|---|
-| `<name>_text` — joined with `" ; "`, lowercased | `"cao đẳng ; đại học"` | ***What** is required?* |
-| `n_<name>` — the number of elements | `2` | ***How many** things are required?* |
+| `<name>_text` — nối bằng `" ; "`, viết thường | `"cao đẳng ; đại học"` | ***Yêu cầu **gì**?* |
+| `n_<name>` — số lượng phần tử | `2` | ***Bao nhiêu** thứ được yêu cầu?* |
 
-The count column is not redundant. A posting listing 12 technical skills and one
-listing 2 are different kinds of posting — usually different seniority. The
-PhoBERT path **cannot see** that difference: it reads only three text fields and
-truncates at 256 tokens. The `n_*` columns are how that signal gets in, and they
-are waiting for the day the tabular features are concatenated to the 768-dim
-vector.
+Cột đếm không hề dư thừa. Một tin đăng liệt kê 12 kỹ năng chuyên môn và một tin
+đăng liệt kê 2 kỹ năng là hai loại tin đăng khác nhau — thường là khác cấp
+bậc. Nhánh PhoBERT **không thể thấy** sự khác biệt đó: nó chỉ đọc ba trường
+văn bản và cắt ở 256 token. Các cột `n_*` giữ tín hiệu đó; chúng không đi vào
+mạng học sâu hiện tại.
 
 ---
 
-## 5. Labels — building and repairing
+## 5. Nhãn — xây dựng và sửa lỗi
 
-### `category` — task 1
+### `category` — nhiệm vụ 1
 
-Unicode normalisation only, nothing else. 16 classes, skewed **27:1** between the
-largest and the smallest; the three smallest hold only 196–258 rows
-([03-protocol.md](03-protocol.md)). That is why the headline metric is macro-F1
-and not accuracy — [background: metrics and baselines](nen-tang/06-do-luong-va-baseline.md).
+Chỉ chuẩn hóa Unicode, không gì khác. 16 lớp, lệch **27:1** giữa lớp lớn nhất
+và lớp nhỏ nhất; ba lớp nhỏ nhất chỉ có 196–258 dòng
+([03-protocol.md](03-protocol.md)). Đó là lý do vì sao chỉ số chính là
+macro-F1 chứ không phải accuracy — [nền tảng: đo lường và
+baseline](nen-tang/06-do-luong-va-baseline.md).
 
-The class `nhóm_nghề_khác` ("other occupations") is a junk drawer: it holds
-marketing, IT and manufacturing postings that belong in other classes. So macro-F1
-is always reported alongside a variant that drops this class (`f1_macro_no_junk`).
+Lớp `nhóm_nghề_khác` ("các nhóm nghề khác") là một ngăn kéo tạp nham: nó chứa
+các tin đăng về marketing, IT và sản xuất mà lẽ ra thuộc các lớp khác. Vì vậy
+macro-F1 luôn được báo cáo kèm theo một biến thể loại bỏ lớp này
+(`f1_macro_no_junk`).
 
-### `salary_*` — task 2
+### `salary_*` — nhiệm vụ 2
 
-Four repairs, each fixing a real form of dirt:
+Bốn sửa lỗi, mỗi sửa lỗi xử lý một dạng bẩn dữ liệu có thật:
 
-| Problem in the data | Repair | Code |
+| Vấn đề trong dữ liệu | Cách sửa | Mã nguồn |
 |---|---|---|
-| Some rows have `salary_min > salary_max` | `np.minimum` / `np.maximum` — swap them back | [dataset.py:119](../src/vietjobs/dataset.py#L119) |
-| Only **one** bound disclosed (min = 0, max > 0) | Use the real bound for both | [dataset.py:120](../src/vietjobs/dataset.py#L120) |
-| No figure disclosed at all | `salary_mid = 0` → `salary_disclosed = 0` | [dataset.py:126](../src/vietjobs/dataset.py#L126) |
-| The salary distribution is heavily right-skewed | The regression target is `log1p(salary_mid)` | [dataset.py:128](../src/vietjobs/dataset.py#L128) |
+| Một số dòng có `salary_min > salary_max` | `np.minimum` / `np.maximum` — hoán đổi lại | [dataset.py:119](../src/vietjobs/dataset.py#L119) |
+| Chỉ công khai **một** cận (min = 0, max > 0) | Dùng cận thật cho cả hai | [dataset.py:120](../src/vietjobs/dataset.py#L120) |
+| Không công khai con số nào cả | `salary_mid = 0` → `salary_disclosed = 0` | [dataset.py:126](../src/vietjobs/dataset.py#L126) |
+| Phân phối lương bị lệch phải nặng | Mục tiêu hồi quy là `log1p(salary_mid)` | [dataset.py:128](../src/vietjobs/dataset.py#L128) |
 
-Derived columns: `salary_mid` (mean of the two bounds) · `salary_disclosed` (0/1) ·
-`salary_is_range` (a range was published, not a single figure) · `salary_mid_log`.
+Các cột dẫn xuất: `salary_mid` (trung bình của hai cận) · `salary_disclosed`
+(0/1) · `salary_is_range` (một khoảng đã được công bố, không phải một con số
+đơn) · `salary_mid_log`.
 
-**Extreme values are flagged, not deleted.** `salary_extreme = 1` when the midpoint
-is ≥ 100 million. p99 is 52.5 million, the maximum is 500 million
+**Các giá trị cực đoan được đánh dấu, không bị xóa.** `salary_extreme = 1` khi
+điểm giữa ≥ 100 triệu. p99 là 52,5 triệu, giá trị lớn nhất là 500 triệu
 ([dataset.py:131](../src/vietjobs/dataset.py#L131)).
 
-Why the tail is not trimmed: **the tail is real.** A chief executive genuinely
-earns 500 million. Deleting those rows teaches the model that high salaries do
-not exist — it will score better *on the trimmed set*, and be systematically
-wrong in the world. Flagging them and reporting them separately is honest;
-deleting them and showing off a pretty MAE is self-deception.
+Vì sao phần đuôi không bị cắt bỏ: **phần đuôi đó là thật.** Một giám đốc điều
+hành thực sự kiếm được 500 triệu. Xóa các dòng đó dạy cho mô hình rằng mức
+lương cao không tồn tại — nó sẽ đạt điểm tốt hơn *trên tập đã cắt*, nhưng lại
+sai một cách có hệ thống trong thực tế. Đánh dấu chúng và báo cáo riêng là
+trung thực; xóa chúng đi rồi khoe một chỉ số MAE đẹp là tự lừa dối bản thân.
 
-Using `log1p` as the regression target is exactly how that tail is handled
-**without throwing data away**: being 5 million off at a salary of 10 million is
-badly wrong, being 5 million off at 200 million is nearly right. A log scale says
-that; a linear scale does not.
+Dùng `log1p` làm mục tiêu hồi quy chính là cách phần đuôi đó được xử lý **mà
+không phải vứt bỏ dữ liệu**: sai lệch 5 triệu ở mức lương 10 triệu là sai
+nặng, sai lệch 5 triệu ở mức 200 triệu gần như đúng. Thang log phản ánh điều
+đó; thang tuyến tính thì không.
 
 ---
 
-## 6. Derived columns — 14 numeric features
+## 6. Các cột dẫn xuất — 14 đặc trưng số
 
-`NUMERIC_COLUMNS` in [features.py:152](../src/vietjobs/features.py#L152). They
-occupy only 14 dimensions out of 236,596 — yet they carry tens of times more
-weight per dimension than any text dimension
+`NUMERIC_COLUMNS` trong [features.py:152](../src/vietjobs/features.py#L152).
+Chúng chỉ chiếm 14 chiều trong tổng số 236.596 — nhưng lại mang trọng số trên
+mỗi chiều lớn hơn hàng chục lần so với bất kỳ chiều văn bản nào
 ([06-mo-hinh-phan-lop.md](archive/06-mo-hinh-phan-lop.md)).
 
-Three worth calling out:
+Ba cột đáng chú ý:
 
-**`n_acronyms`** — counts fully-uppercase tokens longer than 1 character in the
-title: `SEO`, `IT`, `PHP`, `QA`, `HR`. This is an extremely strong sector signal
-and is almost free. It only exists because `normalize_unicode` does **not**
-lowercase — lowercase early and this feature disappears entirely.
+**`n_acronyms`** — đếm số token viết hoa toàn bộ dài hơn 1 ký tự trong tiêu
+đề: `SEO`, `IT`, `PHP`, `QA`, `HR`. Đây là một tín hiệu ngành cực kỳ mạnh và
+gần như miễn phí. Nó chỉ tồn tại vì `normalize_unicode` **không** viết
+thường — viết thường sớm sẽ làm đặc trưng này biến mất hoàn toàn.
 
-**`experience_months`** — puts every phrasing into one unit: `"2 năm"` (2 years)
-→ 24, `"6 tháng"` (6 months) → 6, `"Không yêu cầu"` (not required) → 0,
-`"Chưa có kinh nghiệm"` (no experience) → 0. Without the conversion, `"2 năm"`
-and `"24 tháng"` are two unrelated dimensions, and neither is comparable to the
-other.
+**`experience_months`** — đưa mọi cách diễn đạt về cùng một đơn vị: `"2 năm"`
+→ 24, `"6 tháng"` → 6, `"Không yêu cầu"` → 0, `"Chưa có kinh nghiệm"` → 0. Nếu
+không quy đổi, `"2 năm"` và `"24 tháng"` là hai chiều không liên quan với
+nhau, và không chiều nào có thể so sánh được với chiều còn lại.
 
-**`is_major_city`** — 1 if the province is one of the five largest cities.
-Note: it is computed from the `province` column **regardless** of whether the
-`prep.province` flag is on. That is a smudge in the ablation table — see
-[02-vietnamese-nlp.md §5](02-vietnamese-nlp.md#5-the-closed-tracks-ablation--evidence-not-direction).
+**`is_major_city`** — bằng 1 nếu tỉnh/thành thuộc một trong năm thành phố lớn
+nhất. Lưu ý: nó được tính từ cột `province` **bất kể** cờ `prep.province` có
+được bật hay không. Đó là một điểm nhòe trong bảng ablation — xem
+[02-vietnamese-nlp.md §5](02-vietnamese-nlp.md#5-ablation-của-hướng-đã-khép-lại--bằng-chứng-không-phải-định-hướng).
 
 ---
 
-## 7. Splitting — by group, not by row
+## 7. Chia tách dữ liệu — theo nhóm, không theo dòng
 
-`group_stratified_split` has to satisfy **two** constraints at once, and they pull
-against each other:
+`group_stratified_split` phải thỏa mãn đồng thời **hai** ràng buộc, và chúng
+kéo ngược chiều nhau:
 
-1. **No group may straddle splits.** Every row with the same `group_id` must land
-   entirely in one split.
-2. **Rare classes must survive.** A class with 196 rows must appear in both dev
-   and test, otherwise macro-F1 is computed over a different number of classes
-   from run to run and the results table stops being comparable.
+1. **Không nhóm nào được nằm vắt qua nhiều tập chia tách.** Mọi dòng có cùng
+   `group_id` phải nằm trọn trong một tập chia tách.
+2. **Các lớp hiếm phải tồn tại được.** Một lớp có 196 dòng phải xuất hiện ở cả
+   tập kiểm định và tập kiểm tra, nếu không macro-F1 sẽ được tính trên số
+   lượng lớp khác nhau giữa các lần chạy, và bảng kết quả sẽ mất tính so sánh
+   được.
 
-The algorithm: for **each** occupation class, shuffle the groups, then place the
-**largest groups first** into whichever bucket is furthest below its quota.
-Largest first because they are the hardest to place — leave them to the end and
-they skew the ratio with nothing left to compensate.
+Thuật toán: với **mỗi** lớp nghề, xáo trộn các nhóm, sau đó xếp **các nhóm lớn
+nhất trước** vào bất kỳ giỏ nào đang thiếu hụt nhiều nhất so với hạn ngạch của
+nó. Xếp nhóm lớn trước vì chúng khó xếp nhất — để chúng lại đến cuối thì chúng
+sẽ làm lệch tỷ lệ mà không còn gì để bù lại.
 
 ```python
 pick = max(fractions, key=lambda k: targets[k] - filled[k])
 ```
 
-### Two stages, not one draw
+### Hai giai đoạn, không phải một lần rút
 
-Since **2026-09-09** that draw runs **twice** (`two_stage_split`):
+Kể từ **2026-09-09**, lần rút đó chạy **hai lần** (`two_stage_split`):
 
 1. `train_pool : test` = **8 : 2**
-2. that pool split again, `train : dev` = **9 : 1**
+2. tập pool đó được chia tiếp, `train : dev` = **9 : 1**
 
-which lands at 72 / 8 / 20 of the rows. Two draws rather than one three-way draw,
-because stage 2 must be able to run again — a different dev slice, a k-fold over
-the pool — **without a single row of `test` moving**. That is what keeps `test`
-usable exactly once, at the end. Stage 2 draws with `seed + 1` so the two stages
-do not share a permutation.
+kết quả rơi vào tỷ lệ 72 / 8 / 20 số dòng. Hai lần rút thay vì một lần rút ba
+phần, vì giai đoạn 2 phải có khả năng chạy lại — một lát cắt dev khác, một
+k-fold trên tập pool — **mà không có một dòng nào của `test` bị dịch
+chuyển**. Đó là điều giữ cho `test` chỉ được dùng đúng một lần, ở bước cuối
+cùng. Giai đoạn 2 rút với `seed + 1` để hai giai đoạn không dùng chung một
+hoán vị.
 
-The result, fixed in the manifest:
+Kết quả, được cố định trong manifest:
 
-| Split | Rows | Share | Groups | Postings with a disclosed salary | Classes |
-|---|---|---|---|---|---|
-| train | 34,354 | 72.01 % | 22,026 | 24,669 | 16 |
-| dev | 3,812 | 7.99 % | 3,728 | 2,705 | 16 |
-| test | 9,541 | 20.00 % | 9,145 | 6,719 | 16 |
+| Tập | Số dòng | Tỷ lệ | Tin đăng có công khai lương | Số lớp |
+|---|---|---|---|---|
+| train | 34.354 | 72,01 % | 24.669 | 16 |
+| dev | 3.812 | 7,99 % | 2.705 | 16 |
+| test | 9.541 | 20,00 % | 6.719 | 16 |
 
-**`groups_straddling_splits` = 0**, and `build()` has an `assert` for it. That
-assert may never be disabled. The ratios land within 0.01 pp of the target even
-though the unit of splitting is the group, not the row.
+**`groups_straddling_splits` = 0**, và `build()` có một `assert` để kiểm tra
+điều đó. Assert này không bao giờ được phép tắt. Các tỷ lệ đạt trong phạm vi
+0,01 điểm phần trăm so với mục tiêu, mặc dù đơn vị chia tách là nhóm, không
+phải dòng.
 
-The price of the new scheme is a **thin dev set**: the smallest class,
-`nhóm_nghề_khác`, has only **25** rows there (198 in train, 64 in test). Per-class
-F1 on dev for that class is measured on 25 examples and will swing; read
-`f1_macro_no_junk` alongside it, and confirm on `test` at the end.
+Cái giá của lược đồ mới là một **tập dev mỏng**: lớp nhỏ nhất,
+`nhóm_nghề_khác`, chỉ có **25** dòng ở đó (198 dòng ở train, 64 dòng ở test).
+F1 theo từng lớp trên dev đối với lớp này được đo trên 25 mẫu và sẽ dao động;
+hãy đọc `f1_macro_no_junk` cùng với nó, và xác nhận lại trên `test` ở bước
+cuối.
 
-`SPLIT_SEED = 20260826` is unchanged, but **the ratios changed**, so the splits
-themselves are new. Everything measured under the old 70/15/15 scheme — every row
-of [archive/04-results-ml.md](archive/04-results-ml.md), the 0.6112 classification
-benchmark, the 5.86 salary benchmark, and the cached PhoBERT embeddings — was
-measured on different data and **cannot be compared** with anything measured from
-here on. The old splits, manifest and embedding cache are kept, unmodified, at
-`data/processed/splits-scheme-v1/`, `data/processed/manifest-scheme-v1.json` and
-`artifacts/embeddings-scheme-v1/`; the benchmarks have to be re-run against the
-new splits before they mean anything again.
-
----
-
-## 8. Segmentation runs here — exactly once
-
-Nine columns are word-segmented and **cached straight into the split files**. Cost on
-the 2026-09-09 rebuild: **780.3 seconds** (13 minutes), **0 failures** across
-47,707 postings.
-
-Why here and not inside the training loop: 27 experiments × 13 minutes is nearly
-6 hours spent re-deriving one and the same result. Segment once, write it to
-disk, and every later run reads it directly. **Nothing in the training loop calls
-the segmenter.**
-
-The splits are written as **CSV**, one file per split, so they open in anything —
-a spreadsheet, `head`, another language — without a library in the way.
-
-CSV buys that at a price, and the price was measured rather than assumed. Sending
-`dev` through `to_csv` / `read_csv` and diffing every cell: all 50 dtypes survive
-and all 21 numeric columns match to the last bit (pandas 3.0.5). What does **not**
-survive is the difference between an empty cell and a missing one — both are
-written as two adjacent commas, and pandas reads both back as `NaN`. That silently
-rewrites **4,524 cells of `dev` alone**, `languages_text` worst hit with 2,792 of
-its 3,812. "This posting lists no language requirement" and "this field was never
-filled in" would become the same value.
-
-So nothing reads the split files with a bare `read_csv`. **`dataset.load_split` is
-the only supported reader**: it parses with `na_filter=False`, which keeps every
-field exactly as written, then casts the numeric columns back from the
-`column_dtypes` map that `build` records in `manifest.json`. Verified after the
-conversion — all three splits match the parquet originals cell for cell, with zero
-added `NaN`. Anything that reads a split file directly is a bug.
-
-The rest is cost, and it is real: `train` is **240.4 MB** as CSV against 91.3 MB as
-parquet (2.6×), and `load_split("train")` takes **8.35 s** against **2.17 s**. The
-gap widens when only a few columns are wanted: parquet is columnar and reads
-just those, while CSV has to parse all fifty to find them. The old parquet files
-are kept at `data/processed/splits-parquet/` for anyone who needs the speed.
-
-This is also why `dataset build` rarely has to be re-run — and why it has a
-`--no-segment` flag for fast debugging.
+`SPLIT_SEED = 20260826` không đổi, nhưng **các tỷ lệ đã thay đổi**, nên bản
+thân các tập chia tách là mới. Mọi thứ được đo dưới lược đồ 70/15/15 cũ — mọi
+dòng trong [archive/04-results-ml.md](archive/04-results-ml.md), chuẩn đối
+sánh phân lớp 0,6112, chuẩn đối sánh lương 5,86, và các embedding PhoBERT đã
+lưu cache — đều được đo trên dữ liệu khác và **không thể so sánh** với bất kỳ
+điều gì được đo từ đây trở đi. Các tập chia tách, manifest và cache embedding
+cũ được giữ nguyên, không chỉnh sửa, tại `data/processed/splits-scheme-v1/`,
+`data/processed/manifest-scheme-v1.json` và
+`artifacts/embeddings-scheme-v1/`. Mốc sàn, embedding và hai baseline học sâu đã
+được đo lại trên lược đồ mới (T1.1–T1.6); chuẩn đối sánh học máy 0,6112 thì không.
 
 ---
 
-## Read next
+## 8. Tách từ diễn ra ở đây — đúng một lần
 
-- [Vietnamese processing](02-vietnamese-nlp.md) — the nine steps inside `preprocess`
-- [Deep-learning baseline](06-baseline-dl.md) — how three of these 50 columns become a 768-dim vector
-- [Experiment protocol](03-protocol.md) — the train/dev/test contract
-- Background: [why clean at all](nen-tang/01-vi-sao-phai-lam-sach.md) ·
-  [data leakage](nen-tang/05-ro-ri-du-lieu.md)
+Chín cột được tách từ và **lưu cache thẳng vào các tệp chia tách**. Chi phí
+trên lần xây dựng lại 2026-09-09: **780,3 giây** (13 phút), **0 lỗi** trên
+47.707 tin đăng.
+
+Vì sao ở đây mà không phải bên trong vòng lặp huấn luyện: 27 thí nghiệm × 13
+phút là gần 6 giờ dành để tính lại đi tính lại cùng một kết quả. Tách từ một
+lần, ghi ra đĩa, và mọi lần chạy sau đó đọc trực tiếp kết quả đó. **Không có
+gì trong vòng lặp huấn luyện gọi đến bộ tách từ.**
+
+Các tập chia tách được ghi dưới dạng **CSV**, mỗi tập một tệp, để chúng có thể
+mở được bằng bất cứ thứ gì — bảng tính, `head`, một ngôn ngữ khác — mà không
+cần thư viện nào cản đường.
+
+CSV đánh đổi điều đó bằng một cái giá, và cái giá này được đo chứ không phải
+đoán. Đưa `dev` qua `to_csv` / `read_csv` rồi so sánh từng ô: cả 50 dtype đều
+sống sót và cả 21 cột số đều khớp đến từng bit (pandas 3.0.5). Điều **không**
+sống sót là sự khác biệt giữa một ô rỗng và một ô thiếu giá trị — cả hai đều
+được ghi thành hai dấu phẩy liền nhau, và pandas đọc lại cả hai thành `NaN`.
+Điều đó âm thầm viết lại **4.524 ô chỉ riêng trong `dev`**, `languages_text`
+bị ảnh hưởng nặng nhất với 2.792 trong số 3.812 ô của nó. "Tin đăng này không
+liệt kê yêu cầu ngôn ngữ" và "trường này chưa từng được điền" sẽ trở thành
+cùng một giá trị.
+
+Vì vậy không có gì đọc các tệp chia tách bằng `read_csv` trần trụi.
+**`dataset.load_split` là bộ đọc duy nhất được hỗ trợ**: nó phân tích với
+`na_filter=False`, giữ nguyên mọi trường đúng như đã ghi, sau đó ép kiểu các
+cột số trở lại từ bản đồ `column_dtypes` mà `build` ghi lại trong
+`manifest.json`. Đã được xác minh sau khi chuyển đổi — cả ba tập chia tách
+khớp với bản gốc parquet từng ô một, không thêm `NaN` nào. Bất cứ thứ gì đọc
+trực tiếp một tệp chia tách đều là một lỗi.
+
+Phần còn lại là chi phí, và nó có thật: `train` là **240,4 MB** dưới dạng CSV
+so với 91,3 MB dưới dạng parquet (2,6×), và `load_split("train")` mất **8,35
+giây** so với **2,17 giây**. Khoảng cách này càng rộng ra khi chỉ cần một vài
+cột: parquet có cấu trúc theo cột nên chỉ đọc đúng những cột đó, trong khi CSV
+phải phân tích cả năm mươi cột để tìm ra chúng. Các tệp parquet cũ được giữ
+lại tại `data/processed/splits-parquet/` cho ai cần tốc độ.
+
+Đây cũng là lý do vì sao `dataset build` hiếm khi phải chạy lại — và vì sao nó
+có cờ `--no-segment` để gỡ lỗi nhanh.
+
+---
+
+## Đọc tiếp
+
+- [Xử lý tiếng Việt](02-vietnamese-nlp.md) — chín bước bên trong `preprocess`
+- [Baseline học sâu](06-baseline-dl.md) — cách ba trong số 50 cột này trở
+  thành một vector 768 chiều
+- [Giao thức thí nghiệm](03-protocol.md) — quy ước train/dev/test
+- Nền tảng: [vì sao phải làm sạch](nen-tang/01-vi-sao-phai-lam-sach.md) ·
+  [rò rỉ dữ liệu](nen-tang/05-ro-ri-du-lieu.md)

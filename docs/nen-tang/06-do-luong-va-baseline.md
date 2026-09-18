@@ -185,24 +185,6 @@ from a correct measurement rather than from a crude threshold.
 
 ---
 
-## 6. The ceiling — the thing nobody knows yet
-
-A macro-F1 of 0.6112 sounds low. But **what is the real ceiling?**
-
-If 40 % of the model's errors are actually **wrong original labels** (like the SEO
-postings tagged `nhóm_nghề_khác`), then 0.6112 on dirty labels corresponds to about
-0.75 on clean ones — and the model would already be near its ceiling.
-
-Not measured. The method is recorded in
-[09-lo-trinh.md — Priority 2](../archive/09-lo-trinh-ml.md#ưu-tiên-2--đo-trần-nhiễu-nhãn):
-take 150–200 misclassified postings and hand-assign each to one of three buckets —
-*model error* · *wrong original label* · *genuinely ambiguous*.
-
-This is the most valuable number a report can have, because it answers the one
-question no model can answer: **how much room to improve is left?**
-
----
-
 ## Back to the project itself
 
 - [03-protocol.md §4](../03-protocol.md) — the project's official metric definitions

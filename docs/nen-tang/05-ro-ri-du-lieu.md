@@ -81,7 +81,7 @@ That `assert` may never be disabled. The current result: **0 straddling groups**
 
 > Note: reposts are **not deleted** — they are still real data. Only the **way the
 > split is made** changes. See
-> [01-data-audit.md §2](../01-data-audit.md#2-de-duplication--two-layers-two-different-purposes).
+> [01-data-audit.md §2](../01-data-audit.md#2-loại-trùng-lặp--hai-tầng-hai-mục-đích-khác-nhau).
 
 ### Kind 3 — touching the test set repeatedly
 
@@ -138,9 +138,10 @@ While writing this documentation, a careful read of `features.py` turned up:
 Neither column has a `_masked` copy, and neither is **in `UNMASKED_COLUMNS`** — so
 `tests/test_no_leak.py` passes green without ever checking them.
 
-Whether those two columns restate salary figures is still unknown, because
-`scripts/measure_vitext.py` does not measure them. The work item is recorded in
-[09-lo-trinh.md — Priority 0b](../archive/09-lo-trinh-ml.md#ưu-tiên-0b--xong-không-phải-rò-rỉ).
+They were then measured with `re.search` and the three salary patterns: **0** rows
+in `soft_skills_text`, `qualifications_text` or `technical_skills_text` restate a
+salary, and that check is now a standing test in `tests/test_no_leak.py`
+([archive 09 — Priority 0b](../archive/09-lo-trinh-ml.md#ưu-tiên-0b--xong-không-phải-rò-rỉ)).
 
 This is a living example of the most memorable thing in this note:
 
@@ -148,8 +149,7 @@ This is a living example of the most memorable thing in this note:
 > It only proves that the leak paths **the test's author thought of** are blocked.
 >
 > A list like `UNMASKED_COLUMNS` is a list that **permits omissions**: forget to add
-> a column and the test silently skips it. A safer design would invert the default —
-> list the columns that are **allowed** to be read, and reject everything else.
+> a column and the test silently skips it.
 
 ---
 
@@ -170,6 +170,6 @@ This is a living example of the most memorable thing in this note:
 ## Back to the project itself
 
 - [03-protocol.md](../03-protocol.md) — the full train/dev/test contract
-- [01-data-audit.md](../01-data-audit.md#3-four-copies-of-every-text-column) — the four copies of every column
+- [01-data-audit.md](../01-data-audit.md#3-bốn-bản-sao-cho-mỗi-cột-văn-bản) — the four copies of every column
 - [05-dac-trung-tfidf.md](../archive/05-dac-trung-tfidf.md#1-resolve_column--cửa-duy-nhất) — `resolve_column` and the unpatched hole
 - [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — step 4 (salary masking) and step 9 (the grouping key)

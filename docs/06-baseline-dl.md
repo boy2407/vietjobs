@@ -2,9 +2,7 @@
 
 # Baseline học sâu — PhoBERT đóng băng + dense
 
-Hai bài toán, hai mạng riêng biệt. Phiên bản đa nhiệm (multi-task) sẽ đến sau,
-khi mỗi head đã có con số của riêng mình — nếu mô hình gộp lại tệ hơn, cần biết
-là tệ hơn so với cái gì.
+Hai bài toán, hai mạng riêng biệt.
 
 ---
 
@@ -20,36 +18,33 @@ là tệ hơn so với cái gì.
 flowchart LR
     classDef default fill:#FFFFFF,stroke:#54625E,stroke-width:1.5px,color:#141F1D
     T["<b>tin tuyển dụng</b><br/>tiêu đề . mô tả . yêu cầu<br/>đã tách từ"]
-    R["họ cột<br/><b>raw</b> — phân lớp<br/><b>masked</b> — lương"]
-    P["<b>PhoBERT-base-v2</b><br/>135 triệu tham số<br/><i>đóng băng</i> · 256 token"]
-    M["masked<br/>mean pooling<br/>→ 768 chiều"]
-    C[".npy cache<br/>tính một lần"]
-    D["<b>dense</b><br/>LayerNorm → 768→256<br/>→ GELU → dropout<br/>→ 256→128 → GELU"]
+    P["<b>PhoBERT-base-v2</b><br/>135 triệu tham số<br/><i>đóng băng</i> · 256 token<br/>mean pooling → 768 chiều"]
+    CR[".npy họ <b>raw</b>"]
+    CM[".npy họ <b>masked</b>"]
+    DA["<b>dense</b> (mạng phân loại)<br/>LayerNorm → 768→256 → GELU<br/>→ dropout → 256→128 → GELU"]
+    DB["<b>dense</b> (mạng lương)<br/>LayerNorm → 768→256 → GELU<br/>→ dropout → 256→128 → GELU"]
     A["<b>head A</b><br/>128 → 16 lớp<br/>cross-entropy"]
     B["<b>head B</b><br/>128 → 1<br/>huber trên log1p"]
 
-    T --> R --> P --> M --> C --> D
-    D --> A
-    D --> B
+    T --> P
+    P -->|"cột raw"| CR --> DA --> A
+    P -->|"cột *_masked"| CM --> DB --> B
 
     classDef frozen fill:#EFF3F1,stroke:#54625E,stroke-width:1.5px
-    classDef done fill:#E2F0EC,stroke:#0E6B5B,stroke-width:2px,color:#0E6B5B
-    class P,M,C frozen
+    class P,CR,CM frozen
 ```
 
-Ở mức baseline, **head A và head B sống trong hai mạng khác nhau**, mỗi mạng có
-khối dense riêng. Sơ đồ vẽ chúng cùng nhau để chỉ ra nơi thân mạng và các nhánh
-sẽ tách ra trong lần hợp nhất đa nhiệm (multi-task) sau này — chỗ đó chính là
-khối `dense`.
+**Head A và head B sống trong hai mạng khác nhau**, mỗi mạng có khối dense và
+bộ đệm vector riêng: phân loại đọc họ `raw`, lương đọc họ `masked`.
 
 ## 2. Năm quyết định, và lý do đo được cho mỗi quyết định
 
 | Quyết định | Lý do |
 |---|---|
-| **Đóng băng PhoBERT trước** | Mức đóng băng chạy trong vài phút, mức tinh chỉnh (fine-tune) chạy trong vài giờ. Nếu phiên bản đóng băng không vượt được ngưỡng TF-IDF **0,6112**, lỗi nhiều khả năng nằm ở đường dữ liệu (data path) — phát hiện ở đây rẻ hơn nhiều |
+| **Đóng băng PhoBERT** | Vector tính một lần rồi lưu đệm, mọi lần huấn luyện dense đọc lại. Nếu phiên bản đóng băng không vượt được ngưỡng TF-IDF **0,6112**, lỗi nhiều khả năng nằm ở đường dữ liệu (data path) — phát hiện ở đây rẻ hơn nhiều |
 | **Đầu vào đã tách từ** | PhoBERT được tiền huấn luyện trên văn bản đã tách từ ("nhân_viên kinh_doanh"). Đưa vào văn bản chưa tách từ nghĩa là đưa sai phân phối. Ngược lại hoàn toàn với kết luận của TF-IDF, nơi việc tách từ **gây hại nhẹ** ([02 §6](02-vietnamese-nlp.md#6-hai-bộ-tách-từ-khác-nhau-ở-đâu--và-vì-sao-câu-hỏi-mở-lại)) — cùng một bước, hai kết luận trái ngược, vì đó là hai mô hình khác nhau |
 | **Mean pooling, không dùng vector `<s>`** | Khi không tinh chỉnh, vector `<s>` của PhoBERT chưa từng được huấn luyện cho bất kỳ tác vụ nào; lấy trung bình các token giữ lại nhiều tín hiệu từ vựng hơn |
-| **Cache vector vào `.npy`** | Trọng số đóng băng ⇒ các vector không đổi giữa các epoch. Nhúng (embed) 33.396 tin tuyển dụng của tập `train` lược đồ v1 mất khoảng 20 phút trên CPU; một epoch trên các vector đã cache chỉ mất vài giây. Từ 2026-09-17, mỗi file `.npy` có một sidecar `.json` cùng tên ghi lớp tokenizer (`use_fast=False`), `max_len`, cột nguồn và số dòng — bằng chứng để so hai cache, không phải bắt buộc để đọc lại vector |
+| **Cache vector vào `.npy`** | Trọng số đóng băng ⇒ các vector không đổi giữa các epoch. Nhúng 34.354 tin `train` chạy một lần (T1.2); mọi lần huấn luyện sau đọc lại cache. Từ 2026-09-17, mỗi file `.npy` có một sidecar `.json` cùng tên ghi lớp tokenizer (`use_fast=False`), `max_len`, cột nguồn và số dòng — bằng chứng để so hai cache, không phải bắt buộc để đọc lại vector |
 | **Dùng Huber cho hồi quy, không dùng MSE** | Lương lệch phải mạnh (skew **11,90**, tối đa 500 triệu trên file gốc — [05 §4](05-phan-tich-du-lieu.md#4-phân-phối-lương--đuôi-dài-và-đó-là-lý-do-dùng-log1p)). MSE để cho một nhúm giá trị ngoại lai kéo lệch toàn bộ gradient |
 
 Hai họ cache được tách riêng — `raw` cho phân lớp, `masked` cho lương. Đó
@@ -66,11 +61,11 @@ không phải là chi tiết cài đặt: trộn hai file này là một **rò r
 | Phân lớp — sàn tuyệt đối | macro-F1 **0,0210** (luôn dự đoán lớp lớn nhất) | [archive/04-results-ml.md](archive/04-results-ml.md) |
 | Phân lớp — sàn có ý nghĩa | macro-F1 **0,4321** (luật từ khóa) | như trên |
 | Phân lớp — **ngưỡng thật** | test macro-F1 **0,6112** · dev 0,6049 (TF-IDF + LinearSVC) | như trên |
-| Lương — **ngưỡng thật** *(lược đồ v1)* | dev MAE **5,86 triệu** (dự đoán trung vị, 13,0, cho tất cả) | [05 §7](05-phan-tich-du-lieu.md#7-ngưỡng-sàn--các-con-số-quyết-định-khớp-trên-train-chấm-điểm-trên-dev) |
-| Lương — trần "biết ngành" *(lược đồ v1)* | dev MAE **5,75 triệu** (khi biết nhãn ngành thật) | như trên |
+| Lương — **ngưỡng thật** | dev MAE **5,70 triệu** (dự đoán trung vị, 13,0, cho tất cả) | [05 §7](05-phan-tich-du-lieu.md#7-ngưỡng-sàn--các-con-số-quyết-định-khớp-trên-train-chấm-điểm-trên-dev) |
+| Lương — trần "biết ngành" | dev MAE **5,57 triệu** (khi biết nhãn ngành thật) | như trên |
 
 Con số cuối cùng gây ấn tượng nhất: nhãn ngành **gần như không nói lên điều gì
-về lương** (eta² = 0,032). Nếu head hồi quy chỉ đạt khoảng 5,8 triệu, nó chưa
+về lương** (eta² = 0,032). Nếu head hồi quy chỉ đạt mức 5,70 triệu, nó chưa
 học được gì từ văn bản cả — nó chỉ đang dự đoán trung vị bằng một đường vòng.
 
 ## 4. Cách chạy
@@ -108,17 +103,17 @@ và một thư mục `artifacts/<run_id>/`.
 **Lược đồ chia tách v2 — tính điểm trên `dev`, 3.812 tin.** Đây là các con số
 hiện tại.
 
-| Run | Cấu hình | macro-F1 | acc | balAcc | top-3 | epoch tốt nhất |
-|---|---|---|---|---|---|---|
-| *sàn* | luôn dự đoán lớp đa số | *0,0214* | *0,2062* | — | — | — |
-| `probe-cat-s2` | LogReg trên **cùng** bộ vector | 0,5898 | 0,6388 | 0,5969 | 0,9258 | — |
-| **`dl-cat-s2`** | lr 3e-4 + clipping + chuẩn hóa | **0,6025** | 0,6511 | 0,6199 | **0,9318** | 16/24 |
-| `dl-cat-s2-cw` | như trên + trọng số theo lớp (class weighting) | 0,5710 | 0,5976 | **0,6931** | 0,9208 | 15/23 |
-| *ngưỡng TF-IDF + LinearSVC* | `cat-SW-svm-1` — **lược đồ v1**, chưa đo lại | *0,6050 ± 0,0071* | *0,6445* | *0,6713* | — | — |
+| Run | Cấu hình | macro-F1 | acc | epoch tốt nhất |
+|---|---|---|---|---|
+| *sàn* | luôn dự đoán lớp đa số | *0,0214* | *0,2062* | — |
+| `probe-cat-s2` | LogReg trên **cùng** bộ vector | 0,5898 | 0,6388 | — |
+| **`dl-cat-s2`** | lr 3e-4 + clipping + chuẩn hóa | **0,6025** | 0,6511 | 16/24 |
+| `dl-cat-s2-cw` | như trên + trọng số theo lớp (class weighting) | 0,5710 | 0,5976 | 15/23 |
+| *ngưỡng TF-IDF + LinearSVC* | `cat-SW-svm-1` — **lược đồ v1**, chưa đo lại | *0,6050 ± 0,0071* | *0,6445* | — |
 
 `f1_macro_no_junk` — macro-F1 khi loại `nhóm_nghề_khác` — là **0,6454** đối với
-`dl-cat-s2` và 0,5958 đối với `dl-cat-s2-cw`. Riêng lớp 48 mẫu đó làm con số
-đầu bảng mất 0,043; xử lý nó thế nào là một quyết định riêng (T2.2).
+`dl-cat-s2` và 0,5958 đối với `dl-cat-s2-cw`. Riêng lớp 25 mẫu đó làm con số
+đầu bảng mất 0,043.
 
 Head dense chỉ đạt hơn **0,0127** macro-F1 so với probe tuyến tính trên cùng
 bộ vector (0,6025 so với 0,5898) — khớp với chênh lệch 0,0120 ở v1. Phần lớn
@@ -129,15 +124,15 @@ chế độ khác.
 **Lược đồ chia tách v1 — tính điểm trên `val`, 7.159 tin. Dữ liệu lịch sử,
 không so sánh được với bảng trên.**
 
-| Run | Cấu hình | macro-F1 | acc | balAcc | top-3 | epoch tốt nhất |
-|---|---|---|---|---|---|---|
-| `dl-cat-h256` | lr 1e-3 · không chuẩn hóa · không clip gradient | **0,0420** | 0,2127 | 0,0752 | 0,4577 | 3/11 — **phân kỳ** |
-| `dl-cat-h256-cw` | như trên + trọng số theo lớp | 0,0747 | 0,1904 | 0,1117 | 0,3519 | 3/11 — **phân kỳ** |
-| `probe-cat` | LogReg trên **cùng** bộ vector | 0,5867 | 0,6423 | 0,5782 | 0,9225 | — |
-| `dl-cat-v2-nostd` | lr 3e-4 + clipping · không chuẩn hóa | 0,5934 | 0,6466 | 0,5917 | 0,9250 | 31/39 |
-| **`dl-cat-v2`** | lr 3e-4 + clipping + chuẩn hóa | **0,5987** | 0,6493 | 0,6048 | **0,9257** | 14/22 |
-| `dl-cat-v2-cw` | như trên + trọng số theo lớp | 0,5637 | 0,5913 | **0,6687** | 0,9012 | 6/14 |
-| *ngưỡng TF-IDF + LinearSVC* | `cat-SW-svm-1` | *0,6050 ± 0,0071* | *0,6445* | *0,6713* | — | — |
+| Run | Cấu hình | macro-F1 | acc | epoch tốt nhất |
+|---|---|---|---|---|
+| `dl-cat-h256` | lr 1e-3 · không chuẩn hóa · không clip gradient | **0,0420** | 0,2127 | 3/11 — **phân kỳ** |
+| `dl-cat-h256-cw` | như trên + trọng số theo lớp | 0,0747 | 0,1904 | 3/11 — **phân kỳ** |
+| `probe-cat` | LogReg trên **cùng** bộ vector | 0,5867 | 0,6423 | — |
+| `dl-cat-v2-nostd` | lr 3e-4 + clipping · không chuẩn hóa | 0,5934 | 0,6466 | 31/39 |
+| **`dl-cat-v2`** | lr 3e-4 + clipping + chuẩn hóa | **0,5987** | 0,6493 | 14/22 |
+| `dl-cat-v2-cw` | như trên + trọng số theo lớp | 0,5637 | 0,5913 | 6/14 |
+| *ngưỡng TF-IDF + LinearSVC* | `cat-SW-svm-1` | *0,6050 ± 0,0071* | *0,6445* | — |
 
 **Ở lược đồ v2, `dl-cat-s2` thấp hơn ngưỡng TF-IDF + LinearSVC của lược đồ v1
 đúng 0,0025** — nhỏ hơn cả khoảng tin cậy ±0,0071 của chính ngưỡng đó, và
@@ -159,12 +154,18 @@ thiết kế. Chọn cái nào tùy vào ứng dụng thực tế; mặc định
 **Lược đồ chia tách v2 — tính điểm trên `dev`, 2.698 tin có công khai mức
 lương.** Đây là các con số hiện tại.
 
-| Run | Phương pháp | MAE (triệu) | MedAE | R²(log) | trong ±20 % |
-|---|---|---|---|---|---|
-| *ngưỡng* | dự đoán trung vị, 13,0, cho tất cả | *5,70* | — | *−0,059* | — |
-| *trần "biết ngành"* | trung vị theo ngành, dùng nhãn thật | *5,57* | — | *−0,022* | — |
-| `probe-sal-s2` | Ridge trên vector PhoBERT | 4,42 | 2,77 | 0,466 | 48,0 % |
-| **`dl-sal-s2`** | dense(256), lr 3e-4, đã chuẩn hóa | **4,15** | **2,50** | **0,512** | **51,6 %** |
+| Run | Phương pháp | MAE (triệu) | RMSE (triệu) | R²(log) |
+|---|---|---|---|---|
+| *ngưỡng* | dự đoán trung vị, 13,0, cho tất cả | *5,70* | *10,52* | *−0,059* |
+| *trần "biết ngành"* | trung vị theo ngành, dùng nhãn thật | *5,57* | *10,33* | *−0,022* |
+| `probe-sal-s2` | Ridge trên vector PhoBERT | 4,42 | 8,36 | 0,466 |
+| **`dl-sal-s2`** | dense(256), lr 3e-4, đã chuẩn hóa | **4,15** | **8,29** | **0,512** |
+
+RMSE lấy từ `rmse_trieu` trong `artifacts/dl-sal-s2/metrics.json`, từ `rmse` trong
+`artifacts/eda/summary.json` cho hai mốc, và tính lại cho `probe-sal-s2` bằng đúng
+cấu hình lần chạy đó (khớp lại MAE 4,42 · R² 0,466). RMSE gấp đôi MAE vì bị lỗi lớn ở đuôi lương cao kéo lên: trên
+`predictions_dev.parquet`, 2.571 tin dưới 30 triệu có RMSE 4,49, còn 127 tin từ
+30 triệu trở lên có RMSE 32,43.
 
 Head hồi quy **vượt ngưỡng 1,55 triệu (−27,2 %)**: R² trên thang log đi từ âm
 lên **0,512**, nghĩa là mô hình đọc được tín hiệu lương từ văn bản mà riêng
@@ -176,23 +177,18 @@ tách rời theo nhóm, vẫn cho cùng kiến trúc này tổng quát hóa tố
 bộ vector (`probe-sal`) đạt điểm **tệ hơn cả dự đoán trung vị** (MAE 6,60) —
 kết luận khi đó là tín hiệu lương tồn tại trong các vector nhưng chỉ ở dạng
 phi tuyến. Ở v2, `probe-sal-s2` đạt R² **0,466**, đã đi được phần lớn quãng
-đường tới 0,512 của head dense, và rõ ràng tốt hơn ngưỡng. Có hai cách giải
-thích khả dĩ, chưa cái nào được xác nhận: tập dev v2 (2.698 dòng có công khai
-lương, tách rời theo nhóm) có thể đơn giản là một lát cắt dễ hơn hoặc ít nhiễu
-hơn so với `val` cũ; hoặc kết luận "không tuyến tính" trước đây tự nó là một
-hiện tượng giả (artefact) của lược đồ v1. Làm lại phân tích lỗi kiểu §5.3 trên
-v2 (T1.7/T2.x) sẽ giải quyết được câu hỏi này.
+đường tới 0,512 của head dense, và rõ ràng tốt hơn ngưỡng.
 
 **Lược đồ chia tách v1 — tính điểm trên `val`, 5.095 tin. Dữ liệu lịch sử,
 không so sánh được với bảng trên.**
 
-| Run | Phương pháp | MAE (triệu) | MedAE | R²(log) | trong ±20 % |
-|---|---|---|---|---|---|
-| *ngưỡng* | dự đoán trung vị, 13,0, cho tất cả | *5,86* | — | *−0,063* | — |
-| *trần "biết ngành"* | trung vị theo ngành, dùng nhãn thật | *5,75* | — | *−0,032* | — |
-| `probe-sal` | Ridge trên vector PhoBERT | 6,60 | 3,26 | −0,004 | 42,1 % |
-| `dl-sal-v2` | dense(256), 40 epoch | 4,83 | 2,86 | 0,381 | 47,1 % |
-| `dl-sal-v3-long` | cùng cấu hình, patience 15 | 4,88 | 2,86 | 0,357 | 45,9 % |
+| Run | Phương pháp | MAE (triệu) | R²(log) |
+|---|---|---|---|
+| *ngưỡng* | dự đoán trung vị, 13,0, cho tất cả | *5,86* | *−0,063* |
+| *trần "biết ngành"* | trung vị theo ngành, dùng nhãn thật | *5,75* | *−0,032* |
+| `probe-sal` | Ridge trên vector PhoBERT | 6,60 | −0,004 |
+| `dl-sal-v2` | dense(256), 40 epoch | 4,83 | 0,381 |
+| `dl-sal-v3-long` | cùng cấu hình, patience 15 | 4,88 | 0,357 |
 
 Hai lượt chạy v1 cùng cấu hình cho ra 4,83 và 4,88: **biến thiên giữa các lượt
 chạy vào khoảng 0,05 triệu**, nên đừng đọc một chênh lệch nhỏ hơn thế như một
@@ -200,8 +196,8 @@ cải thiện.
 
 Đáng chú ý từ v1: Ridge trên cùng bộ vector cho ra **6,60** — *tệ hơn cả dự
 đoán trung vị*. Cùng đặc trưng, cùng nhãn; khác biệt là khối dense chuẩn hóa
-đầu vào và học một hàm phi tuyến. Tín hiệu nằm trong các vector, nhưng không ở
-dạng tuyến tính. Điều này chưa được kiểm tra lại trên v2 (T1.5).
+đầu vào và học một hàm phi tuyến. Ở v1 kết luận là tín hiệu nằm trong các vector
+nhưng không ở dạng tuyến tính; ở v2 kết luận này đảo ngược (bảng trên).
 
 ### 5.3 Nó sai ở đâu
 

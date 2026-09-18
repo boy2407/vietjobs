@@ -36,7 +36,7 @@ xử lý ngôn ngữ tự nhiên tiếng Việt còn nhiều thách thức — v
 lẫn lộn tiếng Việt có dấu và không dấu, đầy từ viết tắt chuyên ngành, và ranh giới
 từ trong tiếng Việt không trùng với ranh giới khoảng trắng.
 
-> **Nguồn số liệu:** `artifacts/eda/summary.json` (`disclosure_rate_train` = 0,7176) ·
+> **Nguồn số liệu:** `artifacts/eda/summary.json` (tỷ lệ công bố lương trên tệp gốc 47.707 dòng: 71,5 %) ·
 > [05-phan-tich-du-lieu.md §5](../05-phan-tich-du-lieu.md) · nhận xét về
 > `nhóm_nghề_khác` ở [03-protocol.md §4](../03-protocol.md).
 
@@ -82,9 +82,9 @@ Một tin tuyển dụng tiếng Việt gồm ba trường văn bản tự do:
 
 ### 1.3.2. Quá trình xử lý
 
-Ba trường trên được chuẩn hoá theo chín bước xử lý tiếng Việt, nối lại thành một
-chuỗi, đưa qua PhoBERT để thu vectơ 768 chiều, rồi qua khối kết nối đầy đủ và tách
-nhánh (chi tiết ở Chương 3).
+Ba trường trên được chuẩn hoá và tách từ, nối lại thành một chuỗi, đưa qua PhoBERT
+để thu vectơ 768 chiều, rồi qua mạng kết nối đầy đủ riêng của từng bài toán (chi tiết
+ở §3.3 và §3.7).
 
 ### 1.3.3. Đầu ra
 
@@ -92,7 +92,7 @@ nhánh (chi tiết ở Chương 3).
 |---|---|---|---|
 | Phân loại ngành nghề | `category` | 1 trong 16 lớp | macro-F1 |
 | Tin có công bố lương hay không | `disclosed` | nhị phân 0/1 | accuracy |
-| Ước lượng mức lương | `salary` | số thực, triệu VND/tháng | MAE |
+| Ước lượng mức lương | `salary` | số thực, triệu VND/tháng | MAE, RMSE |
 
 ### 1.3.4. Ví dụ minh hoạ
 
@@ -141,19 +141,11 @@ mức lương. Đơn vị lương là **triệu VND/tháng**.
 > thời gian thu thập**. Hai thông tin này không suy ra được từ mã nguồn; chúng phải
 > do tác giả ghi lại. Ô "Thời gian thực hiện" trong đề cương cũng còn để trống.
 
-**Về mô hình.** Đề tài dùng PhoBERT ở trạng thái **đóng băng trọng số** làm mức cơ
-sở. Việc tinh chỉnh (fine-tune) toàn bộ encoder nằm ngoài phạm vi thực nghiệm trên
-máy hiện tại vì một ràng buộc phần cứng đã đo được: máy chạy kiến trúc Intel
-x86_64, **không có MPS hay CUDA**, và thư viện `torch` không còn phát hành bản dựng
-cho macOS Intel sau phiên bản 2.2.2.
-
-**Về hệ thống.** Hệ thống hoạt động trên một máy chủ đơn, phục vụ dự đoán cho từng
-tin do người dùng nhập vào, không xử lý theo lô lớn và không có cơ chế huấn luyện
-lại trực tuyến.
+**Về mô hình.** Mọi kết quả trong báo cáo dùng PhoBERT ở trạng thái **đóng băng
+trọng số**; chỉ phần mạng kết nối đầy đủ phía sau được huấn luyện.
 
 > **Nguồn số liệu:** `data/processed/manifest.json` (`source_rows` = 48.092,
-> `rows_after_exact_dedup` = 47.707) · ràng buộc phần cứng ở
-> [09-lo-trinh.md, Ưu tiên 2](../09-lo-trinh.md).
+> `rows_after_exact_dedup` = 47.707).
 
 ---
 
@@ -163,28 +155,22 @@ lại trực tuyến.
 
 Đề tài đóng góp ba điểm có thể kiểm chứng lại được:
 
-1. **Một quy trình xử lý tiếng Việt có bằng chứng cho từng bước.** Chín bước tiền
-   xử lý đều đi kèm một dòng đo tách biệt (ablation). Bước nào không cải thiện được
-   con số thì bị gỡ bỏ, không giữ lại vì "sách viết thế". Trong đề tài này đã có hai
-   bước đảo ngược kết luận khi trục mô hình chuyển từ TF-IDF sang PhoBERT.
+1. **Một quy trình xử lý tiếng Việt có bằng chứng cho từng bước.** Mỗi bước còn nằm
+   trên đường vào PhoBERT (§3.3) đi kèm một số đo trên chính dữ liệu cho biết nó thay
+   đổi bao nhiêu dòng.
 2. **Một phép đo giới hạn thực tế của bài toán lương.** Phân rã phương sai cho thấy
    nhãn ngành nghề chỉ giải thích **3,2 %** biến thiên của log-lương. Đây là con số
-   ít được báo cáo trong các công trình cùng dạng, nhưng nó quyết định toàn bộ kỳ
-   vọng đặt vào mô hình đa nhiệm.
+   ít được báo cáo trong các công trình cùng dạng.
 3. **Một giao thức thực nghiệm chống rò rỉ dữ liệu ở hai tầng** — che số lương
    trong văn bản đầu vào của bài toán lương, và chia dữ liệu theo nhóm tin trùng
    lặp gần thay vì theo dòng.
 
 ### 1.5.2. Ý nghĩa thực tiễn
 
-Với người tìm việc, hệ thống trả lại một điểm tham chiếu về mặt bằng lương cho
-những tin không công bố. Với trang tuyển dụng, hệ thống gợi ý ngành nghề ngay lúc
-nhà tuyển dụng đang soạn tin, giúp giảm tỷ lệ gán nhãn sai ngay từ nguồn — điều mà
-mọi khâu xử lý phía sau đều được hưởng lợi.
-
-Độ chính xác top-3 đo được (**0,9257**) đáng chú ý hơn độ chính xác top-1 đối với
-ứng dụng thực tế: một giao diện gợi ý ba ngành nghề để người đăng tin chọn thì đúng
-hơn 92 lần trong 100.
+Mô hình lương đạt MAE **4,15 triệu** trên `dev`, thấp hơn 27,2 % so với đoán trung
+vị — một điểm tham chiếu về mặt bằng lương cho những tin không công bố. Với phân loại,
+độ chính xác top-3 đo được (**0,9318**) đáng chú ý hơn top-1: ba ngành nghề mô hình
+xếp đầu chứa ngành đúng hơn 93 lần trong 100 (§4.3, §4.4).
 
 ---
 
@@ -200,14 +186,14 @@ Báo cáo gồm sáu chương:
   công trình liên quan trong và ngoài nước; chỉ ra khoảng trống nghiên cứu và đề
   xuất hướng tiếp cận của đề tài.
 - **Chương 3 – Phương pháp thực hiện.** Trình bày toàn bộ quy trình: kiểm toán và
-  làm sạch dữ liệu, chín bước xử lý tiếng Việt, cơ chế chống rò rỉ dữ liệu, phân
+  làm sạch dữ liệu, các bước xử lý tiếng Việt, cơ chế chống rò rỉ dữ liệu, phân
   chia tập dữ liệu theo nhóm, phân tích khám phá dữ liệu, kiến trúc mạng học sâu và
   các độ đo đánh giá.
 - **Chương 4 – Thực nghiệm và đánh giá.** Trình bày thiết lập thực nghiệm, hệ thống
-  mốc cơ sở ba tầng, kết quả của từng nhánh, so sánh với học máy truyền thống, phân
+  mốc cơ sở hai tầng, kết quả của từng nhánh, phân
   tích lỗi và bài học rút ra từ những lần chạy thất bại.
-- **Chương 5 – Cài đặt hệ thống minh hoạ.** Trình bày kiến trúc phần mềm, mã nguồn,
-  giao diện người dùng và kết quả kiểm thử hệ thống.
+- **Chương 5 – Cài đặt mã nguồn thực nghiệm.** Trình bày công nghệ sử dụng, kiến trúc
+  mã nguồn và bộ kiểm thử.
 - **Chương 6 – Kết luận và hướng phát triển.** Tổng kết kết quả đạt được, nêu ưu
   điểm và hạn chế còn tồn tại, đề xuất hướng phát triển tiếp theo.
 

@@ -6,7 +6,7 @@
 > is true: word segmentation is **mandatory**, because the model was pre-trained on
 > segmented text. One step, two opposite verdicts — and *why* that happens is the
 > most worthwhile part of this note. See [note 9](09-vector-ngu-nghia.md) and
-> [02 §4](../02-vietnamese-nlp.md#4-which-steps-the-phobert-path-actually-runs).
+> [02 §4](../02-vietnamese-nlp.md#4-luồng-phobert-thực-sự-chạy-những-bước-nào).
 
 This note explains a surprising result in the project: **the Vietnamese word
 segmentation step — the most linguistically "correct" step of all — measured as no
@@ -182,7 +182,7 @@ Three real overlaps in this project:
 
 A preprocessing step that is "theoretically right" is not automatically a useful
 one. **Only an ablation row can decide** — that is the removal rule,
-[03-protocol.md §8](../03-protocol.md#8-the-removal-rule).
+[03-protocol.md §8](../03-protocol.md#8-quy-tắc-loại-bỏ).
 
 ---
 

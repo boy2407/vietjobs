@@ -2,18 +2,8 @@
 
 # CHƯƠNG 4. THỰC NGHIỆM VÀ ĐÁNH GIÁ
 
-> ⛔ **CHƯA CÓ SỐ LIỆU CUỐI CÙNG.** Phần lớn kết quả trong chương này vẫn đo trên
-> **lược đồ chia dữ liệu phiên bản 1** (70/15/15, tập dev 7.159 dòng). Ngày
-> 2026-09-09 lược đồ đổi sang hai tầng 8:2 rồi 9:1 (tập dev còn 3.812 dòng), nên
-> **các con số v1 không so sánh được với con số đo từ nay về sau**. Chúng được giữ
-> lại vì hai lý do: mạch lập luận và các bài học chẩn đoán vẫn đúng, và chúng là
-> mốc để đối chiếu khi các lần chạy mới hoàn tất. §4.3 (phân loại ngành nghề) đã
-> được chạy lại trên lược đồ v2 ngày 2026-09-15 (T1.3), §4.4 (ước lượng lương) chạy
-> lại ngày 2026-09-16 (T1.4); các bảng phân tích lỗi §4.6–§4.8 vẫn ở lược đồ v1. Danh
-> sách việc phải chạy lại ở [09-lo-trinh.md](../09-lo-trinh.md).
->
-> Mỗi bảng còn ở lược đồ v1 được đánh dấu **(lược đồ v1)**; bảng đã chạy lại được
-> đánh dấu **(lược đồ v2)**.
+> Mọi số trong chương đo trên lược đồ chia hai tầng 8:2 rồi 9:1 (tập `dev` 3.812
+> dòng); `test` chưa được đọc.
 
 ---
 
@@ -25,8 +15,8 @@
 
 | Thành phần | Cấu hình |
 |---|---|
-| Kiến trúc | Intel x86_64, 6 nhân |
-| Tăng tốc GPU | **Không có** — không CUDA, không MPS |
+| Máy chạy các lần `*-s2` | macOS arm64, `device=mps` (ghi trong `artifacts/<run_id>/env.json`) |
+| Tăng tốc GPU | Không CUDA |
 | Hệ điều hành | macOS |
 | Môi trường 1 | Python ≥ 3.10 — dữ liệu, xử lý tiếng Việt, học máy, kiểm thử |
 | Môi trường 2 | Python 3.9 — gói `dl/`, do `torch` không còn bản dựng cho macOS Intel sau 2.2.2 |
@@ -45,7 +35,7 @@ phiên bản 2.2.2 và không có bản nào cho Python 3.14. Toàn bộ đườ
 | Khâu | Chi phí đo được |
 |---|---|
 | Tách từ 47.707 tin (một lần, ghi vào đĩa) | **780,3 giây**, 0 lỗi |
-| Nhúng PhoBERT ~33 nghìn tin trên CPU | ~20 phút, khoảng **30 tin/giây** |
+| Nhúng PhoBERT `train` + `dev` (T1.2, 38.166 tin × 2 họ cột) | khoảng **63–64 tin/giây** |
 | Một epoch trên vectơ đã lưu đệm | khoảng 10–15 giây trên máy rảnh |
 
 > **Lưu ý khi đọc cột thời gian trong [04-results.md](../04-results.md):** các lần
@@ -54,7 +44,7 @@ phiên bản 2.2.2 và không có bản nào cho Python 3.14. Toàn bộ đườ
 
 ### 4.1.3. Những gì mỗi lần chạy phải ghi lại
 
-Một lần chạy học máy kết thúc bằng một con số. Một lần chạy học sâu kéo dài nhiều
+Một lần chạy học sâu kéo dài nhiều
 epoch, có thể hỏng giữa chừng, và **lý do hỏng nằm ở đường cong học chứ không nằm ở
 con số cuối**. Vì vậy mỗi lần chạy ghi thêm:
 
@@ -75,19 +65,18 @@ lại nó ba tuần sau.
 
 ---
 
-## 4.2. Hệ thống mốc cơ sở ba tầng
+## 4.2. Hệ thống mốc cơ sở hai tầng
 
 Đây là đóng góp phương pháp luận chính của chương. Một điểm số không có mốc so sánh
-là một con số không đọc được. Đề tài dựng **ba tầng mốc**, mỗi tầng trả lời một câu
+là một con số không đọc được. Đề tài dựng **hai tầng mốc**, mỗi tầng trả lời một câu
 hỏi khác nhau.
 
-**Bảng 4.4: Ba tầng mốc cơ sở**
+**Bảng 4.4: Hai tầng mốc cơ sở (dev 3.812 tin)**
 
 | Tầng | Mốc | Trả lời câu hỏi |
 |---|---|---|
-| 1. Ngây thơ, không mô hình | phân loại: macro-F1 **0,0210** · lương: MAE **5,86 triệu** · disclosed: acc **0,7117** | "Không cần học gì thì đạt bao nhiêu?" |
-| 2. Dò tuyến tính trên chính vectơ | `probe-cat` macro-F1 **0,5867** · `probe-sal` MAE **6,60** | "Đặc trưng tồi, hay đầu mô hình hỏng?" |
-| 3. Học máy truyền thống | TF-IDF + LinearSVC: dev **0,6050 ± 0,0071**, test **0,6112** | "Mô hình mới có hơn cách làm cũ không?" |
+| 1. Ngây thơ, không mô hình | phân loại: macro-F1 **0,0214** · lương: MAE **5,70 triệu** · RMSE **10,52** · disclosed: acc **0,7078** | "Không cần học gì thì đạt bao nhiêu?" |
+| 2. Dò tuyến tính trên chính vectơ | `probe-cat-s2` macro-F1 **0,5898** · `probe-sal-s2` MAE **4,42** · RMSE **8,36** | "Đặc trưng tồi, hay đầu mô hình hỏng?" |
 
 Tầng 2 là tầng ít gặp nhất trong các báo cáo cùng dạng nhưng lại hữu ích nhất khi
 gỡ lỗi. Một mô hình tuyến tính có nghiệm lồi và không có tốc độ học để chỉnh sai —
@@ -95,118 +84,86 @@ nếu nó đạt 0,59 trên chính bộ vectơ đó, thì vấn đề chắc ch�
 trưng. §4.6 cho thấy tầng mốc này đã cứu một lần chạy hỏng như thế nào.
 
 Ngoài ra còn một mốc trần đáng chú ý: **biết trước 100 % nhãn ngành nghề** rồi đoán
-trung vị của ngành chỉ đạt MAE **5,75 triệu**, tức chỉ hơn mốc ngây thơ **1,8 %**.
-Nếu nhánh hồi quy chỉ về được quanh 5,8 triệu thì nó chưa đọc được gì từ văn bản —
+trung vị của ngành chỉ đạt MAE **5,57 triệu**, tức chỉ hơn mốc ngây thơ **2,1 %**.
+Nếu nhánh hồi quy chỉ về được quanh 5,6 triệu thì nó chưa đọc được gì từ văn bản —
 nó chỉ đang đoán trung vị theo một đường vòng.
+
+> **Nguồn số liệu:** tầng 1 và mốc trần — `artifacts/eda/summary.json` khoá `floors`
+> (khớp trên `train`, chấm trên `dev`); tầng 2 — dòng `probe-cat-s2`, `probe-sal-s2`
+> trong [04-results.md](../04-results.md).
 
 ---
 
 ## 4.3. Kết quả bài toán phân loại ngành nghề
 
-**Bảng 4.5: Kết quả phân loại ngành nghề (lược đồ v2, dev 3.812 tin)**
+**Bảng 4.5: Kết quả phân loại ngành nghề (dev 3.812 tin)**
 
-| Lần chạy | Cấu hình | macro-F1 | acc | balAcc | top-3 | epoch tốt nhất |
-|---|---|---|---|---|---|---|
-| *mốc ngây thơ* | luôn đoán lớp đa số | *0,0214* | *0,2062* | — | — | — |
-| `probe-cat-s2` | LogReg trên **cùng** bộ vectơ | 0,5898 | 0,6388 | 0,5969 | 0,9258 | — |
-| **`dl-cat-s2`** | lr 3e-4 + cắt gradient + chuẩn hoá | **0,6025** | 0,6511 | 0,6199 | **0,9318** | 16/24 |
-| `dl-cat-s2-cw` | như trên + cân bằng lớp | 0,5710 | 0,5976 | **0,6931** | 0,9208 | 15/23 |
-| *mốc TF-IDF + LinearSVC* | `cat-SW-svm-1` — **lược đồ v1**, chưa đo lại | *0,6050 ± 0,0071* | *0,6445* | *0,6713* | — | — |
+| Lần chạy | Cấu hình | macro-F1 | acc | epoch tốt nhất |
+|---|---|---|---|---|
+| *mốc ngây thơ* | luôn đoán lớp đa số | *0,0214* | *0,2062* | — |
+| `probe-cat-s2` | LogReg trên **cùng** bộ vectơ | 0,5898 | 0,6388 | — |
+| **`dl-cat-s2`** | lr 3e-4 + cắt gradient + chuẩn hoá | **0,6025** | 0,6511 | 16/24 |
+| `dl-cat-s2-cw` | như trên + cân bằng lớp | 0,5710 | 0,5976 | 15/23 |
 
 > **Nguồn số liệu:** `artifacts/dl-cat-s2/metrics.json`, `artifacts/dl-cat-s2-cw/metrics.json`,
 > ba dòng `dl-cat-s2` / `dl-cat-s2-cw` / `probe-cat-s2` trong [04-results.md](../04-results.md),
 > và mốc ngây thơ từ `artifacts/eda/summary.json` (T1.1).
 
-`f1_macro_no_junk` — macro-F1 khi loại lớp `nhóm_nghề_khác` (48 dòng) — là **0,6454**
+`f1_macro_no_junk` — macro-F1 khi loại lớp `nhóm_nghề_khác` (25 dòng) — là **0,6454**
 cho `dl-cat-s2` và 0,5958 cho `dl-cat-s2-cw`. Riêng lớp này đã kéo con số tổng xuống
-0,043; xử lý lớp này thế nào là một quyết định riêng (T2.2).
+0,043.
 
 Mạng dense chỉ hơn tầng dò tuyến tính **0,0127** macro-F1 trên cùng bộ vectơ (0,6025
-so với 0,5898) — gần đúng khoảng cách 0,0120 đo được ở lược đồ v1. Phần lớn tín hiệu
+so với 0,5898). Phần lớn tín hiệu
 mà mô hình tuyến tính khai thác được, mạng phi tuyến cũng khai thác được; năng lực
 tính toán thêm chỉ mua được một khoảng cải thiện nhỏ và ổn định, không phải một mức
 khác biệt về chất.
 
-**Bảng 4.5b: Kết quả phân loại ngành nghề (lược đồ v1, dev 7.159 tin — lịch sử, không
-so sánh được với Bảng 4.5)**
-
-| Lần chạy | Cấu hình | macro-F1 | acc | balAcc | top-3 | epoch tốt nhất |
-|---|---|---|---|---|---|---|
-| `dl-cat-h256` | lr 1e-3 · không chuẩn hoá · không cắt gradient | **0,0420** | 0,2127 | 0,0752 | 0,4577 | 3/11 — **phân kỳ** |
-| `dl-cat-h256-cw` | như trên + cân bằng lớp | 0,0747 | 0,1904 | 0,1117 | 0,3519 | 3/11 — **phân kỳ** |
-| `probe-cat` | LogReg trên **cùng** bộ vectơ | 0,5867 | 0,6423 | 0,5782 | 0,9225 | — |
-| `dl-cat-v2-nostd` | lr 3e-4 + cắt gradient · không chuẩn hoá | 0,5934 | 0,6466 | 0,5917 | 0,9250 | 31/39 |
-| `dl-cat-v2` | lr 3e-4 + cắt gradient + chuẩn hoá | 0,5987 | 0,6493 | 0,6048 | 0,9257 | 14/22 |
-| `dl-cat-v2-cw` | như trên + cân bằng lớp | 0,5637 | 0,5913 | **0,6687** | 0,9012 | 6/14 |
-| *mốc TF-IDF + LinearSVC* | `cat-SW-svm-1` | *0,6050 ± 0,0071* | *0,6445* | *0,6713* | — | — |
-
 ### 4.3.1. Nhận xét
 
-**Trên lược đồ v2, `dl-cat-s2` thấp hơn mốc TF-IDF + LinearSVC (đo trên lược đồ v1)
-0,0025** — nhỏ hơn khoảng tin cậy ±0,0071 của chính mốc đó, nhưng mốc này chưa được
-đo lại trên `dev` mới nên đây chỉ là so sánh tham khảo, không phải một phép kiểm định
-phân biệt được hai mô hình. Việc đo lại mốc học máy nằm ngoài phạm vi nhiệm vụ này.
+**Độ chính xác top-3 là 0,9318** — mô hình đưa đúng ngành vào top ba đáng tin cậy hơn
+nhiều so với đoán đúng top-1.
 
-**Độ chính xác top-3 trên lược đồ v2 là 0,9318**, tương đương con số 0,9257 đo ở lược
-đồ v1 — mô hình vẫn đưa đúng ngành vào top ba đáng tin cậy hơn nhiều so với đoán
-đúng top-1.
-
-**`--class-weight` vẫn là một phép đánh đổi, không phải một cải thiện, trên lược đồ
-v2:** macro-F1 giảm 0,0315 (0,6025 → 0,5710) trong khi balanced accuracy tăng 0,0733
+**`--class-weight` là một phép đánh đổi, không phải một cải thiện:** macro-F1 giảm 0,0315 (0,6025 → 0,5710) trong khi balanced accuracy tăng 0,0733
 (0,6199 → 0,6931). Nó kéo mô hình về phía các lớp nhỏ, đúng như thiết kế. Chọn cấu
 hình nào phụ thuộc vào ứng dụng thật; mặc định để tắt.
 
-Run `dl-cat-h256` (Bảng 4.5b, macro-F1 0,0420) vẫn được giữ lại như một bằng chứng:
-đó là lần chạy phân kỳ vì thiếu chuẩn hoá và cắt gradient, và chính bài học đó đã
-dẫn tới cấu hình `dl-cat-s2` ở trên.
+Lần chạy phân kỳ `dl-cat-h256` (macro-F1 0,0420) được giữ lại ở §4.6: thiếu chuẩn
+hoá và cắt gradient, và chính bài học đó đã dẫn tới cấu hình `dl-cat-s2` ở trên.
 
 ---
 
 ## 4.4. Kết quả bài toán ước lượng mức lương
 
-**Bảng 4.6: Kết quả ước lượng mức lương (lược đồ v2, dev 2.698 tin có nhãn lương)**
+**Bảng 4.6: Kết quả ước lượng mức lương (dev 2.698 tin có nhãn lương)**
 
-| Lần chạy | Phương pháp | MAE (triệu) | MedAE | R²(log) | trong ±20 % |
-|---|---|---|---|---|---|
-| *mốc* | đoán trung vị 13,0 cho mọi tin | *5,70* | — | *−0,059* | — |
-| *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,57* | — | *−0,022* | — |
-| `probe-sal-s2` | Ridge trên vectơ PhoBERT | 4,42 | 2,77 | 0,466 | 48,0 % |
-| **`dl-sal-s2`** | dense(256), lr 3e-4, chuẩn hoá | **4,15** | **2,50** | **0,512** | **51,6 %** |
+| Lần chạy | Phương pháp | MAE (triệu) | RMSE (triệu) | R²(log) |
+|---|---|---|---|---|
+| *mốc* | đoán trung vị 13,0 cho mọi tin | *5,70* | *10,52* | *−0,059* |
+| *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,57* | *10,33* | *−0,022* |
+| `probe-sal-s2` | Ridge trên vectơ PhoBERT | 4,42 | 8,36 | 0,466 |
+| **`dl-sal-s2`** | dense(256), lr 3e-4, chuẩn hoá | **4,15** | **8,29** | **0,512** |
 
 > **Nguồn số liệu:** `artifacts/dl-sal-s2/metrics.json` và hai dòng `dl-sal-s2` /
 > `probe-sal-s2` trong [04-results.md](../04-results.md); hai mốc lấy từ
-> `artifacts/eda/summary.json` (T1.1).
-
-**Kết quả tầng dò tuyến tính đảo ngược kết luận cũ ở lược đồ v1.** Ở v1, Ridge trên
-cùng bộ vectơ (`probe-sal`) cho MAE **6,60** — *tệ hơn cả đoán trung vị* — nên kết
-luận khi đó là tín hiệu lương có nằm trong vectơ nhưng chỉ ở dạng phi tuyến. Ở v2,
-`probe-sal-s2` đạt R² **0,466**, đã gần bằng mạng dense (0,512), và rõ ràng vượt
-mốc. Hai giả thuyết khả dĩ, chưa kiểm chứng: tập dev v2 (2.698 tin có nhãn lương,
-chia theo nhóm) có thể vốn "dễ" hơn hoặc ít nhiễu hơn tập `val` cũ; hoặc kết luận
-"phi tuyến" trước đây thực ra là hệ quả của cách chia dữ liệu v1. Phân tích lỗi
-kiểu §4.4 (cũ) trên lược đồ v2 (T1.7/T2.x) sẽ trả lời câu hỏi này.
-
-**Bảng 4.6b: Kết quả ước lượng mức lương (lược đồ v1, dev 5.095 tin — lịch sử, không
-so sánh được với Bảng 4.6)**
-
-| Lần chạy | Phương pháp | MAE (triệu) | MedAE | R²(log) | trong ±20 % |
-|---|---|---|---|---|---|
-| *mốc* | đoán trung vị 13,0 cho mọi tin | *5,86* | — | *−0,063* | — |
-| *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,75* | — | *−0,032* | — |
-| `probe-sal` | Ridge trên vectơ PhoBERT | 6,60 | 3,26 | −0,004 | 42,1 % |
-| `dl-sal-v2` | dense(256), 40 epoch | 4,83 | 2,86 | 0,381 | 47,1 % |
-| `dl-sal-v3-long` | cùng cấu hình, patience 15 | 4,88 | 2,86 | 0,357 | 45,9 % |
+> `artifacts/eda/summary.json` (T1.1). RMSE của `dl-sal-s2` lấy từ khoá `rmse_trieu`
+> trong `metrics.json`; RMSE hai mốc lấy từ khoá `rmse` trong `summary.json`; RMSE của
+> `probe-sal-s2` tính lại bằng đúng cấu hình của lần chạy đó (Ridge alpha 1,0, cùng bộ
+> vectơ), cho lại đúng MAE 4,42 và R² 0,466.
 
 ### 4.4.1. Nhận xét
 
-Trên lược đồ v2, nhánh hồi quy **vượt mốc 1,55 triệu (−27,2 %)** — biên độ rõ hơn cả
-con số v1 (−17,6 %): R² trên thang logarit đi từ **âm** lên **0,512**, nghĩa là mô
-hình đọc được tín hiệu lương từ văn bản mà nhãn ngành nghề không cung cấp
-(eta² = 0,032, đo trên tệp gốc).
+Nhánh hồi quy **vượt mốc 1,55 triệu (−27,2 %)**: R² trên thang logarit đi từ **âm**
+lên **0,512**, nghĩa là mô hình đọc được tín hiệu lương từ văn bản mà nhãn ngành nghề
+không cung cấp (eta² = 0,032, đo trên tệp gốc).
 
-Ridge trên cùng bộ vectơ (`probe-sal`, Bảng 4.6b) từng cho **6,60** trên lược đồ v1 —
-*tệ hơn cả việc đoán trung vị*. Kết luận cũ — tín hiệu nằm trong vectơ nhưng không ở
-dạng tuyến tính — chưa được kiểm tra lại trên lược đồ v2 (T1.5).
+Tầng dò tuyến tính `probe-sal-s2` đạt R² **0,466**, đã gần bằng mạng dense (0,512) và
+rõ ràng vượt mốc: phần lớn tín hiệu lương nằm trong vectơ ở dạng tuyến tính.
+
+RMSE của `dl-sal-s2` là **8,29 triệu**, gấp đôi MAE (4,15). RMSE bình phương sai số,
+nên một số ít lỗi rất lớn kéo nó lên. Tách theo mức lương thật trên
+`predictions_dev.parquet`: **2.571** tin dưới 30 triệu có RMSE **4,49** (MAE 3,21);
+**127** tin từ 30 triệu trở lên (4,7 %) có RMSE **32,43** (MAE 23,13).
 
 ---
 
@@ -214,63 +171,18 @@ dạng tuyến tính — chưa được kiểm tra lại trên lược đồ v2 
 
 ### 4.5.1. Lỗi của bài toán phân loại
 
-Đọc từ `predictions_dev.parquet` của `dl-cat-v2`:
-
-**Bảng 4.7: F1 theo lớp — bốn lớp đáng chú ý (lược đồ v1)**
-
-| Lớp | F1 | n |
-|---|---|---|
-| `nhóm_nghề_khác` | **0,000** | 48 |
-| `kỹ_thuật_điện_điện_tử_viễn_thông` | 0,411 | 207 |
-| `thiết_kế_nghệ_thuật_giải_trí…` | 0,441 | 470 |
-| `tài_chính_kế_toán_ngân_hàng_bảo_hiểm` | **0,851** | 713 |
-
-Lớp gom tạp `nhóm_nghề_khác` bị **bỏ hoàn toàn** — đúng như phân tích dữ liệu ở
-§3.6.1 đã dự báo: 48 mẫu, nội dung pha tạp. Đây là **nhiễu nhãn, không phải lỗi mô
-hình**, và đó chính là lý do phải báo cáo `f1_macro_no_junk` song song.
-
-**Bảng 4.8: Ba cặp lớp bị nhầm nhiều nhất (lược đồ v1)**
-
-| Nhầm lẫn | Số tin |
-|---|---|
-| `kinh_doanh…` → `du_lịch_nhà_hàng…` | 202 |
-| `du_lịch_nhà_hàng…` → `kinh_doanh…` | 180 |
-| `thiết_kế_nghệ_thuật…` → `xây_dựng_kiến_trúc…` | 133 |
-
-Cả ba cặp đều là **ranh giới nhãn mờ một cách hợp lệ**, không phải lỗi mô hình. Một
-tin "Nhân viên kinh doanh cho khách sạn" thuộc về cặp thứ nhất, và cả hai nhãn đều
-bảo vệ được. Cặp `kinh_doanh` ↔ `du_lịch_nhà_hàng` chiếm **382 tin** theo cả hai
-chiều.
-
-**Việc còn thiếu:** trần nhiễu nhãn **chưa bao giờ được đo**. Cách đo rẻ nhất là lấy
-mẫu 100 tin, tự gán nhãn bằng tay, rồi đo độ đồng thuận với nhãn gốc. Không có con số
-đó thì không biết mô hình còn cách trần bao xa.
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T2.2, T2.3)
 
 ### 4.5.2. Lỗi của bài toán hồi quy
 
-**Bảng 4.9: Sai số theo dải lương (`dl-sal-v2`, lược đồ v1)**
-
-| Dải lương | Số tin | MAE (triệu) |
-|---|---|---|
-| ≤ 30 triệu | 4.833 | **3,70** |
-| > 30 triệu | 262 | **25,58** |
-
-Mô hình dự đoán cao nhất chỉ **80,7** trong khi dữ liệu có tin ở **275**. Nó **không
-dám đi ra cái đuôi phải** — đây là hệ quả trực tiếp của việc huấn luyện trên `log1p`
-với hàm mất mát Huber: cả hai cùng làm giảm ảnh hưởng của giá trị lớn, và cái giá
-phải trả nằm đúng ở đó.
-
-Theo ngành: khó nhất là `nhóm_nghề_khác` (MAE 11,03), dễ nhất là
-`nông_nghiệp_năng_lượng_môi_trường` (MAE 2,67).
-
-**Hướng khắc phục đề xuất:** dùng hàm mất mát bất đối xứng, hoặc chuyển sang dự đoán
-phân vị thay vì một điểm. Cả hai đều chưa được đo.
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T2.1)
 
 ---
 
 ## 4.6. Lần chạy thất bại đầu tiên — giữ lại làm bằng chứng
 
-Hai lần chạy đầu (`dl-cat-h256`, `dl-cat-h256-cw`) cho macro-F1 **0,042** — thấp hơn
+Hai lần chạy đầu (`dl-cat-h256`, `dl-cat-h256-cw`, đo trên lược đồ chia cũ trước
+2026-09-09) cho macro-F1 **0,042** — thấp hơn
 cả việc thay vectơ PhoBERT bằng số ngẫu nhiên. Tệp `history.jsonl` cho biết lý do
 trong bốn dòng:
 
@@ -291,99 +203,84 @@ Vòng huấn luyện **phân kỳ ở epoch 4**. Hai nguyên nhân, cả hai đ�
 
 Cách sửa: chuẩn hoá theo từng chiều bằng thống kê của `train` (lưu thành `scaler.npz`
 cạnh mô hình, vì đường suy luận phải dùng đúng những con số đó), cắt chuẩn gradient ở
-1,0, hạ lr xuống 3e-4. Kết quả: **0,042 → 0,5987**.
+1,0, hạ lr xuống 3e-4 — cấu hình của `dl-cat-s2` (macro-F1 **0,6025**, §4.3).
 
-**Bài học đáng giá hơn con số:** chính `probe-cat` — hồi quy logistic trên cùng bộ
-vectơ, macro-F1 **0,5867** — là thứ phân biệt được "đặc trưng tồi" với "đầu mô hình
+**Bài học đáng giá hơn con số:** chính tầng dò tuyến tính — hồi quy logistic trên
+cùng bộ vectơ — là thứ phân biệt được "đặc trưng tồi" với "đầu mô hình
 hỏng". Một mô hình tuyến tính có nghiệm lồi và không có tốc độ học để chỉnh sai; nếu
-nó đạt 0,59 thì vấn đề chắc chắn không nằm ở đặc trưng. Đây là lý do tầng mốc thứ hai
+nó đạt gần 0,59 thì vấn đề chắc chắn không nằm ở đặc trưng. Đây là lý do tầng mốc thứ hai
 ở §4.2 tồn tại.
 
 ---
 
-## 4.7. So sánh với học máy truyền thống
+## 4.7. Tổng hợp: đối chiếu kết quả với mốc
 
-Trục học máy đã đóng ngày 2026-09-08 với **101 lần thí nghiệm**, và được giữ nguyên
-làm mốc so sánh.
+**Bảng 4.7: Tổng hợp đối chiếu (dev)**
 
-**Bảng 4.10: Xếp tầng 11 thuật toán học máy theo macro-F1 (lược đồ v1)**
+| Bài toán | Mốc ngây thơ | Mốc dò tuyến tính | Kết quả học sâu | Kết luận |
+|---|---|---|---|---|
+| Phân loại (macro-F1) | 0,0214 | 0,5898 | **0,6025** | Hơn dò tuyến tính 0,0127 |
+| Phân loại (top-3) | — | 0,9258 | **0,9318** | Hơn dò tuyến tính 0,0060 |
+| Lương (MAE, triệu) | 5,70 | 4,42 | **4,15** | **Vượt mốc ngây thơ 27,2 %** |
+| Lương (RMSE, triệu) | 10,52 | 8,36 | **8,29** | Vượt mốc ngây thơ 21,2 %; chỉ hơn dò tuyến tính 0,07 |
+| Lương (R² log) | −0,059 | 0,466 | **0,512** | Từ âm lên dương — đọc được tín hiệu thật |
 
-| Tầng | Mô hình | macro-F1 | Trong tầng |
-|---|---|---|---|
-| **1** | `logreg` 0,6072 · **`svm` 0,6050** · `sgd` 0,6010 | 0,60–0,61 | hoà nhau |
-| **2** | `svm_plain` 0,5927 · `xgb` 0,5912 · `lgbm` 0,5830 | 0,58–0,59 | hoà nhau |
-| **3** | `extra` 0,5665 · `rf` 0,5644 · `nb` 0,5535 | 0,55–0,57 | hoà nhau |
-| **4** | `knn` 0,4361 | | thua rõ tầng trên |
-| **5** | `centroid` 0,3204 | | thua tất cả |
-
-Việc xếp tầng dựa trên bootstrap ghép cặp chứ không dựa trên độ lệch chuẩn: hai mô
-hình trong cùng một tầng có `P(A > B)` nằm quanh 0,5, tức không phân biệt được.
-
-### 4.7.1. Đánh đổi giữa độ chính xác và tốc độ
-
-Đây là bảng mà mục tiêu 3 của đề tài yêu cầu, và là bảng quyết định phương án triển
-khai thật.
-
-**Bảng 4.11: Đánh đổi độ chính xác — chi phí huấn luyện (lược đồ v1)**
-
-| Mô hình | macro-F1 | thời gian fit | so với rẻ nhất |
-|---|---|---|---|
-| `knn` | 0,4361 | 17 s | 1,0× |
-| `nb` | 0,5535 | 24 s | 1,5× |
-| `sgd` | 0,6010 | 40 s | 2,4× |
-| **`svm`** | **0,6050** | **42 s** | **2,5×** |
-| `logreg` | 0,6072 | 4,8 phút | 17,1× |
-| `rf` | 0,5644 | 5,3 phút | 18,9× |
-| `lgbm` | 0,5830 | 12,9 phút | 46,2× |
-
-`logreg` nhỉnh hơn `svm` đúng 0,0022 macro-F1 nhưng tốn gấp **7 lần** thời gian
-huấn luyện — và khoảng chênh đó nhỏ hơn khoảng tin cậy của chính nó. Vì vậy
-**LinearSVC được chọn làm mốc**, không phải mô hình có điểm cao nhất.
-
-### 4.7.2. Đánh đổi ở khâu suy luận — bảng còn thiếu
-
-> ⛔ **CHƯA CÓ SỐ LIỆU** — mục tiêu 3 của đề tài yêu cầu so sánh **cả tốc độ xử lý**
-> giữa học sâu và học máy, nhưng **độ trễ suy luận chưa được đo**. Con số đã biết:
-> PhoBERT chạy khoảng **30 tin/giây** trên CPU ở khâu nhúng, còn TF-IDF + LinearSVC
-> gần như tức thời. Cần một bảng đo thật (mili-giây mỗi tin, cả hai đường) đặt cạnh
-> bảng độ chính xác. Đây là việc bắt buộc trước khi bảo vệ, vì nó là một trong bốn
-> mục tiêu cụ thể.
+> **Nguồn số liệu:** các dòng `*-s2` trong [04-results.md](../04-results.md) ·
+> [06-baseline-dl.md](../06-baseline-dl.md) §5 · `artifacts/eda/summary.json` khoá `floors`.
 
 ---
 
-## 4.8. Tổng hợp: đối chiếu kết quả với mốc
+## 4.8. Đánh giá chéo trên tập dữ liệu ngoài
 
-**Bảng 4.12: Tổng hợp đối chiếu (phân loại cập nhật lược đồ v2 ngày 2026-09-15, lương
-cập nhật lược đồ v2 ngày 2026-09-16; các dòng còn lại vẫn ở lược đồ v1, xem đầu chương)**
+> ⛔ **Số tham khảo** — bảng ánh xạ 60 → 16 còn ở trạng thái `draft` (T7.1, T7.4).
 
-| Bài toán | Mốc ngây thơ | Mốc học máy | Kết quả học sâu | Kết luận |
-|---|---|---|---|---|
-| Phân loại (macro-F1) *(lược đồ v2)* | 0,0214 | *0,6050 ± 0,0071 (lược đồ v1)* | **0,6025** | Chưa phân biệt được với mốc học máy |
-| Phân loại (top-3) *(lược đồ v2)* | — | 0,8631 *(lược đồ v1)* | **0,9318** | **Vượt rõ** |
-| Lương (MAE, triệu) *(lược đồ v2)* | 5,70 | — | **4,15** | **Vượt mốc 27,2 %** |
-| Lương (R² log) *(lược đồ v2)* | −0,059 | — | **0,512** | Từ âm lên dương — đọc được tín hiệu thật |
-| `disclosed` (acc) | 0,7117 | — | *chưa chạy* | ⛔ |
+Mọi kết quả ở §4.3 đều đo trên tập `dev` chia ra từ cùng một bộ dữ liệu với tập
+huấn luyện. Chúng chưa trả lời được câu hỏi: mô hình học được *nghề*, hay học
+*cách viết* của các tin trong `VietJobs.csv`? Để trả lời, mô hình `dl-cat-s2` được
+chấm trên **VietJobs-37K** — bộ 37.274 tin tuyển dụng tiếng Việt do một nhóm khác
+thu thập (1/2025 – 4/2026), gán nhãn theo hệ 60 nhãn đa nhãn, kèm 1.000 tin
+(Gold-1000) do người soát lại. Không có tin nào của bộ này được dùng để huấn luyện
+hay chọn mô hình.
 
-### 4.8.1. Những gì chưa làm
+Ba bước chuẩn bị, chi tiết ở [10-danh-gia-ngoai.md](../10-danh-gia-ngoai.md):
 
-**Bảng 4.13: Các hạng mục thực nghiệm còn thiếu**
+1. **Khử tin trùng** với ba tập chia của ta: cùng tiêu đề (đã gập dấu) và Jaccard
+   tập từ của mô tả ≥ 0,5. Loại 19 / 1.000 tin Gold (1,9 %) và 69 / 3.778 tin test
+   (1,83 %).
+2. **Ánh xạ 60 nhãn về 16 lớp**; bốn nhãn không ánh xạ được (chức danh quản lý,
+   thư viện, NGO) bị loại.
+3. **Hai quy ước chấm**: *strict* chỉ trên tin có đúng một nhãn gốc (chấm như
+   bình thường, kèm khoảng tin cậy bootstrap 1.000 lần); *lenient* trên mọi tin,
+   tính đúng nếu lớp dự đoán thuộc tập lớp đích.
 
-| Hạng mục | Vì sao còn thiếu |
-|---|---|
-| Chạy lại toàn bộ trên lược đồ chia mới | Lược đồ đổi ngày 2026-09-09 |
-| Chạy lại phân tích khám phá dữ liệu | Bảy hình đã sinh lại trên tệp gốc 47.707 dòng, nhưng `summary.json` còn ghi 33.396 dòng — các đại lượng chỉ có trong JSON đang mang dấu `⛔` ở §3.6 |
-| Sinh hình 07 — độ dài token | Cần `--tokens` trong `.venv-dl`; cái giá của việc cắt ở 256 token chưa được đo |
-| Bài toán `disclosed` | Chưa có lần chạy nào |
-| Mô hình **đa nhiệm** | Theo lộ trình, chỉ hợp nhất sau khi hai nhánh có số riêng |
-| Tinh chỉnh PhoBERT | Máy hiện tại không có GPU/MPS; cần Colab hoặc Kaggle |
-| Bảng độ trễ suy luận | Xem §4.7.2 |
-| Đo trần nhiễu nhãn | Xem §4.5.1 |
-| Đánh giá cuối trên `test` | Chỉ được chạm **một lần**, ở bước cuối cùng |
+**Bảng 4.8: Mô hình `dl-cat-s2` trên VietJobs-37K, sau khử trùng và ánh xạ**
 
-> **Nguồn số liệu:** [04-results.md](../04-results.md) (10 dòng thí nghiệm) ·
-> [06-baseline-dl.md](../06-baseline-dl.md) §5 ·
-> [archive/10-so-sanh-mo-hinh.md](../archive/10-so-sanh-mo-hinh.md) ·
-> [archive/04-results-ml.md](../archive/04-results-ml.md).
+| Tập | n chấm | strict n | strict macro-F1 [KTC 95 %] | strict acc | strict top-3 | lenient trúng |
+|---|---|---|---|---|---|---|
+| Gold-1000 (người soát) | 977 | 529 | **0,3977** [0,353; 0,443] | 0,5104 | 0,8204 | 0,6080 |
+| test 37K (nhãn máy) | 3.687 | 2.053 | 0,4525 [0,421; 0,479] | 0,5329 | 0,8315 | 0,6138 |
+| *`dev` nội bộ (§4.3, đối chiếu)* | 3.812 | 3.812 | *0,6025* | *0,6511* | *0,9318* | — |
+
+Nhận xét:
+
+- Mô hình **có tổng quát hóa** sang dữ liệu của người khác, nhưng mất **0,205**
+  macro-F1 trên Gold — gấp gần năm lần bề rộng khoảng tin cậy. Top-3 giữ được tốt
+  hơn (0,93 → 0,82): nghề đúng vẫn thường nằm trong ba lựa chọn đầu.
+- Điểm trên nhãn máy (0,453) **cao hơn** trên nhãn người (0,398): nhãn máy của bộ
+  ngoài được gán bằng từ khóa, mô hình của ta cũng dựa nhiều vào từ vựng, nên hai
+  bên đồng ý với nhau hơn là với người soát. Đó là lý do lấy Gold làm số chính.
+- Phân bố lớp dự đoán lệch rõ: 28,3 % tin Gold bị gán vào lớp nhân sự – hành chính,
+  còn lớp công nghệ thông tin chỉ được dự đoán 5 lần dù Gold có ít nhất 67 tin
+  CNTT.
+
+Giới hạn phải nói rõ: nhãn của bộ ngoài (trừ Gold) là nhãn máy; bảng ánh xạ do
+nhóm tự xây; bộ ngoài **không có trường lương**, nên mục này chỉ đánh giá bài phân
+loại.
+
+> **Nguồn số liệu:** hai dòng `dl-cat-s2-ext37k-gold` và `dl-cat-s2-ext37k-test`
+> trong [04-results.md](../04-results.md) ·
+> `artifacts/dl-cat-s2/external_37k/{gold,test}/metrics.json` và `dedup_report.json` ·
+> [10-danh-gia-ngoai.md](../10-danh-gia-ngoai.md).
 
 ---
 

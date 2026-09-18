@@ -23,7 +23,6 @@ SOURCES=(
   "docs/01-data-audit.md:02-bon-ban-sao-van-ban"
   "docs/02-vietnamese-nlp.md:03-xu-ly-tieng-viet"
   "docs/06-baseline-dl.md:04-kien-truc-hoc-sau"
-  "docs/07-bai-toan-luong.md:05-bai-toan-luong"
   "docs/08-ma-nguon.md:06-ma-nguon"
 )
 

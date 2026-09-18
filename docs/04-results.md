@@ -1,11 +1,11 @@
-# Experiment log (append-only)
+# Nhật ký thí nghiệm (chỉ được nối thêm)
 
-Selection uses `val`. `test` is scored once, at the end.
+Việc chọn mô hình sử dụng `dev` (các dòng trước 2026-09-09 ghi `val`, tên cũ của cùng tập). `test` chỉ được chấm điểm một lần, vào lúc cuối.
 
-> **This log restarts on 2026-09-08**, when the main track of the thesis moved to
-> deep learning. The 101 machine-learning experiment rows (2026-08-26 → 09-07) sit
-> intact in [archive/04-results-ml.md](archive/04-results-ml.md) — the bar to beat
-> is `cat-FINAL-svm-C0.02-test`, **test macro-F1 0.6112**.
+> **Nhật ký này khởi động lại từ ngày 2026-09-08**, khi hướng đi chính của luận văn
+> chuyển sang học sâu. 101 dòng thí nghiệm học máy (2026-08-26 → 09-07) được giữ
+> nguyên trong [archive/04-results-ml.md](archive/04-results-ml.md) — mốc cần vượt
+> qua là `cat-FINAL-svm-C0.02-test`, **macro-F1 trên tập kiểm tra đạt 0,6112**.
 
 | RunID | UTC | Task | Model | Scope | Prep | Eval | n | Headline | Time | Commit |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -24,3 +24,5 @@ Selection uses `val`. `test` is scored once, at the end.
 | dl-sal-s2 | 09-16 06:25 | salary | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 2698 | MAE=4.15tr · MedAE=2.50tr · R2log=0.512 · ±20%=51.6% | 16.0s | 70ab8518 |
 | probe-cat-s2 | 09-16 06:44 | category | logreg-probe(C=1.0) on phobert-frozen | title+desc+req | segment | dev | 3812 | macroF1=0.5898 · acc=0.6388 · balAcc=0.5969 · top3=0.9258 | 34.7s | probe |
 | probe-sal-s2 | 09-16 06:45 | salary | ridge-probe(alpha=1.0) on phobert-frozen | title+desc+req | segment | dev | 2698 | MAE=4.42tr · MedAE=2.77tr · R2log=0.466 · ±20%=48.0% | 0.2s | probe |
+| dl-cat-s2-ext37k-gold | 09-17 03:23 | category | phobert-frozen+dense(h=256) scored on VietJobs-37K | title+desc+req | segment+dedup+crosswalk(draft 2026-09-17, chưa duyệt) | ext37k-gold | 977 | strict: macroF1=0.3977 [0.353,0.443] · acc=0.5104 · top3=0.8204 (n=529) · lenient: hit=0.6080 · macroF1=0.4775 (n=977) | 0.7s | eval-only |
+| dl-cat-s2-ext37k-test | 09-17 03:24 | category | phobert-frozen+dense(h=256) scored on VietJobs-37K | title+desc+req | segment+dedup+crosswalk(draft 2026-09-17, chưa duyệt) | ext37k-test | 3687 | strict: macroF1=0.4525 [0.421,0.479] · acc=0.5329 · top3=0.8315 (n=2053) · lenient: hit=0.6138 · macroF1=0.4935 (n=3687) | 66.7s | eval-only |

@@ -53,9 +53,8 @@ knowingly in exchange for two things:
   explained.
 
 The partial patch for this loss is **n-grams** — see
-[note 3](03-ngram-va-ranh-gioi-tu.md). The complete patch is a neural network that
-reads in order (PhoBERT), recorded in
-[09-lo-trinh.md — Priority 4](../archive/09-lo-trinh-ml.md#ưu-tiên-4--chuyển-trục-chính-sang-học-sâu-đa-nhiệm).
+[note 3](03-ngram-va-ranh-gioi-tu.md). A model that reads words in order, PhoBERT,
+is the project's main track now — see [note 9](09-vector-ngu-nghia.md).
 
 ---
 
@@ -247,9 +246,7 @@ than half; D1 concentrates everything into 5 dimensions and stays strong. Mostly
 this is the **correct** behaviour — inside a long posting, `kinh doanh` genuinely is
 a small part of the content. But it has a downside: a posting stuffed with generic
 marketing copy ("young environment", "attractive benefits") dilutes its own
-occupation signal. The compensation is **block weighting**, to restore what was
-spread thin —
-[09-lo-trinh.md Priority 3a](../archive/09-lo-trinh-ml.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-mốc-cơ-sở-ml).
+occupation signal.
 
 ---
 

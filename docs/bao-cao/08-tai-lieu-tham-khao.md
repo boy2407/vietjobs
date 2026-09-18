@@ -20,10 +20,6 @@ vẫn phải ghi nguồn. Chỉ những gì là kiến thức phổ thông của
 **3. Mọi số liệu trong báo cáo đều là số đo của đề tài**, không mượn từ công trình
 khác. Nếu có mượn một con số để so sánh, phải ghi rõ nguồn ngay tại chỗ.
 
-**4. Số thứ tự sẽ phải đánh lại** sau khi mục §2.3 (khảo sát công trình liên quan)
-được viết, vì các công trình đó xuất hiện sớm hơn trong báo cáo. Việc đánh lại làm
-một lần, ở bước ghép Word cuối cùng.
-
 ---
 
 ## Danh sách hiện tại
@@ -61,36 +57,28 @@ Demonstrations*, New Orleans, LA, USA, 2018, pp. 56–60.
 [7] R. Caruana, "Multitask learning," *Machine Learning*, vol. 28, no. 1, pp. 41–75,
 1997.
 
-[8] A. Kendall, Y. Gal, and R. Cipolla, "Multi-task learning using uncertainty to
-weigh losses for scene geometry and semantics," in *Proc. IEEE Conf. Computer Vision
-and Pattern Recognition (CVPR)*, Salt Lake City, UT, USA, 2018, pp. 7482–7491.
-
 ### Hàm mất mát và hình học của biểu diễn
 
-[9] P. J. Huber, "Robust estimation of a location parameter," *The Annals of
+[8] P. J. Huber, "Robust estimation of a location parameter," *The Annals of
 Mathematical Statistics*, vol. 35, no. 1, pp. 73–101, 1964.
 
-[10] K. Ethayarajh, "How contextual are contextualized word representations?
+[9] K. Ethayarajh, "How contextual are contextualized word representations?
 Comparing the geometry of BERT, ELMo, and GPT-2 embeddings," in *Proc. 2019 Conf.
 Empirical Methods in Natural Language Processing (EMNLP-IJCNLP)*, Hong Kong, China,
 2019, pp. 55–65.
 
-> **Ghi chú:** [10] là cơ sở lý thuyết cho hiện tượng **dị hướng** của vectơ PhoBERT
-> nêu ở §3.7.3 và §4.6 (cosin trung vị 0,896 giữa hai tin bất kỳ). Cần chèn trích dẫn
-> `[10]` vào đúng hai chỗ đó khi ghép Word.
-
 ### Công cụ và thư viện
 
-[11] A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury *et al.*, "PyTorch: An
+[10] A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury *et al.*, "PyTorch: An
 imperative style, high-performance deep learning library," in *Advances in Neural
 Information Processing Systems 32 (NeurIPS)*, Vancouver, Canada, 2019,
 pp. 8024–8035.
 
-[12] T. Wolf, L. Debut, V. Sanh, J. Chaumond, C. Delangue *et al.*, "Transformers:
+[11] T. Wolf, L. Debut, V. Sanh, J. Chaumond, C. Delangue *et al.*, "Transformers:
 State-of-the-art natural language processing," in *Proc. 2020 Conf. Empirical Methods
 in Natural Language Processing: System Demonstrations*, 2020, pp. 38–45.
 
-[13] F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion *et al.*,
+[12] F. Pedregosa, G. Varoquaux, A. Gramfort, V. Michel, B. Thirion *et al.*,
 "Scikit-learn: Machine learning in Python," *Journal of Machine Learning Research*,
 vol. 12, pp. 2825–2830, 2011.
 

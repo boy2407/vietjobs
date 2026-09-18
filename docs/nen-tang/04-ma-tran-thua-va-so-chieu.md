@@ -162,9 +162,7 @@ Small `C` = strong regularisation = weights pushed toward zero. An optimal `C`
 help because it has too many dimensions**.
 
 The right reading: if it takes that much regularisation to work at all, then most
-of the 236,596 dimensions are noise. The next thing to do is not another sweep of
-`C`, but **cutting dimensions** — sweeping `min_df` and `max_features`. Recorded in
-[09-lo-trinh.md — Priority 3b](../archive/09-lo-trinh-ml.md#ưu-tiên-3--hai-đòn-bẩy-rẻ-cho-mốc-cơ-sở-ml).
+of the 236,596 dimensions are noise.
 
 ---
 

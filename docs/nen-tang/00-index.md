@@ -65,7 +65,7 @@ baseline that uses no machine learning at all (0.4321). See
 **"More preprocessing makes a better model."** False. The nine Vietnamese
 processing steps in this project contribute **+0.0017** macro-F1 in total. One
 hyper-parameter line contributes **+0.0287** — nearly 17× more. See
-[02-vietnamese-nlp §5](../02-vietnamese-nlp.md#5-the-closed-tracks-ablation--evidence-not-direction).
+[02-vietnamese-nlp §5](../02-vietnamese-nlp.md#5-ablation-của-hướng-đã-khép-lại--bằng-chứng-không-phải-định-hướng).
 
 **"A high score means a good model."** Not necessarily. A high score is usually a
 sign of leakage before it is a sign of a good model. See

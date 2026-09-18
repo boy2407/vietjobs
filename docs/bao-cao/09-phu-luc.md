@@ -9,8 +9,8 @@
 Tên lớp giữ nguyên như trong dữ liệu gốc (đây là **dữ liệu**, không phải văn bản báo
 cáo, nên không dịch và không sửa chính tả).
 
-> **Nguồn số liệu:** `docs/figures/eda/eda-02-lech-lop.png` và
-> `eda-03-tan-xa-co-lop.png` — đo trên **tệp gốc** sau khử trùng lặp, 47.707 dòng
+> **Nguồn số liệu:** `artifacts/eda/summary.json`, hình `docs/figures/eda/eda-02a-lech-lop.png` và
+> `eda-03a-co-lop.png` — đo trên **tệp gốc** sau khử trùng lặp, 47.707 dòng
 > (`AGENTS.md` Rule 8). Bảng này không phụ thuộc lược đồ chia.
 
 | Nhóm ngành nghề | Số tin | Tỷ lệ |
@@ -42,7 +42,7 @@ Mọi kết quả trong báo cáo tái lập được bằng các lệnh dưới
 ### B.1. Chuẩn bị hai môi trường
 
 ```bash
-# môi trường chính — dữ liệu, tiếng Việt, học máy, kiểm thử
+# môi trường chính — dữ liệu, tiếng Việt, kiểm thử
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt && pip install -e .
 
@@ -56,7 +56,8 @@ pip install -r requirements.txt && pip install -e .
 ```bash
 pytest -q                                   # phải xanh trước mọi thứ khác
 python -m vietjobs.dataset build            # dựng lại ba tập (hiếm khi cần chạy)
-python scripts/analyze_data.py              # số đo + 5 hình cho chương 3
+python scripts/analyze_data.py              # số đo + 11 hình cho chương 3
+PYTHONPATH=src .venv-dl/bin/python scripts/analyze_data.py --tokens   # thêm độ dài token (hình 07)
 python scripts/measure_vitext.py            # đo lại bảng chín bước
 ```
 
@@ -71,13 +72,7 @@ PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_dl --task salary
 PYTHONPATH=src .venv-dl/bin/python scripts/probe_embeddings.py --task category
 ```
 
-### B.4. Chạy lại mốc học máy
-
-```bash
-python -m vietjobs.train --task category --model svm --C 0.02 --province
-```
-
-### B.5. Xuất hình cho bản Word
+### B.4. Xuất hình cho bản Word
 
 ```bash
 ./scripts/render_figures.sh     # cần Node và Chrome
@@ -106,37 +101,15 @@ một dòng đã viết không bao giờ được sửa, kể cả khi lần ch�
 
 ## Phụ lục D. Nhật ký thí nghiệm đầy đủ
 
-Bản đầy đủ nằm ở [docs/04-results.md](../04-results.md) (10 dòng, trục học sâu, bắt
-đầu 2026-09-08) và [docs/archive/04-results-ml.md](../archive/04-results-ml.md)
-(101 dòng, trục học máy, 2026-08-26 → 09-07).
+Bản đầy đủ nằm ở [docs/04-results.md](../04-results.md) (17 dòng, trục học sâu, bắt
+đầu 2026-09-08). Báo cáo chỉ dẫn các dòng đo trên lược đồ chia hiện hành.
 
-Khi ghép vào bản Word, chèn cả hai bảng vào phụ lục này dưới dạng bảng, hoặc dẫn
+Khi ghép vào bản Word, chèn bảng vào phụ lục này dưới dạng bảng, hoặc dẫn
 chiếu tới tệp nếu hội đồng chấp nhận phụ lục điện tử.
 
 ---
 
-## Phụ lục E. Kế hoạch thực hiện
-
-**Bảng E.1: Kế hoạch 15 tuần**
-
-| STT | Nội dung công việc | Thời gian | Kết quả đạt được | Trạng thái |
-|---|---|---|---|---|
-| 1 | Khảo sát bài toán, thu thập và xử lý dữ liệu tin tuyển dụng | Tuần 1–2 | Bộ dữ liệu đã chuẩn hoá và chia ba tập | **xong** |
-| 2 | Biểu diễn văn bản bằng mô hình ngôn ngữ tiếng Việt và xây nhánh phân loại | Tuần 3–4 | Mô hình phân loại chạy ổn định, vượt các mốc cơ sở | **cần chạy lại** trên lược đồ mới |
-| 3 | Bổ sung nhánh ước lượng lương, huấn luyện đa nhiệm | Tuần 5–6 | Mô hình đa nhiệm cho ra ngành nghề và mức lương | nhánh lương **xong**; đa nhiệm **chưa** |
-| 4 | Phân tích lỗi và cải tiến mô hình | Tuần 7–9 | Báo cáo nguyên nhân dự đoán sai và kết quả sau cải tiến | phân tích **xong**, cải tiến **chưa** |
-| 5 | So sánh học sâu với học máy truyền thống | Tuần 10 | Bảng so sánh độ chính xác và tốc độ xử lý | thiếu **bảng độ trễ suy luận** |
-| 6 | Xây dựng hệ thống dự đoán và giao diện | Tuần 11–12 | Hệ thống nhận tin và trả về ngành nghề, mức lương | **chưa bắt đầu** |
-| 7 | Hoàn thiện chức năng và kiểm thử hệ thống | Tuần 13 | Hệ thống chạy ổn định, có kết quả kiểm thử | **chưa bắt đầu** |
-| 8 | Đánh giá tổng thể trên tập kiểm tra | Tuần 14 | Kết quả đánh giá cuối cùng của hai bài toán | **chưa** — `test` chỉ được chạm một lần |
-| 9 | Viết báo cáo và chuẩn bị bảo vệ | Tuần 15 | Quyển báo cáo, slide, bản demo | đang làm liên tục |
-
-> ✍️ **CẦN VIẾT TAY** — ô "Thời gian thực hiện" trong đề cương (ngày bắt đầu và ngày
-> kết thúc) vẫn còn để trống. Điền vào đề cương và đồng bộ mốc tuần ở bảng trên.
-
----
-
-## Phụ lục F. Đối chiếu số liệu — bảng kiểm trước khi nộp
+## Phụ lục E. Đối chiếu số liệu — bảng kiểm trước khi nộp
 
 Mỗi con số trong quyển báo cáo phải tìm được ở đúng một trong các nguồn sau:
 
@@ -146,14 +119,13 @@ Mỗi con số trong quyển báo cáo phải tìm được ở đúng một tro
 | `artifacts/eda/summary.json` | Mọi con số của phân tích khám phá dữ liệu |
 | `artifacts/<run_id>/metrics.json` | Bộ độ đo đầy đủ của một lần chạy |
 | `docs/04-results.md` | Một dòng mỗi lần chạy — chỉ-thêm |
-| `docs/archive/04-results-ml.md` | 101 dòng của trục học máy đã đóng |
 
 **Bảng kiểm cuối cùng trước khi nộp:**
 
 - [ ] Không còn dấu `⛔` nào trong toàn bộ thư mục báo cáo
 - [ ] Không còn dấu `✍️` nào
 - [ ] Mọi khối `> **Nguồn số liệu:**` đã được xoá khỏi bản Word
-- [ ] Ba hình `04`, `05`, `06` đã được render
+- [ ] Các hình mermaid đã được render (`bash scripts/render_figures.sh`)
 - [ ] Số thứ tự tài liệu tham khảo đã đánh lại theo thứ tự xuất hiện
 - [ ] Mục lục, danh mục hình, danh mục bảng đã cập nhật tự động
 - [ ] `pytest -q` xanh
