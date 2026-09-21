@@ -115,3 +115,56 @@ def test_branch_ablation_changes_parameter_count():
     gru = sum(p.numel() for p in BiGruLstmCnn(branches="gru").parameters())
     lstm = sum(p.numel() for p in BiGruLstmCnn(branches="lstm").parameters())
     assert gru < both and lstm < both and lstm > gru      # LSTM có 4 cổng, GRU 3
+
+
+# ---------------------------------------------------------------------------
+# Chạy hết `run()` — test đã thiếu khi nhánh Dense gãy ở T8.2 mà 160 test vẫn xanh
+# ---------------------------------------------------------------------------
+
+import json  # noqa: E402
+import shutil  # noqa: E402
+
+from vietjobs import config as C  # noqa: E402
+from vietjobs.dl import encode as ENC  # noqa: E402
+from vietjobs.dl import train_dl as TD  # noqa: E402
+
+import importlib.util  # noqa: E402
+
+# `run()` ghi env.json với phiên bản transformers, nên cần cả gói đó — `.venv` chính
+# có torch (2.14, Python 3.14) nhưng không có transformers; ở đó hai test này skip.
+_needs_pooled = pytest.mark.skipif(
+    importlib.util.find_spec("transformers") is None
+    or not (ENC.cache_path("train", C.TASK_CATEGORY, 256).exists()
+            and ENC.cache_path("dev", C.TASK_CATEGORY, 256).exists()),
+    reason="cần transformers + cache gộp train/dev họ raw (chạy trong .venv-dl)")
+
+
+def _run(*extra):
+    args = TD.build_parser().parse_args(
+        ["--task", "category", "--no-log", "--device", "cpu", *extra])
+    out = TD.run(args)
+    try:
+        yield out, json.loads((out["out_dir"] / "metrics.json").read_text())
+    finally:
+        shutil.rmtree(out["out_dir"], ignore_errors=True)
+
+
+@_needs_pooled
+def test_run_one_dense_epoch_end_to_end():
+    """Một epoch Dense trên CPU phải chạy trọn, ghi đủ metrics.json với 16 lớp."""
+    for out, m in _run("--epochs", "1", "--run-id", "smoke-test-dense"):
+        assert out["stopped_by"] == "epochs"
+        assert 0 < m["metrics"]["f1_macro"] < 1
+        lop = [k for k in m["per_class"] if k not in ("accuracy", "macro avg", "weighted avg")]
+        assert len(lop) == 16
+        assert m["per_class"]["macro avg"]["f1-score"] == pytest.approx(m["metrics"]["f1_macro"])
+        assert {"f1_macro", "f1_micro", "f1_weighted", "accuracy"} <= set(m["metrics"])
+
+
+@_needs_pooled
+def test_max_minutes_stops_and_records_reason():
+    """Trần thời gian cắt sau epoch đầu và ghi stopped_by = time, epochs_run < epochs."""
+    for out, m in _run("--epochs", "5", "--max-minutes", "0.001", "--run-id", "smoke-test-cap"):
+        assert out["stopped_by"] == "time" and m["stopped_by"] == "time"
+        assert m["epochs_run"] < 5
+        assert m["best_epoch"] >= 1

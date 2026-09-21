@@ -29,9 +29,16 @@ def _has_cache(split, task):
     return all(p.exists() for p in _paths(split, task))
 
 
+# Skip theo TỪNG tổ hợp, không phải tất-cả-hoặc-không: một phiên Colab chỉ khôi phục
+# một họ cache (raw cho category, masked cho salary) vẫn phải qua được cổng test cho
+# họ đó — trước đây thiếu một họ là cả bốn tổ hợp cùng skip, cổng thành vô nghĩa.
+COMBOS_PARAM = [pytest.param(s, t, id=f"{s}-{t}",
+                             marks=pytest.mark.skipif(not _has_cache(s, t),
+                                                      reason=f"thiếu cache {s}/{t}"))
+                for s, t in COMBOS]
 _needs_cache = pytest.mark.skipif(
-    not all(_has_cache(s, t) for s, t in COMBOS),
-    reason="cần chạy `encode.py --pooling none` cho cả train/dev × raw/masked")
+    not any(_has_cache(s, t) for s, t in COMBOS),
+    reason="chưa có cache token nào — chạy `encode.py --pooling none`")
 
 
 def test_cache_paths_are_distinct_and_keep_the_old_name():
@@ -43,7 +50,7 @@ def test_cache_paths_are_distinct_and_keep_the_old_name():
 
 
 @_needs_cache
-@pytest.mark.parametrize("split,task", COMBOS)
+@pytest.mark.parametrize("split,task", COMBOS_PARAM)
 def test_masked_mean_of_token_cache_equals_pooled_cache(split, task):
     """Tiêu chí T8.1 trên bảng: mean(token cache) == cache pooled, tol 1e-2 (fp16)."""
     tok_p, mask_p, pooled_p = _paths(split, task)
@@ -55,7 +62,7 @@ def test_masked_mean_of_token_cache_equals_pooled_cache(split, task):
 
 
 @_needs_cache
-@pytest.mark.parametrize("split,task", COMBOS)
+@pytest.mark.parametrize("split,task", COMBOS_PARAM)
 def test_token_cache_shape_matches_manifest_and_mask_is_sane(split, task):
     manifest = json.loads(C.MANIFEST.read_text())
     n_rows = manifest["splits"][split]["rows"]
@@ -71,7 +78,7 @@ def test_token_cache_shape_matches_manifest_and_mask_is_sane(split, task):
 
 
 @_needs_cache
-@pytest.mark.parametrize("split,task", COMBOS)
+@pytest.mark.parametrize("split,task", COMBOS_PARAM)
 def test_token_sidecar_says_no_pooling(split, task):
     tok_p, _, _ = _paths(split, task)
     info = json.loads(tok_p.with_suffix(".json").read_text())

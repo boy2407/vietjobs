@@ -138,7 +138,8 @@ def batches(n: int, size: int, shuffle: bool, gen: torch.Generator):
         yield idx[i:i + size]
 
 
-def main() -> None:
+def build_parser() -> argparse.ArgumentParser:
+    """Tách khỏi ``main`` để test gọi được ``run(build_parser().parse_args([...]))``."""
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--task", required=True, choices=list(C.TASKS))
     ap.add_argument("--epochs", type=int, default=40)
@@ -159,8 +160,14 @@ def main() -> None:
                     help="chỉ dùng với --head rnn; ablation T8.5")
     ap.add_argument("--spatial-dropout", type=float, default=0.2,
                     help="chỉ dùng với --head rnn: tắt cả một kênh trên mọi bước thời gian")
+    ap.add_argument("--conv-channels", type=int, default=64,
+                    help="chỉ dùng với --head rnn: số kênh Conv1d sau mỗi nhánh RNN. "
+                         "Bài Tran–Vo–Luu 2022 dùng 50 (cùng --hidden 100)")
     ap.add_argument("--max-len", type=int, default=256)
     ap.add_argument("--patience", type=int, default=8)
+    ap.add_argument("--max-minutes", type=float, default=0,
+                    help="trần thời gian huấn luyện (phút, tính từ epoch 1); 0 = không giới hạn. "
+                         "Hết giờ thì dừng và giữ best.pt tới lúc đó — dùng cho phiên Colab có cap")
     ap.add_argument("--class-weight", action="store_true",
                     help="cân bằng lớp cho bài phân lớp (lệch 27:1)")
     ap.add_argument("--loss", default="ce", choices=["ce", "focal"],
@@ -182,8 +189,19 @@ def main() -> None:
                          "tái lập, nhật ký chỉ nhận lần chạy thật")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--seed", type=int, default=C.RANDOM_SEED)
-    args = ap.parse_args()
+    return ap
 
+
+def main() -> None:
+    run(build_parser().parse_args())
+
+
+def run(args: argparse.Namespace) -> dict:
+    """Một lần chạy trọn vẹn. Trả về ``{"run_id", "out_dir", "metrics", "stopped_by"}``.
+
+    Tách khỏi ``main`` để có một test chạy hết đường huấn luyện Dense một epoch —
+    thứ đã thiếu khi nhánh Dense gãy ở T8.2 mà 160 test vẫn xanh.
+    """
     if args.eval == "test" and not args.confirm_test:
         raise SystemExit("chấm test cần --confirm-test (docs/03-protocol.md, điều 2)")
     if args.loss == "focal" and args.task == C.TASK_SALARY:
@@ -255,6 +273,7 @@ def main() -> None:
     if is_rnn:
         model = BiGruLstmCnn(in_dim, args.hidden, out_dim, args.dropout,
                              spatial_dropout=args.spatial_dropout,
+                             conv_channels=args.conv_channels,
                              branches=args.branches).to(device)
     else:
         model = DenseHead(in_dim, args.hidden, out_dim, args.dropout).to(device)
@@ -286,7 +305,8 @@ def main() -> None:
 
     gen = torch.Generator().manual_seed(args.seed)
     best_score, best_epoch, best_state, waited = -np.inf, -1, None, 0
-    t0 = time.time()
+    stopped_by = "epochs"          # | "patience" | "time" — ghi vào metrics.json
+    t0 = time.time()               # tính từ epoch 1, không tính token_stats phía trên
 
     for epoch in range(1, args.epochs + 1):
         model.train()
@@ -342,7 +362,15 @@ def main() -> None:
             waited += 1
             if waited >= args.patience:
                 print(f"  dừng sớm ở epoch {epoch} (tốt nhất: {best_epoch})")
+                stopped_by = "patience"
                 break
+        if args.max_minutes and time.time() - t0 > 60 * args.max_minutes:
+            # Trần thời gian cho phiên Colab có cap. Best tới lúc này vẫn là best —
+            # đúng như patience — nhưng run này CHƯA hội tụ tự nhiên, nên ghi rõ.
+            print(f"  dừng vì hết giờ sau epoch {epoch} "
+                  f"({args.max_minutes:g} phút; tốt nhất: {best_epoch})")
+            stopped_by = "time"
+            break
 
     seconds = time.time() - t0
     model.load_state_dict(best_state)
@@ -355,8 +383,8 @@ def main() -> None:
     pd.DataFrame(pred_frame).to_parquet(out_dir / f"predictions_{args.eval}.parquet")
 
     env = environment(device)
-    arch = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},{args.branches})" if is_rnn
-            else "phobert-frozen+dense")
+    arch = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches})"
+            if is_rnn else "phobert-frozen+dense")
     # F1 "chuẩn" 2·P·R/(P+R) chỉ định nghĩa cho MỘT lớp; với 16 lớp là 16 con số,
     # và macro/micro/weighted ở `metrics` chỉ là ba cách gộp chúng lại. Lưu cả 16
     # (kèm precision/recall/support) để báo cáo đọc được từng lớp mà không phải
@@ -368,6 +396,7 @@ def main() -> None:
         "run_id": run_id, "task": args.task, "model": arch,
         "pooling": "none (token-level)" if is_rnn else "masked_mean",
         "eval": args.eval, "best_epoch": best_epoch, "epochs_run": epoch,
+        "stopped_by": stopped_by,
         "seconds": seconds, "metrics": best_metrics, "per_class": per_class,
         "config": vars(args), "env": env,
         "columns": T.columns_for(args.task),
@@ -382,11 +411,12 @@ def main() -> None:
                     f"R2raw={best_metrics['r2_raw']:.3f} · "
                     f"±20%={best_metrics['within_20pct'] * 100:.1f}%")
     else:
+        # `F1` = f1_weighted, đúng quy ước sẵn có của dự án (docs/nen-tang/06 §3).
         # microF1 = accuracy = F1 của arXiv:2112.11052 — ghi cả hai tên để so được
         # với bài báo mà không phải tra lại đẳng thức (xem evaluate.py).
         headline = (f"macroF1={best_metrics['f1_macro']:.4f} · "
+                    f"F1={best_metrics['f1_weighted']:.4f} · "
                     f"microF1={best_metrics['f1_micro']:.4f} · "
-                    f"wF1={best_metrics['f1_weighted']:.4f} · "
                     f"acc={best_metrics['accuracy']:.4f}")
 
     if not args.no_log:
@@ -401,9 +431,11 @@ def main() -> None:
                 encoding="utf-8")
         with path.open("a", encoding="utf-8") as fh:
             loss_tag = f",focal(g={args.focal_gamma:g})" if args.loss == "focal" else ""
-            base = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},{args.branches}" if is_rnn
-                    else f"phobert-frozen+dense(h={args.hidden}")
+            base = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches}"
+                    if is_rnn else f"phobert-frozen+dense(h={args.hidden}")
             prep = "segment+token-level" if is_rnn else "segment"
+            if stopped_by == "time":
+                prep += "+time-capped"     # người đọc log biết run này chưa hội tụ tự nhiên
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "
                      f"| {args.task} | {base}"
                      f"{',cw' if args.class_weight else ''}{loss_tag}) | title+desc+req | {prep} "
@@ -412,6 +444,8 @@ def main() -> None:
 
     print(f"\n[{run_id}] {args.task} · best epoch {best_epoch}/{epoch} · {headline}")
     print(f"  -> artifacts/{run_id}/")
+    return {"run_id": run_id, "out_dir": out_dir, "metrics": best_metrics,
+            "stopped_by": stopped_by}
 
 
 if __name__ == "__main__":

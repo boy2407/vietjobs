@@ -95,6 +95,8 @@ trải dài qua nhiều epoch, có thể thất bại giữa chừng, và **lý 
 | `env.json` | device, phiên bản torch/transformers, encoder | Hai lần chạy trên hai máy có thời gian không thể so sánh được |
 | `best.pt` | trọng số tại epoch `val` tốt nhất | Nếu không, một lần crash ở giờ thứ hai sẽ làm mất tất cả |
 | `predictions_<eval>.parquet` | dự đoán theo từng dòng | Đọc các lỗi thực tế sau khi lần chạy đã kết thúc |
+| `metrics.json` → `per_class` | 16 dòng precision / recall / **F1** / support, một dòng mỗi ngành (từ 2026-09-21) | F1 "chuẩn" 2·P·R/(P+R) chỉ có nghĩa cho một lớp; `f1_macro` chỉ là trung bình của 16 số này — báo cáo cần cả 16 |
+| `metrics.json` → `stopped_by` | `epochs` · `patience` · `time` (từ 2026-09-21) | `--max-minutes` cắt một lần chạy chưa hội tụ tự nhiên; người đọc phải biết điều đó. Khi là `time`, cột *Prep* của dòng log ghi thêm `+time-capped` |
 
 **`04-results.md` vẫn chỉ nhận một dòng cho mỗi lần chạy.** Nhồi mọi epoch vào
 đó sẽ phá hỏng khả năng đọc của chính nhật ký.
@@ -104,8 +106,11 @@ Cột *Headline* của dòng đó, với tác vụ lương, ghi
 không có `RMSE` và `R2raw`, và các dòng trước 2026-09-20 còn có `MedAE`).
 `RMSE` và `R2raw` tính trên thang triệu, là hai số mà bài báo giới thiệu bộ dữ
 liệu (arXiv 2603.05262) dùng để báo cáo, nên đặt sẵn trên dòng để so sánh
-không phải mở tệp. Với phân lớp, dòng ghi `macroF1 · F1 · acc` (từ
-2026-09-20; các dòng trước đó ghi `macroF1 · acc · balAcc · top3`).
+không phải mở tệp. Với phân lớp, dòng ghi `macroF1 · F1 · microF1 · acc` (từ 2026-09-21; từ
+2026-09-20 là `macroF1 · F1 · acc`; trước đó `macroF1 · acc · balAcc · top3`).
+`F1` là `f1_weighted` theo quy ước [nen-tang/06 §3](nen-tang/06-do-luong-va-baseline.md);
+`microF1` bằng `acc` với bài đơn nhãn và bằng F1 mà arXiv:2112.11052 báo cáo —
+để đặt cạnh số của bài đó không phải tra lại đẳng thức.
 
 Các vector PhoBERT được cache trong `artifacts/embeddings/`, thành hai tệp
 chia theo nhóm cột: `raw` cho phân lớp, `masked` cho hai tác vụ lương. Trộn
