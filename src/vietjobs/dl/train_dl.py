@@ -182,10 +182,11 @@ def main() -> None:
         raise SystemExit("chấm test cần --confirm-test (docs/03-protocol.md, điều 2)")
     if args.loss == "focal" and args.task == C.TASK_SALARY:
         raise SystemExit("--loss focal chỉ dùng cho phân lớp, salary đã dùng Huber")
-    if args.head == "rnn" and args.batch > 64:
+    if args.head == "rnn" and args.batch > 64 and args.device != "cuda":
         # 256 × 768 float32 = 786 KB mỗi tin; batch 256 là 200 MB chỉ riêng đầu vào,
-        # chưa kể trạng thái RNN. Hạ xuống thay vì để người chạy gặp OOM giữa chừng.
-        print(f"  --head rnn: hạ batch {args.batch} → 64 (mỗi tin nặng gấp 256 lần)")
+        # chưa kể trạng thái RNN — nặng cho CPU/MPS. Trên GPU (16 GB+) 200 MB không
+        # đáng lo, và hạ batch chỉ làm chậm do giảm độ song song — không cap ở đó.
+        print(f"  --head rnn trên {args.device}: hạ batch {args.batch} → 64 (mỗi tin nặng gấp 256 lần)")
         args.batch = 64
 
     torch.manual_seed(args.seed)
