@@ -15,11 +15,9 @@ Occupation classification and salary estimation from Vietnamese job postings
 `category` (classification), `disclosed` (does the posting state a salary?),
 `salary` (regression on `log1p(salary_mid)`).
 
-**The main track is deep learning** (since 2026-09-08): PhoBERT → dense → a
-single head, one task at a time first, multi-task later. The machine-learning
-track is closed and lives in `docs/archive/` and `scripts/archive/`; it is the
-**bar to beat** (test macro-F1 0.6112 for classification; dev MAE 5.86 million
-VND for salary), not junk — do not extend that branch, and do not delete it.
+**The only track is deep learning**: PhoBERT → dense → a single head, one task at
+a time first, multi-task later. The bars to clear are the no-model floors and the
+linear probe on the same vectors — see Rule 12.
 
 The project map is [docs/00-tong-quan.md](docs/00-tong-quan.md). Read it before
 touching the code.
@@ -31,7 +29,7 @@ x86_64 after 2.2.2 and none at all for Python 3.14, so the `dl/` package runs in
 its own venv.
 
 ```bash
-# main environment (data, Vietnamese NLP, machine learning, tests)
+# main environment (data, Vietnamese NLP, metrics, tests)
 python -m venv .venv && source .venv/bin/activate   # Python >= 3.10
 pip install -r requirements.txt && pip install -e .
 pytest -q                                            # must be green before a commit
@@ -45,16 +43,13 @@ PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_dl --task category --cla
 PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_dl --task salary
 PYTHONPATH=src .venv-dl/bin/python scripts/probe_embeddings.py --task category  # diagnostic bar
 
-# machine-learning path — only to re-run the old benchmark
 python -m vietjobs.dataset build                     # rebuild the splits (rarely needed)
-python -m vietjobs.train --task category --model svm --C 0.02 --province
-python -m vietjobs.predict --title "..." --description "..."
 bash scripts/render_figures.sh                       # render the mermaid diagrams in docs/
 ```
 
-`underthesea`, `pyvi`, `lightgbm` and `xgboost` are optional at import time —
-without them the pipeline still runs, it just loses one measurement axis. Do not
-wrap them in new `try/except` blocks: `vitext.py` already handles that.
+`underthesea` and `pyvi` are optional at import time — without them the pipeline
+still runs, it just loses one measurement axis. Do not wrap them in new
+`try/except` blocks: `vitext.py` already handles that.
 
 ## 2. Layout
 
@@ -62,11 +57,10 @@ wrap them in new `try/except` blocks: `vitext.py` already handles that.
 |---|---|
 | `TASKS.md` | **The work board** — read it first in every session: active task, dependencies, evidence, log. [docs/09-lo-trinh.md](docs/09-lo-trinh.md) is the strategy; this is the operations |
 | `tasks/` | Detail sheets for board sections that outgrew `TASKS.md` (one file per section, TASKS.md §3 Rule 7). `TASKS.md` keeps the pointer; status lives in the sheet |
-| `src/vietjobs/` | 8 shared modules. Role of each file: [docs/08-ma-nguon.md](docs/08-ma-nguon.md) |
+| `src/vietjobs/` | 5 shared modules. Role of each file: [docs/08-ma-nguon.md](docs/08-ma-nguon.md) |
 | `src/vietjobs/dl/` | The main track: `text.py` (input) · `encode.py` (PhoBERT) · `heads.py` (dense) · `train_dl.py` (CLI) |
-| `tests/` | 5 test files. `pytest -q` runs all of them — it works even without torch |
+| `tests/` | 5 test files (132 tests). `pytest -q` runs all of them — it works even without torch |
 | `scripts/` | Measurement and reporting — not a library, never imported back into `src/` |
-| `docs/archive/`, `scripts/archive/` | The closed machine-learning phase. **Do not edit** |
 | `docs/` | The living map of the project (see Rule 1) |
 | `hoc-tap/` | **Personal study notes, written in Vietnamese** — how the two deep-learning pipelines work, for a reader with no DL background. Outside Rule 1, Rule 6 and Rule 7: it holds no result numbers, nobody updates it after a run, and it is never cited in the thesis |
 | `resources/` | Abbreviations, stopwords, province list — Vietnamese data, committed |
@@ -85,7 +79,7 @@ After **every** real change, update it in the same working session:
 
 | What you just did | Which file you must edit |
 |---|---|
-| Finished a training run | `04-results.md` (automatic, append-only) + the results table in `06-baseline-dl.md` + the status cell in `00-tong-quan.md` |
+| Finished a training run | `04-results.md` (automatic, append-only) + the results table in `06-baseline-dl.md` + the status cell in `00-tong-quan.md` + regenerate `data/eda_xlsx/ket_qua_chay.xlsx` with `scripts/export_runs.py` (Rule 13) |
 | Changed the network architecture / default hyper-parameters | `06-baseline-dl.md` — diagram + the "five decisions" table |
 | Added a data measurement, changed a figure | `05-phan-tich-du-lieu.md` + re-run `python scripts/analyze_data.py` — measured on the **original file**, see Rule 8 |
 | Changed a preprocessing step | `02-vietnamese-nlp.md` — the nine-step table, the ablation table, the diagram (only the steps on the path into PhoBERT, Rule 11) |
@@ -123,15 +117,14 @@ reader.
   is evidence, not junk. It is not retold elsewhere (Rule 11).
 - **Only what was done** (Rule 11). Plans live in `TASKS.md` and
   `09-lo-trinh.md`, nowhere else.
-- Short sentences, one idea per sentence. Decimal point (0.6112).
+- Short sentences, one idea per sentence. Decimal point (0.6025).
 
 ## Rule 2 — experiment protocol
 
 Details in [docs/03-protocol.md](docs/03-protocol.md). Four absolutes:
 
 1. **Never change** `SPLIT_SEED = 20260826` or the split fractions. Changing them
-   makes every row in `04-results.md` **and every benchmark in `docs/archive/`**
-   incomparable.
+   makes every row in `04-results.md` incomparable.
 2. **`test` is touched exactly once**, at the end, behind `--confirm-test`. Model
    selection uses `dev` — and `test` is never *transformed*, see Rule 5.
 3. **`04-results.md` is append-only.** Never edit a row that is already written.
@@ -150,15 +143,16 @@ vector cache keeps the `raw` and `masked` families in separate files under
 Warning: `UNMASKED_COLUMNS` is a **hand-written list**, so the test only guards
 the columns whoever wrote it thought of. `soft_skills_text`,
 `qualifications_text` and `technical_skills_text` are not in it; they were
-measured to hold **0** salary figures (`docs/archive/09-lo-trinh-ml.md`,
-Ưu tiên 0b), and `tests/test_no_leak.py` now keeps that check. Adding a new text column means updating `_MASKABLE` **and**
+measured to hold **0** salary figures, and `tests/test_no_leak.py` keeps that
+check — that test is now the source of the claim. Adding a new text column means updating `_MASKABLE` **and**
 `UNMASKED_COLUMNS`.
 
 ## Rule 4 — training and inference share one code path
 
-`predict.build_frame` must produce exactly the column layout `dataset.clean`
-creates. A mismatch is a silent bug that only shows up as slowly worsening
-predictions.
+Any inference path must build exactly the column layout `dataset.clean` creates,
+and read its columns through `features.resolve_column` like `dl/text.py` does. A
+mismatch is a silent bug that only shows up as slowly worsening predictions.
+There is **no inference entry point right now** — T5.1 owns adding one.
 
 ## Rule 5 — `test` is untouchable, `dev` is the only place to tune
 
@@ -179,8 +173,6 @@ predictions.
    `"dev"` key in `manifest.json`. The blanket rename happened together with the
    new split scheme, because that scheme had already invalidated every number
    measured before it — so there was nothing left to stay name-compatible with.
-   Rows already written in `docs/archive/04-results-ml.md` still say `val`; that
-   file is append-only and describes the old splits, so leave it alone.
 5. **The split scheme is two-stage** (`config.SPLIT_TEST_FRACTION`,
    `SPLIT_DEV_FRACTION`): `train:test` = 8:2, then that train pool split again
    into `train:dev` = 9:1 → 34,354 / 3,812 / 9,541 rows. `dev` is small on
@@ -192,7 +184,7 @@ predictions.
 1. **`docs/00-tong-quan.md` through `docs/09-lo-trinh.md` (the ten numbered
    top-level notes) are written in Vietnamese**, translated from English on
    2026-09-16. **Everything else stays English**: `docs/nen-tang/`,
-   `docs/archive/`, `README.md`, this file, and every `SKILL.md` under
+   `README.md`, this file, and every `SKILL.md` under
    `.claude/skills/`. Two further notes were already Vietnamese before this
    change: `docs/bao-cao/` (the thesis manuscript, see item 6) and `hoc-tap/`
    (personal study notes — outside the documentation tree, never cited, see §2).
@@ -204,7 +196,7 @@ predictions.
    `docs/bao-cao/` — including when a sentence quotes a result that lives in
    `04-results.md` under the English convention; only the log rows themselves
    stay as originally measured (see item 5). English-language files
-   (`docs/nen-tang/`, `docs/archive/`, `README.md`, this file, `SKILL.md`) keep
+   (`docs/nen-tang/`, `README.md`, this file, `SKILL.md`) keep
    English convention: decimal point, thousands comma.
 3. **English stays only where it is a code identifier, file path, column name,
    commit hash, or a literal quotation** (sample postings, raw text examples,
@@ -216,7 +208,7 @@ predictions.
    content, keep the path. Heading anchors *do* move with a translation, so a
    `file.md#heading` link must be updated in the same session as the heading it
    points at.
-5. **`docs/04-results.md`'s log table and all of `docs/archive/` are frozen**
+5. **`docs/04-results.md`'s log table is frozen**
    (Rule 2 item 3, and the layout table above). The RunID rows already written —
    text and number formatting both — stay exactly as written; only the prose
    around the table (e.g. the log's opening paragraph) follows item 1. New rows
@@ -403,7 +395,7 @@ Changing this list means editing **three** places: this rule, §7 of
 3. **Done work is written without excess.** Describe the steps that ran on the
    path the model actually reads, in order, once. Do not list steps that were
    removed or deliberately not done (their ablation evidence lives in
-   `docs/02-vietnamese-nlp.md` and `docs/archive/`), do not repeat what another
+   `docs/02-vietnamese-nlp.md`), do not repeat what another
    section already says (link to it), do not restate a table in prose.
    A run that failed is still a run that was done: it stays (Rule 7 item 4).
 4. **Example:** bao-cao §3.3 lists only NFC → tone marks → abbreviations →
@@ -412,6 +404,74 @@ Changing this list means editing **three** places: this rule, §7 of
 
 Changing this rule means editing **three** places: this rule, §8 of
 `docs/bao-cao/00-index.md`, and item 6 of `TASKS.md` §3.
+
+---
+
+## Rule 12 — the repository has one track, and does not name the closed one
+
+1. **Do not mention the earlier sparse-feature / classical-machine-learning
+   track anywhere** — not in `docs/`, `docs/bao-cao/`, `docs/nen-tang/`,
+   `README.md`, `TASKS.md`, source comments, or any `SKILL.md`. Its files, its
+   numbers and its dependencies were removed on 2026-09-19; writing them back in
+   as context, comparison, or history re-creates the thing that was removed.
+2. **The only bars are measured on this track**: the no-model floors
+   (`artifacts/eda/summary.json`, key `floors`) and the linear probe on the same
+   PhoBERT vectors (`probe-cat-s2`, `probe-sal-s2`). A new model is judged
+   against those and against the two baseline runs `dl-cat-s2` and `dl-sal-s2`,
+   never against a number that no longer has a file behind it.
+3. **The exception is the work log.** `TASKS.md` §5 and the rows already written
+   in `docs/04-results.md` are an immutable record of what was done on which day
+   (Rule 2 item 3). They are not edited to match this rule — rewriting a log to
+   fit a later decision is falsifying it, which is worse than the mention.
+4. **A number with no live source is deleted, not relabelled.** If a measurement
+   cannot be pointed at a file in this repository — `metrics.json`,
+   `summary.json`, `manifest.json`, or a row in `04-results.md` — it does not
+   appear in any document (Rule 1, Rule 7 item 1).
+
+Changing this rule means editing **two** places: this rule and the status line in
+`docs/00-tong-quan.md`.
+
+---
+
+## Rule 13 — every run is recorded, and names its model and its loss
+
+1. **After every training or probe run, regenerate the results workbook**:
+
+   ```bash
+   .venv/bin/python scripts/export_runs.py     # -> data/eda_xlsx/ket_qua_chay.xlsx
+   ```
+
+   It rebuilds three sheets from the sources — `00_Runs` (every run, every
+   column), `01_Phan_Lop` and `02_Luong` (the two report tables). Run it in
+   `.venv`; `.venv-dl` has no `openpyxl`.
+
+2. **The workbook is derived, never authored.** Its sources are
+   `docs/04-results.md` (the append-only log) and `artifacts/<run_id>/`. Never
+   edit the `.xlsx` by hand: the next regeneration silently discards the edit,
+   and a hand-typed number has no source (Rule 7 item 1). If a number in it is
+   wrong, the run is wrong, not the workbook.
+
+3. **Every row must name the model and the loss, with the loss's own
+   hyper-parameters** — γ for focal, whether class weighting was on. Two runs
+   that differ only in loss are otherwise indistinguishable in the log, which is
+   exactly the comparison the classification task is being judged on.
+
+4. **A run's row also carries the device and the library versions**
+   (`torch`, `numpy`, `pandas`, `scikit_learn`, from `env.json`). This is not
+   bookkeeping: on 2026-09-20 `dl-cat-s2` could not be reproduced, and the cause
+   could not be diagnosed because those versions were never recorded. See item 5.
+
+5. **Training runs on `cpu` by default, and that default is load-bearing.**
+   Measured 2026-09-20: on `mps`, the same seed and the same code give macro-F1
+   anywhere in **0,6012–0,6041** across eight runs; on `cpu` the same
+   configuration gives one number every time, at the same wall-clock cost
+   (12–16 s). Any run that reports `device=mps` for the dense head is a run whose
+   number cannot be checked — treat a difference below **0,003** macro-F1 between
+   two such runs as noise, not as a result. `encode.py` may stay on `mps`: its
+   output is written to `artifacts/embeddings/` once and reused byte-for-byte.
+
+Changing this rule means editing **three** places: this rule, the "Finished a
+training run" row of the Rule 1 table, and item 8 of `TASKS.md` §3.
 
 ---
 

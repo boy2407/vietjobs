@@ -614,7 +614,10 @@ Báo cáo kèm theo:
 - `f1_macro_no_junk` — macro-F1 trên 15 lớp, bỏ `nhóm_nghề_khác`. Lớp này là ngăn
   chứa tạp; báo cáo cả hai con số giữ cho **nhiễu nhãn** và **lỗi mô hình** không bị
   trộn làm một.
-- `balanced_accuracy`, `accuracy`, `top3_accuracy`.
+- `f1_weighted` (ghi là **F1**) — cùng F1 nhưng trung bình có trọng số theo số mẫu
+  mỗi lớp, và `accuracy`. Từ 2026-09-20 đây là toàn bộ bộ chỉ số của bài phân lớp:
+  `balanced_accuracy` và `top3_accuracy` đã bị bỏ khỏi `evaluate.py`, nên các lần
+  chạy từ ngày đó không còn ghi hai số này.
 - Ma trận nhầm lẫn và 10 cặp lớp bị nhầm nhiều nhất.
 
 ### 3.8.2. Bài toán hồi quy mức lương
@@ -628,7 +631,6 @@ gian logarit không phải con số ai hành động được.
 |---|---|
 | MAE | Sai số tuyệt đối trung bình |
 | RMSE | Căn bậc hai của sai số bình phương trung bình — phạt nặng các lỗi lớn |
-| MedAE | Sai số tuyệt đối trung vị — bền với ngoại lệ hơn MAE |
 | R² (log) | Hệ số xác định, tính trên thang `log1p` |
 | ±20 % | Tỷ lệ tin có dự đoán nằm trong ±20 % giá trị thật |
 

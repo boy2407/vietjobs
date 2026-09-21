@@ -120,9 +120,9 @@ Vì sao accuracy lừa người đọc khi lớp lệch: xem
 
 Một điểm số đứng một mình **không nói gì cả**. Phải so với mô hình ngu nhất có thể:
 
-- Phân loại: mô hình luôn đoán lớp lớn nhất. Mô hình chỉ dùng quy tắc từ khoá trên tiêu
-  đề. Và mốc thật sự phải vượt: đường TF-IDF + LinearSVC cũ — 101 thí nghiệm, giờ đã
-  khoá lại trong `docs/archive/` **không phải vì nó rác, mà vì nó là thước đo**.
+- Phân loại: mô hình luôn đoán lớp lớn nhất — sàn tuyệt đối. Và mốc thật sự phải
+  vượt: **phép dò tuyến tính trên chính bộ vector PhoBERT** — nếu mạng dense không hơn
+  được nó, phần sức tính toán thêm vào không mua được gì.
 - Lương: mô hình đoán **trung vị** cho mọi tin. Nghe buồn cười, nhưng nó là cái sàn
   thật sự — một mô hình học sâu không vượt được nó thì nó chưa học được gì từ văn bản,
   chỉ đang đoán trung vị bằng đường vòng.

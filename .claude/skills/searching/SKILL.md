@@ -19,7 +19,7 @@ How it differs from the other skills: *what is this concept* →
 [`model-diagnosis`](../model-diagnosis/SKILL.md). This skill answers only **what to
 try next**.
 
-This skill **proposes**; it does not run. `train.py` and `dl/train_dl.py` run.
+This skill **proposes**; it does not run. `dl/train_dl.py` runs.
 
 ---
 
@@ -33,14 +33,13 @@ Mandatory `Read` before writing a single word:
 
 | File | What to take from it |
 |---|---|
-| `docs/archive/10-so-sanh-mo-hinh.md` | The fair sweep cluster: which model won, by how much, `P(row > column)`, the cost of one point |
-| `docs/04-results.md` (and `docs/archive/04-results-ml.md` for the closed track) | Every configuration actually run, with date and commit |
+| `docs/04-results.md` | Every configuration actually run, with date and commit |
+| `docs/06-baseline-dl.md` | The two baseline runs, the floors, and what each decision was measured against |
 | `docs/09-lo-trinh.md` | The work items already ranked, and why they are ranked that way |
 | `docs/03-protocol.md` | The decision rules: the paired-bootstrap threshold, the removal rule |
 
 If the question is about the salary task, also read `docs/07-bai-toan-luong.md`; if
-it is about the deep-learning track, `docs/06-baseline-dl.md`; if it is about
-TF-IDF features, `docs/archive/05-dac-trung-tfidf.md`.
+it is about how the text reaches the model, `docs/02-vietnamese-nlp.md`.
 
 Answering from memory here produces a *plausible-sounding* proposal for an
 experiment that **has already been run and already lost**. Nobody catches it, not
@@ -55,7 +54,7 @@ recall them:
 |---|---|
 | Training samples, number of groups | `data/processed/manifest.json` |
 | Number of classes and the class skew | `manifest.json` + the `metrics.per_class` key of `metrics.json` |
-| Feature dimensionality, the p/n ratio | `docs/archive/05-dac-trung-tfidf.md` (TF-IDF) · `docs/06-baseline-dl.md` (768 dense dims) |
+| Input dimensionality | `docs/06-baseline-dl.md` — 768 dense dimensions per posting |
 | Current fit budget | `fit_seconds` in `artifacts/<run>/metrics.json` |
 | Hardware | `environment` in that same file — **no GPU**, so every fine-tuning proposal must state its cost |
 | The score to beat | The best row in `docs/04-results.md`, with `f1_macro_boot_std` |
@@ -87,18 +86,16 @@ A proposal is only worth something if the reader knows what to type next. Every 
 of the candidate table ends in **one** of two things:
 
 - A command that runs right now, e.g.
-  `python -m vietjobs.train --task category --model svm --C 0.02 --province`, or
   `PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_dl --task category`,
-  plus `--set KEY=VALUE` for estimator hyper-parameters.
-- Or an explicit statement of **what has to be written**: adding a name to
-  `CLASSIFIERS`/`REGRESSORS` and a branch in `build_estimator`
-  (`src/vietjobs/models.py`); adding a switch to `PrepConfig` or editing a block in
-  `build_features` (`src/vietjobs/features.py`); adding an architecture to
-  `src/vietjobs/dl/heads.py`. With an estimate of the lines of code.
+  with the flags that differ from the default.
+- Or an explicit statement of **what has to be written**: which columns
+  `dl/text.py` would have to join (and that changing them means re-encoding);
+  which architecture to add to `src/vietjobs/dl/heads.py`. With an estimate of the
+  lines of code.
 
-Note one real limitation: `--set` only reaches the estimator. Changing a TF-IDF
-parameter (`min_df`, `max_features`, `sublinear_tf`) means editing `_word_tfidf` —
-say so plainly instead of offering a command that does not exist.
+Note one real limitation: a flag reaches the head only. Changing what goes **into**
+the vector means editing `dl/text.py` and re-running `dl/encode.py` — say so plainly
+instead of offering a command that does not exist.
 
 ## Rule 5 — an expectation is not a result
 
@@ -137,13 +134,12 @@ worth as much as picking one.
 
 | Type | Also accepts | Read first | The constraint that usually binds |
 |---|---|---|---|
-| `pick-a-model` | `chon-mo-hinh`, `model`, `algorithm` | `docs/archive/10-so-sanh-mo-hinh.md` | Six families already measured; the gaps are inside the noise |
+| `pick-a-model` | `chon-mo-hinh`, `model`, `architecture` | `docs/06-baseline-dl.md` | The dense head beats its linear probe by only 0.0127 — capacity is not the binding constraint |
 | `imbalance` | `mat-can-bang`, `small-classes`, `class-weight` | `docs/05-phan-tich-du-lieu.md` §2 | Skew 27.1:1; `--class-weight` measured as a trade, not a gain |
-| `fewer-dimensions` | `giam-chieu`, `min-df`, `max-features`, `svd`, `p-n` | `docs/archive/05-dac-trung-tfidf.md` | p/n ≈ 7; `--set` cannot reach the TF-IDF stage |
-| `block-weighting` | `trong-so-khoi`, `title-x2` | `docs/archive/09-lo-trinh-ml.md` Priority 3a | Needs an edit to `build_features`; no CLI flag exists |
+| `more-input-columns` | `them-cot`, `them-dac-trung`, `skills`, `province` | `docs/05-phan-tich-du-lieu.md` | Adding a column means editing `dl/text.py` and re-encoding, or concatenating a block onto the vector |
 | `deep-learning` | `hoc-sau`, `phobert`, `bert`, `transformer` | `docs/06-baseline-dl.md` + `docs/09-lo-trinh.md` Priority 2 | No GPU; inference latency must be reported alongside the score |
-| `calibration` | `hieu-chuan`, `probabilities`, `top3` | `docs/archive/09-lo-trinh-ml.md` Priority 5.1 | `LinearSVC` has no `predict_proba` |
-| `salary-regression` | `hoi-quy-luong`, `salary`, `ridge`, `lgbm`, `quantile` | `docs/07-bai-toan-luong.md` | Reads `*_masked` columns only; selection bias |
+| `calibration` | `hieu-chuan`, `probabilities`, `top3` | `docs/06-baseline-dl.md` | `top3_accuracy` is already logged; softmax scores are not calibrated probabilities |
+| `salary-regression` | `hoi-quy-luong`, `salary`, `quantile` | `docs/07-bai-toan-luong.md` | Reads `*_masked` columns only; selection bias |
 | `label-noise` | `nhieu-nhan`, `ceiling`, `relabel` | `docs/viec-du-lieu/00-index.md` D1 | The real ceiling is unmeasured — measure it before switching models |
 | `multi-task` | `da-nhiem`, `shared-trunk` | `docs/09-lo-trinh.md` Priority 3 | The sector explains 3.2 % of log-salary variance — expect little |
 

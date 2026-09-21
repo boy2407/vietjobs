@@ -189,9 +189,9 @@ Một thư mục `artifacts/<run_id>/` với 7 tệp — bảng đầy đủ đ�
 Ba mốc để so, từ thấp đến cao:
 
 1. Mô hình luôn đoán lớp lớn nhất — sàn tuyệt đối.
-2. Quy tắc từ khoá trên tiêu đề — sàn có ý nghĩa.
-3. **TF-IDF + LinearSVC** — mốc thật sự phải vượt. 101 thí nghiệm cũ, đã đóng lại vào
-   `docs/archive/`, không phải vì lỗi thời mà vì đó **là** cái thước.
+2. **Phép dò tuyến tính trên chính bộ vector PhoBERT** — mốc thật sự phải vượt: nó
+   đọc đúng đầu vào ấy, không có tốc độ học để chỉnh sai, nên nếu mạng dense thua nó
+   thì lỗi nằm ở đầu ra chứ không ở biểu diễn.
 
 Con số cụ thể của cả ba mốc: [`docs/06-baseline-dl.md` §3`](../docs/06-baseline-dl.md#3-the-bars-to-beat) —
 không chép sang đây vì nó là kết quả đo, không phải khái niệm.

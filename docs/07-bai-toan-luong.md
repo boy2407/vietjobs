@@ -1,10 +1,10 @@
-[← Tổng quan](00-tong-quan.md) · [← Mô hình phân lớp](archive/06-mo-hinh-phan-lop.md) · [Mã nguồn →](08-ma-nguon.md)
+[← Tổng quan](00-tong-quan.md) · [← Baseline học sâu](06-baseline-dl.md) · [Mã nguồn →](08-ma-nguon.md)
 
 # Bài toán 2 — ước lượng lương
 
 Đầu ra lương là một mạng dense trên vector PhoBERT họ `masked`
 ([06-baseline-dl.md](06-baseline-dl.md)). Kết quả trên lược đồ chia v2 (T1.4,
-`dl-sal-s2`, `dev` 2.698 tin có nhãn lương): MAE **4,15** triệu, RMSE **8,29** triệu, R² log **0,512**,
+`dl-sal-cpu-0920`, `dev` 2.698 tin có nhãn lương): MAE **4,13** triệu, RMSE **8,13** triệu, R² log **0,515**,
 so với mốc đoán trung vị 5,70 triệu — chi tiết ở
 [06 §5.2](06-baseline-dl.md#52-ước-lượng-lương).
 
@@ -31,25 +31,6 @@ Xem phần thiên lệch chọn mẫu bên dưới.
 **3. Mục tiêu là một số thực có đuôi dài**, không phải nhãn rời rạc. Đó là lý
 do mục tiêu hồi quy là `log1p(salary_mid)` chứ không phải `salary_mid`
 ([01-data-audit.md §5](01-data-audit.md#5-nhãn--xây-dựng-và-sửa-lỗi)).
-
----
-
-## Cạm bẫy đã đo: hồi quy tuyến tính không chính quy hoá
-
-Đo ở nhánh học máy (TF-IDF trên tiêu đề, p/n = 0,22, lược đồ v1):
-
-| Mô hình | R² train | R² dev | MAE dev |
-|---|---|---|---|
-| LinearRegression thuần | 0,718 | **0,081** | **6,00 M** |
-| Ridge alpha=1 | 0,657 | **0,507** | **4,25 M** |
-
-MAE 6,00 triệu còn tệ hơn cả mốc chuẩn "trung vị theo nhóm ngành nghề"
-(5,54 M, lược đồ v1) — nghĩa là tệ hơn cả việc không dùng mô hình nào.
-
-Đọc kỹ hai dòng này: R² trên train giảm (0,718 → 0,657) trong khi R² trên dev
-**tăng gấp sáu lần** (0,081 → 0,507). Đó chính là định nghĩa của hiện tượng
-overfitting (quá khớp), và cũng là toàn bộ lý do vì sao chính quy hoá tồn tại
-— [nền tảng: chính quy hoá](nen-tang/07-chinh-quy-hoa.md).
 
 ---
 

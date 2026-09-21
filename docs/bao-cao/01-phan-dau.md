@@ -104,7 +104,6 @@ PHỤ LỤC
 | GPU | Graphics Processing Unit | Bộ xử lý đồ hoạ |
 | IQR | Interquartile Range | Khoảng tứ phân vị |
 | MAE | Mean Absolute Error | Sai số tuyệt đối trung bình |
-| MedAE | Median Absolute Error | Sai số tuyệt đối trung vị |
 | MPS | Metal Performance Shaders | Nền tảng tăng tốc GPU trên macOS |
 | MSE | Mean Squared Error | Sai số bình phương trung bình |
 | RMSE | Root Mean Squared Error | Căn bậc hai sai số bình phương trung bình |
@@ -112,7 +111,6 @@ PHỤ LỤC
 | NLP | Natural Language Processing | Xử lý ngôn ngữ tự nhiên |
 | PhoBERT | — | Mô hình ngôn ngữ tiền huấn luyện cho tiếng Việt |
 | R² | Coefficient of Determination | Hệ số xác định |
-| SVM | Support Vector Machine | Máy vectơ hỗ trợ |
 | VND | Vietnam Dong | Đồng Việt Nam |
 
 ---
@@ -136,9 +134,9 @@ lớp, một mạng hồi quy mức lương trên thang `log1p` chỉ đọc vă
 tuyến tính trên chính vectơ đó.
 
 Trên tập `dev`, mạng hồi quy lương giảm sai số tuyệt đối trung bình từ mốc **5,70
-triệu** xuống **4,15 triệu** đồng/tháng (R² trên thang log 0,512), còn mạng phân loại
-đạt macro-F1 **0,6025** và độ chính xác top-3 **0,9318**, so với **0,5898** và
-**0,9258** của mốc dò tuyến tính trên cùng bộ vectơ.
+triệu** xuống **4,13 triệu** đồng/tháng (R² trên thang log 0,515), còn mạng phân loại
+đạt macro-F1 **0,6030** và F1 có trọng số **0,6413**, so với **0,5898** và **0,6271**
+của mốc dò tuyến tính trên cùng bộ vectơ.
 
 Một phát hiện quan trọng: **nhãn ngành nghề gần như không nói gì về mức lương** —
 phân rã phương sai cho eta² = **0,032**, tức ngành nghề chỉ giải thích 3,2 % biến

@@ -58,7 +58,7 @@ chia lại. Mọi việc làm sạch hay điều chỉnh dữ liệu chỉ áp d
 `dev`. Một khi tập test đã bị chỉnh sửa, con số cuối cùng không còn nói lên
 điều gì về dữ liệu thực nữa.
 
-`train.py` từ chối chạy `--eval test` nếu không có cờ `--confirm-test`. Cờ đó
+`dl/train_dl.py` từ chối chạy `--eval test` nếu không có cờ `--confirm-test`. Cờ đó
 tồn tại để việc chạm vào test là một hành động có chủ ý, chứ không phải mặc
 định.
 
@@ -69,7 +69,7 @@ một ước lượng không thiên lệch nữa.
 ## 3. Nhật ký chỉ được ghi thêm
 
 `docs/04-results.md` là một nhật ký **chỉ được ghi thêm**. Mỗi lần chạy
-`train.py` ghi đúng một dòng: run id, timestamp, task, model, scope, cấu hình
+`dl/train_dl.py` ghi đúng một dòng: run id, timestamp, task, model, scope, cấu hình
 tiền xử lý, tập đánh giá, số lượng mẫu, các chỉ số, thời gian huấn luyện, git
 sha.
 
@@ -83,7 +83,7 @@ khảo.
 
 ## 3b. Học sâu ghi thêm những gì
 
-Một lần chạy học máy kết thúc bằng một con số duy nhất. Một lần chạy học sâu
+Một lần chạy học sâu
 trải dài qua nhiều epoch, có thể thất bại giữa chừng, và **lý do thất bại nằm
 ở đường cong huấn luyện, không nằm ở con số cuối cùng**. Vì vậy
 `dl/train_dl.py` ghi thêm các tệp trong `artifacts/<run_id>/`:
@@ -98,6 +98,14 @@ trải dài qua nhiều epoch, có thể thất bại giữa chừng, và **lý 
 
 **`04-results.md` vẫn chỉ nhận một dòng cho mỗi lần chạy.** Nhồi mọi epoch vào
 đó sẽ phá hỏng khả năng đọc của chính nhật ký.
+
+Cột *Headline* của dòng đó, với tác vụ lương, ghi
+`MAE · RMSE · R2log · R2raw · ±20%` (từ 2026-09-20; các dòng trước 2026-09-19
+không có `RMSE` và `R2raw`, và các dòng trước 2026-09-20 còn có `MedAE`).
+`RMSE` và `R2raw` tính trên thang triệu, là hai số mà bài báo giới thiệu bộ dữ
+liệu (arXiv 2603.05262) dùng để báo cáo, nên đặt sẵn trên dòng để so sánh
+không phải mở tệp. Với phân lớp, dòng ghi `macroF1 · F1 · acc` (từ
+2026-09-20; các dòng trước đó ghi `macroF1 · acc · balAcc · top3`).
 
 Các vector PhoBERT được cache trong `artifacts/embeddings/`, thành hai tệp
 chia theo nhóm cột: `raw` cho phân lớp, `masked` cho hai tác vụ lương. Trộn
@@ -117,7 +125,10 @@ dàng che giấu một mô hình bỏ qua hoàn toàn phần đuôi.
   những tin tuyển dụng thực chất thuộc về marketing và IT. Đó là **nhiễu
   nhãn, không phải lỗi mô hình**; báo cáo cả hai con số giữ hai điều này tách
   biệt.
-- `balanced_accuracy`, `accuracy`, `top3_accuracy`.
+- `f1_weighted` — F1 trung bình có trọng số theo số mẫu mỗi lớp, và
+  `accuracy`. Từ 2026-09-20 đây là toàn bộ bộ chỉ số của bài phân lớp;
+  `balanced_accuracy` và `top3_accuracy` đã bị bỏ khỏi `evaluate.py`, nên các
+  run từ ngày đó không còn ghi hai số này vào `metrics.json`.
 - Ma trận nhầm lẫn và 10 cặp lớp bị nhầm lẫn nhiều nhất.
 
 ### Hồi quy lương
@@ -125,36 +136,18 @@ dàng che giấu một mô hình bỏ qua hoàn toàn phần đuôi.
 Mọi con số đều được **báo cáo theo triệu VND/tháng**. Một MAE trong không
 gian log không phải là con số mà người ta có thể dựa vào để hành động.
 
-## 5. Hai trục thực nghiệm
-
-Ba thuật toán × sáu bước tiền xử lý là 18 lần chạy, và KNN trên toàn văn bản
-mất 10–30 phút mỗi lần. Không khả thi. Vì vậy:
-
-**Trục 1 — bậc thang tiền xử lý.** Cố định *một* thuật toán rẻ, mạnh (`svm`)
-làm thước đo và bật/tắt từng bước xử lý tiếng Việt một lần lượt. Chốt lại cấu
-hình tốt nhất, gọi nó là `PREP*`.
-
-**Trục 2 — so sánh thuật toán.** Cả ba thuật toán chạy trên đúng `PREP*`,
-cùng đặc trưng, cùng seed.
-
-Trộn lẫn hai trục và bạn sẽ không thể biết một cải thiện đến từ tiền xử lý
-hay từ thuật toán.
-
 ## 7. So sánh mô hình — các quy tắc quyết định
 
-Được thêm vào sau cụm sweep công bằng
-([10-so-sanh-mo-hinh.md](archive/10-so-sanh-mo-hinh.md)). Ba ràng buộc áp
-dụng cho mọi so sánh mô hình kể từ đây:
+Ba ràng buộc áp dụng cho mọi so sánh mô hình:
 
 **a. Cùng một số lượng cấu hình cho mọi mô hình.** So sánh "tốt nhất trong
 chín lần thử" với "lần thử đầu tiên" là so sánh công sức tinh chỉnh thủ công,
 không phải thuật toán. Nếu một mô hình được sweep `n` cấu hình, mọi mô hình
 trong cùng bảng đó cũng phải được sweep `n` cấu hình.
 
-**b. Mọi lần chạy đều lưu `predictions.npz`.** `train.py` ghi `row_index`,
-`y_true` và `y_pred` trên tập đánh giá. Nếu không có, lần chạy đó **không thể
-được ghép cặp** với bất kỳ lần chạy nào khác — đó là lý do 33 lần chạy trước
-cụm này đã phải chạy lại từ đầu.
+**b. Mọi lần chạy đều lưu dự đoán từng dòng.** `dl/train_dl.py` ghi
+`predictions_<eval>.parquet`. Nếu không có, lần chạy đó **không thể được ghép
+cặp** với bất kỳ lần chạy nào khác.
 
 **c. Quyết định bằng paired bootstrap, không bằng σ.** Dùng **một** ma trận
 chỉ số dùng chung (`evaluate.bootstrap_indices`) cho mọi mô hình được so

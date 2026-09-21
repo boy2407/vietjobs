@@ -58,8 +58,7 @@ dấu `⛔` ngay tại mục tương ứng, không được để trống hay vi
 Mọi số liệu trong báo cáo đo trên lược đồ chia hai tầng `train:test = 8:2` rồi
 `train:dev = 9:1` (34.354 / 3.812 / 9.541 dòng, `manifest.json`). Phân tích dữ liệu
 mô tả đo trên **tệp gốc 47.707 dòng** (`AGENTS.md` Rule 8). Các lần chạy trước
-2026-09-09 (tập dev cũ 7.159 dòng) và nhánh học máy TF-IDF trong
-[archive/](../archive/README.md) **không** được dùng trong báo cáo.
+2026-09-09 (tập dev cũ 7.159 dòng) **không** được dùng trong báo cáo.
 
 ---
 

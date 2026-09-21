@@ -154,10 +154,9 @@ trăm bộ lọc chạy song song.
 xoá sạch. Ví dụ một bộ lọc rộng 3 có thể học cách kích hoạt mạnh trên
 `lập_trình_viên . java . senior`, một bộ lọc khác trên `kế_toán . tổng_hợp . thuế`.
 
-**Đây chính là ý tưởng n-gram** của [`docs/nen-tang/03-ngram-va-ranh-gioi-tu.md`](../docs/nen-tang/03-ngram-va-ranh-gioi-tu.md),
-nhưng **được học** thay vì **được đếm** — và khác biệt đó rất lớn: n-gram đếm chỉ khớp
-khi cụm từ **trùng khít**, còn bộ lọc tích chập chạy trên vector nên nó kích hoạt cả
-với cụm *gần giống*. `chuyên_viên kinh_doanh` có thể kích hoạt bộ lọc đã học từ
+**Đây chính là ý tưởng bắt cụm từ liền nhau**, nhưng **được học** thay vì **được
+đếm** — và khác biệt đó rất lớn: đếm cụm chỉ khớp khi cụm từ **trùng khít**, còn bộ
+lọc tích chập chạy trên vector nên nó kích hoạt cả với cụm *gần giống*. `chuyên_viên kinh_doanh` có thể kích hoạt bộ lọc đã học từ
 `nhân_viên bán_hàng`, dù không chung chữ nào.
 
 **Ba cửa sổ 3/4/5.** Chạy song song ba lớp tích chập với ba bề rộng, nghĩa đen là "nhìn
@@ -215,5 +214,4 @@ Không phải hướng dẫn thi công, chỉ là danh sách những chỗ dễ 
 
 - [Bài 5 · vòng huấn luyện và đo lường](05-vong-huan-luyen-va-do-luong.md) — kèm bảng
   so sánh A và B cạnh nhau
-- [`docs/nen-tang/03-ngram-va-ranh-gioi-tu.md`](../docs/nen-tang/03-ngram-va-ranh-gioi-tu.md) —
-  n-gram và ranh giới từ tiếng Việt
+- [`docs/02-vietnamese-nlp.md`](../docs/02-vietnamese-nlp.md) — ranh giới từ tiếng Việt

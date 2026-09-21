@@ -17,7 +17,6 @@ import numpy as np
 from sklearn.metrics import (
     accuracy_score,
     average_precision_score,
-    balanced_accuracy_score,
     classification_report,
     confusion_matrix,
     f1_score,
@@ -25,7 +24,6 @@ from sklearn.metrics import (
     mean_squared_error,
     r2_score,
     roc_auc_score,
-    top_k_accuracy_score,
 )
 
 from . import config as C
@@ -36,14 +34,13 @@ from . import config as C
 # ---------------------------------------------------------------------------
 
 
-def classification_metrics(y_true, y_pred, y_proba=None, labels=None) -> dict:
+def classification_metrics(y_true, y_pred, labels=None) -> dict:
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
 
     out = {
         "f1_macro": float(f1_score(y_true, y_pred, average="macro", zero_division=0)),
         "accuracy": float(accuracy_score(y_true, y_pred)),
-        "balanced_accuracy": float(balanced_accuracy_score(y_true, y_pred)),
         "f1_weighted": float(f1_score(y_true, y_pred, average="weighted", zero_division=0)),
         "n": int(len(y_true)),
     }
@@ -59,14 +56,6 @@ def classification_metrics(y_true, y_pred, y_proba=None, labels=None) -> dict:
             )
         )
 
-    # Top-3 matters for the product: the UI can offer three candidates.
-    if y_proba is not None and labels is not None:
-        try:
-            out["top3_accuracy"] = float(
-                top_k_accuracy_score(y_true, y_proba, k=3, labels=list(labels))
-            )
-        except ValueError:
-            pass
     return out
 
 
@@ -164,11 +153,9 @@ def bootstrap_scores(y_true, y_pred, idx, metric: str = "f1_macro"):
             out[i] = f1[present].mean() if present.any() else 0.0
         return out
 
-    fn_ = {
-        "accuracy": accuracy_score,
-        "balanced_accuracy": balanced_accuracy_score,
-    }[metric]
-    return np.array([float(fn_(y_true[i], y_pred[i])) for i in idx])
+    if metric != "accuracy":
+        raise ValueError(f"metric không hỗ trợ: {metric}")
+    return np.array([float(accuracy_score(y_true[i], y_pred[i])) for i in idx])
 
 
 def bootstrap_summary(scores) -> dict:
@@ -217,7 +204,6 @@ def binary_metrics(y_true, y_pred, y_score=None) -> dict:
         "f1_macro": float(f1_score(y_true, y_pred, average="macro", zero_division=0)),
         "f1_positive": float(f1_score(y_true, y_pred, pos_label=1, zero_division=0)),
         "accuracy": float(accuracy_score(y_true, y_pred)),
-        "balanced_accuracy": float(balanced_accuracy_score(y_true, y_pred)),
         "n": int(len(y_true)),
     }
     if y_score is not None:
@@ -242,7 +228,6 @@ def regression_metrics(y_true_log, y_pred_log) -> dict:
 
     return {
         "mae_trieu": float(mean_absolute_error(y_true, y_pred)),
-        "median_ae_trieu": float(np.median(abs_err)),
         "rmse_trieu": float(np.sqrt(mean_squared_error(y_true, y_pred))),
         "mape": float(np.mean(ape)),
         "r2_log": float(r2_score(y_true_log, y_pred_log)),

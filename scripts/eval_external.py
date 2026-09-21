@@ -87,7 +87,7 @@ def score(df: pd.DataFrame, proba: np.ndarray, labels: list, n_boot: int) -> dic
     s = df["strict_target"].notna().to_numpy()
     if s.sum():
         y = df.loc[s, "strict_target"].to_numpy()
-        m = E.classification_metrics(y, pred[s], proba[s], labels)
+        m = E.classification_metrics(y, pred[s], labels)
         idx = E.bootstrap_indices(int(s.sum()), n_boot=n_boot)
         m["f1_macro_ci"] = E.bootstrap_summary(E.bootstrap_scores(y, pred[s], idx))
         m["per_class"] = E.per_class_report(y, pred[s], labels)
@@ -96,7 +96,7 @@ def score(df: pd.DataFrame, proba: np.ndarray, labels: list, n_boot: int) -> dic
 
     # lenient: every scorable row, credit if prediction ∈ targets
     y_len = X.lenient_truth(pred, df["targets"].tolist())
-    m = E.classification_metrics(y_len, pred, proba, labels)
+    m = E.classification_metrics(y_len, pred, labels)
     m["hit_any_target"] = float(np.mean([p in t for p, t in zip(pred, df["targets"])]))
     out["lenient"] = m
     out["pred_distribution"] = pd.Series(pred).value_counts().to_dict()
@@ -181,7 +181,7 @@ def main() -> None:
         if st:
             ci = st["f1_macro_ci"]
             headline += (f"strict: macroF1={st['f1_macro']:.4f} [{ci['ci95_lo']:.3f},{ci['ci95_hi']:.3f}]"
-                         f" · acc={st['accuracy']:.4f} · top3={st.get('top3_accuracy', float('nan')):.4f}"
+                         f" · F1={st['f1_weighted']:.4f} · acc={st['accuracy']:.4f}"
                          f" (n={st['n']}) · ")
         headline += f"lenient: hit={le['hit_any_target']:.4f} · macroF1={le['f1_macro']:.4f} (n={le['n']})"
         print(f"  {headline}  ({seconds:.0f}s)")

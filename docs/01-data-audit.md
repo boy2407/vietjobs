@@ -26,8 +26,7 @@ Bằng chứng: [`data/processed/manifest.json`](../data/processed/manifest.json
 | Đơn vị lương | triệu VNĐ/tháng | `manifest.salary_unit` |
 
 sha256 trong manifest chỉ có đúng một nhiệm vụ: nếu tệp gốc thay đổi, mọi con số
-trong [archive/04-results-ml.md](archive/04-results-ml.md) sẽ mất tính so sánh
-được, và ta phải biết điều đó ngay lập tức, chứ không phải ba tuần sau. Cùng một
+trong [04-results.md](04-results.md) sẽ mất tính so sánh được, và ta phải biết điều đó ngay lập tức, chứ không phải ba tuần sau. Cùng một
 hash này cũng neo giữ phần phân tích mô tả, vốn được đo trên tệp này chứ không
 phải trên một tập chia tách ([AGENTS.md Quy tắc 8](../AGENTS.md#rule-8--data-analysis-is-measured-on-the-original-file),
 [05](05-phan-tich-du-lieu.md)).
@@ -212,10 +211,9 @@ nặng, sai lệch 5 triệu ở mức 200 triệu gần như đúng. Thang log 
 
 ## 6. Các cột dẫn xuất — 14 đặc trưng số
 
-`NUMERIC_COLUMNS` trong [features.py:152](../src/vietjobs/features.py#L152).
-Chúng chỉ chiếm 14 chiều trong tổng số 236.596 — nhưng lại mang trọng số trên
-mỗi chiều lớn hơn hàng chục lần so với bất kỳ chiều văn bản nào
-([06-mo-hinh-phan-lop.md](archive/06-mo-hinh-phan-lop.md)).
+Các cột số này hiện **không** đi vào mô hình: đường PhoBERT chỉ đọc ba cột văn
+bản (`dl/text.py`). Chúng được dựng sẵn trong `dataset.clean` để dùng cho phân
+tích và cho các thí nghiệm sau.
 
 Ba cột đáng chú ý:
 
@@ -292,14 +290,13 @@ cuối.
 
 `SPLIT_SEED = 20260826` không đổi, nhưng **các tỷ lệ đã thay đổi**, nên bản
 thân các tập chia tách là mới. Mọi thứ được đo dưới lược đồ 70/15/15 cũ — mọi
-dòng trong [archive/04-results-ml.md](archive/04-results-ml.md), chuẩn đối
-sánh phân lớp 0,6112, chuẩn đối sánh lương 5,86, và các embedding PhoBERT đã
+chuẩn đối sánh lương 5,86 cũ và các embedding PhoBERT đã
 lưu cache — đều được đo trên dữ liệu khác và **không thể so sánh** với bất kỳ
 điều gì được đo từ đây trở đi. Các tập chia tách, manifest và cache embedding
 cũ được giữ nguyên, không chỉnh sửa, tại `data/processed/splits-scheme-v1/`,
 `data/processed/manifest-scheme-v1.json` và
 `artifacts/embeddings-scheme-v1/`. Mốc sàn, embedding và hai baseline học sâu đã
-được đo lại trên lược đồ mới (T1.1–T1.6); chuẩn đối sánh học máy 0,6112 thì không.
+được đo lại trên lược đồ mới (T1.1–T1.6).
 
 ---
 

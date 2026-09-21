@@ -3,9 +3,9 @@
 Việc chọn mô hình sử dụng `dev` (các dòng trước 2026-09-09 ghi `val`, tên cũ của cùng tập). `test` chỉ được chấm điểm một lần, vào lúc cuối.
 
 > **Nhật ký này khởi động lại từ ngày 2026-09-08**, khi hướng đi chính của luận văn
-> chuyển sang học sâu. 101 dòng thí nghiệm học máy (2026-08-26 → 09-07) được giữ
-> nguyên trong [archive/04-results-ml.md](archive/04-results-ml.md) — mốc cần vượt
-> qua là `cat-FINAL-svm-C0.02-test`, **macro-F1 trên tập kiểm tra đạt 0,6112**.
+> chuyển sang học sâu. Mốc để đối chiếu là hai lần chạy nền `dl-cat-s2`
+> (macro-F1 **0,6025**) và `dl-sal-s2` (MAE **4,15 triệu**), cùng các sàn không
+> dùng mô hình ở [06-baseline-dl.md](06-baseline-dl.md).
 
 | RunID | UTC | Task | Model | Scope | Prep | Eval | n | Headline | Time | Commit |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -26,3 +26,15 @@ Việc chọn mô hình sử dụng `dev` (các dòng trước 2026-09-09 ghi `v
 | probe-sal-s2 | 09-16 06:45 | salary | ridge-probe(alpha=1.0) on phobert-frozen | title+desc+req | segment | dev | 2698 | MAE=4.42tr · MedAE=2.77tr · R2log=0.466 · ±20%=48.0% | 0.2s | probe |
 | dl-cat-s2-ext37k-gold | 09-17 03:23 | category | phobert-frozen+dense(h=256) scored on VietJobs-37K | title+desc+req | segment+dedup+crosswalk(draft 2026-09-17, chưa duyệt) | ext37k-gold | 977 | strict: macroF1=0.3977 [0.353,0.443] · acc=0.5104 · top3=0.8204 (n=529) · lenient: hit=0.6080 · macroF1=0.4775 (n=977) | 0.7s | eval-only |
 | dl-cat-s2-ext37k-test | 09-17 03:24 | category | phobert-frozen+dense(h=256) scored on VietJobs-37K | title+desc+req | segment+dedup+crosswalk(draft 2026-09-17, chưa duyệt) | ext37k-test | 3687 | strict: macroF1=0.4525 [0.421,0.479] · acc=0.5329 · top3=0.8315 (n=2053) · lenient: hit=0.6138 · macroF1=0.4935 (n=3687) | 66.7s | eval-only |
+| dl-cat-focal-g1-s2 | 09-19 09:47 | category | phobert-frozen+dense(h=256,focal(g=1)) | title+desc+req | segment | dev | 3812 | macroF1=0.5938 · acc=0.6401 · balAcc=0.6174 · top3=0.9294 | 13.3s | 1cf72192+dirty |
+| dl-cat-focal-s2 | 09-19 09:48 | category | phobert-frozen+dense(h=256,focal(g=2)) | title+desc+req | segment | dev | 3812 | macroF1=0.5962 · acc=0.6448 · balAcc=0.6089 · top3=0.9273 | 10.5s | 1cf72192+dirty |
+| dl-cat-focal-g5-s2 | 09-19 09:48 | category | phobert-frozen+dense(h=256,focal(g=5)) | title+desc+req | segment | dev | 3812 | macroF1=0.5929 · acc=0.6348 · balAcc=0.6116 · top3=0.9250 | 10.8s | 1cf72192+dirty |
+| dl-cat-ce-0920 | 09-20 03:18 | category | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 3812 | macroF1=0.6013 · F1=0.6411 · acc=0.6498 | 19.3s | 1cf72192+dirty |
+| dl-cat-focal-0920 | 09-20 03:19 | category | phobert-frozen+dense(h=256,focal(g=2)) | title+desc+req | segment | dev | 3812 | macroF1=0.5962 · F1=0.6386 · acc=0.6448 | 12.6s | 1cf72192+dirty |
+| dl-sal-0920 | 09-20 03:19 | salary | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 2698 | MAE=4.15tr · RMSE=8.29tr · R2log=0.512 · R2raw=0.342 · ±20%=51.6% | 16.6s | 1cf72192+dirty |
+| probe-cat-0920 | 09-20 03:45 | category | logreg-probe(C=1.0) on phobert-frozen | title+desc+req | segment | dev | 3812 | macroF1=0.5898 · F1=0.6271 · acc=0.6388 | 34.6s | probe |
+| probe-sal-0920 | 09-20 03:45 | salary | ridge-probe(alpha=1.0) on phobert-frozen | title+desc+req | segment | dev | 2698 | MAE=4.42tr · RMSE=8.36tr · R2log=0.466 · ±20%=48.0% | 0.2s | probe |
+| dl-cat-ce-cpu-0920 | 09-20 04:22 | category | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 3812 | macroF1=0.6030 · F1=0.6413 · acc=0.6501 | 6.2s | 1cf72192+dirty |
+| dl-cat-focal-cpu-0920 | 09-20 04:23 | category | phobert-frozen+dense(h=256,focal(g=2)) | title+desc+req | segment | dev | 3812 | macroF1=0.5972 · F1=0.6343 · acc=0.6427 | 6.9s | 1cf72192+dirty |
+| dl-sal-cpu-0920 | 09-20 04:23 | salary | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 2698 | MAE=4.13tr · RMSE=8.13tr · R2log=0.515 · R2raw=0.368 · ±20%=52.6% | 6.1s | 1cf72192+dirty |
+| dl-cat-focal-repo-0921 | 09-21 04:10 | category | phobert-frozen+dense(h=256,focal(g=2)) | title+desc+req | segment | dev | 3812 | macroF1=0.5972 · F1=0.6343 · acc=0.6427 | 7.8s | 1cf72192+dirty |

@@ -15,14 +15,14 @@ thực tế, không làm tròn lên.
 |---|---|---|---|
 | 1 | Biểu diễn tin tuyển dụng bằng mô hình ngôn ngữ tiếng Việt tiền huấn luyện | **Đạt** | PhoBERT-base-v2 đóng băng → vectơ 768 chiều, lưu đệm theo hai họ cột |
 | 2 | Xây dựng mạng học sâu **đa nhiệm** | **Đạt một phần** | Hai mạng riêng đã chạy và có số (§4.3, §4.4) |
-| 3 | So sánh với học máy truyền thống, cả độ chính xác **lẫn tốc độ** | **Chưa đạt** | Mạng dense mới được đối chiếu với mốc ngây thơ và mốc dò tuyến tính (§4.2, §4.7) |
+| 3 | Đối chiếu với mốc không dùng mô hình và mốc dò tuyến tính | **Đạt** | Cả hai mạng dense đều vượt mốc ngây thơ và mốc dò tuyến tính trên `dev` (§4.2, §4.3, §4.4, §4.7) |
 | 4 | Triển khai hệ thống hoàn chỉnh cho người dùng | **Chưa đạt** | — |
 
 ### 6.1.1. Ba kết quả có giá trị nhất
 
 **Thứ nhất — mạng ước lượng lương đọc được tín hiệu thật từ văn bản.** MAE giảm từ
-mốc **5,70** xuống **4,15 triệu** (−27,2 %), và R² trên thang logarit đi từ **−0,059**
-lên **0,512** (`dl-sal-s2`, `dev` 2.698 tin). Con số R² mới là điều đáng nói: nó chuyển từ âm sang dương, nghĩa là mô
+mốc **5,70** xuống **4,13 triệu** (−27,5 %), và R² trên thang logarit đi từ **−0,059**
+lên **0,515** (`dl-sal-cpu-0920`, `dev` 2.698 tin). Con số R² mới là điều đáng nói: nó chuyển từ âm sang dương, nghĩa là mô
 hình giải thích được biến thiên thật chứ không chỉ đoán quanh trung vị.
 
 **Thứ hai — phép đo cho thấy ngành nghề gần như không nói gì về lương.** eta² = **0,032**.
@@ -36,9 +36,10 @@ quyết định việc bảng điểm số đó có đáng tin hay không.
 
 ### 6.1.2. Mạng dense chỉ hơn mốc dò tuyến tính một khoảng nhỏ
 
-Mạng phân loại đạt macro-F1 **0,6025** (`dl-cat-s2`), còn hồi quy logistic trên cùng
-bộ vectơ (`probe-cat-s2`) đạt **0,5898** — khoảng cách chỉ **0,0127**. Top-3 là 0,9318
-so với 0,9258.
+Mạng phân loại đạt macro-F1 **0,6030** (`dl-cat-ce-cpu-0920`), còn hồi quy logistic
+trên cùng bộ vectơ (`probe-cat-0920`) đạt **0,5898** — khoảng cách chỉ **0,0132**.
+Thay `CrossEntropyLoss` bằng `FocalLoss` không thu hẹp được khoảng cách đó mà còn
+lùi lại (0,5972, §4.3.1).
 
 Kết quả này được báo cáo nguyên vẹn vì nó mang một thông tin quan trọng: với PhoBERT
 **đóng băng**, phần lớn tín hiệu phân loại đã khai thác được bằng một mô hình tuyến

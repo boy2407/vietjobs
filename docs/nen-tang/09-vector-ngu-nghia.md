@@ -1,22 +1,19 @@
-[← Reading a comparison table](08-doc-mot-bang-so-sanh.md) · [Background](00-index.md)
+[← Regularisation](07-chinh-quy-hoa.md) · [Background](00-index.md)
 
 # 9. Semantic vectors — what PhoBERT returns
 
-The previous eight notes are built on **one** sentence: *machine learning on text is
-counting character sequences and finding weights*. This note replaces that sentence
-with another:
+One sentence carries this whole note:
 
 > Stop counting words. Instead, place each passage at **a point** in a
 > 768-dimensional space, so that two postings in the same occupation land near each
 > other — even when they share no words at all.
 
-After this note you will understand why
-[02-vietnamese-nlp](../02-vietnamese-nlp.md) reverses two earlier verdicts, and why
-the TF-IDF track had to close.
+After this note, the preprocessing choices in
+[02-vietnamese-nlp](../02-vietnamese-nlp.md) stop looking arbitrary.
 
 ---
 
-## 1. The problem counting cannot solve
+## 1. The problem word matching cannot solve
 
 Two job postings, the same occupation:
 
@@ -32,12 +29,10 @@ A:  {nhân_viên, bán_hàng, tại, cửa_hàng}
 B:  {chuyên_viên, kinh_doanh, khu_vực}
 ```
 
-**Not one word in common.** To TF-IDF these two vectors are orthogonal — cosine zero,
-i.e. "entirely unrelated". A linear model can only learn that they share a class if it
-**sees each word separately, often enough**, in the training set.
-
-That is the hard limit of counting: it has no notion of *meaning*. `bán_hàng` and
-`kinh_doanh` are two unrelated dimensions, exactly as far apart as `bán_hàng` and
+**Not one word in common.** Represent each posting by the words it contains and these
+two are orthogonal — "entirely unrelated". Such a representation has no notion of
+*meaning*: `bán_hàng` and `kinh_doanh` are two unrelated dimensions, exactly as far
+apart as `bán_hàng` and
 `hàn_xì` (welding). The matrix holds no information that could say otherwise.
 
 No amount of extra preprocessing fixes it — tone normalisation, abbreviation
@@ -71,21 +66,20 @@ parameter model can run on 33 thousand job postings without instantly overfittin
 
 ---
 
-## 3. Three differences from TF-IDF
+## 3. Six properties of the representation
 
-| | TF-IDF | PhoBERT |
-|---|---|---|
-| Dimensions | 236,596 — **depends on the corpus** | 768 — fixed, whatever the corpus |
-| What a dimension means | One specific word. Dimension 8,412 = the word "kế_toán" | **No name.** No dimension corresponds to a word |
-| How many cells one posting fills | A few dozen non-zero cells, the rest zeros — **sparse** | All 768 cells non-zero — **dense** |
-| Learned from | Only the 33 thousand postings in train | Tens of GB of Vietnamese, before it ever saw this project |
-| Word order | Discarded (bag of words) | Kept — the model reads in sequence |
-| A never-seen word | Ignored entirely | Broken into small pieces, still gets a vector |
+| Property | PhoBERT vectors |
+|---|---|
+| Dimensions | 768 — fixed, whatever the corpus |
+| What a dimension means | **Nothing nameable.** No dimension corresponds to a word |
+| How many cells one posting fills | All 768 are non-zero — **dense** |
+| Learned from | Tens of GB of Vietnamese, before it ever saw this project |
+| Word order | Kept — the model reads in sequence |
+| A never-seen word | Broken into small pieces, still gets a vector |
 
-The first two rows are the most disappointing. With TF-IDF we can **open the lid**:
-print the weight of each word and see immediately which class the model scores
-`kế_toán` highly for. With 768 dense dimensions we cannot. No dimension has a name,
-and there is no way to read one out in words. We trade explainability for
+The second row is the expensive one. A representation whose dimensions are words can
+be opened up: print the weight of each word and read off what drove a decision. With
+768 anonymous dimensions that is not available. Explainability is traded for
 generalisation.
 
 ---
@@ -115,13 +109,13 @@ That is exactly why the preprocessing steps in
 [02-vietnamese-nlp](../02-vietnamese-nlp.md) are **still needed**, even though the
 reason has changed:
 
-| Step | Old reason (TF-IDF) | New reason (PhoBERT) |
-|---|---|---|
-| Unicode and tone-mark normalisation | `hoà` and `hòa` occupy two dimensions | `hoà` and `hòa` cut into two different piece sequences |
-| Abbreviation expansion | `NV` and `nhân viên` are two unrelated dimensions | `NV` is a rare piece, `nhân_viên` is a common one |
-| Word segmentation | redundant — bigrams already solved it | **mandatory** — PhoBERT's piece table was built on segmented text |
+| Step | Why PhoBERT needs it |
+|---|---|
+| Unicode and tone-mark normalisation | `hoà` and `hòa` cut into two different piece sequences |
+| Abbreviation expansion | `NV` is a rare piece, `nhân_viên` is a common one |
+| Word segmentation | **mandatory** — PhoBERT's piece table was built on segmented text |
 
-The last row is the reversal. PhoBERT learned on *segmented* text, so its piece table
+The last row matters most. PhoBERT learned on *segmented* text, so its piece table
 contains `nhân_viên` as **one** unit. Feed it unsegmented "nhân viên" and the model
 must use two other pieces — not wrong, but two pieces it has seen far less often.
 
@@ -146,10 +140,9 @@ Two sentences give two different `quản_lý` vectors. The model reads the whole
 before deciding, so it can tell the two senses apart — something neither a bag of
 words nor word2vec can do.
 
-This is why **stopword removal is dropped entirely** on the new track. With TF-IDF,
-deleting "của", "và", "tại" (of, and, at) was merely redundant. With PhoBERT, those
-very words build the relations among the remaining ones — deleting them presents a
-kind of sentence the model has never read.
+This is why **stopword removal is dropped entirely**. Words like "của", "và", "tại"
+(of, and, at) are exactly what builds the relations among the remaining ones —
+deleting them presents a kind of sentence the model has never read.
 
 ---
 
@@ -198,19 +191,18 @@ GPU.
    representation onto labels is still a model that has to be trained.
 2. **They do not fix wrong labels.** If two classes have a blurred boundary and the
    annotators were inconsistent, no vector however good gets past that ceiling.
-3. **They do not explain themselves.** With TF-IDF we can point at the word that drove
-   a decision. With 768 anonymous dimensions we need dedicated tooling — and in a
-   thesis, losing explainability is a price that must be stated, not a detail to skip.
+3. **They do not explain themselves.** With 768 anonymous dimensions, pointing at what
+   drove a decision needs dedicated tooling — and in a thesis, losing explainability
+   is a price that must be stated, not a detail to skip.
 
 ---
 
-## One sentence to replace the old one
+## The sentence to keep
 
-> The TF-IDF track asks: **which words appear?**
-> The PhoBERT track asks: **which postings is this one like?**
+> The question is not **which words appear** but **which postings is this one like**.
 >
 > The second question can be answered even for postings that share no words — and that
-> is the entire reason for the change of track.
+> is the entire reason this representation is worth its cost.
 
 ---
 
@@ -218,7 +210,4 @@ GPU.
 
 - [Vietnamese processing](../02-vietnamese-nlp.md) — the nine steps, and which ones PhoBERT actually needs
 - [Deep-learning baseline](../06-baseline-dl.md) — the real architecture, and the measured numbers
-- [note 3 · n-grams and word boundaries](03-ngram-va-ranh-gioi-tu.md) — why the same
-  segmentation step yields two opposite verdicts
-- [note 4 · sparse matrices](04-ma-tran-thua-va-so-chieu.md) — 236,596 sparse
-  dimensions versus 768 dense ones
+- [note 7 · regularisation](07-chinh-quy-hoa.md) — what holds the dense head back

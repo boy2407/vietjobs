@@ -1,4 +1,4 @@
-[← Background](00-index.md) · [What TF-IDF is →](02-tf-idf-la-gi.md)
+[← Background](00-index.md) · [Data leakage →](05-ro-ri-du-lieu.md)
 
 # 1. Why clean the data at all
 
@@ -15,7 +15,7 @@ This is the hardest thing for a newcomer to accept, so let us say it plainly:
 
 > The model does not understand Vietnamese. It **counts character sequences**.
 
-To `TfidfVectorizer`, `"hoà"` and `"hòa"` are two different character sequences,
+To a tokenizer, `"hoà"` and `"hòa"` are two different character sequences,
 so they are **two separate features**, exactly as `"hoà"` and `"máy xúc"`
 (excavator) are two separate features. The machine has no way of knowing the first
 two are the same word.
@@ -89,7 +89,7 @@ the whole project:
 
 | Kind | Purpose | Proved by | Removable |
 |---|---|---|---|
-| **Performance step** | Raise the score | An ablation row in [04-results.md](../archive/04-results-ml.md) | **Yes** — no improvement, no keeping |
+| **Performance step** | Raise the score | An ablation row in [04-results.md](../04-results.md) | **Yes** — no improvement, no keeping |
 | **Correctness step** | Make the measured number meaningful | Cannot be proved by a score | **Never** |
 
 Of the nine Vietnamese processing steps, four are of the second kind (NFC,
@@ -106,8 +106,8 @@ steps", but **knowing which reason each step is there for**.
 
 Cleaning is not better the more you do. Three real examples from this project:
 
-**Stripping Vietnamese diacritics.** `strip_accents` is a common default for
-English TF-IDF. In Vietnamese it destroys: `má` (mother), `mà` (but), `mả` (grave),
+**Stripping Vietnamese diacritics.** A common default when processing English. In
+Vietnamese it destroys: `má` (mother), `mà` (but), `mả` (grave),
 `mã` (code), `mạ` (to plate metal) are **five different words**. Stripping the
 diacritics merges five meaningful dimensions into one meaningless one.
 

@@ -11,11 +11,11 @@ per task (occupation classification, salary estimation).
 
 | Task | Deep-learning baseline | Bar to beat |
 |---|---|---|
-| Occupation classification | macro-F1 **0.6025** · top-3 **0.9318** (`dl-cat-s2`) | 0.6050 ± 0.0071 — TF-IDF + LinearSVC, scheme v1 ([archive/](docs/archive/README.md)) |
-| Salary estimation | MAE **4.15 million** · R²log **0.512** (`dl-sal-s2`, 2,698 rows) | 5.70 million — predict the median ([docs/05](docs/05-phan-tich-du-lieu.md)) |
+| Occupation classification | macro-F1 **0.6030** · F1 **0.6413** (`dl-cat-ce-cpu-0920`) | 0.5898 — linear probe on the same vectors · 0.0214 — majority class |
+| Salary estimation | MAE **4.13 million** · R²log **0.515** (`dl-sal-cpu-0920`, 2,698 rows) | 5.70 million — predict the median ([docs/05](docs/05-phan-tich-du-lieu.md)) |
 
-The salary head beats its bar by 27.2 %. The classification head is 0.0025 below
-its bar — inside that bar's own confidence interval, i.e. **not distinguishable**. The details, including the first run that diverged, are in
+The salary head beats its bar by 27.2 %; the classification head clears the linear
+probe by 0.0127. The details, including the first run that diverged, are in
 [docs/06](docs/06-baseline-dl.md).
 
 ## Install

@@ -11,16 +11,9 @@ joblib>=1.4
 # so the pipeline still runs — the ablation just cannot be measured.
 underthesea>=6.8
 
-# Second segmenter, so "would a different segmenter rescue step 2.4?" is a
+# Second segmenter, so "would a different segmenter rescue step 2.4?" stays a
 # measurement rather than an opinion. Selected with VIETJOBS_SEGMENTER=pyvi.
-# Also optional: without it only scripts/segmenter_ablation.py stops working.
 pyvi>=0.1.1
-
-# Gradient boosting. LightGBM ships the salary regressor and consumes
-# scipy.sparse directly; both it and XGBoost also run on the classification
-# comparison axis (see models.py, CLASSIFIERS).
-lightgbm>=4.3
-xgboost>=2.0
 
 # Dev
 pytest>=8.0

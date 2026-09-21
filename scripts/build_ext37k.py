@@ -67,19 +67,28 @@ def audit(df: pd.DataFrame) -> pd.DataFrame:
     return bucket
 
 
-def review_sample(df: pd.DataFrame, n: int, seed: int) -> pd.DataFrame:
+def review_sample(df: pd.DataFrame, n: int, seed: int,
+                  rules: tuple = X.RULES, exclude: set = frozenset()) -> pd.DataFrame:
     """T9.5 — n labelled rows to read by hand, every rule represented.
 
     Stratified by the rule that read the pay, not by source alone: the review
     has to say whether *each* widening rule holds, and the rules are wildly
-    unequal in size (``payword`` is 5,287 rows, ``dong_range`` 47). Within a
-    rule the draw is proportional to source, and one row per template group, so
-    a single reposted ad cannot fill the sample.
+    unequal in size (``payword`` is 5,078 rows, ``bare_range`` 116).
+
+    Deduplication is on ``template_id`` **and** on the matched snippet. The
+    first round used ``template_id`` alone and 33 of the 39 ``header`` rows came
+    back as the same bank ad: it varies its requirements per branch, so it holds
+    33 template ids while stating one salary. Two ads that phrase their pay
+    identically are the same evidence, whatever else differs.
     """
-    sal = df[df["salary_disclosed"] == 1].drop_duplicates("template_id")
-    per = max(n // len(X.RULES), 1)
+    sal = (df[df["salary_disclosed"] == 1]
+           .drop_duplicates("template_id")
+           .drop_duplicates("salary_text"))
+    if exclude:
+        sal = sal[~sal["id"].isin(exclude)]
+    per = max(n // len(rules), 1)
     parts = []
-    for rule in X.RULES:
+    for rule in rules:
         rows = sal[sal["salary_rule"] == rule]
         parts.append(rows.sample(min(per, len(rows)), random_state=seed))
     out = pd.concat(parts).sort_values(["salary_rule", "source"])
@@ -98,6 +107,9 @@ def main() -> None:
                     help="coverage only: bucket every row by why it has no salary, write nothing")
     ap.add_argument("--review", type=int, metavar="N",
                     help=f"write {OUT_REVIEW.name}: N labelled rows to check by hand (T9.5)")
+    ap.add_argument("--rule", choices=X.RULES, action="append",
+                    help="with --review: sample only this rule, into its own file, "
+                         "skipping ids already reviewed")
     ap.add_argument("--seed", type=int, default=20260826)
     args = ap.parse_args()
 
@@ -106,9 +118,16 @@ def main() -> None:
         audit(df)
         return
     if args.review:
-        sample = review_sample(df, args.review, args.seed)
-        sample.to_csv(OUT_REVIEW, index=False)
-        print(f"wrote {OUT_REVIEW}  rows={len(sample)}")
+        rules, out_path, seen = tuple(X.RULES), OUT_REVIEW, set()
+        if args.rule:
+            rules = tuple(args.rule)
+            out_path = OUT_REVIEW.with_name(
+                f"{OUT_REVIEW.stem}-{'-'.join(rules)}{OUT_REVIEW.suffix}")
+            if OUT_REVIEW.exists():
+                seen = set(pd.read_csv(OUT_REVIEW)["id"])
+        sample = review_sample(df, args.review, args.seed, rules, seen)
+        sample.to_csv(out_path, index=False)
+        print(f"wrote {out_path}  rows={len(sample)}")
         print(sample.groupby(["salary_rule", "source"]).size())
         return
     df.to_csv(args.out, index=False)

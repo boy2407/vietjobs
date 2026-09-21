@@ -1,4 +1,4 @@
-[← Sparse matrices](04-ma-tran-thua-va-so-chieu.md) · [Background](00-index.md) · [Metrics and baselines →](06-do-luong-va-baseline.md)
+[← Why clean the data](01-vi-sao-phai-lam-sach.md) · [Background](00-index.md) · [Metrics and baselines →](06-do-luong-va-baseline.md)
 
 # 5. Data leakage
 
@@ -100,11 +100,9 @@ left to tell you how good the model really is.
 | `dev` | Model selection, hyper-parameters, preprocessing steps | Unlimited |
 | `test` | Reporting the final number | **Exactly once**, at the end |
 
-`train.py` refuses `--eval test` without the `--confirm-test` flag. That flag exists
-so that touching test is **a deliberate act**, not a default.
-
-Across the project's 27 experiments, exactly **one** row was scored on test:
-`cat-FINAL-svm-C0.02-test`.
+`dl/train_dl.py` refuses `--eval test` without the `--confirm-test` flag. That flag
+exists so that touching test is **a deliberate act**, not a default. No run in
+[04-results.md](../04-results.md) has been scored on test yet.
 
 ---
 
@@ -140,8 +138,7 @@ Neither column has a `_masked` copy, and neither is **in `UNMASKED_COLUMNS`** �
 
 They were then measured with `re.search` and the three salary patterns: **0** rows
 in `soft_skills_text`, `qualifications_text` or `technical_skills_text` restate a
-salary, and that check is now a standing test in `tests/test_no_leak.py`
-([archive 09 — Priority 0b](../archive/09-lo-trinh-ml.md#ưu-tiên-0b--xong-không-phải-rò-rỉ)).
+salary, and that check is now a standing test in `tests/test_no_leak.py`.
 
 This is a living example of the most memorable thing in this note:
 
@@ -171,5 +168,4 @@ This is a living example of the most memorable thing in this note:
 
 - [03-protocol.md](../03-protocol.md) — the full train/dev/test contract
 - [01-data-audit.md](../01-data-audit.md#3-bốn-bản-sao-cho-mỗi-cột-văn-bản) — the four copies of every column
-- [05-dac-trung-tfidf.md](../archive/05-dac-trung-tfidf.md#1-resolve_column--cửa-duy-nhất) — `resolve_column` and the unpatched hole
 - [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) — step 4 (salary masking) and step 9 (the grouping key)

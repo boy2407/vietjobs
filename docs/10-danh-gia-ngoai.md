@@ -158,9 +158,42 @@ dấu `/`, nên `100 triệu/năm` đến tay ta thành `100 triệu năm`.
 > **34 nhóm** khác nhau. Chia theo `template_id` vẫn rò mẫu tin này. Cần một
 > khóa mờ (Jaccard) mới gom hết — chưa làm.
 
+### 3.4. Người soát: precision 97,0 %
+
+199 tin được soát tay (soát bởi tác giả, 2026-09-19), lấy mẫu phân tầng theo
+luật, ghi ở `data/external/vietjobs37k/review-salary.csv` với ba giá trị
+`correct` / `wrong` / `ambiguous`.
+
+Con số dưới đây tính trên **165 dòng mang bằng chứng khác nhau** (gộp các dòng
+có `salary_text` trùng nhau về một), và tính `ambiguous` là **sai**:
+
+| Luật | Bằng chứng đã soát | Đúng | Precision | Độ phủ bằng chứng của luật |
+|---|---|---|---|---|
+| `payword` | 40 | 40 | 100 % | 40 / 3.434 (1,2 %) |
+| `header` | 8 | 8 | 100 % | **8 / 8 — soát hết** |
+| `bare_range` | 38 | 37 | 97,4 % | 38 / 95 (40 %) |
+| `m_unit` | 40 | 38 | 95,0 % | 40 / 175 (23 %) |
+| `dong_range` | 39 | 37 | 94,9 % | 39 / 206 (19 %) |
+| **Tổng** | **165** | **160** | **97,0 %** | 165 / 3.918 (4,2 %) |
+
+Ngưỡng đặt trước khi soát là 95 % chung và 90 % mỗi luật; **không luật nào bị
+gỡ**. Hai dòng `wrong`: một tin đọc ra `80-100 triệu` vốn là tiền thuế hoàn khi
+về nước (`bare_range`), một tin đọc cận dưới `2` vốn là phụ cấp KPI
+(`dong_range`). Ba dòng `ambiguous` đều cùng một dạng: tin nêu cả *lương cứng*
+lẫn *thu nhập* và luật trộn hai mức.
+
+> **Cảnh báo về mẫu, đã đo:** mẫu ban đầu lọc trùng theo `template_id`, nhưng
+> 33/39 dòng `header` vẫn rơi vào cùng tin ngân hàng — tin đó đổi chút phần yêu
+> cầu theo chi nhánh nên giữ 33 mã `template_id` khác nhau. Bộ lọc mẫu nay lọc
+> trùng theo **cả `template_id` lẫn `salary_text`**. Hệ quả cho luật `header`:
+> nó lấy thêm 717 dòng nhưng chỉ dựa trên **7 quảng cáo khác nhau** (710 dòng là
+> một tin ngân hàng). Đã soát hết cả 7, nên precision 100 % là đầy đủ chứ không
+> phải mẫu mỏng — nhưng đóng góp của luật này gần như là *một nhà tuyển dụng*.
+
 > **Nguồn số liệu:** `PYTHONPATH=src .venv/bin/python scripts/build_ext37k.py`
 > và `--audit`, chạy 2026-09-18 · `data/external/vietjobs37k/ext37k.csv`,
-> `ext37k-sal.csv` · `tests/test_external.py` (46 test, `pytest -q` 156 passed).
+> `ext37k-sal.csv`, `review-salary.csv` (199 dòng, soát xong 2026-09-19) ·
+> `tests/test_external.py` (46 test xanh).
 
 ## 4. Kết quả
 
@@ -173,18 +206,18 @@ PYTHONPATH=src .venv-dl/bin/python scripts/eval_external.py --run-id dl-cat-s2 -
 
 **Bảng 10.1: Mô hình `dl-cat-s2` chấm trên VietJobs-37K, sau khử trùng và ánh xạ**
 
-| Tập | n chấm | strict n | strict macro-F1 [KTC 95 %] | strict acc | strict top-3 | lenient trúng | lenient macro-F1 |
+| Tập | n chấm | strict n | strict macro-F1 [KTC 95 %] | strict F1 | strict acc | lenient trúng | lenient macro-F1 |
 |---|---|---|---|---|---|---|---|
-| **Gold-1000** (người soát) | 977 | 529 | **0,3977** [0,353; 0,443] | 0,5104 | 0,8204 | 0,6080 | 0,4775 |
-| test 37K (silver) | 3.687 | 2.053 | 0,4525 [0,421; 0,479] | 0,5329 | 0,8315 | 0,6138 | 0,4935 |
-| *`dev` của ta, để đối chiếu* | 3.812 | 3.812 | *0,6025* | *0,6511* | *0,9318* | — | — |
+| **Gold-1000** (người soát) | 977 | 529 | **0,3977** [0,353; 0,443] | 0,5094 | 0,5104 | 0,6080 | 0,4775 |
+| test 37K (silver) | 3.687 | 2.053 | 0,4525 [0,421; 0,479] | 0,5393 | 0,5329 | 0,6138 | 0,4935 |
+| *`dev` của ta, để đối chiếu* | 3.812 | 3.812 | *0,6025* | *0,6423* | *0,6511* | — | — |
 
 Đọc bảng:
 
 1. **Có tổng quát hóa, nhưng mất nhiều.** Trên Gold, macro-F1 strict rơi từ
    0,6025 (trong miền) xuống 0,3977 — mất **0,205**, gấp gần năm lần bề rộng
-   khoảng tin cậy. Top-3 giữ được tốt hơn (0,93 → 0,82): nghề đúng vẫn thường
-   nằm trong ba lựa chọn đầu.
+   khoảng tin cậy. F1 có trọng số giảm nhẹ hơn (0,642 → 0,509): mô hình giữ
+   được các lớp lớn, phần mất tập trung ở các lớp nhỏ.
 2. **Gold thấp hơn silver** (0,398 so với 0,453). Nhãn silver được gán bằng
    từ khóa, và mô hình của ta cũng dựa nhiều vào từ vựng, nên hai bên "đồng ý"
    với nhau nhiều hơn là với người soát. Đây là lý do Gold là con số chính.

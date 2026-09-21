@@ -236,7 +236,7 @@ MAE giảm từ 5,70 xuống 5,57, tức giảm **2,3%**. Hai kết luận:
    như chưa học được gì.
 2. Tín hiệu về lương nằm trong **các chi tiết của tin đăng** — cấp bậc, số
    năm kinh nghiệm, ngôn ngữ, địa điểm — chứ không nằm trong nhãn ngành. Đó
-   chính xác là điều PhoBERT có cơ hội đọc được còn TF-IDF ở cấp ngành thì
+   chính xác là điều PhoBERT có cơ hội đọc được còn nhãn ngành thì
    không.
 
 Hãy đọc con số 3,2% cùng với thiên lệch chọn mẫu (selection bias) ở

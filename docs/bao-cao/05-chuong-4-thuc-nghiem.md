@@ -15,10 +15,10 @@
 
 | Thành phần | Cấu hình |
 |---|---|
-| Máy chạy các lần `*-s2` | macOS arm64, `device=mps` (ghi trong `artifacts/<run_id>/env.json`) |
+| Thiết bị huấn luyện | macOS arm64, **`device=cpu`** cho mọi lần chạy `*-cpu-0920` — mặc định từ 2026-09-20 vì `mps` không tái lập được (§4.3.2). Các lần chạy `*-s2` cũ dùng `device=mps` (ghi trong `artifacts/<run_id>/env.json`) |
 | Tăng tốc GPU | Không CUDA |
 | Hệ điều hành | macOS |
-| Môi trường 1 | Python ≥ 3.10 — dữ liệu, xử lý tiếng Việt, học máy, kiểm thử |
+| Môi trường 1 | Python ≥ 3.10 — dữ liệu, xử lý tiếng Việt, độ đo, kiểm thử |
 | Môi trường 2 | Python 3.9 — gói `dl/`, do `torch` không còn bản dựng cho macOS Intel sau 2.2.2 |
 | Mô hình nền | PhoBERT-base-v2, 135 triệu tham số, đóng băng |
 
@@ -76,7 +76,7 @@ hỏi khác nhau.
 | Tầng | Mốc | Trả lời câu hỏi |
 |---|---|---|
 | 1. Ngây thơ, không mô hình | phân loại: macro-F1 **0,0214** · lương: MAE **5,70 triệu** · RMSE **10,52** · disclosed: acc **0,7078** | "Không cần học gì thì đạt bao nhiêu?" |
-| 2. Dò tuyến tính trên chính vectơ | `probe-cat-s2` macro-F1 **0,5898** · `probe-sal-s2` MAE **4,42** · RMSE **8,36** | "Đặc trưng tồi, hay đầu mô hình hỏng?" |
+| 2. Dò tuyến tính trên chính vectơ | `probe-cat-0920` macro-F1 **0,5898** · `probe-sal-0920` MAE **4,42** · RMSE **8,36** | "Đặc trưng tồi, hay đầu mô hình hỏng?" |
 
 Tầng 2 là tầng ít gặp nhất trong các báo cáo cùng dạng nhưng lại hữu ích nhất khi
 gỡ lỗi. Một mô hình tuyến tính có nghiệm lồi và không có tốc độ học để chỉnh sai —
@@ -89,31 +89,62 @@ Nếu nhánh hồi quy chỉ về được quanh 5,6 triệu thì nó chưa đ�
 nó chỉ đang đoán trung vị theo một đường vòng.
 
 > **Nguồn số liệu:** tầng 1 và mốc trần — `artifacts/eda/summary.json` khoá `floors`
-> (khớp trên `train`, chấm trên `dev`); tầng 2 — dòng `probe-cat-s2`, `probe-sal-s2`
+> (khớp trên `train`, chấm trên `dev`); tầng 2 — dòng `probe-cat-0920`, `probe-sal-0920`
 > trong [04-results.md](../04-results.md).
 
 ---
 
 ## 4.3. Kết quả bài toán phân loại ngành nghề
 
+Đây là **mô hình nền thứ nhất** của đề tài. Toàn bộ điều kiện của lần chạy được ghi
+lại ngay dưới đây, để đọc chương này là đủ dựng lại lần chạy, không cần mở thêm tệp
+nào khác.
+
+**Bảng 4.5a: Hồ sơ lần chạy `dl-cat-ce-cpu-0920`**
+
+| Hạng mục | Giá trị |
+|---|---|
+| Lệnh | `python -m vietjobs.dl.train_dl --task category --run-id dl-cat-ce-cpu-0920` (biến `PYTHONPATH=src`) |
+| Môi trường | Môi trường 2 — Python 3.9.6, `torch` 2.2.2, `transformers` 4.46.3, `numpy` 1.26.4, `pandas` 2.3.3, `scikit-learn` 1.6.1, **`device=cpu`**, macOS arm64 |
+| Ngày chạy | 2026-09-20 |
+| Hàm mất mát | `CrossEntropyLoss`, không cân bằng lớp |
+| Bộ mã hoá | `vinai/phobert-base-v2`, **đóng băng**; vectơ nạp lại từ đệm `train`/`dev` họ `raw`, `len256` |
+| Cột đọc vào | `job_title_seg` · `description_seg` · `requirements_seg` |
+| Kiến trúc đầu ra | LayerNorm → 768→256 → GELU → dropout 0,3 → 256→128 → GELU → dropout → 128→**16 lớp** (§3.7.1) |
+| Siêu tham số | lr 3e-4 · batch 256 · weight decay 0,01 · cắt gradient 1,0 · chuẩn hoá đầu vào · tối đa 40 epoch, dừng sớm sau 8 epoch không cải thiện · hạt giống 42 |
+| Dữ liệu | khớp trên `train` 34.354 tin; chấm trên `dev` 3.812 tin; `test` không đụng tới |
+| Epoch tốt nhất | 11/19 |
+| Tái lập | chạy ba lần cho cùng một kết quả tới chữ số cuối (§4.3.2) |
+
+> **Nguồn số liệu:** `artifacts/dl-cat-ce-cpu-0920/config.json`,
+> `artifacts/dl-cat-ce-cpu-0920/env.json`, `artifacts/dl-cat-ce-cpu-0920/metrics.json`,
+> `data/processed/manifest.json`.
+
 **Bảng 4.5: Kết quả phân loại ngành nghề (dev 3.812 tin)**
 
-| Lần chạy | Cấu hình | macro-F1 | acc | epoch tốt nhất |
-|---|---|---|---|---|
-| *mốc ngây thơ* | luôn đoán lớp đa số | *0,0214* | *0,2062* | — |
-| `probe-cat-s2` | LogReg trên **cùng** bộ vectơ | 0,5898 | 0,6388 | — |
-| **`dl-cat-s2`** | lr 3e-4 + cắt gradient + chuẩn hoá | **0,6025** | 0,6511 | 16/24 |
-| `dl-cat-s2-cw` | như trên + cân bằng lớp | 0,5710 | 0,5976 | 15/23 |
+| Lần chạy | Hàm mất mát | macro-F1 | F1 | acc | epoch tốt nhất |
+|---|---|---|---|---|---|
+| *mốc ngây thơ* | luôn đoán lớp đa số | *0,0214* | *0,0705* | *0,2062* | — |
+| `probe-cat-0920` | — (LogReg trên **cùng** bộ vectơ) | 0,5898 | 0,6271 | 0,6388 | — |
+| **`dl-cat-ce-cpu-0920`** | **CrossEntropyLoss** | **0,6030** | **0,6413** | 0,6501 | 11/19 |
+| `dl-cat-focal-cpu-0920` | FocalLoss (γ=2) | 0,5972 | 0,6343 | 0,6427 | 11/19 |
 
-> **Nguồn số liệu:** `artifacts/dl-cat-s2/metrics.json`, `artifacts/dl-cat-s2-cw/metrics.json`,
-> ba dòng `dl-cat-s2` / `dl-cat-s2-cw` / `probe-cat-s2` trong [04-results.md](../04-results.md),
-> và mốc ngây thơ từ `artifacts/eda/summary.json` (T1.1).
+Cả ba lần chạy dùng cùng kiến trúc và cùng siêu tham số của Bảng 4.5a, trên
+`device=cpu`, và **tái lập được từng chữ số**; §4.3.2 giải thích vì sao điều đó
+phải được nói ra. `F1` là F1 trung bình có trọng số theo số mẫu mỗi lớp;
+`macro-F1` cho mọi lớp trọng số bằng nhau và vẫn là chỉ số chọn mô hình.
 
-`f1_macro_no_junk` — macro-F1 khi loại lớp `nhóm_nghề_khác` (25 dòng) — là **0,6454**
-cho `dl-cat-s2` và 0,5958 cho `dl-cat-s2-cw`. Riêng lớp này đã kéo con số tổng xuống
-0,043.
+> **Nguồn số liệu:** `artifacts/dl-cat-ce-cpu-0920/metrics.json`,
+> `artifacts/dl-cat-focal-cpu-0920/metrics.json`, các dòng `dl-cat-ce-cpu-0920` /
+> `dl-cat-focal-cpu-0920` / `probe-cat-0920` trong [04-results.md](../04-results.md),
+> mốc ngây thơ từ `artifacts/eda/summary.json` (T1.1), và
+> `data/eda_xlsx/ket_qua_chay.xlsx` sheet `01_Phan_Lop` (Rule 13).
 
-Mạng dense chỉ hơn tầng dò tuyến tính **0,0127** macro-F1 trên cùng bộ vectơ (0,6025
+`f1_macro_no_junk` — macro-F1 khi loại lớp `nhóm_nghề_khác` (25 dòng) — là **0,6458**
+cho `dl-cat-ce-cpu-0920` và 0,6395 cho `dl-cat-focal-cpu-0920`. Riêng lớp này đã kéo
+con số tổng xuống 0,043.
+
+Mạng dense chỉ hơn tầng dò tuyến tính **0,0132** macro-F1 trên cùng bộ vectơ (0,6030
 so với 0,5898). Phần lớn tín hiệu
 mà mô hình tuyến tính khai thác được, mạng phi tuyến cũng khai thác được; năng lực
 tính toán thêm chỉ mua được một khoảng cải thiện nhỏ và ổn định, không phải một mức
@@ -121,19 +152,92 @@ khác biệt về chất.
 
 ### 4.3.1. Nhận xét
 
-**Độ chính xác top-3 là 0,9318** — mô hình đưa đúng ngành vào top ba đáng tin cậy hơn
-nhiều so với đoán đúng top-1.
+**Focal loss thua CrossEntropy 0,0058 macro-F1** (0,5972 so với 0,6030).
+`FocalLoss` (`dl/focal_loss.py`, bản itakurah/focal-loss-pytorch) nhân cross-entropy từng mẫu với `(1-p_t)^γ`, tức
+cân theo *độ khó* của mẫu thay vì *độ hiếm* của lớp — đúng cơ chế được kỳ vọng
+sẽ giúp trên bộ dữ liệu lệch 27:1. Nó không giúp. Khoảng cách 0,0058 lớn hơn
+biên nhiễu 0,003 đo ở §4.3.2, nên đây là kết luận thật chứ không phải dao động
+giữa hai lần chạy. Cả hai lần chạy dùng đúng cùng kiến trúc, cùng siêu tham số,
+cùng hạt giống và cùng thiết bị; khác biệt duy nhất là hàm mất mát.
 
-**`--class-weight` là một phép đánh đổi, không phải một cải thiện:** macro-F1 giảm 0,0315 (0,6025 → 0,5710) trong khi balanced accuracy tăng 0,0733
-(0,6199 → 0,6931). Nó kéo mô hình về phía các lớp nhỏ, đúng như thiết kế. Chọn cấu
-hình nào phụ thuộc vào ứng dụng thật; mặc định để tắt.
+**`--class-weight` cũng là một phép đánh đổi, không phải một cải thiện:**
+macro-F1 giảm 0,0315 (`dl-cat-s2` 0,6025 → `dl-cat-s2-cw` 0,5710). Nó kéo mô
+hình về phía các lớp nhỏ, đúng như thiết kế; mặc định để tắt. Hai lần chạy này
+đo trên `device=mps` ngày 15/09 nên từng con số riêng lẻ không tái lập được,
+nhưng khoảng cách 0,0315 vượt xa biên nhiễu nên kết luận vẫn đứng.
 
 Lần chạy phân kỳ `dl-cat-h256` (macro-F1 0,0420) được giữ lại ở §4.6: thiếu chuẩn
-hoá và cắt gradient, và chính bài học đó đã dẫn tới cấu hình `dl-cat-s2` ở trên.
+hoá và cắt gradient, và chính bài học đó đã dẫn tới cấu hình ở trên.
+
+### 4.3.2. Tái lập: vì sao mọi lần chạy đều đặt trên `cpu`
+
+Ngày 2026-09-20, khi chạy lại mô hình nền để đo bằng bộ chỉ số mới,
+`dl-cat-s2` (chạy 15/09, macro-F1 0,6025) **không tái lập được**: cùng hạt
+giống, cùng dữ liệu, cùng mã nguồn, kết quả ra 0,6013.
+
+Truy nguyên bằng cách dựng một cây làm việc git tại đúng commit `12a847c1` của
+lần chạy cũ rồi chạy **mã nguồn nguyên bản** ngày hôm đó — cũng ra 0,6013. Vậy
+nguyên nhân không nằm ở thay đổi mã. Loại trừ tiếp: bộ đệm vectơ (không đổi từ
+13/09), tệp chia và `manifest.json` (không đổi từ 10/09), kiến trúc, hạt giống,
+`torch` 2.2.2, cùng chuỗi `platform`.
+
+Nguyên nhân là **thiết bị**:
+
+| Thiết bị | macro-F1 qua các lần chạy cùng cấu hình | Thời gian |
+|---|---|---|
+| `mps` | 0,6012 · 0,6013 · 0,6013 · 0,6013 · 0,6025 · 0,6041 · 0,6041 · 0,6041 | 13–15 giây |
+| `cpu` | 0,6030 · 0,6030 · 0,6030 (giống tới chữ số cuối) | 12–16 giây |
+
+Biên dao động của `mps` là **0,003 macro-F1**, lớn hơn phần lớn khác biệt mà
+chương này muốn đo. `cpu` cho đúng một số mỗi lần và **không chậm hơn**: mạng
+dense chỉ 768→256→128→16, quá nhỏ để GPU có lợi ích. Từ đó `train_dl.py` mặc
+định `--device cpu`.
+
+Ba hệ quả ràng buộc cách đọc mọi bảng trong chương:
+
+1. Các lần chạy `*-cpu-0920` tái lập được; các lần chạy `-s2` (trên `mps`) thì
+   không, và được giữ lại như dữ liệu lịch sử.
+2. Trên các lần chạy `mps` cũ, **mọi chênh lệch dưới 0,003 macro-F1 là nhiễu**.
+   Hai kết luận của §4.3.1 vẫn đứng vì vượt xa biên đó: `--class-weight`
+   (−0,0315) và focal loss (−0,0058).
+3. `env.json` từ nay ghi thêm `numpy`, `pandas`, `scikit-learn` — ba thư viện
+   mà việc không ghi lại đã khiến lần truy nguyên này dài hơn cần thiết.
+
+Nhánh hồi quy không lộ vấn đề theo cách đó: `dl-sal-s2` tái lập trên `mps` tới
+chữ số cuối (MAE 4,14868613775178). Nhưng chuyển sang `cpu` vẫn đổi kết quả
+(4,13 triệu, hội tụ ở epoch 19 thay vì 26) — hai thiết bị là hai đường số học
+khác nhau, nên §4.4 dùng lần chạy `cpu` cho nhất quán.
+
+> **Nguồn số liệu:** `artifacts/dl-cat-ce-cpu-0920/`, `artifacts/dl-cat-s2/`,
+> `data/eda_xlsx/ket_qua_chay.xlsx` sheet `00_Runs` (cột `device`), và
+> AGENTS.md Rule 13 điều 5.
 
 ---
 
 ## 4.4. Kết quả bài toán ước lượng mức lương
+
+**Mô hình nền thứ hai.** Cùng kiến trúc, cùng siêu tham số với §4.3 — khác đúng ba
+điểm: đầu ra một giá trị thay vì 16 lớp, mục tiêu là `log1p(salary_mid)`, và vectơ
+lấy từ họ `masked` để mô hình không đọc được chính con số lương in trong tin
+(quy tắc chống rò rỉ, §3.4).
+
+**Bảng 4.6a: Hồ sơ lần chạy `dl-sal-cpu-0920`**
+
+| Hạng mục | Giá trị |
+|---|---|
+| Lệnh | `python -m vietjobs.dl.train_dl --task salary --run-id dl-sal-cpu-0920` (biến `PYTHONPATH=src`) |
+| Môi trường | Môi trường 2 — Python 3.9.6, `torch` 2.2.2, `transformers` 4.46.3, `numpy` 1.26.4, `pandas` 2.3.3, `scikit-learn` 1.6.1, **`device=cpu`**, macOS arm64 |
+| Ngày chạy | 2026-09-20 |
+| Hàm mất mát | `SmoothL1Loss` (Huber) trên `log1p(salary_mid)` |
+| Bộ mã hoá | `vinai/phobert-base-v2`, **đóng băng**; vectơ nạp lại từ đệm `train`/`dev` họ `masked`, `len256` |
+| Cột đọc vào | `job_title_masked_seg` · `description_masked_seg` · `requirements_masked_seg` |
+| Kiến trúc đầu ra | LayerNorm → 768→256 → GELU → dropout 0,3 → 256→128 → GELU → dropout → 128→**1** (mất mát Huber trên `log1p`) |
+| Siêu tham số | lr 3e-4 · batch 256 · weight decay 0,01 · cắt gradient 1,0 · chuẩn hoá đầu vào · tối đa 40 epoch, dừng sớm sau 8 epoch không cải thiện · hạt giống 42 |
+| Dữ liệu | khớp trên `train` 34.354 tin; chấm trên **2.698** tin `dev` có công bố lương; `test` không đụng tới |
+| Epoch tốt nhất | 19/27 |
+
+> **Nguồn số liệu:** `artifacts/dl-sal-cpu-0920/config.json`, `artifacts/dl-sal-cpu-0920/env.json`,
+> `artifacts/dl-sal-s2/metrics.json`, `data/processed/manifest.json`.
 
 **Bảng 4.6: Kết quả ước lượng mức lương (dev 2.698 tin có nhãn lương)**
 
@@ -141,26 +245,26 @@ hoá và cắt gradient, và chính bài học đó đã dẫn tới cấu hình
 |---|---|---|---|---|
 | *mốc* | đoán trung vị 13,0 cho mọi tin | *5,70* | *10,52* | *−0,059* |
 | *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,57* | *10,33* | *−0,022* |
-| `probe-sal-s2` | Ridge trên vectơ PhoBERT | 4,42 | 8,36 | 0,466 |
-| **`dl-sal-s2`** | dense(256), lr 3e-4, chuẩn hoá | **4,15** | **8,29** | **0,512** |
+| `probe-sal-0920` | Ridge trên vectơ PhoBERT | 4,42 | 8,36 | 0,466 |
+| **`dl-sal-cpu-0920`** | dense(256), lr 3e-4, chuẩn hoá, SmoothL1Loss | **4,13** | **8,13** | **0,515** |
 
-> **Nguồn số liệu:** `artifacts/dl-sal-s2/metrics.json` và hai dòng `dl-sal-s2` /
-> `probe-sal-s2` trong [04-results.md](../04-results.md); hai mốc lấy từ
-> `artifacts/eda/summary.json` (T1.1). RMSE của `dl-sal-s2` lấy từ khoá `rmse_trieu`
-> trong `metrics.json`; RMSE hai mốc lấy từ khoá `rmse` trong `summary.json`; RMSE của
-> `probe-sal-s2` tính lại bằng đúng cấu hình của lần chạy đó (Ridge alpha 1,0, cùng bộ
-> vectơ), cho lại đúng MAE 4,42 và R² 0,466.
+> **Nguồn số liệu:** `artifacts/dl-sal-cpu-0920/metrics.json` và hai dòng
+> `dl-sal-cpu-0920` / `probe-sal-0920` trong [04-results.md](../04-results.md); hai mốc
+> lấy từ `artifacts/eda/summary.json` (T1.1). RMSE của lần chạy dense lấy từ khoá
+> `rmse_trieu` trong `metrics.json`; RMSE hai mốc lấy từ khoá `rmse` trong
+> `summary.json`; RMSE của `probe-sal-0920` lấy từ chính dòng log của lần chạy đó.
+> Bảng tổng hợp: `data/eda_xlsx/ket_qua_chay.xlsx` sheet `02_Luong` (Rule 13).
 
 ### 4.4.1. Nhận xét
 
-Nhánh hồi quy **vượt mốc 1,55 triệu (−27,2 %)**: R² trên thang logarit đi từ **âm**
-lên **0,512**, nghĩa là mô hình đọc được tín hiệu lương từ văn bản mà nhãn ngành nghề
+Nhánh hồi quy **vượt mốc 1,57 triệu (−27,5 %)**: R² trên thang logarit đi từ **âm**
+lên **0,515**, nghĩa là mô hình đọc được tín hiệu lương từ văn bản mà nhãn ngành nghề
 không cung cấp (eta² = 0,032, đo trên tệp gốc).
 
-Tầng dò tuyến tính `probe-sal-s2` đạt R² **0,466**, đã gần bằng mạng dense (0,512) và
+Tầng dò tuyến tính `probe-sal-0920` đạt R² **0,466**, đã gần bằng mạng dense (0,515) và
 rõ ràng vượt mốc: phần lớn tín hiệu lương nằm trong vectơ ở dạng tuyến tính.
 
-RMSE của `dl-sal-s2` là **8,29 triệu**, gấp đôi MAE (4,15). RMSE bình phương sai số,
+RMSE của `dl-sal-cpu-0920` là **8,13 triệu**, gần gấp đôi MAE (4,13). RMSE bình phương sai số,
 nên một số ít lỗi rất lớn kéo nó lên. Tách theo mức lương thật trên
 `predictions_dev.parquet`: **2.571** tin dưới 30 triệu có RMSE **4,49** (MAE 3,21);
 **127** tin từ 30 triệu trở lên (4,7 %) có RMSE **32,43** (MAE 23,13).
@@ -203,7 +307,7 @@ Vòng huấn luyện **phân kỳ ở epoch 4**. Hai nguyên nhân, cả hai đ�
 
 Cách sửa: chuẩn hoá theo từng chiều bằng thống kê của `train` (lưu thành `scaler.npz`
 cạnh mô hình, vì đường suy luận phải dùng đúng những con số đó), cắt chuẩn gradient ở
-1,0, hạ lr xuống 3e-4 — cấu hình của `dl-cat-s2` (macro-F1 **0,6025**, §4.3).
+1,0, hạ lr xuống 3e-4 — cấu hình của `dl-cat-ce-cpu-0920` (macro-F1 **0,6030**, §4.3).
 
 **Bài học đáng giá hơn con số:** chính tầng dò tuyến tính — hồi quy logistic trên
 cùng bộ vectơ — là thứ phân biệt được "đặc trưng tồi" với "đầu mô hình
@@ -219,13 +323,13 @@ nó đạt gần 0,59 thì vấn đề chắc chắn không nằm ở đặc tr�
 
 | Bài toán | Mốc ngây thơ | Mốc dò tuyến tính | Kết quả học sâu | Kết luận |
 |---|---|---|---|---|
-| Phân loại (macro-F1) | 0,0214 | 0,5898 | **0,6025** | Hơn dò tuyến tính 0,0127 |
-| Phân loại (top-3) | — | 0,9258 | **0,9318** | Hơn dò tuyến tính 0,0060 |
-| Lương (MAE, triệu) | 5,70 | 4,42 | **4,15** | **Vượt mốc ngây thơ 27,2 %** |
-| Lương (RMSE, triệu) | 10,52 | 8,36 | **8,29** | Vượt mốc ngây thơ 21,2 %; chỉ hơn dò tuyến tính 0,07 |
-| Lương (R² log) | −0,059 | 0,466 | **0,512** | Từ âm lên dương — đọc được tín hiệu thật |
+| Phân loại (macro-F1) | 0,0214 | 0,5898 | **0,6030** | Hơn dò tuyến tính 0,0132 |
+| Phân loại (F1 có trọng số) | 0,0705 | 0,6271 | **0,6413** | Hơn dò tuyến tính 0,0142 |
+| Lương (MAE, triệu) | 5,70 | 4,42 | **4,13** | **Vượt mốc ngây thơ 27,5 %** |
+| Lương (RMSE, triệu) | 10,52 | 8,36 | **8,13** | Vượt mốc ngây thơ 22,7 %; hơn dò tuyến tính 0,23 |
+| Lương (R² log) | −0,059 | 0,466 | **0,515** | Từ âm lên dương — đọc được tín hiệu thật |
 
-> **Nguồn số liệu:** các dòng `*-s2` trong [04-results.md](../04-results.md) ·
+> **Nguồn số liệu:** các dòng `*-cpu-0920` và `probe-*-0920` trong [04-results.md](../04-results.md) ·
 > [06-baseline-dl.md](../06-baseline-dl.md) §5 · `artifacts/eda/summary.json` khoá `floors`.
 
 ---
@@ -255,11 +359,11 @@ Ba bước chuẩn bị, chi tiết ở [10-danh-gia-ngoai.md](../10-danh-gia-ng
 
 **Bảng 4.8: Mô hình `dl-cat-s2` trên VietJobs-37K, sau khử trùng và ánh xạ**
 
-| Tập | n chấm | strict n | strict macro-F1 [KTC 95 %] | strict acc | strict top-3 | lenient trúng |
+| Tập | n chấm | strict n | strict macro-F1 [KTC 95 %] | strict F1 | strict acc | lenient trúng |
 |---|---|---|---|---|---|---|
-| Gold-1000 (người soát) | 977 | 529 | **0,3977** [0,353; 0,443] | 0,5104 | 0,8204 | 0,6080 |
-| test 37K (nhãn máy) | 3.687 | 2.053 | 0,4525 [0,421; 0,479] | 0,5329 | 0,8315 | 0,6138 |
-| *`dev` nội bộ (§4.3, đối chiếu)* | 3.812 | 3.812 | *0,6025* | *0,6511* | *0,9318* | — |
+| Gold-1000 (người soát) | 977 | 529 | **0,3977** [0,353; 0,443] | 0,5094 | 0,5104 | 0,6080 |
+| test 37K (nhãn máy) | 3.687 | 2.053 | 0,4525 [0,421; 0,479] | 0,5393 | 0,5329 | 0,6138 |
+| *`dev` nội bộ (§4.3, đối chiếu)* | 3.812 | 3.812 | *0,6025* | *0,6423* | *0,6511* | — |
 
 Nhận xét:
 

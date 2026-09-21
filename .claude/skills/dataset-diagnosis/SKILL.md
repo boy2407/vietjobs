@@ -30,7 +30,7 @@ shared preamble:
 ```python
 import sys; sys.path.insert(0, 'src')
 import numpy as np, pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import normalize
 from sklearn.metrics import f1_score
 from vietjobs import config as C, vitext as V
@@ -122,8 +122,8 @@ for c in ["job_title","description","requirements_text","qualifications_text",
     print(c, f"{(L==0).mean():.2%}", L.quantile(.1), L.median(), L.quantile(.9))
 ```
 
-Threshold: over 60 % empty → that column's TF-IDF block is nearly constant; **drop
-the block and re-measure**, following the removal rule in `docs/03-protocol.md`.
+Threshold: over 60 % empty → that column carries almost nothing; **do not feed it in
+without measuring**, following the removal rule in `docs/03-protocol.md`.
 10–60 % empty → the `n_*` count column is conflating "missing" with "present but
 zero"; add a `has_*` flag.
 
@@ -145,7 +145,7 @@ reason "Vietnamese OOV".
 ### A6 · Class separability — cosine between class centroids
 
 ```python
-X = TfidfVectorizer(min_df=3, ngram_range=(1,2), sublinear_tf=True).fit_transform(tr.job_title)
+X = np.load('artifacts/embeddings/train-raw-len256.npy')   # the vectors the model actually reads
 labs = sorted(tr.category.unique())
 Cm = normalize(np.vstack([np.asarray(X[(tr.category == l).values].mean(axis=0)) for l in labs]))
 S = Cm @ Cm.T; np.fill_diagonal(S, 0)
@@ -252,6 +252,6 @@ result, not an empty space — exactly the "record the failures too" spirit of
   what percentage of the smallest class goes with them.
 - **Concluding from a single measurement.** Rule 3.
 - **Writing into `docs/` on your own initiative.** Print markdown to stdout, the way
-  `scripts/measure_vitext.py` and `scripts/archive/report_sweep.py` do. If something
+  `scripts/measure_vitext.py` does. If something
   deserves to go into a note, ask in one line at the end, and when you do it, follow
   Rule 1 in `AGENTS.md`.

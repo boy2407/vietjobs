@@ -41,8 +41,8 @@ bộ đệm vector riêng: phân loại đọc họ `raw`, lương đọc họ `
 
 | Quyết định | Lý do |
 |---|---|
-| **Đóng băng PhoBERT** | Vector tính một lần rồi lưu đệm, mọi lần huấn luyện dense đọc lại. Nếu phiên bản đóng băng không vượt được ngưỡng TF-IDF **0,6112**, lỗi nhiều khả năng nằm ở đường dữ liệu (data path) — phát hiện ở đây rẻ hơn nhiều |
-| **Đầu vào đã tách từ** | PhoBERT được tiền huấn luyện trên văn bản đã tách từ ("nhân_viên kinh_doanh"). Đưa vào văn bản chưa tách từ nghĩa là đưa sai phân phối. Ngược lại hoàn toàn với kết luận của TF-IDF, nơi việc tách từ **gây hại nhẹ** ([02 §6](02-vietnamese-nlp.md#6-hai-bộ-tách-từ-khác-nhau-ở-đâu--và-vì-sao-câu-hỏi-mở-lại)) — cùng một bước, hai kết luận trái ngược, vì đó là hai mô hình khác nhau |
+| **Đóng băng PhoBERT** | Vector tính một lần rồi lưu đệm, mọi lần huấn luyện dense đọc lại. Nếu bản đóng băng không vượt nổi sàn và probe tuyến tính, lỗi nhiều khả năng nằm ở đường dữ liệu — phát hiện ở đây rẻ hơn nhiều |
+| **Đầu vào đã tách từ** | PhoBERT được tiền huấn luyện trên văn bản đã tách từ ("nhân_viên kinh_doanh"). Đưa vào văn bản chưa tách từ nghĩa là đưa sai phân phối ngay từ lớp đầu tiên |
 | **Mean pooling, không dùng vector `<s>`** | Khi không tinh chỉnh, vector `<s>` của PhoBERT chưa từng được huấn luyện cho bất kỳ tác vụ nào; lấy trung bình các token giữ lại nhiều tín hiệu từ vựng hơn |
 | **Cache vector vào `.npy`** | Trọng số đóng băng ⇒ các vector không đổi giữa các epoch. Nhúng 34.354 tin `train` chạy một lần (T1.2); mọi lần huấn luyện sau đọc lại cache. Từ 2026-09-17, mỗi file `.npy` có một sidecar `.json` cùng tên ghi lớp tokenizer (`use_fast=False`), `max_len`, cột nguồn và số dòng — bằng chứng để so hai cache, không phải bắt buộc để đọc lại vector |
 | **Dùng Huber cho hồi quy, không dùng MSE** | Lương lệch phải mạnh (skew **11,90**, tối đa 500 triệu trên file gốc — [05 §4](05-phan-tich-du-lieu.md#4-phân-phối-lương--đuôi-dài-và-đó-là-lý-do-dùng-log1p)). MSE để cho một nhúm giá trị ngoại lai kéo lệch toàn bộ gradient |
@@ -51,16 +51,15 @@ Hai họ cache được tách riêng — `raw` cho phân lớp, `masked` cho lư
 không phải là chi tiết cài đặt: trộn hai file này là một **rò rỉ (leak) lương
 âm thầm**, một mô hình đọc chính đáp án của mình.
 [`dl/text.py`](../src/vietjobs/dl/text.py) đi qua
-`features.resolve_column` giống hệt đường TF-IDF, và
+`features.resolve_column` — cổng duy nhất quyết định cột, và
 [`tests/test_dl_text.py`](../tests/test_dl_text.py) canh giữ điều đó.
 
 ## 3. Các ngưỡng cần vượt qua
 
 | Bài toán | Ngưỡng | Nguồn |
 |---|---|---|
-| Phân lớp — sàn tuyệt đối | macro-F1 **0,0210** (luôn dự đoán lớp lớn nhất) | [archive/04-results-ml.md](archive/04-results-ml.md) |
-| Phân lớp — sàn có ý nghĩa | macro-F1 **0,4321** (luật từ khóa) | như trên |
-| Phân lớp — **ngưỡng thật** | test macro-F1 **0,6112** · dev 0,6049 (TF-IDF + LinearSVC) | như trên |
+| Phân lớp — sàn tuyệt đối | dev macro-F1 **0,0214** (luôn dự đoán lớp lớn nhất) | [05 §7](05-phan-tich-du-lieu.md#7-ngưỡng-sàn--các-con-số-quyết-định-khớp-trên-train-chấm-điểm-trên-dev) |
+| Phân lớp — **ngưỡng thật** | dev macro-F1 **0,5898** (probe tuyến tính trên chính bộ vector) | dòng `probe-cat-0920` trong [04-results.md](04-results.md) |
 | Lương — **ngưỡng thật** | dev MAE **5,70 triệu** (dự đoán trung vị, 13,0, cho tất cả) | [05 §7](05-phan-tich-du-lieu.md#7-ngưỡng-sàn--các-con-số-quyết-định-khớp-trên-train-chấm-điểm-trên-dev) |
 | Lương — trần "biết ngành" | dev MAE **5,57 triệu** (khi biết nhãn ngành thật) | như trên |
 
@@ -103,23 +102,32 @@ và một thư mục `artifacts/<run_id>/`.
 **Lược đồ chia tách v2 — tính điểm trên `dev`, 3.812 tin.** Đây là các con số
 hiện tại.
 
-| Run | Cấu hình | macro-F1 | acc | epoch tốt nhất |
-|---|---|---|---|---|
-| *sàn* | luôn dự đoán lớp đa số | *0,0214* | *0,2062* | — |
-| `probe-cat-s2` | LogReg trên **cùng** bộ vector | 0,5898 | 0,6388 | — |
-| **`dl-cat-s2`** | lr 3e-4 + clipping + chuẩn hóa | **0,6025** | 0,6511 | 16/24 |
-| `dl-cat-s2-cw` | như trên + trọng số theo lớp (class weighting) | 0,5710 | 0,5976 | 15/23 |
-| *ngưỡng TF-IDF + LinearSVC* | `cat-SW-svm-1` — **lược đồ v1**, chưa đo lại | *0,6050 ± 0,0071* | *0,6445* | — |
+| Run | Cấu hình | macro-F1 | F1 | acc | epoch tốt nhất |
+|---|---|---|---|---|---|
+| *sàn* | luôn dự đoán lớp đa số | *0,0214* | *0,0705* | *0,2062* | — |
+| `probe-cat-0920` | LogReg trên **cùng** bộ vector | 0,5898 | 0,6271 | 0,6388 | — |
+| **`dl-cat-ce-cpu-0920`** | CrossEntropyLoss, lr 3e-4 + clipping + chuẩn hóa | **0,6030** | **0,6413** | 0,6501 | 11/19 |
+| `dl-cat-focal-cpu-0920` | như trên, thay bằng focal loss (γ=2) | 0,5972 | 0,6343 | 0,6427 | 11/19 |
 
-`f1_macro_no_junk` — macro-F1 khi loại `nhóm_nghề_khác` — là **0,6454** đối với
-`dl-cat-s2` và 0,5958 đối với `dl-cat-s2-cw`. Riêng lớp 25 mẫu đó làm con số
-đầu bảng mất 0,043.
+Ba lần chạy này đo trên `cpu` và **tái lập được từng chữ số** — xem §5.5 về lý
+do điều đó không hiển nhiên. `F1` là F1 trung bình có trọng số theo số mẫu mỗi
+lớp; `macro-F1` cho mọi lớp trọng số bằng nhau và vẫn là chỉ số dùng để chọn
+mô hình.
 
-Head dense chỉ đạt hơn **0,0127** macro-F1 so với probe tuyến tính trên cùng
-bộ vector (0,6025 so với 0,5898) — khớp với chênh lệch 0,0120 ở v1. Phần lớn
-tín hiệu mà một mô hình tuyến tính trích được, head phi tuyến cũng trích được;
-dung lượng thêm vào chỉ mua được một biên độ nhỏ, ổn định, chứ không phải một
-chế độ khác.
+`f1_macro_no_junk` — macro-F1 khi loại `nhóm_nghề_khác` — là **0,6458** đối với
+`dl-cat-ce-cpu-0920` và 0,6395 đối với `dl-cat-focal-cpu-0920`. Riêng lớp 25
+mẫu đó làm con số đầu bảng mất 0,043.
+
+Head dense chỉ đạt hơn **0,0132** macro-F1 so với probe tuyến tính trên cùng
+bộ vector (0,6030 so với 0,5898). Phần lớn tín hiệu mà một mô hình tuyến tính
+trích được, head phi tuyến cũng trích được; dung lượng thêm vào chỉ mua được
+một biên độ nhỏ, ổn định, chứ không phải một chế độ khác.
+
+**Focal loss thua CrossEntropy 0,0058 macro-F1** (0,5972 so với 0,6030).
+`FocalLoss` trong `dl/focal_loss.py` (bản itakurah/focal-loss-pytorch) nhân cross-entropy từng mẫu với `(1-p_t)^γ` —
+cân theo *độ khó* của mẫu thay vì *độ hiếm* của lớp, tức là đúng thứ được kỳ
+vọng sẽ giúp trên bộ dữ liệu lệch 27:1. Nó không giúp. Khoảng cách 0,0058 lớn
+hơn biên nhiễu 0,003 đo ở §5.5 nên đây là kết luận thật, không phải dao động.
 
 **Lược đồ chia tách v1 — tính điểm trên `val`, 7.159 tin. Dữ liệu lịch sử,
 không so sánh được với bảng trên.**
@@ -132,22 +140,12 @@ không so sánh được với bảng trên.**
 | `dl-cat-v2-nostd` | lr 3e-4 + clipping · không chuẩn hóa | 0,5934 | 0,6466 | 31/39 |
 | **`dl-cat-v2`** | lr 3e-4 + clipping + chuẩn hóa | **0,5987** | 0,6493 | 14/22 |
 | `dl-cat-v2-cw` | như trên + trọng số theo lớp | 0,5637 | 0,5913 | 6/14 |
-| *ngưỡng TF-IDF + LinearSVC* | `cat-SW-svm-1` | *0,6050 ± 0,0071* | *0,6445* | — |
 
-**Ở lược đồ v2, `dl-cat-s2` thấp hơn ngưỡng TF-IDF + LinearSVC của lược đồ v1
-đúng 0,0025** — nhỏ hơn cả khoảng tin cậy ±0,0071 của chính ngưỡng đó, và
-ngưỡng đó chưa từng được đo lại trên lược đồ này, nên so sánh này chỉ mang
-tính định hướng, không phải một phép kiểm định phân biệt. Đo lại ngưỡng đó
-trên `dev` nằm ngoài phạm vi công việc này.
-
-Độ chính xác top-3 ở v2 là **0,9318**, khớp với con số 0,9257 ở v1 — mô hình
-vẫn đưa được lớp đúng vào top ba đáng tin cậy hơn nhiều so với việc đoán đúng
-chính xác top-1.
-
-`--class-weight` một lần nữa là một **sự đánh đổi, không phải một cải thiện**
-ở v2: macro-F1 giảm 0,0315 (0,6025 → 0,5710) trong khi độ chính xác cân bằng
-tăng 0,0733 (0,6199 → 0,6931). Nó kéo mô hình về phía các lớp nhỏ, đúng như
-thiết kế. Chọn cái nào tùy vào ứng dụng thực tế; mặc định là tắt.
+`--class-weight` là một **sự đánh đổi, không phải một cải thiện**: macro-F1
+giảm 0,0315 (`dl-cat-s2` 0,6025 → `dl-cat-s2-cw` 0,5710). Nó kéo mô hình về
+phía các lớp nhỏ, đúng như thiết kế. Mặc định là tắt. Hai lần chạy này đo trên
+`mps` ngày 15/09, nên chênh lệch 0,0315 đáng tin (lớn hơn nhiều biên nhiễu
+0,003 ở §5.5) nhưng từng con số riêng lẻ thì không tái lập được.
 
 ### 5.2 Ước lượng lương
 
@@ -158,17 +156,17 @@ lương.** Đây là các con số hiện tại.
 |---|---|---|---|---|
 | *ngưỡng* | dự đoán trung vị, 13,0, cho tất cả | *5,70* | *10,52* | *−0,059* |
 | *trần "biết ngành"* | trung vị theo ngành, dùng nhãn thật | *5,57* | *10,33* | *−0,022* |
-| `probe-sal-s2` | Ridge trên vector PhoBERT | 4,42 | 8,36 | 0,466 |
-| **`dl-sal-s2`** | dense(256), lr 3e-4, đã chuẩn hóa | **4,15** | **8,29** | **0,512** |
+| `probe-sal-0920` | Ridge trên vector PhoBERT | 4,42 | 8,36 | 0,466 |
+| **`dl-sal-cpu-0920`** | SmoothL1Loss (Huber), dense(256), lr 3e-4, đã chuẩn hóa | **4,13** | **8,13** | **0,515** |
 
-RMSE lấy từ `rmse_trieu` trong `artifacts/dl-sal-s2/metrics.json`, từ `rmse` trong
-`artifacts/eda/summary.json` cho hai mốc, và tính lại cho `probe-sal-s2` bằng đúng
-cấu hình lần chạy đó (khớp lại MAE 4,42 · R² 0,466). RMSE gấp đôi MAE vì bị lỗi lớn ở đuôi lương cao kéo lên: trên
-`predictions_dev.parquet`, 2.571 tin dưới 30 triệu có RMSE 4,49, còn 127 tin từ
-30 triệu trở lên có RMSE 32,43.
+RMSE lấy từ `rmse_trieu` trong `artifacts/dl-sal-cpu-0920/metrics.json`, từ `rmse`
+trong `artifacts/eda/summary.json` cho hai mốc, và cho `probe-sal-0920` từ dòng
+của chính lần chạy đó trong [04-results.md](04-results.md). RMSE gấp đôi MAE vì bị
+lỗi lớn ở đuôi lương cao kéo lên: trên `predictions_dev.parquet` của `dl-sal-s2`,
+2.571 tin dưới 30 triệu có RMSE 4,49, còn 127 tin từ 30 triệu trở lên có RMSE 32,43.
 
-Head hồi quy **vượt ngưỡng 1,55 triệu (−27,2 %)**: R² trên thang log đi từ âm
-lên **0,512**, nghĩa là mô hình đọc được tín hiệu lương từ văn bản mà riêng
+Head hồi quy **vượt ngưỡng 1,57 triệu (−27,5 %)**: R² trên thang log đi từ âm
+lên **0,515**, nghĩa là mô hình đọc được tín hiệu lương từ văn bản mà riêng
 nhãn ngành không cung cấp được ([05 §6](05-phan-tich-du-lieu.md)). Đây là biên
 độ rõ ràng hơn so với kết quả lược đồ v1 bên dưới (−17,6 %) — tập v2 nhỏ hơn,
 tách rời theo nhóm, vẫn cho cùng kiến trúc này tổng quát hóa tốt hơn ở đây.
@@ -176,8 +174,8 @@ tách rời theo nhóm, vẫn cho cùng kiến trúc này tổng quát hóa tố
 **Kết quả probe tuyến tính đảo ngược phát hiện ở v1.** Ở v1, Ridge trên cùng
 bộ vector (`probe-sal`) đạt điểm **tệ hơn cả dự đoán trung vị** (MAE 6,60) —
 kết luận khi đó là tín hiệu lương tồn tại trong các vector nhưng chỉ ở dạng
-phi tuyến. Ở v2, `probe-sal-s2` đạt R² **0,466**, đã đi được phần lớn quãng
-đường tới 0,512 của head dense, và rõ ràng tốt hơn ngưỡng.
+phi tuyến. Ở v2, `probe-sal-0920` đạt R² **0,466**, đã đi được phần lớn quãng
+đường tới 0,515 của head dense, và rõ ràng tốt hơn ngưỡng.
 
 **Lược đồ chia tách v1 — tính điểm trên `val`, 5.095 tin. Dữ liệu lịch sử,
 không so sánh được với bảng trên.**
@@ -270,3 +268,44 @@ sai — nếu nó đạt 0,59, vấn đề chắc chắn không nằm ở đặc
 ---
 
 [← Phân tích dữ liệu](05-phan-tich-du-lieu.md) · [Lộ trình →](09-lo-trinh.md)
+
+### 5.5 Tái lập: vì sao mọi lần chạy đều đặt trên `cpu`
+
+Ngày 2026-09-20, khi chạy lại mô hình nền để đo bằng bộ chỉ số mới,
+`dl-cat-s2` (chạy 15/09, macro-F1 0,6025) **không tái lập được**: cùng seed,
+cùng dữ liệu, cùng mã nguồn, kết quả ra 0,6013.
+
+Truy nguyên bằng cách dựng một git worktree tại đúng commit `12a847c1` của lần
+chạy cũ và chạy **mã nguồn nguyên bản** ngày hôm đó: cũng ra 0,6013. Vậy không
+phải do thay đổi mã. Loại trừ tiếp: cache vector (không đổi từ 13/09), split và
+`manifest.json` (không đổi từ 10/09), kiến trúc, seed, `torch` 2.2.2, cùng chuỗi
+`platform`.
+
+Nguyên nhân là **thiết bị**. Trên `mps`, tám lần chạy cùng một cấu hình cho:
+
+| Thiết bị | macro-F1 qua các lần chạy | Thời gian |
+|---|---|---|
+| `mps` | 0,6012 · 0,6013 · 0,6013 · 0,6013 · 0,6025 · 0,6041 · 0,6041 · 0,6041 | 13–15 s |
+| `cpu` | 0,6030 · 0,6030 · 0,6030 (giống từng chữ số) | 12–16 s |
+
+Biên dao động của `mps` là **0,003 macro-F1** — lớn hơn nhiều khác biệt mà một
+thí nghiệm nhỏ muốn đo. `cpu` cho đúng một số mỗi lần và **không chậm hơn**:
+head dense chỉ 768→256→128→16, quá nhỏ để GPU có lợi ích. Từ đó `train_dl.py`
+mặc định `--device cpu` (AGENTS.md Rule 13 điều 5).
+
+Ba hệ quả được ghi lại ở đây vì chúng ràng buộc cách đọc mọi bảng phía trên:
+
+1. Các con số `*-cpu-0920` tái lập được; các con số `-s2` (đo trên `mps`) thì
+   không, và được giữ lại như dữ liệu lịch sử.
+2. Trên các lần chạy `mps` cũ, **mọi chênh lệch dưới 0,003 macro-F1 là nhiễu**.
+   Hai kết luận vẫn đứng vững vì vượt xa biên đó: `--class-weight` (−0,0315) và
+   focal loss (−0,0058).
+3. `env.json` từ nay ghi thêm `numpy`, `pandas`, `scikit_learn` — ba thư viện
+   mà việc không ghi lại đã khiến lần truy nguyên này mất nhiều bước hơn cần
+   thiết.
+
+Lần chạy lương không bị ảnh hưởng theo cách này: `dl-sal-s2` tái lập trên `mps`
+tới từng chữ số cuối (MAE 4,14868613775178). Nhưng chuyển sang `cpu` vẫn đổi kết
+quả (4,13, hội tụ ở epoch 19 thay vì 26) — hai thiết bị là hai đường số học khác
+nhau, nên bảng §5.2 dùng lần chạy `cpu` cho nhất quán.
+

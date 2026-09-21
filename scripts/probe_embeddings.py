@@ -54,9 +54,9 @@ def main() -> None:
     if args.task == C.TASK_CATEGORY:
         clf = LogisticRegression(max_iter=1000, C=args.C, n_jobs=-1).fit(Xtr, tr["category"])
         m = E.classification_metrics(va["category"].to_numpy(), clf.predict(Xva),
-                                     clf.predict_proba(Xva), list(clf.classes_))
-        headline = (f"macroF1={m['f1_macro']:.4f} · acc={m['accuracy']:.4f} · "
-                    f"balAcc={m['balanced_accuracy']:.4f} · top3={m['top3_accuracy']:.4f}")
+                                     list(clf.classes_))
+        headline = (f"macroF1={m['f1_macro']:.4f} · F1={m['f1_weighted']:.4f} · "
+                    f"acc={m['accuracy']:.4f}")
         model = f"logreg-probe(C={args.C})"
     else:
         ktr = ((tr["salary_disclosed"] == 1) & tr["salary_mid"].notna()).to_numpy()
@@ -65,7 +65,7 @@ def main() -> None:
         yva = np.log1p(va.loc[kva, "salary_mid"].to_numpy())
         reg = Ridge(alpha=1.0).fit(Xtr[ktr], ytr)
         m = E.regression_metrics(yva, reg.predict(Xva[kva]))
-        headline = (f"MAE={m['mae_trieu']:.2f}tr · MedAE={m['median_ae_trieu']:.2f}tr · "
+        headline = (f"MAE={m['mae_trieu']:.2f}tr · RMSE={m['rmse_trieu']:.2f}tr · "
                     f"R2log={m['r2_log']:.3f} · ±20%={m['within_20pct'] * 100:.1f}%")
         model = "ridge-probe(alpha=1.0)"
 

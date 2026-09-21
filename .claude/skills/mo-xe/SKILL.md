@@ -77,7 +77,6 @@ Anticipate them and put a warning block right there:
 
 A few known ones in this project: `n` is a fixed number of columns, not the number
 of words in the input sentence · `df` counts **documents**, not **occurrences** ·
-"Inverse" attaches to *Document Frequency*, not to *Term Frequency* · TF-IDF matches
 **spelling**, not **meaning** · the label is never a feature.
 
 ## Rule 5 — when a case comes out wrong, keep it
@@ -103,20 +102,15 @@ backwards from this column.
 
 | Topic | Read first | What the example must show |
 |---|---|---|
-| TF-IDF, bag of words | `docs/nen-tang/02-tf-idf-la-gi.md` | The full matrix, `df` versus `tf`, L2 per row |
 | n-grams, segmentation | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` | A bigram catching a phrase that unigrams shatter |
-| Several feature blocks | `docs/archive/05-dac-trung-tfidf.md` | One vocabulary per column, glued side by side, `‖row‖ = √(number of blocks with text)` |
-| Sparse matrices, dimensionality | `docs/nen-tang/04-ma-tran-thua-va-so-chieu.md` | Counting non-zero cells against the total |
-| One-hot, scaling numbers | `docs/archive/05-dac-trung-tfidf.md` §6 | A large-scale column swamping a 0/1 column when unscaled |
 | Semantic vectors, PhoBERT | `docs/nen-tang/09-vector-ngu-nghia.md` | Two postings with no shared word landing close together |
 
 ### Models
 
 | Topic | Read first | What the example must show |
 |---|---|---|
-| Linear models, SVM, LogReg | `docs/archive/06-mo-hinh-phan-lop.md` | `W` printed in full, `score_k = w_k·x + b_k`, `argmax`, which cell drives the score |
+| The dense head | `docs/06-baseline-dl.md` | 768 → 256 → 128 → out, what each layer does to one vector |
 | KNN | `docs/nen-tang/04-ma-tran-thua-va-so-chieu.md` | The nearest neighbour changing when normalisation is removed |
-| Trees / LightGBM | `docs/07-bai-toan-luong.md` | Where one branch splits and why |
 | Regression | `docs/07-bai-toan-luong.md` | Prediction versus label, per-sample error |
 | Deep learning | `docs/06-baseline-dl.md` | One forward pass computed by hand |
 

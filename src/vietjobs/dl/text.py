@@ -4,11 +4,10 @@ Hai điều bắt buộc, cả hai đều đo được bằng ``tests/test_dl_te
 
 1. **Che lương.** Bài ``salary`` và ``disclosed`` chỉ được đọc bản ``*_masked``.
    Quyết định đó không nằm ở đây mà ở ``features.resolve_column`` — đường DL đi
-   qua đúng cái cổng mà đường TF-IDF đã đi (quy tắc số 3).
+   qua đúng cái cổng đó (quy tắc số 3).
 2. **Tách từ.** PhoBERT được huấn luyện trên văn bản đã tách từ
    ("nhân_viên kinh_doanh"). Đưa văn bản chưa tách vào là đưa sai phân bố so với
-   lúc tiền huấn luyện, nên ``segmented=True`` là mặc định ở đây — ngược với kết
-   luận của đường TF-IDF, và đó là điều nên nói rõ trong tài liệu.
+   lúc tiền huấn luyện, nên ``segmented=True`` là mặc định ở đây.
 """
 from __future__ import annotations
 

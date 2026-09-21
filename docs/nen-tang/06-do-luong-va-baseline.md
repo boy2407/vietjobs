@@ -21,7 +21,7 @@ at the data:
 |---|---|
 | **accuracy** | **0.2014** |
 | macro-F1 | **0.0210** |
-| balanced accuracy | 0.0625 |
+| F1 (weighted) | 0.0705 |
 
 Accuracy says "right 20 % of the time". That does not sound terrible. But this model
 **ignores 15 of the 16 classes entirely** — it has learned nothing. Macro-F1 tells
@@ -76,19 +76,24 @@ right.
 |---|---|---|
 | **macro-F1** | Does the model do **evenly** well across all 16 classes? | The **headline** metric for model selection |
 | `f1_macro_no_junk` | What happens when the junk class `nhóm_nghề_khác` is dropped? | Separates **label noise** from **model error** |
-| `balanced_accuracy` | Mean recall across classes | Sensitive to abandoned classes |
+| `f1_weighted` (reported as **F1**) | Same F1, averaged by how many rows each class has | Shows the large classes' view; always higher than macro-F1 here |
 | `accuracy` | Raw correctness rate | Only for **comparing against the floor**, never for model selection |
-| `top3_accuracy` | Is the right answer among the 3 suggestions? | What a real user actually needs |
 
 **`f1_macro_no_junk` is worth noting.** The class `nhóm_nghề_khác` is a junk drawer:
 it holds "Nhân Viên Seo Web", "Nhân Viên Quản Trị Website" — postings that belong in
 marketing and IT. Getting them wrong is **not the model's fault**; the original
 label is wrong. Reporting both numbers lets the reader keep the two apart.
 
-**`top3_accuracy` = 93 %** while macro-F1 is only 0.61. That gap is not a
-contradiction — it says the model nearly always puts the right label in the top 3
-and merely orders the intrinsically ambiguous occupations wrongly. For a system that
-suggests options to a user, 93 % is the number to report.
+**The gap between F1 and macro-F1 is the imbalance, made visible.** On
+`dl-cat-ce-cpu-0920` the two are 0.6413 and 0.6030: weighting by class size flatters
+the model, because the classes it handles best are also the biggest. Report macro-F1
+as the headline for exactly that reason, and read F1 beside it as "what a user drawn
+uniformly from the corpus experiences".
+
+**Two metrics were removed on 2026-09-20**: `balanced_accuracy` and `top3_accuracy`
+are no longer computed by `evaluate.py`, so runs from that date carry neither. Older
+rows in `04-results.md` still show them and are left as written (the log is
+append-only).
 
 ---
 
@@ -101,20 +106,18 @@ The project builds three floor levels for classification:
 
 | Level | What it is | macro-F1 |
 |---|---|---|
-| **Floor 1** — random | Always predict the largest class | 0.0210 |
-| **Floor 2** — no ML | Keyword matching in the title | **0.4321** |
-| The cheapest model | SVM reading titles only | 0.5547 |
-| The final model | SVM C=0.02, full text | 0.6050 |
+| **Floor 1** — no model | Always predict the largest class | 0.0214 |
+| **Floor 2** — linear probe | A linear model on the same PhoBERT vectors | 0.5898 |
+| The network | Dense head on those vectors (`dl-cat-ce-cpu-0920`) | 0.6030 |
 
-**Floor 2 is the real floor.** It asks: *"if we use no machine learning, just a few
-if-else lines matching keywords, how far do we get?"* — 0.4321.
+**Floor 2 is the floor that matters.** It asks: *"is the representation weak, or is
+the head broken?"* A linear model has a convex solution and no learning rate to get
+wrong — if it already reaches 0.5898 on those vectors, the representation is fine
+and any failure is in the head.
 
-Any machine-learning model that cannot beat 0.4321 **does not deserve to exist**: it
-costs training time, is hard to explain, hard to maintain, and loses to a far
-simpler piece of code.
-
-In this project, **two full-text KNN models lose to floor 2** (0.4059). That is a
-useful result, and it is in the log — see [note 4](04-ma-tran-thua-va-so-chieu.md).
+A network that cannot beat its linear probe **does not deserve its extra capacity**:
+it costs training time, is harder to explain and harder to maintain, and loses to a
+far simpler piece of code.
 
 For the salary tasks, the corresponding floors are:
 
@@ -172,13 +175,12 @@ The question that actually matters is: *"does A beat B on **the same** rows?"*
 Two different questions, and the second is far more sensitive. The reason: two models
 are wrong on largely the same ambiguous postings, so if you resample **the same** set
 of rows for both and subtract, the shared variation cancels out. That is the **paired
-bootstrap**, and it is the basis for decisions in
-[10-so-sanh-mo-hinh.md §4](../archive/10-so-sanh-mo-hinh.md#4-ma-trận-phàng--cột).
+bootstrap**, implemented in `evaluate.paired_delta`, and it is how comparisons are
+decided here.
 
-A real example from that cluster: `logreg` 0.6072 versus `svm` 0.6050 — a gap of
-+0.0022, smaller than σ, so the old rule called it noise. The paired bootstrap gives
-`P(logreg > svm) = 0.685`, i.e. **still indistinguishable**, but now we know that
-from a correct measurement rather than from a crude threshold.
+A gap smaller than σ is not automatically noise, and a gap larger than σ is not
+automatically real: σ answers *"how much would this score move on a different dev
+set?"*, while the paired bootstrap answers the question actually being asked.
 
 > **Principle:** before celebrating an improvement, ask *"is it larger than the
 > noise?"* If you do not know how large the noise is, you may not conclude anything.
@@ -188,5 +190,5 @@ from a correct measurement rather than from a crude threshold.
 ## Back to the project itself
 
 - [03-protocol.md §4](../03-protocol.md) — the project's official metric definitions
-- [06-mo-hinh-phan-lop.md](../archive/06-mo-hinh-phan-lop.md) — the results ladder and how to read it
-- [04-results.md](../archive/04-results-ml.md) — the experiment log
+- [06-baseline-dl.md](../06-baseline-dl.md) — the results ladder and how to read it
+- [04-results.md](../04-results.md) — the experiment log

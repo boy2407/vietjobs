@@ -1,6 +1,6 @@
 ---
 name: giai-thich
-description: "Briefly explain one concept in the VietJobs pipeline — data cleaning, Vietnamese processing, TF-IDF, features, leakage, metrics, regularisation — starting from an everyday analogy and only then naming the term. Use this skill when the user asks what a preprocessing step, feature-engineering choice, or ML concept in this project means or why it exists, invokes /giai-thich, or asks 'tại sao phải ...' about any pipeline stage."
+description: "Briefly explain one concept in the VietJobs pipeline — data cleaning, Vietnamese processing, semantic vectors, leakage, metrics, regularisation — starting from an everyday analogy and only then naming the term. Use this skill when the user asks what a preprocessing step, feature-engineering choice, or ML concept in this project means or why it exists, invokes /giai-thich, or asks 'tại sao phải ...' about any pipeline stage."
 trigger: "Use this skill when the user asks what a preprocessing step, feature-engineering choice, or ML concept in this project means or why it exists, invokes /giai-thich, or asks 'tại sao phải ...' about any pipeline stage."
 version: 1
 ---
@@ -81,11 +81,7 @@ The "analogy seed" column is a direction for the example, not a sentence to copy
 
 | Type | Also accepts | Read this file | Everyday analogy seed |
 |---|---|---|---|
-| `tf-idf` | `tfidf`, `tf`, `idf`, `bag-of-words`, `tui-tu` | `docs/nen-tang/02-tf-idf-la-gi.md` | A rare word in a book is worth looking up; the word "and" is not |
 | `ngram` | `bigram`, `unigram`, `n-gram` | `docs/nen-tang/03-ngram-va-ranh-gioi-tu.md` §1 | "bánh mì" is nothing like "bánh" and "mì" standing apart |
-| `features` | `dac-trung`, `feature`, `blocks`, `column-transformer` | `docs/archive/05-dac-trung-tfidf.md` (closed track) | Filling in an application form — one field per item, not everything on one line |
-| `tfidf-params` | `tham-so-tfidf`, `min-df`, `max-df`, `sublinear`, `max-features` | `docs/archive/05-dac-trung-tfidf.md` §4 (closed track) | The dials on a filter: too coarse and too fine are both wrong |
-| `sparse-matrix` | `ma-tran-thua`, `sparse`, `dimensions`, `p-n`, `curse` | `docs/nen-tang/04-ma-tran-thua-va-so-chieu.md` | A phone book with two hundred thousand numbers when you only call five |
 | `semantic-vectors` | `vector-ngu-nghia`, `phobert`, `embedding`, `subword` | `docs/nen-tang/09-vector-ngu-nghia.md` | Two job ads with no words in common that mean the same job |
 
 ### Models and measurement

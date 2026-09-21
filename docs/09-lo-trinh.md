@@ -2,17 +2,15 @@
 
 # Lộ trình
 
-Nhánh học máy đã đóng vào ngày 2026-09-08 và chuyển vào
-[archive/](archive/README.md). Từ đây, nhánh chính của khóa luận là **mạng học sâu
-trên biểu diễn PhoBERT**, theo thứ tự: hai bài toán tách riêng
-trước, hợp nhất đa nhiệm sau.
+Nhánh chính của khóa luận là **mạng học sâu trên biểu diễn PhoBERT**, theo thứ
+tự: hai bài toán tách riêng trước, hợp nhất đa nhiệm sau.
 
 Các mốc cần vượt, đo trên cùng tập chia dữ liệu với cùng seed:
 
 | Bài toán | Mốc | Nguồn |
 |---|---|---|
-| Phân loại ngành nghề | macro-F1 trên test **0,6112** (LinearSVC + TF-IDF) | [archive/04-results-ml.md](archive/04-results-ml.md) |
-| Phân loại ngành nghề — sàn | đa số **0,0210** · quy tắc từ khóa **0,4321** | [archive/06-mo-hinh-phan-lop.md](archive/06-mo-hinh-phan-lop.md) |
+| Phân loại ngành nghề | dev macro-F1 **0,6030** · F1 **0,6413** (`dl-cat-ce-cpu-0920`) | [04-results.md](04-results.md) |
+| Phân loại ngành nghề — sàn | đa số **0,0214** · probe tuyến tính **0,5898** | [05 §7](05-phan-tich-du-lieu.md#7-ngưỡng-sàn--các-con-số-quyết-định-khớp-trên-train-chấm-điểm-trên-dev) · [04-results.md](04-results.md) |
 | Ước lượng lương | MAE trên dev **5,70 triệu** (dự đoán trung vị) | [05 §7](05-phan-tich-du-lieu.md#7-ngưỡng-sàn--các-con-số-quyết-định-khớp-trên-train-chấm-điểm-trên-dev) |
 | Có công bố lương hay không | accuracy **0,7078** (luôn đoán "có") | nguồn như trên |
 
@@ -41,12 +39,12 @@ Ba việc kết quả này sinh ra, sắp theo giá trị trên mỗi giờ côn
 ## Ưu tiên 2 — tinh chỉnh PhoBERT (mức cũ 4b)
 
 Rã đông trọng số encoder, huấn luyện đầu-cuối, 256 token. Chỉ làm **sau khi** mức
-đóng băng đã có số: nếu bản đóng băng không vượt nổi 0,6112, lỗi nhiều khả năng nằm
-ở đường dữ liệu, và phát hiện điều đó ở mức rẻ tiền chỉ tốn vài phút thay vì hàng
-giờ.
+đóng băng đã có số: nếu bản đóng băng không vượt nổi probe tuyến tính trên chính bộ
+vector đó, lỗi nhiều khả năng nằm ở đường dữ liệu, và phát hiện điều đó ở mức rẻ
+tiền chỉ tốn vài phút thay vì hàng giờ.
 
-Đây là hạng mục còn lại có kỳ vọng cao nhất: bản đóng băng đã ngang mốc TF-IDF **mà
-chưa dùng đến khả năng thích nghi của encoder chút nào**. Ràng buộc phần cứng đã đo
+Đây là hạng mục còn lại có kỳ vọng cao nhất: bản đóng băng đã có số **mà chưa dùng
+đến khả năng thích nghi của encoder chút nào**. Ràng buộc phần cứng đã đo
 được: máy này chạy Intel x86_64, **không có MPS/CUDA**, và `torch` không còn phát
 hành bản dựng cho macOS Intel sau bản 2.2.2. Nhúng ở trạng thái đóng băng cho tập
 `train` v1 (33.396 tin) mất ~20 phút với tốc độ ~30 tin/giây; tập `train` v2 có
@@ -104,20 +102,18 @@ nhiệm vụ nhiều khả năng nằm ở **một mô hình duy nhất thay vì
       với ngành — đo cùng mục thiên lệch chọn mẫu ở trên
 - [ ] **Bộ tách từ lệch với nguồn PhoBERT** — dự án dùng underthesea/pyvi, PhoBERT
       được VinAI tách từ bằng RDRSegmenter của VnCoreNLP. Hai bộ tách *trong* dự án
-      đã bất đồng trên 84,8 % description ([02 §6](02-vietnamese-nlp.md#6-hai-bộ-tách-từ-khác-nhau-ở-đâu--và-vì-sao-câu-hỏi-mở-lại));
-      độ lệch so với RDRSegmenter chưa từng được đo. Kết luận "đừng đổi bộ tách từ"
-      ở §6 là kết luận cho TF-IDF (bước tách từ khi đó bị tắt) — với PhoBERT thì
-      bước này luôn bật, nên câu hỏi "chọn bộ nào" lại mở ra
-- [ ] **2.148 title (4,50 %) viết không dấu chưa có đường xử lý nào** — kênh bỏ dấu
-      cũ (bước 6) từng bắt được chúng cho TF-IDF; với BPE của PhoBERT, "Nhan Vien"
+      đã bất đồng trên 84,8 % description; độ lệch so với RDRSegmenter chưa từng
+      được đo. Với PhoBERT bước tách từ luôn bật, nên câu hỏi "chọn bộ nào" là câu
+      hỏi mở
+- [ ] **2.148 title (4,50 %) viết không dấu chưa có đường xử lý nào** — với BPE của
+      PhoBERT, "Nhan Vien"
       bị băm thành các mảnh hiếm ([02 §3](02-vietnamese-nlp.md#3-chín-bước--làm-gì-vì-sao-và-điều-gì-đo-được), bước 6)
 
 ## Ưu tiên 5 — hệ thống
 
-- [ ] `predict.py` chưa biết đến đường học sâu. Quy tắc 4 (huấn luyện và suy luận
-      dùng chung một đường mã) hiện **không được canh** cho nhánh học sâu
+- [ ] Chưa có đường suy luận nào cho người dùng cuối. Quy tắc 4 (huấn luyện và suy
+      luận dùng chung một đường mã) hiện **không được canh**
 - [ ] `artifacts/PRODUCTION.json` ánh xạ bài toán → run_id, thay cho `_latest_run`,
       vốn đang chọn theo thời gian sửa tệp
 - [ ] Đo độ trễ suy luận và báo cáo nó cạnh điểm số: PhoBERT chạy ~30 tin/giây trên
-      CPU so với TF-IDF + LinearSVC gần như tức thời — đây là một sự đánh đổi mà báo
-      cáo phải trình bày
+      CPU — chi phí đó phải được trình bày trong báo cáo

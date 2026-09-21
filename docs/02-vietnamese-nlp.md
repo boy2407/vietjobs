@@ -6,15 +6,10 @@ Chín bước biến một ô văn bản thô thành chuỗi mà **PhoBERT** tá
 cách. Mọi con số đều được đo trên corpus và có thể tái lập bằng
 `python scripts/measure_vitext.py`.
 
-> **Thay đổi hướng đi, 2026-09-08.** Ghi chú này ban đầu được viết cho TF-IDF.
-> Hướng chính hiện nay là PhoBERT, nên phần "vì sao" của từng bước đã được viết
-> lại xoay quanh cơ chế BPE, và **hai bước đã đảo ngược kết luận**: tách từ đi
-> từ "loại bỏ" thành **bắt buộc**, còn bỏ dấu đi từ "giữ lại" thành **loại bỏ**.
->
-> Các bảng ablation ở §5 và §6 được đo trên TF-IDF + LinearSVC và được
-> **giữ nguyên không đổi** — đó là bằng chứng của một giai đoạn đã khép lại
-> ([archive/](archive/README.md)), không phải định hướng. Hãy đọc chúng như
-> lịch sử, không phải như chỉ dẫn.
+> ⛔ **Chưa có số liệu ablation cho chín bước này trên PhoBERT → Dense.** Các
+> bước đang bật là những bước cơ chế BPE đòi hỏi (mục §2 và §3 giải thích từng
+> bước); phần đo lường để giữ hay bỏ từng bước chưa chạy trên hướng hiện tại.
+> Xem TASKS.md.
 
 > Chưa quen với "rò rỉ dữ liệu" hay "vector ngữ nghĩa"? Hãy đọc
 > [nền tảng: vì sao phải làm sạch](nen-tang/01-vi-sao-phai-lam-sach.md) trước.
@@ -39,8 +34,8 @@ sinh: `province`, `experience_months`, `group_id`.
 Cả 9 bước đều là **hàm thuần (pure functions)** — cùng đầu vào cho cùng đầu
 ra, không đọc trạng thái bên ngoài, không học gì từ dữ liệu. Chính điều đó cho
 phép cùng một đoạn code chạy ở ba nơi mà không lệch nhau: `dataset.py` (trước
-khi chia tập), `features.py` (cửa `resolve_column`), `predict.py` (lúc suy
-luận). Đây là Rule 4 trong [../AGENTS.md](../AGENTS.md) — sự lệch nhau giữa
+khi chia tập), `features.py` (cửa `resolve_column`), `dl/text.py` (lúc dựng
+chuỗi vào PhoBERT). Đây là Rule 4 trong [../AGENTS.md](../AGENTS.md) — sự lệch nhau giữa
 luồng code huấn luyện và luồng code suy luận là một lỗi âm thầm.
 
 ### Chín bước chạy ở ba nơi khác nhau
@@ -57,9 +52,9 @@ số này chỉ tồn tại để `preprocess()` vẫn còn khả năng làm vi�
 |---|---|---|
 | 1 NFC · 2 dấu thanh · 3 viết tắt · 4 che lương | `V.preprocess(tone=True, abbrev=True, mask=…)`, gọi từ `dataset.clean` | Đây là chuỗi biến đổi trên **một** ô văn bản |
 | 5 tách từ | `V.segment_many`, lượt riêng ngay sau `preprocess` trong `dataset.clean` | Chạy trên toàn cột (Series), không phải trên một ô — khác cơ chế với 1–4 |
-| 6 bỏ dấu | `fold_accents`, không còn được gọi trên hướng chính | Nó sinh ra để nuôi kênh n-gram ký tự của TF-IDF. PhoBERT không có kênh như vậy |
+| 6 bỏ dấu | `fold_accents`, không còn được gọi trên hướng chính | PhoBERT chỉ có một kênh văn bản, và bản sao bỏ dấu không đi vào kênh đó |
 | 7 chuẩn hoá tỉnh/thành | `dataset.clean`, chỉ trên cột `location` | Nó tạo ra một **cột mới** (`province`), không chỉnh sửa văn bản |
-| 8 stopword | `remove_stopwords`, có trong `preprocess()` qua `drop_stopwords` nhưng không có lời gọi nào bật nó | Tham số còn đó cho ablation ở §5, nhưng đường build thật sự không dùng |
+| 8 stopword | `remove_stopwords`, có trong `preprocess()` qua `drop_stopwords` nhưng không có lời gọi nào bật nó | Tham số còn đó để còn đo được, nhưng đường build thật sự không dùng |
 | 9 khoá gộp nhóm | `dataset.clean`, sau khi văn bản đã sạch | Nó tạo ra một **id**, không phải một đặc trưng |
 
 Thứ tự **hiệu dụng** trong `dataset.clean` là cố định và có lý do:
@@ -165,11 +160,11 @@ loại trùng lặp, có thể tái lập bằng `python scripts/measure_vitext.
 | 2 | **Chuẩn hoá dấu thanh**<br/>`normalize_tone` | Chuyển dấu thanh sang nguyên âm thứ hai trong `oa`/`oe`/`uy`: hòa → hoà, thúy → thuý | Cả hai cách đặt dấu đều **đúng chính tả**, và NFC **không** gộp chúng lại. BPE cắt hai cách viết thành hai chuỗi subword khác nhau, nên cùng một từ nhận hai vector khác nhau. Chuẩn hoá về nguyên âm thứ hai là hướng an toàn: "quý" được giữ nguyên, trong khi quy ước ngược lại sẽ phá nó thành "qúy" | Description dùng kiểu "hoà" **76,6 %** số lần, kiểu "hòa" **30,3 %** — phần lớn tin đăng trộn lẫn cả hai. 13 cặp token tiêu đề được gộp lại sau bước này: họa 565 + hoạ 64 · hóa 307 + hoá 50 |
 | 3 | **Mở rộng viết tắt**<br/>`expand_abbreviations` | 39 từ viết tắt không mơ hồ được thay theo từng token (NV → nhân viên, BHXH → bảo hiểm xã hội); 6 từ viết tắt mơ hồ (TP, CP, CV…) chỉ mở rộng khi một regex ngữ cảnh khớp | "NV" là một token hiếm trong corpus tiền huấn luyện; "nhân viên" thì không. Mở rộng một từ viết tắt là đổi một mảnh hiếm lấy một mảnh phổ biến — đúng thứ mà PhoBERT có vector tốt. Điều ngược lại cũng thật không kém: mở rộng mù quáng "TP" thành "trưởng phòng" bên trong "TP HCM" tạo ra một tín hiệu sai — **mở rộng sai còn tệ hơn không mở rộng**, nên các mục mơ hồ cần ngữ cảnh trước khi kích hoạt | **3.436 description (7,2 %)** chứa ít nhất một từ viết tắt trong bảng: bhxh 748 · cskh 446 · ncc 414 · bhyt 298. Riêng "TP" xuất hiện trong 419 description |
 | 4 | **Che số liệu lương**<br/>`mask_salary` | Chỉ áp dụng cho nhánh lương: "15 - 22 triệu" → `<SALARY>`. `_is_pay` bỏ qua các con số **đếm** thứ khác: "40 triệu người dùng", "500 triệu đồng doanh thu" | `salary_*` là **nhãn** của tác vụ 2. Nếu một con số lương vẫn còn trong description hay benefits, mô hình đọc thẳng đáp án ngay trên đầu vào của nó: một R² đẹp trong báo cáo, nhưng vỡ trận ngoài thực tế. Việc che vẫn giữ *sự kiện* rằng "tin này có nhắc đến lương" (một tín hiệu hợp lệ) và chỉ xoá đi *giá trị*. Với phân lớp ngành nghề thì không gì bị che cả — mức lương là một manh mối hợp lệ cho ngành nghề | Các dòng nhắc lại số liệu lương trong văn bản: benefits **5.081 (10,65 %)** · description 250 (0,52 %) · requirements 103 (0,22 %) · title 121 (0,25 %) |
-| 5 | **Tách từ**<br/>`segment` · underthesea hoặc pyvi | "Nhân viên kinh doanh" → "Nhân_viên kinh_doanh" | **Bắt buộc, và đây là nơi kết luận đảo ngược so với TF-IDF.** PhoBERT-base-v2 được tiền huấn luyện trên văn bản đã tách từ; bảng BPE của nó chứa `nhân_viên` như một đơn vị. Đưa vào văn bản chưa tách từ nghĩa là đưa sai phân phối ngay từ lớp đầu tiên. Với TF-IDF thì ngược lại — `ngram_range=(1,2)` đã bắt được "nhân viên" như một bigram, nên bước này dư thừa (§5) | Âm tiết "viên" xuất hiện **27.053 lần** trong title, đứng sau **70 âm tiết khác nhau**: nhân 20.138 · chuyên 4.858 · thuật 498. Hai bộ tách từ cắt khác nhau trên **84,8 %** description — xem §6 |
-| 6 | **Kênh bỏ dấu**<br/>`fold_accents` | Tạo một bản sao đã bỏ dấu. Dùng để nuôi kênh n-gram ký tự 3–5 của TF-IDF | **Không còn chỗ để dùng.** PhoBERT chỉ có một kênh duy nhất và bản sao bỏ dấu không được đi vào đó: trong tiếng Việt, dấu thanh **chính là** từ — má / mà / mả / mã / mạ là năm từ khác nhau. Hàm này vẫn tồn tại vì `group_key` gọi nó (bước 9). Các tin không dấu hiện không có đường xử lý riêng (theo dõi ở [09](09-lo-trinh.md) Ưu tiên 4) | **2.148 title (4,50 %)** hoàn toàn không mang dấu thanh nào |
+| 5 | **Tách từ**<br/>`segment` · underthesea hoặc pyvi | "Nhân viên kinh doanh" → "Nhân_viên kinh_doanh" | **Bắt buộc.** PhoBERT-base-v2 được tiền huấn luyện trên văn bản đã tách từ; bảng BPE của nó chứa `nhân_viên` như một đơn vị. Đưa vào văn bản chưa tách từ nghĩa là đưa sai phân phối ngay từ lớp đầu tiên. | Âm tiết "viên" xuất hiện **27.053 lần** trong title, đứng sau **70 âm tiết khác nhau**: nhân 20.138 · chuyên 4.858 · thuật 498. Hai bộ tách từ cắt khác nhau trên **84,8 %** description |
+| 6 | **Kênh bỏ dấu**<br/>`fold_accents` | Tạo một bản sao đã bỏ dấu | **Không còn chỗ để dùng.** PhoBERT chỉ có một kênh duy nhất và bản sao bỏ dấu không được đi vào đó: trong tiếng Việt, dấu thanh **chính là** từ — má / mà / mả / mã / mạ là năm từ khác nhau. Hàm này vẫn tồn tại vì `group_key` gọi nó (bước 9). Các tin không dấu hiện không có đường xử lý riêng (theo dõi ở [09](09-lo-trinh.md) Ưu tiên 4) | **2.148 title (4,50 %)** hoàn toàn không mang dấu thanh nào |
 | 7 | **Chuẩn hoá tỉnh/thành**<br/>`normalize_province` | Ánh xạ tên địa danh vào 42 tỉnh/thành qua một bảng 183 tên gọi khác: "hà đông" → "hà nội", "Tp. HCM" → "hồ chí minh". Địa danh không rõ giữ nguyên tên có dấu, chỉ tiền tố hành chính bị bỏ | Nó tạo ra một cột **số/phân loại**, không phải văn bản. Đầu học sâu hiện chỉ nhận 768 chiều từ PhoBERT ([heads.py](../src/vietjobs/dl/heads.py)), nên cột này không đi vào mô hình học sâu | 984 chuỗi location → **265 giá trị**; **7.481 dòng (15,7 %)** đổi giá trị. Riêng "hà nội" hấp thụ **136 biến thể**: hà đông 1.166 · bắc từ liêm 166 · cầu giấy 136 |
-| 8 | **Loại bỏ stopword**<br/>`remove_stopwords` | Loại bỏ 161 mục trong `stopwords_vi.txt` (193 dạng, tính cả các dạng có gạch dưới cho văn bản đã tách từ) | **Bị loại bỏ, và với PhoBERT nó còn tệ hơn là vô dụng.** Một mô hình theo ngữ cảnh dùng chính những hư từ đó để dựng quan hệ giữa các từ; xoá chúng đi tạo ra một kiểu câu mà mô hình chưa từng thấy trong lúc tiền huấn luyện. Với TF-IDF nó chỉ đơn thuần vô dụng: `idf` đã hạ trọng số các từ xuất hiện ở khắp nơi | Cùng cấu hình TF-IDF ở C=0.5: bật 0,5756 (`cat-P5-svm-stop`) so với tắt 0,5754 (`cat-P4-svm-charfold`) — chênh lệch **0,0002**, thấp hơn nhiều so với ngưỡng nhiễu 0,0077 |
-| 9 | **Khoá gộp nhóm**<br/>`group_key` | SHA-1 của (title + description + requirements) sau khi viết thường, bỏ dấu và loại bỏ dấu câu → một id 16 ký tự | Nhà tuyển dụng đăng lại cùng một tin nhiều lần với chỉnh sửa nhỏ. Nếu chia theo dòng, cùng một tin có thể rơi vào cả train lẫn test: mô hình đạt điểm cao nhờ **học thuộc lòng**, và điểm đó không nói lên điều gì về khả năng tổng quát hoá. Không phụ thuộc mô hình — đúng với cả TF-IDF lẫn PhoBERT | 47.707 dòng chỉ có **34.899 nhóm** — **12.808 dòng (26,8 %)** là tin đăng lại, nhóm lớn nhất có 33 dòng. `dataset.build()` khẳng định 0 nhóm bị chia lệch giữa các tập |
+| 8 | **Loại bỏ stopword**<br/>`remove_stopwords` | Loại bỏ 161 mục trong `stopwords_vi.txt` (193 dạng, tính cả các dạng có gạch dưới cho văn bản đã tách từ) | **Bị loại bỏ, và với PhoBERT nó còn tệ hơn là vô dụng.** Một mô hình theo ngữ cảnh dùng chính những hư từ đó để dựng quan hệ giữa các từ; xoá chúng đi tạo ra một kiểu câu mà mô hình chưa từng thấy trong lúc tiền huấn luyện. | ⛔ chưa đo lại trên PhoBERT → Dense |
+| 9 | **Khoá gộp nhóm**<br/>`group_key` | SHA-1 của (title + description + requirements) sau khi viết thường, bỏ dấu và loại bỏ dấu câu → một id 16 ký tự | Nhà tuyển dụng đăng lại cùng một tin nhiều lần với chỉnh sửa nhỏ. Nếu chia theo dòng, cùng một tin có thể rơi vào cả train lẫn test: mô hình đạt điểm cao nhờ **học thuộc lòng**, và điểm đó không nói lên điều gì về khả năng tổng quát hoá. Không phụ thuộc mô hình | 47.707 dòng chỉ có **34.899 nhóm** — **12.808 dòng (26,8 %)** là tin đăng lại, nhóm lớn nhất có 33 dòng. `dataset.build()` khẳng định 0 nhóm bị chia lệch giữa các tập |
 
 ### Ba điểm tinh tế đáng đọc kỹ
 
@@ -201,7 +196,7 @@ cách máy móc sẽ biến "không yêu cầu kinh nghiệm" thành "yêu cầu
 [../resources/stopwords_vi.txt](../resources/stopwords_vi.txt) liệt kê các từ
 được cố tình giữ lại vì lý do đó: `không`, `chưa`, `trên/dưới`, `ít/nhiều`,
 `tối/thiểu`, `từ/đến`, `ưu/tiên`. Với PhoBERT thì cả danh sách này không được
-dùng đến — file vẫn được giữ để ablation ở §5 còn tái lập được.
+dùng đến — file vẫn được giữ để bước này còn đo lại được.
 
 ---
 
@@ -233,8 +228,7 @@ thường rồi bỏ dấu trước khi băm. Vì vậy bước 1 và 2 bị `gr
 `nhân viên` → `nhan vien` sống sót qua việc bỏ dấu và làm đổi giá trị băm.
 
 Tắt `abbrev` sẽ làm đổi `group_id`, làm đổi các tập chia, làm mất khả năng so
-sánh với mọi dòng trong [04-results.md](04-results.md) **và** mọi benchmark
-trong [archive/](archive/README.md) — vi phạm Rule 2, mục 1.
+sánh với mọi dòng trong [04-results.md](04-results.md) — vi phạm Rule 2, mục 1.
 
 ### Từ cột `_seg` tới vector 768 chiều — những gì xảy ra sau chín bước
 
@@ -254,7 +248,7 @@ nói tới — nguồn chân lý là
 Không bước nào trong bốn bước này viết thường hoặc bỏ dấu — chúng chỉ nối
 chuỗi và cắt token.
 
-### Ba điều PhoBERT thêm vào mà TF-IDF không có
+### Ba điều riêng của đường PhoBERT
 
 1. **Cắt ở 256 token** ([encode.py](../src/vietjobs/dl/encode.py)). Đây không
    phải một lựa chọn mà là **trần cứng** của `phobert-base-v2`
@@ -269,147 +263,10 @@ chuỗi và cắt token.
    là một rò rỉ lương âm thầm — Rule 3. Mỗi file `.npy` nay có một sidecar
    `.json` cùng tên ghi lại lớp tokenizer, `max_len`, cột nguồn và số dòng đã
    nhúng — bằng chứng để so hai cache với nhau, không phải để đọc lại vector.
-3. **Không cần viết thường hoá.** `TfidfVectorizer(lowercase=True)` từng làm
-   việc đó; tokenizer của PhoBERT phân biệt hoa thường, nên chữ hoa đi thẳng
-   vào mô hình.
+3. **Không viết thường hoá.** Tokenizer của PhoBERT phân biệt hoa thường, nên
+   chữ hoa đi thẳng vào mô hình.
 
 ---
-
-## 5. Ablation của hướng đã khép lại — bằng chứng, không phải định hướng
-
-> Toàn bộ §5 và §6 được đo trên **TF-IDF + LinearSVC**, hướng đã khép lại vào
-> ngày 2026-09-08. Được giữ lại vì quy tắc "ghi lại cả những thất bại": chúng
-> giải thích vì sao pipeline có hình dạng như hiện tại. Đừng dùng chúng để
-> quyết định bất cứ điều gì cho PhoBERT — hai mô hình đọc văn bản qua các cơ
-> chế khác nhau, và bước 5 là bằng chứng sống động cho điều đó.
-
-SVM cố định ở `C = 0.02`, mỗi lần bật/tắt một bước. 200 lần lấy mẫu lại
-bootstrap cho độ lệch chuẩn macro-F1 xấp xỉ **0,0077** — chênh lệch nhỏ hơn con
-số đó là nhiễu, không phải cải thiện. Con số này đến từ 34 lần chạy của cụm so
-sánh, xem
-[10-so-sanh-mo-hinh.md §7](archive/10-so-sanh-mo-hinh.md#8-σ--lần-đầu-được-tính-bằng-code).
-Lưu ý: các kết luận "trong ngưỡng nhiễu" dưới đây đạt được bằng cách so sánh
-hai điểm **độc lập**. So sánh **theo cặp** (paired bootstrap) nhạy hơn nhiều,
-nhưng các lần chạy trong bảng này không lưu `y_pred`, nên không thể kiểm tra
-lại — **trừ trường hợp tách từ**, vốn đã được chạy lại và so sánh theo cặp ở
-§6.
-
-| Cấu hình | cờ `PrepConfig` | macro-F1 (dev) | Lần chạy trong [archive/04-results-ml.md](archive/04-results-ml.md) |
-|---|---|---|---|
-| Không bước nào | `raw` | 0,6033 | `cat-R-svm-C0.02-noprep` |
-| Chuẩn hoá tỉnh/thành | `province` | **0,6050** | `cat-T-svm-C0.02` |
-| Tỉnh/thành + tách từ (underthesea) | `segment+province` | 0,5998 | `cat-R-svm-C0.02-seg` |
-| Tỉnh/thành + tách từ (pyvi) | `segment+province` | 0,5982 | `cat-SEG-pyvi` |
-| Tỉnh/thành + tách từ + bỏ dấu | `segment+charfold+province` | 0,6024 | `cat-R-svm-C0.02-all` |
-
-**Với TF-IDF, chỉ chuẩn hoá tỉnh/thành sống sót** — bước rẻ nhất trong chín
-bước, P(>0) = 0,97. Cả tách từ lẫn bỏ dấu đều kéo điểm xuống thấp hơn cả việc
-không làm gì.
-
-Loại bỏ stopword không có dòng nào ở `C = 0.02`. So sánh hợp lệ duy nhất nằm ở
-một cụm chạy trước đó với `C` mặc định: `cat-P4-svm-charfold` 0,5754 →
-`cat-P5-svm-stop` 0,5756, tức **+0,0002** — không phân biệt được với nhiễu.
-Kết luận vẫn là "loại bỏ", nhưng vì nó không mang lại gì, không phải vì nó gây
-hại.
-
-Tách từ không giúp ích cho TF-IDF vì `ngram_range=(1,2)` **đã** bắt được
-"nhân viên" như một bigram — bước 5 giải quyết một vấn đề mà vectoriser đã
-giải quyết sẵn. PhoBERT không có bigram nào giải trước, và bảng BPE của nó
-được xây trên văn bản đã tách từ — nên cùng một bước lại cho ra hai kết luận
-trái ngược. Cơ chế này được trình bày chi tiết ở
-[nền tảng: n-gram và ranh giới từ](nen-tang/03-ngram-va-ranh-gioi-tu.md).
-
-Đặt cạnh nhau để thấy tỷ lệ công sức: chỉnh `C` từ 0,5 xuống 0,02 (cùng cấu
-hình `province`) đưa macro-F1 từ 0,5763 lên 0,6050, **+0,0287**; toàn bộ
-pipeline tiếng Việt chỉ đóng góp **+0,0017**. Một dòng siêu tham số đã vượt
-chín bước xử lý ngôn ngữ tới **gần 17 lần**.
-
-Ba bước bị loại khỏi cấu hình TF-IDF (5, 6, 8) vẫn còn trong code, tắt theo
-mặc định phía sau các cờ `PrepConfig`, nên bảng trên vẫn tái lập được bất cứ
-lúc nào. Luồng học sâu **không** đọc `PrepConfig` — nó đi thẳng qua
-`resolve_column`.
-
-> **Một vết mờ cần phải nói rõ.** Dòng `raw` không hoàn toàn là "không xử lý
-> gì". Cột `is_major_city` luôn được tính từ `province` bất kể cờ
-> `prep.province` ([dataset.py:92](../src/vietjobs/dataset.py#L92)), nên dòng
-> `raw` vẫn hưởng một phần lợi ích của việc chuẩn hoá tỉnh/thành. Vì vậy
-> khoảng cách thật giữa `raw` và `province` **hẹp hơn** con số 0,0017 đã đo
-> được. Kết luận "chuẩn hoá tỉnh/thành là bước duy nhất sống sót" không đổi,
-> nhưng bằng chứng cho nó yếu hơn so với vẻ ngoài của bảng.
-
-Bốn bước được **giữ lại bất kể** chúng có nâng điểm hay không, vì chúng thuộc
-về tính đúng đắn chứ không phải hiệu năng — và điều này đúng trên cả hai
-hướng:
-
-| Bước | Thiếu nó thì hỏng gì |
-|---|---|
-| 1 · NFC | Cùng một từ tồn tại ở hai nơi. Mọi dòng ablation về sau đo trên hai đầu vào khác nhau, và bảng so sánh trở nên vô nghĩa |
-| 2 · chuẩn hoá dấu thanh | Như trên, và tần suất bị chia đôi đúng vào những từ phổ biến nhất |
-| 4 · che lương | Rò rỉ nhãn — Rule 3. Không có lỗi nào được báo; nó âm thầm tạo ra một mô hình đọc chính đáp án của nó |
-| 9 · khoá gộp nhóm | Rò rỉ giữa các tập — [03-protocol.md](03-protocol.md) §1. Điểm test tăng lên mà không có thật |
-
-Bài học chung, đáng giá hơn cả bảng số liệu: **một bước tiền xử lý có hai loại
-lý do để tồn tại** — nó nâng điểm, hoặc nó làm cho con số đo được có ý nghĩa.
-Loại thứ hai không bao giờ xuất hiện trong bảng ablation, và cũng không bao
-giờ bị loại bỏ.
-
----
-
-## 6. Hai bộ tách từ khác nhau ở đâu — và vì sao câu hỏi mở lại
-
-§5 kết luận rằng tách từ không đáng giữ lại **đối với TF-IDF**. Nhưng kết
-luận đó gắn với **một** thư viện duy nhất: underthesea. Nếu nó cắt tồi, thứ
-được đo là chất lượng của thư viện đó, không phải giá trị của việc tách từ.
-Vì vậy toàn bộ việc này được chạy lại với một thư viện thứ hai —
-[pyvi](https://github.com/trungtv/pyvi) — giữ nguyên mọi thứ khác: cùng các
-tập chia đã đóng băng, cùng LinearSVC `C = 0.02`, cùng chuẩn hoá tỉnh/thành,
-cùng năm cột văn bản.
-
-Tái lập bằng `python scripts/archive/segmenter_ablation.py`; số liệu nằm
-trong `artifacts/segmenter-ablation/metrics.json`.
-
-**Hai bộ thật sự cắt khác nhau.** 84,8 % dòng description cho ra chuỗi khác
-nhau — đây không phải hai lần chạy của cùng một thứ:
-
-```
-Nhân Viên Vận Hành Hệ Thống Xử Lí Nước Thải
-pyvi         Nhân_Viên Vận_Hành Hệ_Thống Xử_Lí Nước_Thải
-underthesea  Nhân_Viên Vận_Hành Hệ_Thống Xử_Lí_Nước_Thải     ← 4 âm tiết gộp thành 1 token
-```
-
-| Cấu hình | macro-F1 (dev) | Δ so với không tách từ (bootstrap **theo cặp**) |
-|---|---|---|
-| Chỉ tỉnh/thành — không tách từ | **0,6050** | baseline |
-| + tách từ · underthesea | 0,5998 | −0,0050 · CI95 [−0,0109; +0,0013] · P(>0) = 0,059 |
-| + tách từ · pyvi | 0,5982 | −0,0067 · CI95 [−0,0125; −0,0012] · P(>0) = 0,009 |
-
-Hai thư viện **không phân biệt được với nhau**: pyvi − underthesea = −0,0017,
-CI95 [−0,0070; +0,0038], P(>0) = 0,266.
-
-So sánh theo cặp cũng siết chặt lại kết luận cũ. §5 gọi tách từ là "trong
-ngưỡng nhiễu" vì khoảng cách 0,0052 nhỏ hơn σ ≈ 0,0077. Khi so sánh theo cặp
-trên **cùng** các dòng dev, khoảng tin cậy của pyvi **không chứa số 0**: với
-TF-IDF, tách từ không vô hại, nó **gây hại nhẹ** — đúng như cơ chế trong
-[nền tảng: n-gram và ranh giới từ](nen-tang/03-ngram-va-ranh-gioi-tu.md) dự
-đoán, vì bigram đã bắt được "nhân viên" trong khi tách từ phá huỷ các bigram
-bắc cầu như "viên kinh".
-
-**Chỗ pyvi thắng là tốc độ, không phải điểm số.** Cùng năm cột, cùng 40.555
-dòng:
-
-| Bộ tách từ | Giây | |
-|---|---|---|
-| underthesea | 461,2 | |
-| pyvi | 63,8 | **nhanh hơn 7,2×** |
-
-Với TF-IDF thì con số này không quan trọng, vì bước tách từ đang tắt. **Với
-PhoBERT thì nó quan trọng**: bước 5 luôn bật, nên cả tốc độ lẫn cách cắt đều
-lại trở thành câu hỏi mở (theo dõi ở [09-lo-trinh.md](09-lo-trinh.md) Ưu tiên 4).
-
-Công tắc chuyển đổi nằm trong code — biến môi trường
-`VIETJOBS_SEGMENTER=pyvi`, mặc định là `underthesea`. Đổi bộ tách từ nghĩa là
-phải xây lại các cột `*_seg` và mã hoá lại toàn bộ cache embedding.
-
 ---
 
 ## Đọc tiếp
@@ -420,5 +277,5 @@ phải xây lại các cột `*_seg` và mã hoá lại toàn bộ cache embeddi
 - [Giao thức thực nghiệm](03-protocol.md) — vì sao mỗi dòng ablation đều hợp
   lệ
 - Nền tảng: [vì sao phải làm sạch](nen-tang/01-vi-sao-phai-lam-sach.md) ·
-  [n-gram và ranh giới từ](nen-tang/03-ngram-va-ranh-gioi-tu.md) ·
+  [vector ngữ nghĩa](nen-tang/09-vector-ngu-nghia.md) ·
   [rò rỉ dữ liệu](nen-tang/05-ro-ri-du-lieu.md)

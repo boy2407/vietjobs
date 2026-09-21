@@ -12,7 +12,7 @@ Sections below are numbered to match the plan:
     2.3 expand_abbreviations   NV -> nhân viên, BHXH -> bảo hiểm xã hội, ...
     2.4 segment                word segmentation (nhân_viên kinh_doanh)
     2.5 remove_stopwords       optional, ablation-gated
-    2.6 fold_accents           accent-folded mirror for the char n-gram channel
+    2.6 fold_accents           accent-folded mirror, used by group_key
     2.7 normalize_province     hà đông -> hà nội
     2.8 mask_salary            replace pay figures with <SALARY>
     2.9 experience_to_months / parse_list_field / split_locations
@@ -44,7 +44,7 @@ def normalize_unicode(text: object) -> str:
     """NFC-normalise, drop bullets and control chars, collapse whitespace.
 
     NFC first: without it ``"ế"`` can exist as one code point or as ``e`` plus
-    two combining marks, which TF-IDF would see as two different tokens.
+    two combining marks, which a tokenizer would see as two different tokens.
     """
     if text is None:
         return ""
@@ -64,7 +64,7 @@ def normalize_unicode(text: object) -> str:
 # Vietnamese has two conventions for where the tone mark sits in the diphthongs
 # "oa", "oe" and "uy": on the first vowel ("hòa", "thúy") or on the second
 # ("hoà", "thuý"). Both are correct spellings of the same word, and NFC does
-# NOT unify them — so "hoà" and "hòa" are two distinct TF-IDF tokens.
+# NOT unify them — so "hoà" and "hòa" tokenize as two different words.
 #
 # Canonical form chosen here: tone on the SECOND vowel ("hoà", "thuý").
 # That direction is safe for "qu-": "quý" already has the mark on the second
@@ -149,7 +149,7 @@ def expand_abbreviations(text: object) -> str:
 # ---------------------------------------------------------------------------
 # Vietnamese is an isolating language: whitespace separates SYLLABLES, not
 # words. "nhân viên kinh doanh" is 2 words spread over 4 syllables. Without
-# segmentation, TF-IDF learns one "viên" shared by nhân viên / chuyên viên /
+# segmentation, a model sees one "viên" shared by nhân viên / chuyên viên /
 # nghiên cứu viên / công viên — four unrelated meanings.
 
 _SEGMENTER_STATE: dict[str, object] = {"loaded": False, "fn": None, "name": None}
@@ -325,10 +325,10 @@ def remove_stopwords(text: object) -> str:
 
 
 def fold_accents(text: object) -> str:
-    """Strip diacritics — for the char n-gram channel ONLY.
+    """Strip diacritics — used by ``group_key`` ONLY.
 
     5.1% of titles in this dump are written without diacritics ("Nhan Vien
-    Kinh Doanh"). A folded mirror lets those match their accented twins.
+    Kinh Doanh"); folding makes a repost match its accented twin when hashing.
 
     This must NEVER be applied to the main word channel: in Vietnamese the
     diacritics are the word. má / mà / mả / mã / mạ are five different words.

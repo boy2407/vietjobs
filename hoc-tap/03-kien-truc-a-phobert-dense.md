@@ -68,10 +68,8 @@ Hai chi tiết quan trọng:
   `dụng`. Nhờ vậy **không có từ nào là từ lạ hoàn toàn** — cái gì cũng chẻ ra được.
   Đây là một khác biệt lớn so với TextCNN ở [bài 4](04-kien-truc-b-textcnn.md).
 - **Gạch dưới.** PhoBERT được huấn luyện trên văn bản **đã tách từ**: `nhân_viên` là
-  một token, không phải hai. Nên đường học sâu bật `segmented=True` mặc định. Chú ý:
-  đường TF-IDF cũ lại kết luận tách từ **hơi có hại**. Cùng một bước xử lý, hai kết
-  luận ngược nhau, vì hai mô hình khác nhau — chuyện này được nói kỹ ở
-  [`docs/02-vietnamese-nlp.md`](../docs/02-vietnamese-nlp.md).
+  một token, không phải hai. Nên đường học sâu bật `segmented=True` mặc định — nói
+  kỹ ở [`docs/02-vietnamese-nlp.md`](../docs/02-vietnamese-nlp.md).
 
 **Ở đâu.** `AutoTokenizer.from_pretrained("vinai/phobert-base-v2")` trong
 [`src/vietjobs/dl/encode.py`](../src/vietjobs/dl/encode.py), gọi với
@@ -114,8 +112,8 @@ chiều cho mỗi token**, tức một tensor `[số tin, số token, 768]`.
 
 **Vì sao cần.** Đây là chỗ "nghĩa" xuất hiện. PhoBERT đã đọc hàng chục GB tiếng Việt và
 học được rằng `bán_hàng` với `kinh_doanh` đứng cạnh những từ giống nhau, nên vector của
-chúng gần nhau — dù hai từ không có ký tự nào chung. Cách đếm từ kiểu TF-IDF không bao
-giờ làm được việc đó. Chi tiết ở
+chúng gần nhau — dù hai từ không có ký tự nào chung. Biểu diễn chỉ dựa trên việc đếm
+từ không bao giờ làm được việc đó. Chi tiết ở
 [`docs/nen-tang/09-vector-ngu-nghia.md`](../docs/nen-tang/09-vector-ngu-nghia.md).
 
 **"Đóng băng" nghĩa là gì.** Trọng số PhoBERT bị khoá: `.eval()`, và toàn bộ bước chạy
@@ -226,8 +224,8 @@ trên hình vẽ. Phi tuyến là thứ làm cho lớp thứ hai có ý nghĩa.
 **Làm gì.** Khi huấn luyện, mỗi bước tắt ngẫu nhiên 30 % số tín hiệu. Khi suy diễn thì
 tắt hẳn cơ chế này.
 **Vì sao cần.** Chống quá khớp: mô hình không được phép dựa chết vào một vài chiều,
-vì chiều nào cũng có thể biến mất ở bước sau. Cùng một ý tưởng với chính quy hoá `C`
-bên đường TF-IDF, chỉ khác bộ áo —
+vì chiều nào cũng có thể biến mất ở bước sau. Cùng họ với các cơ chế chính quy hoá
+khác —
 [`docs/nen-tang/07-chinh-quy-hoa.md`](../docs/nen-tang/07-chinh-quy-hoa.md).
 
 ### `Linear(256, 128) → GELU → Dropout`

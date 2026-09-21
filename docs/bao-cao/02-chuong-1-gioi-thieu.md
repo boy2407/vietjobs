@@ -57,8 +57,9 @@ nội dung một tin tuyển dụng tiếng Việt.
    nối đầy đủ dùng chung rồi tách thành hai nhánh đầu ra — một nhánh phân loại
    ngành nghề, một nhánh ước lượng mức lương xử lý được cả những tin không công bố
    lương — toàn mạng tối ưu bằng một hàm mất mát hợp nhất.
-3. So sánh mô hình học sâu với các mô hình học máy truyền thống dùng làm mốc cơ sở,
-   đánh giá cả độ chính xác lẫn tốc độ xử lý để chọn phương án triển khai.
+3. Đối chiếu mô hình học sâu với các mốc cơ sở không dùng mô hình và với phép dò
+   tuyến tính trên chính vectơ biểu diễn, để xác nhận phần cải thiện đo được là do
+   mô hình chứ không do phân bố nhãn.
 4. Triển khai hệ thống hoàn chỉnh cho phép người dùng nhập tin tuyển dụng và nhận
    kết quả dự đoán.
 
@@ -167,10 +168,11 @@ trọng số**; chỉ phần mạng kết nối đầy đủ phía sau được 
 
 ### 1.5.2. Ý nghĩa thực tiễn
 
-Mô hình lương đạt MAE **4,15 triệu** trên `dev`, thấp hơn 27,2 % so với đoán trung
+Mô hình lương đạt MAE **4,13 triệu** trên `dev`, thấp hơn 27,5 % so với đoán trung
 vị — một điểm tham chiếu về mặt bằng lương cho những tin không công bố. Với phân loại,
-độ chính xác top-3 đo được (**0,9318**) đáng chú ý hơn top-1: ba ngành nghề mô hình
-xếp đầu chứa ngành đúng hơn 93 lần trong 100 (§4.3, §4.4).
+macro-F1 **0,6030** trên 16 lớp lệch 27:1 nghĩa là mô hình không bỏ rơi phần đuôi:
+F1 có trọng số (**0,6413**) chỉ cao hơn 0,038, khoảng cách mà một mô hình chỉ học
+các lớp lớn sẽ nới rộng nhiều hơn thế (§4.3, §4.4).
 
 ---
 

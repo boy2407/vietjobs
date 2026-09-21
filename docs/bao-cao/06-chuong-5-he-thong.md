@@ -15,7 +15,7 @@
 | Xử lý tiếng Việt | `underthesea` | Tách từ tiếng Việt |
 | Mô hình ngôn ngữ | `transformers` · PhoBERT-base-v2 | Sinh vectơ ngữ nghĩa 768 chiều |
 | Học sâu | PyTorch | Khối kết nối đầy đủ và vòng huấn luyện |
-| Học máy | scikit-learn | Các phép dò tuyến tính (mốc tầng 2) |
+| Độ đo và mốc cơ sở | scikit-learn | Các phép đo chất lượng và phép dò tuyến tính (mốc tầng 2) |
 | Kiểm thử | pytest | 107 kiểm thử, trong đó 30 kiểm thử canh rò rỉ dữ liệu |
 
 **Bảng 5.2: Hai môi trường ảo và lý do tách riêng**
@@ -46,7 +46,7 @@ Phần mã nguồn trong `src/vietjobs/` mà đề tài dùng gồm **10 mô-đu
 | `vitext.py` | 584 | Toàn bộ xử lý tiếng Việt. Hàm thuần tuý, mỗi bước có kiểm thử riêng |
 | `dataset.py` | 381 | Làm sạch + chia tập cố định. Tách từ chạy **một lần** và ghi vào parquet |
 | `features.py` | 279 | `resolve_column` — cửa duy nhất quyết định bài toán nào đọc cột nào |
-| `evaluate.py` | 267 | Độ đo cho cả ba bài toán + bootstrap và so sánh ghép cặp |
+| `evaluate.py` | 252 | Độ đo cho cả ba bài toán + bootstrap và so sánh ghép cặp |
 | `config.py` | 85 | Đường dẫn · `SPLIT_SEED` · nhóm cột · tên bài toán |
 | `dl/text.py` | 40 | Nối ba trường văn bản thành đầu vào PhoBERT. Không phụ thuộc torch |
 | `dl/encode.py` | 153 | PhoBERT đóng băng → vectơ 768 chiều, lưu đệm `.npy` theo họ `raw`/`masked` |

@@ -46,12 +46,12 @@ above 0.975 or below 0.025 is a clear difference; around 0.5 is a tie.
 ## Rule 3 — no skipping rungs, and no touching test
 
 Climb B0 → B8 in order. Rungs B4 + B5 + B6 together cost about ten machine-minutes;
-one fine-tune costs an hour or two. **Changing the model family is always the last
+one fine-tune costs an hour or two. **Changing the architecture is always the last
 lever.**
 
-`artifacts/cat-FINAL-svm-C0.02-test` is the single `test` touch that has been spent.
-Do not run `--eval test`, do not read `test.parquet` for diagnosis, do not
-"re-confirm" a conclusion on test.
+No run has been scored on `test` yet — that single touch is still unspent. Do not
+run `--eval test`, do not read the test split for diagnosis, do not "re-confirm" a
+conclusion on test.
 
 ---
 
@@ -61,9 +61,9 @@ The shared preamble for every block:
 
 ```python
 import sys, json; sys.path.insert(0, 'src')
-import numpy as np, pandas as pd, joblib
+import numpy as np, pandas as pd
 from sklearn.metrics import f1_score
-RUN = 'cat-SW-svm-1'
+RUN = 'dl-cat-s2'
 m = json.load(open(f'artifacts/{RUN}/metrics.json'))
 dv = pd.read_parquet('data/processed/splits/dev.parquet')
 ```
@@ -140,14 +140,13 @@ for finer resolution, not for discovery.
 
 ### B4 · The train ↔ dev gap — bias or variance
 
-`train.py --eval` only accepts `dev` and `test`, and **do not** add a `train` option
-— it would write a meaningless row into the append-only log. The right way is to
-load the saved model and score again:
+`dl/train_dl.py --eval` only accepts `dev` and `test`, and **do not** add a `train`
+option — it would write a meaningless row into the append-only log. Read the gap
+from `history.jsonl`, which already records both numbers per epoch:
 
 ```python
-p = joblib.load(f'artifacts/{RUN}/model.joblib')
-tr = pd.read_parquet('data/processed/splits/train.parquet')
-print(f1_score(tr["category"], p.predict(tr), average="macro", zero_division=0))
+h = [json.loads(l) for l in open(f'artifacts/{RUN}/history.jsonl')]
+print(pd.DataFrame(h)[["epoch", "train_loss", "dev_f1_macro"]].to_string())
 ```
 
 | train − dev gap | Conclusion | Lever |
@@ -166,19 +165,20 @@ Sample **by `group_id`**, not by row. Sampling by row puts reposts both inside a
 outside the subsample, and flattens the learning curve artificially.
 
 ```python
-from sklearn.pipeline import Pipeline
-from vietjobs import features as F
-from vietjobs.models import build_estimator
-prep = F.PrepConfig(province=True)                     # exactly the config of the run being examined
+from sklearn.linear_model import LogisticRegression     # the linear probe, not the network
+Xtr = np.load('artifacts/embeddings/train-raw-len256.npy')
+Xdv = np.load('artifacts/embeddings/dev-raw-len256.npy')
 gids = tr["group_id"].unique().copy(); np.random.default_rng(42).shuffle(gids)
 for frac in (0.1, 0.25, 0.5, 1.0):                     # shuffle ONCE -> nested subsamples
-    sub = tr[tr["group_id"].isin(set(gids[:int(len(gids)*frac)]))]
-    est, _ = build_estimator("category", "svm", 42); est.set_params(C=0.02)
-    pipe = Pipeline([("features", F.build_features("category", "full", prep, None)),
-                     ("estimator", est)]).fit(sub, sub["category"])
-    print(frac, len(sub), f1_score(dv["category"], pipe.predict(dv),
-                                   average="macro", zero_division=0))
+    keep = tr["group_id"].isin(set(gids[:int(len(gids)*frac)])).values
+    clf = LogisticRegression(max_iter=2000).fit(Xtr[keep], tr["category"][keep])
+    print(frac, keep.sum(), f1_score(dv["category"], clf.predict(Xdv),
+                                     average="macro", zero_division=0))
 ```
+
+The probe stands in for the network here on purpose: it reads the same vectors, has
+no learning rate to get wrong, and four points cost minutes instead of an hour. The
+**shape** of the curve is what is being read, not its height.
 
 Four points cost about three to four minutes, write no artifact and touch no log.
 Read the gap between `frac=0.5` and `frac=1.0`: under 2σ → the curve has saturated,
@@ -186,73 +186,49 @@ Read the gap between `frac=0.5` and `frac=1.0`: under 2σ → the curve has satu
 and collecting more data is the cheapest lever — with the warning that rebuilding
 the splits invalidates `04-results.md`.
 
-### B6 · Contribution per feature block — `Σ|w|`
+### B6 · Which input columns the run actually read
 
 ```python
-from vietjobs.features import source_columns
-ct, est = p.named_steps["features"], p.named_steps["estimator"]
-names = ct.get_feature_names_out()                     # shaped "block__feature"
-blocks = np.array([n.split("__", 1)[0] for n in names])
-t = pd.DataFrame({"block": blocks, "w": np.abs(est.coef_).sum(axis=0)}) \
-      .groupby("block").agg(dims=("w","size"), w=("w","sum"))
-t["pct"] = 100 * t.w / t.w.sum()
-t["per_dim_x"] = (t.pct / t.dims) / (100 / t.dims.sum())
-print(t.sort_values("pct", ascending=False).round(3).to_string(), source_columns(ct))
+print(m["columns"])          # exactly what dl/text.py joined for this run
 ```
-
-`per_dim_x` is the average weight of one dimension in the block, relative to the
-global average. Cross-check this table against
-`docs/archive/05-dac-trung-tfidf.md` §9.
 
 | Condition | Action |
 |---|---|
-| A block's `per_dim_x` is more than 2× that of the largest block | That block is **diluted** — weight it up (archive roadmap Priority 3a: title ×2, ×3) |
-| A block holds over 25 % of the dimensions with `per_dim_x` under 0.8 | Cut its dimensions with `min_df` / `max_features` — archive roadmap Priority 3b |
-| A block under 0.1 % of the weight | Remove the block and re-measure. Cross-check A4: is the source column mostly empty |
+| A salary run lists a column without `_masked` | **Stop** — that is a leak (Rule 3). Re-run after fixing `dl/text.py` |
+| The list differs from another run being compared | The two runs are not comparable; re-encode before comparing |
+| A column is mostly empty in the split (cross-check A4) | Its contribution cannot be large; do not spend a lever on it |
 
-Only works for linear models (`svm`, `logreg`). For trees, replace
-`np.abs(est.coef_).sum(axis=0)` with `est.feature_importances_` and keep the rest.
-
-### B7 · Hyper-parameter sensitivity — read the existing sweep, do not re-sweep
+### B7 · Hyper-parameter sensitivity — read the runs already on disk
 
 ```python
 import glob
-rows = [(json.load(open(f))["model"], json.load(open(f))["metrics"]["f1_macro"])
-        for f in sorted(glob.glob('artifacts/cat-SW-*/metrics.json'))]
-df = pd.DataFrame(rows, columns=["model","f1"])
-print(df.groupby("model").f1.agg(["min","median","max"])
-        .assign(spread=lambda d: d["max"] - d["min"]).round(4).to_string())
+rows = [(json.load(open(f))["run_id"], json.load(open(f))["metrics"]["f1_macro"])
+        for f in sorted(glob.glob('artifacts/dl-cat-*/metrics.json'))]
+print(pd.DataFrame(rows, columns=["run", "f1"]).round(4).to_string())
 ```
 
-The rule: **a spread under 2σ across six configurations means hyper-parameters are
-exhausted for that model.** Sweeping further burns machine-hours without changing
-the conclusion. To rebuild all seven comparison tables, run
-`PYTHONPATH=src python scripts/archive/report_sweep.py` — it runs `check_alignment`
-itself and carries six reproduction anchors.
+Pair each row with its `config.json`: the deviation from the default is the whole
+explanation of the gap. **A spread under 2σ across several configurations means
+hyper-parameters are exhausted for that architecture** — sweeping further burns
+machine-hours without changing the conclusion.
 
-### B8 · Calibration and top-3 — when there is no `y_proba`
+`history.jsonl` matters more than the final number here: a run whose dev metric
+peaked early and then decayed is over-trained, and no further sweeping fixes that.
 
-`LinearSVC` has no `predict_proba`, so `predictions.npz` for every `svm` run has
-only four keys. Check first, do not assume: `np.load(...).files`.
+### B8 · Calibration and top-3
 
-The substitute for `svm` is the `decision_function` margin:
+The classification head emits logits over 16 classes, so probabilities come from a
+softmax and `top3_accuracy` is already in `metrics.json`. Read it before computing
+anything.
 
 ```python
-M = p.decision_function(dv); labs = np.array(p.named_steps["estimator"].classes_)
-top3 = labs[np.argsort(-M, axis=1)[:, :3]]
-print(np.mean([t in r for t, r in zip(dv["category"], top3)]))
-S = np.sort(M, axis=1); gap = S[:, -1] - S[:, -2]
-ok = (dv["category"].values == labs[M.argmax(1)])
-for q in (0.10, 0.25, 0.50):
-    th = np.quantile(gap, q); print(q, ok[gap <= th].mean(), ok[gap > th].mean())
+pred = pd.read_parquet(f'artifacts/{RUN}/predictions_dev.parquet')
+print(pred.columns.tolist())      # check what was actually saved, do not assume
 ```
 
-The margin gives **the right ordering but not a probability**. It can be used for a
-refuse-to-answer threshold (if accuracy below the threshold is clearly lower than
-above it), but it **cannot** be used to say "the model is 80 % confident". For real
-probabilities, run exactly once
-`python -m vietjobs.train --task category --model svm_calibrated --scope full --province --C 0.02`
-— three times the fit cost, in exchange for `y_proba` and `top3_accuracy`.
+A large gap between top-1 and top-3 accuracy means the model **orders** the classes
+well while failing to separate the top pair — that is a label-boundary problem
+(B2, B3), not a capacity problem. Do not pull the architecture lever for it.
 
 ---
 
@@ -264,11 +240,11 @@ probabilities, run exactly once
 | B2 symmetric pair + high A6 cosine | **labels** | Merge the classes into a secondary axis, or record the ceiling. Do not run a new model |
 | B3 over 30 % of errors are "wrong original label" | **labels** | Record the corrected ceiling in the matching `docs/` note; stop comparing models around the current level |
 | B3 over 40 % of errors are "genuinely ambiguous" | **problem definition** | Move the metric to top-3 or multi-label — a new axis, not a replacement for the old one |
-| B4 gap between 2σ and 0.10 | **features** | Archive roadmap Priority 3a: add `transformer_weights` to `build_features`, re-run the same configuration |
+| B4 gap between 2σ and 0.10 | **features** | The representation is the ceiling — change what goes into the vector, then re-encode |
 | B4 gap above 0.15 | **hyper-parameters** | A smaller `--C`, or a larger `min_df` |
 | B5 gap from frac 0.5→1.0 under 2σ | **rule out data** | Do not collect more. Move to features or labels |
 | B6 one block's `per_dim_x` is several times higher | **features** | Weight that block ×2 then ×3, two runs, paired-bootstrap against the original |
-| B6 a block with many dimensions but little weight | **features** | Archive roadmap Priority 3b: edit `_word_tfidf` (`min_df`, `max_features`) — `--set` cannot reach TF-IDF |
+| B6 the run read a column it should not have | **stop** | Fix `dl/text.py` and re-encode; the number is not usable until then |
 | B7 spread across six configurations under 2σ | **exhausted** | Stop sweeping hyper-parameters |
 | B7 `p_gt_0` around 0.5 between two models | **do not change model family** | A tie → choose by fit cost |
 | B8 top-3 clearly higher than top-1 | **the system, not the model** | Have the product show three suggestions. That is a result, not a failure |
