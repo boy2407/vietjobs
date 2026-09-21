@@ -317,7 +317,11 @@ def main() -> None:
             pred = np.array(labels)[proba.argmax(1)]
             m = E.classification_metrics(yev, pred, labels)
             score = m["f1_macro"]
-            line = {"val_macro_f1": m["f1_macro"], "val_accuracy": m["accuracy"]}
+            # macro-F1 là độ đo chọn mô hình (lệch lớp 27:1); f1_weighted đi kèm để
+            # thấy ngay mô hình có đang bỏ rơi lớp nhỏ không — hai số càng xa nhau
+            # thì phần đuôi càng bị bỏ. `f1_macro_no_junk` chỉ lưu ở metrics.json.
+            line = {"val_macro_f1": m["f1_macro"], "val_f1_weighted": m["f1_weighted"],
+                    "val_accuracy": m["accuracy"]}
 
         with hist_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps({"epoch": epoch, "train_loss": total / seen,
