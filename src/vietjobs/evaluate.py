@@ -38,8 +38,25 @@ def classification_metrics(y_true, y_pred, labels=None) -> dict:
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
 
+    # Bốn con số, ba ý nghĩa khác nhau — đừng lẫn lộn khi viết báo cáo:
+    #
+    #   f1_macro     trung bình F1 của 16 lớp, mỗi lớp nặng như nhau. Lớp lệch 27:1
+    #                nên đây là độ đo **chọn mô hình** của dự án.
+    #   f1_micro     gộp toàn bộ TP/FP/FN rồi mới tính. Với bài ĐƠN nhãn nó bằng
+    #                đúng accuracy — và cũng bằng đúng F1 mà Tran–Vo–Luu 2022
+    #                (arXiv:2112.11052, công thức 1) báo cáo:
+    #                    F1 = (1/N) Σ 2|yᵢ ∩ ŷᵢ| / (|yᵢ| + |ŷᵢ|)
+    #                Công thức đó viết cho bài ĐA nhãn của họ (68 chức danh, một
+    #                tin nhiều nhãn). Ở đây |yᵢ| = |ŷᵢ| = 1 nên nó suy biến.
+    #                `tests/test_bootstrap.py` chốt đẳng thức này.
+    #   f1_weighted  F1 từng lớp, trung bình có trọng số theo số mẫu. Gần accuracy
+    #                nhưng KHÔNG bằng.
+    #
+    # Muốn đặt số của ta cạnh con số 61,29 của bài báo thì so `f1_micro`; muốn nói
+    # mô hình có bỏ rơi lớp nhỏ không thì đọc khoảng cách `f1_macro` ↔ `f1_weighted`.
     out = {
         "f1_macro": float(f1_score(y_true, y_pred, average="macro", zero_division=0)),
+        "f1_micro": float(f1_score(y_true, y_pred, average="micro", zero_division=0)),
         "accuracy": float(accuracy_score(y_true, y_pred)),
         "f1_weighted": float(f1_score(y_true, y_pred, average="weighted", zero_division=0)),
         "n": int(len(y_true)),

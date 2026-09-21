@@ -106,3 +106,20 @@ def test_mismatched_lengths_raise():
         E.bootstrap_scores(y, y[:5], idx)
     with pytest.raises(ValueError):
         E.paired_delta(np.zeros(5), np.zeros(6))
+
+
+def test_paper_f1_formula_equals_accuracy_for_single_label():
+    """F1 của Tran–Vo–Luu 2022 (công thức 1) suy biến thành accuracy khi đơn nhãn.
+
+    Công thức của họ viết cho bài ĐA nhãn: F1 = (1/N) Σ 2|yᵢ ∩ ŷᵢ| / (|yᵢ| + |ŷᵢ|).
+    Bài này đơn nhãn nên |yᵢ| = |ŷᵢ| = 1 và công thức bằng đúng accuracy — chốt lại
+    ở đây để không ai đem `f1_macro` đi so với con số 61,29 của bài báo.
+    """
+    import numpy as np
+
+    rng = np.random.default_rng(0)
+    y_true = rng.integers(0, 16, 500)
+    y_pred = np.where(rng.random(500) < 0.7, y_true, rng.integers(0, 16, 500))
+
+    paper_f1 = np.mean([2 * len({t} & {p}) / 2 for t, p in zip(y_true, y_pred)])
+    assert paper_f1 == pytest.approx(E.classification_metrics(y_true, y_pred)["accuracy"])

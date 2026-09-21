@@ -320,8 +320,8 @@ def main() -> None:
             # macro-F1 là độ đo chọn mô hình (lệch lớp 27:1); f1_weighted đi kèm để
             # thấy ngay mô hình có đang bỏ rơi lớp nhỏ không — hai số càng xa nhau
             # thì phần đuôi càng bị bỏ. `f1_macro_no_junk` chỉ lưu ở metrics.json.
-            line = {"val_macro_f1": m["f1_macro"], "val_f1_weighted": m["f1_weighted"],
-                    "val_accuracy": m["accuracy"]}
+            line = {"val_macro_f1": m["f1_macro"], "val_f1_micro": m["f1_micro"],
+                    "val_f1_weighted": m["f1_weighted"], "val_accuracy": m["accuracy"]}
 
         with hist_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps({"epoch": epoch, "train_loss": total / seen,
@@ -372,8 +372,11 @@ def main() -> None:
                     f"R2raw={best_metrics['r2_raw']:.3f} · "
                     f"±20%={best_metrics['within_20pct'] * 100:.1f}%")
     else:
+        # microF1 = accuracy = F1 của arXiv:2112.11052 — ghi cả hai tên để so được
+        # với bài báo mà không phải tra lại đẳng thức (xem evaluate.py).
         headline = (f"macroF1={best_metrics['f1_macro']:.4f} · "
-                    f"F1={best_metrics['f1_weighted']:.4f} · "
+                    f"microF1={best_metrics['f1_micro']:.4f} · "
+                    f"wF1={best_metrics['f1_weighted']:.4f} · "
                     f"acc={best_metrics['accuracy']:.4f}")
 
     if not args.no_log:
