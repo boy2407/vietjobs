@@ -114,7 +114,13 @@ def token_stats(X, rows: np.ndarray, mask: np.ndarray, chunk: int = 512):
     total = np.zeros(ENC.HIDDEN, dtype=np.float64)
     total_sq = np.zeros(ENC.HIDDEN, dtype=np.float64)
     n_tok = 0
+    t0 = time.time()
     for i in range(0, len(rows), chunk):
+        if i and (i // chunk) % 10 == 0:
+            # Lượt này đọc tuần tự 13,5 GB và chạy trước epoch đầu tiên. Không in
+            # gì thì người chạy tưởng treo — đã xảy ra thật trên Colab 2026-09-21.
+            print(f"  thống kê chuẩn hoá: {i:,}/{len(rows):,} dòng "
+                  f"({100 * i / len(rows):4.1f}%, {time.time() - t0:5.0f}s)", flush=True)
         idx = rows[i:i + chunk]
         xb = np.asarray(X[idx], dtype=np.float32)          # [c, T, 768]
         mb = mask[i:i + chunk][..., None].astype(np.float32)
@@ -290,7 +296,7 @@ def main() -> None:
             if args.clip:
                 nn.utils.clip_grad_norm_(model.parameters(), args.clip)
             opt.step()
-            total += float(loss) * len(idx)
+            total += loss.detach().item() * len(idx)
             seen += len(idx)
 
         model.eval()
