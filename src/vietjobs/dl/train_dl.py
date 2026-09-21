@@ -241,12 +241,16 @@ def main() -> None:
                     torch.from_numpy(mask[order].astype(np.uint8)).to(device))
         in_dim = ENC.HIDDEN
     else:
+        in_dim = Xtr.shape[1]
         Xtr_t = torch.tensor((Xtr - mu) / sigma, dtype=torch.float32)
         Xev_t = torch.tensor((Xev - mu) / sigma, dtype=torch.float32).to(device)
+        # Vòng lặp gọi take(Xtr, ...) chung cho cả hai head, nên ở nhánh này Xtr/Xev
+        # phải là tensor đã chuẩn hoá — không phải mảng numpy thô. Thiếu dòng này
+        # thì `.to(device)` gãy trên numpy (bắt được bằng smoke run 2026-09-21).
+        Xtr, Xev = Xtr_t, Xev_t
 
         def take(X, mask, idx):
             return X[idx].to(device), None
-        in_dim = Xtr.shape[1]
 
     if is_rnn:
         model = BiGruLstmCnn(in_dim, args.hidden, out_dim, args.dropout,
@@ -353,13 +357,19 @@ def main() -> None:
     env = environment(device)
     arch = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},{args.branches})" if is_rnn
             else "phobert-frozen+dense")
+    # F1 "chuẩn" 2·P·R/(P+R) chỉ định nghĩa cho MỘT lớp; với 16 lớp là 16 con số,
+    # và macro/micro/weighted ở `metrics` chỉ là ba cách gộp chúng lại. Lưu cả 16
+    # (kèm precision/recall/support) để báo cáo đọc được từng lớp mà không phải
+    # chạy lại — trước 2026-09-21 `per_class_report` có sẵn nhưng không ai gọi.
+    per_class = None if is_reg else E.per_class_report(yev, best_pred, labels)
     (out_dir / "config.json").write_text(json.dumps(vars(args), indent=2), encoding="utf-8")
     (out_dir / "env.json").write_text(json.dumps(env, indent=2), encoding="utf-8")
     (out_dir / "metrics.json").write_text(json.dumps({
         "run_id": run_id, "task": args.task, "model": arch,
         "pooling": "none (token-level)" if is_rnn else "masked_mean",
         "eval": args.eval, "best_epoch": best_epoch, "epochs_run": epoch,
-        "seconds": seconds, "metrics": best_metrics, "config": vars(args), "env": env,
+        "seconds": seconds, "metrics": best_metrics, "per_class": per_class,
+        "config": vars(args), "env": env,
         "columns": T.columns_for(args.task),
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 
