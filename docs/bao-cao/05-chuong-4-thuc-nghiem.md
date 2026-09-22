@@ -126,13 +126,18 @@ nào khác.
 |---|---|---|---|---|---|
 | *mốc ngây thơ* | luôn đoán lớp đa số | *0,0214* | *0,0705* | *0,2062* | — |
 | `probe-cat-0920` | — (LogReg trên **cùng** bộ vectơ) | 0,5898 | 0,6271 | 0,6388 | — |
-| **`dl-cat-ce-cpu-0920`** | **CrossEntropyLoss** | **0,6030** | **0,6413** | 0,6501 | 11/19 |
-| `dl-cat-focal-cpu-0920` | FocalLoss (γ=2) | 0,5972 | 0,6343 | 0,6427 | 11/19 |
+| **`dl-cat-ce-cpu-0920`** | **CrossEntropyLoss** (Dense) | **0,6030** | **0,6413** | 0,6501 | 11/19 |
+| `dl-cat-focal-cpu-0920` | FocalLoss (γ=2), Dense | 0,5972 | 0,6343 | 0,6427 | 11/19 |
+| `dl-cat-rnn-ce` | CrossEntropyLoss (Bi-GRU‖Bi-LSTM→CNN, T8) | 0,6046 | 0,6567 | 0,6655 | 8/16 |
+| `dl-cat-rnn-focal` | FocalLoss (γ=2), cùng head | 0,6033 | 0,6451 | 0,6529 | 9/17 |
 
-Cả ba lần chạy dùng cùng kiến trúc và cùng siêu tham số của Bảng 4.5a, trên
-`device=cpu`, và **tái lập được từng chữ số**; §4.3.2 giải thích vì sao điều đó
-phải được nói ra. `F1` là F1 trung bình có trọng số theo số mẫu mỗi lớp;
-`macro-F1` cho mọi lớp trọng số bằng nhau và vẫn là chỉ số chọn mô hình.
+Hai dòng `*-cpu-0920` dùng cùng kiến trúc và cùng siêu tham số của Bảng 4.5a,
+trên `device=cpu`, và **tái lập được từng chữ số**; §4.3.2 giải thích vì sao
+điều đó phải được nói ra. Hai dòng `dl-cat-rnn-*` chạy trên GPU Colab
+(`device=cuda`) và **không** tái lập được từng chữ số cùng lý do `mps` không
+tái lập được ở §4.3.2 — xem §4.4.2 cho phần đối chiếu có bootstrap. `F1` là F1
+trung bình có trọng số theo số mẫu mỗi lớp; `macro-F1` cho mọi lớp trọng số
+bằng nhau và vẫn là chỉ số chọn mô hình.
 
 > **Nguồn số liệu:** `artifacts/dl-cat-ce-cpu-0920/metrics.json`,
 > `artifacts/dl-cat-focal-cpu-0920/metrics.json`, các dòng `dl-cat-ce-cpu-0920` /
@@ -247,6 +252,7 @@ lấy từ họ `masked` để mô hình không đọc được chính con số 
 | *trần "biết ngành"* | trung vị của ngành, dùng nhãn thật | *5,57* | *10,33* | *−0,022* |
 | `probe-sal-0920` | Ridge trên vectơ PhoBERT | 4,42 | 8,36 | 0,466 |
 | **`dl-sal-cpu-0920`** | dense(256), lr 3e-4, chuẩn hoá, SmoothL1Loss | **4,13** | **8,13** | **0,515** |
+| `dl-sal-rnn` | Bi-GRU‖Bi-LSTM→CNN (T8), cùng hàm mất mát | **3,92** | 8,14 | **0,562** |
 
 > **Nguồn số liệu:** `artifacts/dl-sal-cpu-0920/metrics.json` và hai dòng
 > `dl-sal-cpu-0920` / `probe-sal-0920` trong [04-results.md](../04-results.md); hai mốc
@@ -268,6 +274,51 @@ RMSE của `dl-sal-cpu-0920` là **8,13 triệu**, gần gấp đôi MAE (4,13).
 nên một số ít lỗi rất lớn kéo nó lên. Tách theo mức lương thật trên
 `predictions_dev.parquet`: **2.571** tin dưới 30 triệu có RMSE **4,49** (MAE 3,21);
 **127** tin từ 30 triệu trở lên (4,7 %) có RMSE **32,43** (MAE 23,13).
+
+### 4.4.2. T8 — head đọc token thay vì vectơ đã gộp
+
+Hai mô hình nền ở Bảng 4.5/4.6 đọc **vectơ đã gộp trung bình**: PhoBERT xuất
+`[256, 768]` mỗi tin, cache nén còn `[768]` trước khi vào Dense. T8 thay Dense
+bằng `BiGruLstmCnn` (SpatialDropout → Bi-GRU ‖ Bi-LSTM → Conv1d → pooling có
+mặt nạ → dense), đọc thẳng `[256, 768]`, giữ thứ tự và phủ định mà phép trung
+bình xoá mất — kiến trúc theo Tran–Vo–Luu (2022), `--hidden 100
+--conv-channels 50` (1,30 M tham số). Chạy trên GPU Colab T4 vì một epoch quá
+chậm để vừa một phiên trên `cpu`/`mps` của máy chính (23 phút và 8,5 phút,
+đo được, so với ~4,4 phút trên T4) — nghĩa là **không tái lập được từng chữ
+số** như các lần chạy `cpu` ở §4.3.2, cùng lý do `mps` không tái lập được ở đó.
+
+**So cặp trên cùng dòng `dev`, 1.000 mẫu bootstrap** (`evaluate.bootstrap_indices`
++ `paired_delta`, Δ = RNN trừ Dense):
+
+| So sánh | Δ macro-F1 | KTC 95% | P(RNN thắng) | Kết luận |
+|---|---|---|---|---|
+| `dl-cat-rnn-ce` so `dl-cat-ce-cpu-0920` | +0,0017 | [−0,017, +0,019] | 0,595 | không phân biệt được với nhiễu |
+| Cùng cặp, Δ accuracy | +0,0159 | [+0,004, +0,028] | **0,994** | **thật** — nhưng ở acc, không macro-F1 |
+| `dl-sal-rnn` so `dl-sal-cpu-0920`, Δ MAE | −0,22 triệu | [+0,10, +0,34]* | **1,000** | **thật, −5,1 %** |
+
+*KTC ghi theo chiều Dense − RNN; dương nghĩa RNN tốt hơn.
+
+Phân lớp: macro-F1 gần như đứng yên trong khi accuracy nhích thật — RNN đúng
+thêm ở các lớp lớn (8/16 ngành tốt hơn, lớn nhất +0,056 ở `kinh_doanh…`
+n=786) mà không đều trên toàn bộ 16 lớp (thua nặng nhất −0,095 ở
+`nông_nghiệp…`, n=37 — mẫu quá nhỏ để tin). Đúng như phép dò tuyến tính đã chỉ
+ra ở §4.3: phần lớn tín hiệu đã nằm sẵn trong 768 chiều gộp, đọc thêm token
+mua được rất ít trên bài phân lớp.
+
+Lương: MAE giảm thật (3,92 so với 4,13 triệu) nhưng RMSE gần như không đổi
+(8,14 so với 8,13) vì cải thiện tập trung ở phần thân phân phối — tách theo
+mức lương thật: dưới 30 triệu MAE 3,09 so với 3,23 (n=2.571), từ 30 triệu trở
+lên MAE 20,63 so với 22,45 nhưng RMSE gần như bằng nhau (31,29 so với 31,46,
+n=127). Head đọc token không sửa được vấn đề đuôi phải nêu ở §4.5.2, chỉ khá
+hơn ở phần thân.
+
+⛔ **Chưa có số liệu** cho ablation nhánh T8.5 (`--branches gru` / `lstm`
+riêng, so với `dl-cat-rnn-ce` 0,6046 cả hai nhánh) — xem `TASKS.md` T8.5.
+
+> **Nguồn số liệu:** `artifacts/dl-cat-rnn-ce/`, `artifacts/dl-cat-rnn-focal/`,
+> `artifacts/dl-sal-rnn/metrics.json`, `history.jsonl`, `predictions_dev.parquet`;
+> bốn dòng `dl-cat-rnn-*` / `dl-sal-rnn` trong [04-results.md](../04-results.md);
+> `data/eda_xlsx/ket_qua_chay.xlsx` sheet `01_Phan_Lop`, `02_Luong` (Rule 13).
 
 ---
 
@@ -321,16 +372,18 @@ nó đạt gần 0,59 thì vấn đề chắc chắn không nằm ở đặc tr�
 
 **Bảng 4.7: Tổng hợp đối chiếu (dev)**
 
-| Bài toán | Mốc ngây thơ | Mốc dò tuyến tính | Kết quả học sâu | Kết luận |
-|---|---|---|---|---|
-| Phân loại (macro-F1) | 0,0214 | 0,5898 | **0,6030** | Hơn dò tuyến tính 0,0132 |
-| Phân loại (F1 có trọng số) | 0,0705 | 0,6271 | **0,6413** | Hơn dò tuyến tính 0,0142 |
-| Lương (MAE, triệu) | 5,70 | 4,42 | **4,13** | **Vượt mốc ngây thơ 27,5 %** |
-| Lương (RMSE, triệu) | 10,52 | 8,36 | **8,13** | Vượt mốc ngây thơ 22,7 %; hơn dò tuyến tính 0,23 |
-| Lương (R² log) | −0,059 | 0,466 | **0,515** | Từ âm lên dương — đọc được tín hiệu thật |
+| Bài toán | Mốc ngây thơ | Mốc dò tuyến tính | Dense | Bi-GRU‖Bi-LSTM→CNN (T8) | Kết luận |
+|---|---|---|---|---|---|
+| Phân loại (macro-F1) | 0,0214 | 0,5898 | 0,6030 | **0,6046** | RNN không phân biệt được với Dense (P=0,595, bootstrap ghép cặp) |
+| Phân loại (F1 có trọng số) | 0,0705 | 0,6271 | 0,6413 | **0,6567** | |
+| Phân loại (accuracy) | 0,2062 | 0,6388 | 0,6501 | **0,6655** | RNN hơn Dense thật (P=0,994) — ở các lớp lớn, không đều trên 16 lớp |
+| Lương (MAE, triệu) | 5,70 | 4,42 | 4,13 | **3,92** | RNN hơn Dense thật (P=1,000), **−31,2 % so mốc ngây thơ** |
+| Lương (RMSE, triệu) | 10,52 | 8,36 | 8,13 | 8,14 | RNN không phân biệt được với Dense — cải thiện chỉ ở phần thân, không ở đuôi |
+| Lương (R² log) | −0,059 | 0,466 | 0,515 | **0,562** | |
 
-> **Nguồn số liệu:** các dòng `*-cpu-0920` và `probe-*-0920` trong [04-results.md](../04-results.md) ·
-> [06-baseline-dl.md](../06-baseline-dl.md) §5 · `artifacts/eda/summary.json` khoá `floors`.
+> **Nguồn số liệu:** các dòng `*-cpu-0920`, `probe-*-0920`, `dl-cat-rnn-*`, `dl-sal-rnn`
+> trong [04-results.md](../04-results.md) · [06-baseline-dl.md](../06-baseline-dl.md) §5.1,
+> §5.2, §5.6 (số bootstrap) · `artifacts/eda/summary.json` khoá `floors`.
 
 ---
 

@@ -37,10 +37,16 @@ OUT = C.ROOT / "data" / "eda_xlsx" / "ket_qua_chay.xlsx"
 # bảng trong luận văn phải là một lựa chọn có trách nhiệm, không phải "lần nào
 # chạy sau cùng thì lấy lần đó". Đổi baseline nghĩa là sửa đúng chỗ này.
 OFFICIAL_CLS = [
-    ("CrossEntropyLoss", "dl-cat-ce-cpu-0920", "probe-cat-0920"),
-    ("FocalLoss (γ=2)", "dl-cat-focal-cpu-0920", "probe-cat-0920"),
+    ("CrossEntropyLoss", "dl-cat-ce-cpu-0920", "dl-cat-rnn-ce", "probe-cat-0920"),
+    ("FocalLoss (γ=2)", "dl-cat-focal-cpu-0920", "dl-cat-rnn-focal", "probe-cat-0920"),
 ]
-OFFICIAL_REG = ("SmoothL1Loss (Huber)", "dl-sal-cpu-0920", "probe-sal-0920")
+OFFICIAL_REG = ("SmoothL1Loss (Huber)", "dl-sal-cpu-0920", "dl-sal-rnn", "probe-sal-0920")
+# T8.5 — ablation nhánh, cùng cấu hình dl-cat-rnn-ce trừ --branches.
+OFFICIAL_ABLATION = [
+    ("cả hai nhánh", "dl-cat-rnn-ce"),
+    ("chỉ Bi-GRU", "dl-cat-rnn-gru"),
+    ("chỉ Bi-LSTM", "dl-cat-rnn-lstm"),
+]
 
 # Nhãn cột trong headline -> tên cột trong bảng.
 _HEAD_KEYS = {
@@ -141,23 +147,32 @@ def main() -> None:
     fl = floors()
 
     cls_rows = []
-    for loss_name, dense_id, probe_id in OFFICIAL_CLS:
+    for loss_name, dense_id, rnn_id, probe_id in OFFICIAL_CLS:
         cls_rows.append({"Mô hình": loss_name, "macro-F1": None, "F1": None, "acc": None})
         cls_rows.append({"Mô hình": "Luôn đoán lớp đông nhất", **fl["cls"]})
         for label, rid in (("LogReg trên cùng bộ vector", probe_id),
-                           (f"Dense ({dense_id})", dense_id)):
+                           (f"Dense ({dense_id})", dense_id),
+                           (f"Bi-GRU‖Bi-LSTM→CNN ({rnn_id})", rnn_id)):
             r = by_id.get(rid, {})
             cls_rows.append({"Mô hình": label, "macro-F1": r.get("macro_F1"),
                              "F1": r.get("F1"), "acc": r.get("acc")})
         cls_rows.append({})
 
-    loss_name, dense_id, probe_id = OFFICIAL_REG
+    loss_name, dense_id, rnn_id, probe_id = OFFICIAL_REG
     reg_rows = [{"Mô hình": loss_name}, {"Mô hình": "Đoán trung vị (13 triệu)", **fl["reg"]}]
     for label, rid in (("Ridge trên cùng bộ vector", probe_id),
-                       (f"Dense ({dense_id})", dense_id)):
+                       (f"Dense ({dense_id})", dense_id),
+                       (f"Bi-GRU‖Bi-LSTM→CNN ({rnn_id})", rnn_id)):
         r = by_id.get(rid, {})
         reg_rows.append({"Mô hình": label, "MAE_trieu": r.get("MAE_trieu"),
                          "RMSE_trieu": r.get("RMSE_trieu"), "R2log": r.get("R2log")})
+
+    abl_rows = []
+    for label, rid in OFFICIAL_ABLATION:
+        r = by_id.get(rid, {})
+        abl_rows.append({"Nhánh": label, "run_id": rid, "macro-F1": r.get("macro_F1"),
+                         "F1": r.get("F1"), "acc": r.get("acc"),
+                         "epoch tốt nhất": r.get("best_epoch")})
 
     cols = ["run_id", "utc", "task", "model", "loss", "gamma", "class_weight", "device",
             "lr", "hidden", "eval", "n", "best_epoch", "epochs_run",
@@ -174,12 +189,14 @@ def main() -> None:
            .round({"MAE_trieu": 2, "RMSE_trieu": 2, "R2log": 3})
            .rename(columns={"MAE_trieu": "MAE (triệu)", "RMSE_trieu": "RMSE",
                             "R2log": "R² (thang log)"}))
+    abl = pd.DataFrame(abl_rows).round({"macro-F1": 4, "F1": 4, "acc": 4})
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with pd.ExcelWriter(OUT, engine="openpyxl") as xl:
         runs.to_excel(xl, sheet_name="00_Runs", index=False)
         cls.to_excel(xl, sheet_name="01_Phan_Lop", index=False)
         reg.to_excel(xl, sheet_name="02_Luong", index=False)
+        abl.to_excel(xl, sheet_name="03_Ablation_Nhanh", index=False)
 
     print(f"-> {OUT.relative_to(C.ROOT)}  ({len(runs)} lần chạy)")
 

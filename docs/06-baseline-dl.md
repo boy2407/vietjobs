@@ -106,8 +106,10 @@ hiện tại.
 |---|---|---|---|---|---|
 | *sàn* | luôn dự đoán lớp đa số | *0,0214* | *0,0705* | *0,2062* | — |
 | `probe-cat-0920` | LogReg trên **cùng** bộ vector | 0,5898 | 0,6271 | 0,6388 | — |
-| **`dl-cat-ce-cpu-0920`** | CrossEntropyLoss, lr 3e-4 + clipping + chuẩn hóa | **0,6030** | **0,6413** | 0,6501 | 11/19 |
-| `dl-cat-focal-cpu-0920` | như trên, thay bằng focal loss (γ=2) | 0,5972 | 0,6343 | 0,6427 | 11/19 |
+| **`dl-cat-ce-cpu-0920`** | Dense, CrossEntropyLoss, lr 3e-4 + clipping + chuẩn hóa | **0,6030** | **0,6413** | 0,6501 | 11/19 |
+| `dl-cat-focal-cpu-0920` | Dense, focal loss (γ=2) | 0,5972 | 0,6343 | 0,6427 | 11/19 |
+| `dl-cat-rnn-ce` | Bi-GRU‖Bi-LSTM→CNN (T8, GPU) | 0,6046 | 0,6567 | 0,6655 | 8/16 |
+| `dl-cat-rnn-focal` | như trên, focal loss (γ=2) | 0,6033 | 0,6451 | 0,6529 | 9/17 |
 
 Ba lần chạy này đo trên `cpu` và **tái lập được từng chữ số** — xem §5.5 về lý
 do điều đó không hiển nhiên. `F1` là F1 trung bình có trọng số theo số mẫu mỗi
@@ -157,7 +159,8 @@ lương.** Đây là các con số hiện tại.
 | *ngưỡng* | dự đoán trung vị, 13,0, cho tất cả | *5,70* | *10,52* | *−0,059* |
 | *trần "biết ngành"* | trung vị theo ngành, dùng nhãn thật | *5,57* | *10,33* | *−0,022* |
 | `probe-sal-0920` | Ridge trên vector PhoBERT | 4,42 | 8,36 | 0,466 |
-| **`dl-sal-cpu-0920`** | SmoothL1Loss (Huber), dense(256), lr 3e-4, đã chuẩn hóa | **4,13** | **8,13** | **0,515** |
+| **`dl-sal-cpu-0920`** | Dense, SmoothL1Loss (Huber), lr 3e-4, đã chuẩn hóa | **4,13** | **8,13** | **0,515** |
+| `dl-sal-rnn` | Bi-GRU‖Bi-LSTM→CNN (T8, GPU) | **3,92** | 8,14 | **0,562** |
 
 RMSE lấy từ `rmse_trieu` trong `artifacts/dl-sal-cpu-0920/metrics.json`, từ `rmse`
 trong `artifacts/eda/summary.json` cho hai mốc, và cho `probe-sal-0920` từ dòng
@@ -308,4 +311,64 @@ Lần chạy lương không bị ảnh hưởng theo cách này: `dl-sal-s2` tá
 tới từng chữ số cuối (MAE 4,14868613775178). Nhưng chuyển sang `cpu` vẫn đổi kết
 quả (4,13, hội tụ ở epoch 19 thay vì 26) — hai thiết bị là hai đường số học khác
 nhau, nên bảng §5.2 dùng lần chạy `cpu` cho nhất quán.
+
+### 5.6 T8 — head đọc token thay vì trung bình gộp
+
+Hai lượt chạy trên đọc **vector đã gộp trung bình**: PhoBERT xuất `[256, 768]`
+mỗi tin, cache nén còn `[768]` bằng trung bình có mặt nạ trước khi tới Dense —
+xem [02 §4](02-vietnamese-nlp.md#4-luồng-phobert-thực-sự-chạy-những-bước-nào).
+T8 hỏi: phép trung bình đó có vứt mất thông tin đáng giữ không? `BiGruLstmCnn`
+đọc thẳng `[256, 768]` (SpatialDropout → Bi-GRU ‖ Bi-LSTM → Conv1d → avg/max
+pool có mặt nạ → dense), giữ thứ tự và phủ định mà trung bình xoá mất.
+
+Chạy trên GPU Colab T4 (`--device cuda`, không tái lập được từng chữ số như
+`cpu` — xem cảnh báo cuối mục), cấu hình theo Tran–Vo–Luu 2022 (arXiv:2112.11052):
+`--hidden 100 --conv-channels 50`, 1,30 M tham số so với 0,2 M của Dense.
+
+**Phân lớp — so cặp trên cùng 3.812 dòng `dev`, 1.000 mẫu bootstrap**
+(`evaluate.bootstrap_indices` + `paired_delta`):
+
+| So sánh | Δ macro-F1 | KTC 95% | P(RNN thắng) | Kết luận |
+|---|---|---|---|---|
+| `dl-cat-rnn-ce` so `dl-cat-ce-cpu-0920` | +0,0017 | [−0,017, +0,019] | 0,595 | **không phân biệt được với nhiễu** |
+| `dl-cat-rnn-focal` so `dl-cat-focal-cpu-0920` | +0,0064 | [−0,009, +0,023] | 0,766 | không phân biệt được |
+| CE: cùng theo Δ accuracy | +0,0159 | [+0,004, +0,028] | **0,994** | thật, nhưng đến từ acc chứ không macro-F1 |
+
+macro-F1 gần như đứng yên (0,6030 → 0,6046) trong khi accuracy nhích thật
+(0,6501 → 0,6655, P=0,994): RNN đúng thêm ở các lớp lớn — 58,4 % số dòng cả
+hai mô hình cùng đúng, 8,1 % chỉ RNN đúng, 6,6 % chỉ Dense đúng — mà không đều
+trên 16 lớp. So từng ngành (`dl-cat-rnn-ce` với `dl-cat-ce-cpu-0920`): RNN hơn
+ở **8/16** ngành (lớn nhất +0,056 ở `kinh_doanh…`, n=786) và thua ở 8/16 (nặng
+nhất −0,095 ở `nông_nghiệp_năng_lượng_môi_trường`, n=37 — mẫu quá nhỏ để tin).
+Đúng chỗ probe tuyến tính từng chỉ ra: phần lớn tín hiệu đã nằm sẵn trong 768
+chiều gộp; head đọc token mua thêm rất ít trên bài phân lớp.
+
+**Lương — cùng cách bootstrap trên 2.698 dòng có nhãn:**
+
+| So sánh | Δ MAE (triệu) | KTC 95% | P(RNN tốt hơn) | Kết luận |
+|---|---|---|---|---|
+| `dl-sal-rnn` so `dl-sal-cpu-0920` | −0,216 (RNN nhỏ hơn) | [+0,097, +0,343]* | **1,000** | **thật, −5,1 %** |
+| Cùng cặp, RMSE | −0,004 | [−0,38, +0,34] | 0,498 | không phân biệt được |
+
+*KTC ghi theo chiều `Dense − RNN`, dương nghĩa là RNN tốt hơn. MAE giảm thật
+(3,92 so với 4,13 triệu) nhưng RMSE gần như không đổi (8,14 so với 8,13) — tách
+theo mức lương thật trên `predictions_dev.parquet` cho thấy vì sao: RNN cải
+thiện ở phần dưới 30 triệu (MAE 3,09 so với 3,23, n=2.571) nhưng cải thiện chỉ
+1,8 triệu ở phần đuôi ≥ 30 triệu (MAE 20,63 so với 22,45, RMSE gần như bằng
+nhau: 31,29 so với 31,46, n=127) — head đọc token không sửa được vấn đề đuôi
+phải đã nêu ở §5.3, chỉ khá hơn một chút ở phần thân phân phối.
+
+**Ablation nhánh (T8.5):** `dl-cat-rnn-ce` (cả hai nhánh) macro-F1 0,6046 —
+mốc so sánh cho hai lần chạy `--branches gru` và `--branches lstm`.
+⛔ **Chưa có số liệu** cho hai lần chạy đó; xem `TASKS.md` T8.5.
+
+> **Tái lập, khác với §5.5:** các lần chạy T8 dùng `--device cuda` trên Colab
+> vì head RNN quá chậm để chạy `cpu` cho vừa một phiên (đo ở máy chính: 23
+> phút/epoch trên `cpu`, 8,5 phút trên `mps`, so với ~4,4 phút/epoch đo được
+> trên T4). Nghĩa là **từng chữ số của các con số T8 không tái lập được**, cùng
+> lý do `mps` không tái lập được ở §5.5 — chỉ khác biệt lớn hơn biên nhiễu mới
+> đáng tin. `dl-cat-rnn-ce` có hai lần chạy: lần đầu bị trần 35 phút cắt ở
+> macro-F1 0,6026 (`stopped_by: time`, giữ lại làm dữ liệu), lần sau đủ giờ hội
+> tụ tự nhiên ở 0,6046 (`stopped_by: patience`) — con số trong bảng trên là lần
+> sau.
 
