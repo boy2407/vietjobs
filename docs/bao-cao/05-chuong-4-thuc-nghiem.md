@@ -326,7 +326,58 @@ riêng, so với `dl-cat-rnn-ce` 0,6046 cả hai nhánh) — xem `TASKS.md` T8.5
 
 ### 4.5.1. Lỗi của bài toán phân loại
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T2.2, T2.3)
+Phạm vi: mô hình khớp trên `train`, chấm trên `dev` (3.812 tin, lược đồ v2). Không
+huấn luyện lại: `scripts/analyze_errors.py` đọc `predictions_dev.parquet` của ba run
+`dl-cat-ce-cpu-0920` (Dense, CE), `dl-cat-focal-cpu-0920` (Dense, focal γ=2) và
+`dl-cat-rnn-focal` (BiGRU-LSTM-CNN, focal γ=2). Xác suất của run Dense CE được tính
+lại từ `best.pt` + `scaler.npz` trên vectơ `dev` đã lưu; argmax khớp 100 % nhãn đã
+lưu, macro-F1 tính lại đúng 0,6030.
+
+**Bảng 4.13: F1 từng lớp của `dl-cat-ce-cpu-0920` (dev, lược đồ v2)**
+
+| Lớp | Support | F1 |
+|---|---|---|
+| `tài_chính_kế_toán_ngân_hàng_bảo_hiểm` | 373 | 0,838 |
+| `công_nghệ_thông_tin_kỹ_thuật_số` | 219 | 0,793 |
+| `marketing_truyền_thông_quảng_cáo_nội_dung` | 402 | 0,771 |
+| `logistics_vận_tải_chuỗi_cung_ứng` | 155 | 0,724 |
+| `nhân_sự_hành_chính_pháp_chế_tư_vấn` | 233 | 0,707 |
+| `giáo_dục_đào_tạo_nghiên_cứu` | 131 | 0,705 |
+| `y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học` | 47 | 0,688 |
+| `sản_xuất_lao_động_phổ_thông_cơ_khí` | 417 | 0,639 |
+| `ngôn_ngữ_dịch_thuật` | 32 | 0,636 |
+| `nông_nghiệp_năng_lượng_môi_trường` | 37 | 0,576 |
+| `kinh_doanh_bán_hàng_chăm_sóc_khách_hàng` | 786 | 0,567 |
+| `xây_dựng_kiến_trúc_bất_động_sản` | 141 | 0,551 |
+| `du_lịch_nhà_hàng_khách_sạn_dịch_vụ` | 443 | 0,548 |
+| `thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí` | 268 | 0,482 |
+| `kỹ_thuật_điện_điện_tử_viễn_thông` | 103 | 0,424 |
+| `nhóm_nghề_khác` | 25 | 0,000 |
+
+**Bảng 4.14: Năm cặp nhầm lớn nhất của `dl-cat-ce-cpu-0920`** (% = trên số tin của lớp thật)
+
+| Nhãn thật → dự đoán | Số tin | % lớp thật |
+|---|---|---|
+| `du_lịch_nhà_hàng…` → `kinh_doanh_bán_hàng…` | 132 | 29,8 % |
+| `kinh_doanh_bán_hàng…` → `du_lịch_nhà_hàng…` | 75 | 9,5 % |
+| `thiết_kế_nghệ_thuật…` → `xây_dựng_kiến_trúc…` | 62 | 23,1 % |
+| `thiết_kế_nghệ_thuật…` → `marketing_truyền_thông…` | 57 | 21,3 % |
+| `du_lịch_nhà_hàng…` → `sản_xuất_lao_động…` | 51 | 11,5 % |
+
+Hình ma trận đầy đủ: `docs/figures/cat-confusion-v2.png`. Năm cặp này giữ nguyên
+thứ tự ở cả hai run focal (Dense và RNN), với số tin chênh không quá 16 — nhầm lẫn
+nằm ở dữ liệu, không ở head hay hàm mất mát. Cặp `du_lịch` ↔ `kinh_doanh` nhầm theo
+**cả hai chiều** (132 + 75 tin). `kỹ_thuật_điện` bị đoán thành `sản_xuất` 30 % số tin.
+`nhóm_nghề_khác` không có tin nào đoán đúng; 40 % số tin của lớp này bị đoán là
+`sản_xuất`.
+
+**Lỗi chung giữa ba run.** 2.113 tin cả ba đều đúng; **984** tin (25,8 %) cả ba
+đều sai; 715 tin chỉ một hoặc hai run sai. Phần lớn lỗi là cùng một tập tin, bất kể
+head hay hàm mất mát.
+
+> **Nguồn số liệu:** `artifacts/eda/errors-v2.json` (sinh bởi
+> `PYTHONPATH=src .venv-dl/bin/python scripts/analyze_errors.py`, 2026-09-24), đọc từ
+> `artifacts/{dl-cat-ce-cpu-0920,dl-cat-focal-cpu-0920,dl-cat-rnn-focal}/predictions_dev.parquet`.
 
 ### 4.5.2. Lỗi của bài toán hồi quy
 

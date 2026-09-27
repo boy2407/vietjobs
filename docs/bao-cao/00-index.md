@@ -25,7 +25,7 @@ chuyển sang `xong` khi mọi con số trong chương đã có nguồn đo th�
 | 1 | [02-chuong-1-gioi-thieu.md](02-chuong-1-gioi-thieu.md) | Giới thiệu đề tài | **xong bản thảo** | đề cương · [01](../01-data-audit.md) · [05](../05-phan-tich-du-lieu.md) |
 | 2 | [03-chuong-2-tong-quan.md](03-chuong-2-tong-quan.md) | Tổng quan nghiên cứu | **thiếu khảo sát công trình** | cần tra cứu tài liệu thật |
 | 3 | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) | Phương pháp thực hiện | **xong bản thảo** | [01](../01-data-audit.md) · [02](../02-vietnamese-nlp.md) · [03](../03-protocol.md) · [06](../06-baseline-dl.md) |
-| 4 | [05-chuong-4-thuc-nghiem.md](05-chuong-4-thuc-nghiem.md) | Thực nghiệm và đánh giá | **bản thảo · phân tích lỗi §4.5 chờ T2.1–T2.3** | [04-results.md](../04-results.md) — xem §3 |
+| 4 | [05-chuong-4-thuc-nghiem.md](05-chuong-4-thuc-nghiem.md) | Thực nghiệm và đánh giá | **bản thảo · phân tích lỗi §4.5 chờ T2.1** | [04-results.md](../04-results.md) — xem §3 |
 | 5 | [06-chuong-5-he-thong.md](06-chuong-5-he-thong.md) | Cài đặt mã nguồn thực nghiệm | **xong bản thảo** | [08](../08-ma-nguon.md) · `pytest -q` |
 | 6 | [07-chuong-6-ket-luan.md](07-chuong-6-ket-luan.md) | Kết luận và hướng phát triển | **bản thảo một phần** | [09](../09-lo-trinh.md) |
 | — | [08-tai-lieu-tham-khao.md](08-tai-lieu-tham-khao.md) | Tài liệu tham khảo (IEEE) | **đang bổ sung** | — |

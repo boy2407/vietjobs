@@ -2,8 +2,8 @@
 
 # Mã nguồn
 
-10 mô-đun trong `src/vietjobs/` (không tính `__init__.py`) · 2.937 dòng · 162 kiểm thử
-(160 chạy ở `.venv`, 2 kiểm thử chạy hết vòng huấn luyện cần `transformers` nên chỉ chạy ở
+11 mô-đun trong `src/vietjobs/` (không tính `__init__.py`) · 2.942 dòng · 167 kiểm thử
+(165 chạy ở `.venv`, 2 kiểm thử chạy hết vòng huấn luyện cần `transformers` nên chỉ chạy ở
 `.venv-dl`, nơi 29 kiểm thử có torch đều xanh).
 Nhánh chính là gói [`dl/`](../src/vietjobs/dl/).
 
@@ -53,7 +53,7 @@ flowchart LR
 | **[`dl/text.py`](../src/vietjobs/dl/text.py)** | 40 | Ghép ba trường văn bản thành đầu vào cho PhoBERT. Không phụ thuộc torch nên kiểm thử của nó chạy được trên mọi máy | [06](06-baseline-dl.md) |
 | **[`dl/encode.py`](../src/vietjobs/dl/encode.py)** | 253 | PhoBERT đông cứng, hai mức cache theo họ cột `raw`/`masked`: `--pooling mean` → `[n, 768]` float32; `--pooling none` → `[n, 256, 768]` float16 memmap + mặt nạ, ghi tăng dần (T8.1). Sidecar `.json` ghi tokenizer/`max_len`/cột nguồn/pooling | [06](06-baseline-dl.md) |
 | **[`dl/heads.py`](../src/vietjobs/dl/heads.py)** | 104 | `DenseHead` 768 → h → h/2 → out, và `BiGruLstmCnn` (T8.2): SpatialDropout → Bi-GRU ‖ Bi-LSTM → Conv1d → avg/max pool có mặt nạ → dense; `pack_padded_sequence` nên đầu ra bất biến với pad | [06](06-baseline-dl.md) |
-| **[`dl/train_dl.py`](../src/vietjobs/dl/train_dl.py)** | 452 | `run(args)` = một lượt chạy = một dòng trong [04-results.md](04-results.md) + `history.jsonl`; `--head {dense,rnn}` đọc cache gộp hay memmap token theo batch; `--max-minutes` trần thời gian (ghi `stopped_by`); `--conv-channels`, `--branches` cho T8.5 | [03](03-protocol.md) · [06](06-baseline-dl.md) |
+| **[`dl/train_dl.py`](../src/vietjobs/dl/train_dl.py)** | 457 | `run(args)` = một lượt chạy = một dòng trong [04-results.md](04-results.md) + `history.jsonl`; `--head {dense,rnn}` đọc cache gộp hay memmap token theo batch; `--max-minutes` trần thời gian (ghi `stopped_by`); `--conv-channels`, `--branches` cho T8.5 | [03](03-protocol.md) · [06](06-baseline-dl.md) |
 | [`notebooks/colab_setup.py`](../notebooks/colab_setup.py) | 164 | Khôi phục splits + cache nhỏ từ Google Drive cho một phiên Colab, encode lại train token của họ cần dùng, chạy cổng test. Ba notebook `T8_3_category` / `T8_4_salary` / `T8_5_ablation.ipynb` gọi chung nó | memory `colab-drive-paths` |
 | [`external.py`](../src/vietjobs/external.py) | 549 | VietJobs-37K làm tập ngoài: tách `[TITLE]/[REQ]/[DESC]` về ba cột của ta, ánh xạ 60 → 16 (`apply_crosswalk`), bắt tin trùng với ba tập chia bằng băm chính xác **hoặc** cùng tiêu đề + Jaccard ≥ 0,5 (`overlap_mask`), quy ước lenient. Đọc lương bạc từ văn bản: `extract_salary` (mỏ neo từ lương hoặc tiêu đề mục → con số cùng câu), `audit_salary` xếp mọi tin vào một nhóm phủ, `salary_note`, `salary_rule`, `template_ids`. Không phụ thuộc torch | [10](10-danh-gia-ngoai.md) |
 | [`scripts/eval_external.py`](../scripts/eval_external.py) | 199 | Chấm một run `category` trên VietJobs-37K: khử trùng → ánh xạ → mã hóa PhoBERT (cache `ext37k-*`) → nạp `best.pt` + `scaler.npz` → strict/lenient + bootstrap → một dòng [04-results.md](04-results.md) mỗi tập | [10](10-danh-gia-ngoai.md) |

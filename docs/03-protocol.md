@@ -97,6 +97,8 @@ trải dài qua nhiều epoch, có thể thất bại giữa chừng, và **lý 
 | `predictions_<eval>.parquet` | dự đoán theo từng dòng | Đọc các lỗi thực tế sau khi lần chạy đã kết thúc |
 | `metrics.json` → `per_class` | 16 dòng precision / recall / **F1** / support, một dòng mỗi ngành (từ 2026-09-21) | F1 "chuẩn" 2·P·R/(P+R) chỉ có nghĩa cho một lớp; `f1_macro` chỉ là trung bình của 16 số này — báo cáo cần cả 16 |
 | `metrics.json` → `stopped_by` | `epochs` · `patience` · `time` (từ 2026-09-21) | `--max-minutes` cắt một lần chạy chưa hội tụ tự nhiên; người đọc phải biết điều đó. Khi là `time`, cột *Prep* của dòng log ghi thêm `+time-capped` |
+| `metrics.json` → `labels` (từ 2026-09-24) | thứ tự lớp mô hình học | Đọc đúng cột của `proba` |
+| `predictions_dev.parquet` → cột `proba` (từ 2026-09-24) | xác suất softmax của epoch tốt nhất, theo thứ tự `labels` | Phân tích lỗi không phải nạp lại `best.pt` |
 
 **`04-results.md` vẫn chỉ nhận một dòng cho mỗi lần chạy.** Nhồi mọi epoch vào
 đó sẽ phá hỏng khả năng đọc của chính nhật ký.

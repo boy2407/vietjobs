@@ -358,6 +358,7 @@ def run(args: argparse.Namespace) -> dict:
             best_score, best_epoch, waited = score, epoch, 0
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
             best_metrics, best_pred = m, (pred_log if is_reg else pred)
+            best_proba = None if is_reg else proba
         else:
             waited += 1
             if waited >= args.patience:
@@ -380,6 +381,8 @@ def run(args: argparse.Namespace) -> dict:
     pred_frame = {"y_true": yev if not is_reg else np.expm1(yev),
                   "y_pred": best_pred if not is_reg else np.expm1(best_pred),
                   "category": ev_df["category"].to_numpy()}
+    if not is_reg:  # xác suất lưu kèm để phân tích sau không phải nạp best.pt
+        pred_frame["proba"] = [row.tolist() for row in best_proba.astype(np.float32)]
     pd.DataFrame(pred_frame).to_parquet(out_dir / f"predictions_{args.eval}.parquet")
 
     env = environment(device)
@@ -398,6 +401,7 @@ def run(args: argparse.Namespace) -> dict:
         "eval": args.eval, "best_epoch": best_epoch, "epochs_run": epoch,
         "stopped_by": stopped_by,
         "seconds": seconds, "metrics": best_metrics, "per_class": per_class,
+        "labels": labels,
         "config": vars(args), "env": env,
         "columns": T.columns_for(args.task),
     }, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -438,7 +442,8 @@ def run(args: argparse.Namespace) -> dict:
                 prep += "+time-capped"     # người đọc log biết run này chưa hội tụ tự nhiên
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "
                      f"| {args.task} | {base}"
-                     f"{',cw' if args.class_weight else ''}{loss_tag}) | title+desc+req | {prep} "
+                     f"{',cw' if args.class_weight else ''}{loss_tag}"
+                     f") | title+desc+req | {prep} "
                      f"| {args.eval} | {best_metrics['n']} | {headline} | {seconds:.1f}s "
                      f"| {env['git_sha'][:8]}{'+dirty' if env['git_dirty'] else ''} |\n")
 
