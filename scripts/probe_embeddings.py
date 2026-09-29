@@ -32,6 +32,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--task", default=C.TASK_CATEGORY, choices=[C.TASK_CATEGORY, C.TASK_SALARY])
     ap.add_argument("--max-len", type=int, default=256)
+    ap.add_argument("--encoder", default=ENC.DEFAULT_ENCODER, choices=list(ENC.ENCODERS))
     ap.add_argument("--standardize", action="store_true")
     ap.add_argument("--C", type=float, default=1.0)
     ap.add_argument("--no-log", action="store_true", help="không ghi vào 04-results.md")
@@ -41,8 +42,8 @@ def main() -> None:
     from sklearn.linear_model import LogisticRegression, Ridge
     from sklearn.preprocessing import StandardScaler
 
-    Xtr = np.load(ENC.cache_path("train", args.task, args.max_len))
-    Xva = np.load(ENC.cache_path("dev", args.task, args.max_len))
+    Xtr = np.load(ENC.cache_path("train", args.task, args.max_len, encoder=args.encoder))
+    Xva = np.load(ENC.cache_path("dev", args.task, args.max_len, encoder=args.encoder))
     tr = D.load_split("train")
     va = D.load_split("dev")
 
@@ -70,14 +71,14 @@ def main() -> None:
         model = "ridge-probe(alpha=1.0)"
 
     seconds = time.time() - t0
-    run_id = args.run_id or f"probe-{args.task[:3]}{'-std' if args.standardize else ''}"
+    run_id = args.run_id or f"probe-{'' if args.encoder == ENC.DEFAULT_ENCODER else args.encoder + '-'}{args.task[:3]}{'-std' if args.standardize else ''}"
     print(f"[{run_id}] {headline}  ({seconds:.0f}s)")
 
     if not args.no_log:
         with C.RESULTS_LOG.open("a", encoding="utf-8") as fh:
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "
-                     f"| {args.task} | {model} on phobert-frozen | title+desc+req "
-                     f"| segment{'+std' if args.standardize else ''} | dev | {m['n']} "
+                     f"| {args.task} | {model} on {args.encoder}-frozen | title+desc+req "
+                     f"| {'segment' if ENC.ENCODERS[args.encoder]['segmented'] else 'nosegment'}{'+std' if args.standardize else ''} | dev | {m['n']} "
                      f"| {headline} | {seconds:.1f}s | probe |\n")
 
 

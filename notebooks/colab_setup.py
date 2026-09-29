@@ -142,6 +142,8 @@ def main() -> None:
     ap.add_argument("--copy-train-token-from-mac", action="store_true",
                     help="copy 12,9 GB/họ từ Othercomputers/My Mac thay vì encode lại (thường chậm hơn)")
     ap.add_argument("--skip-tests", action="store_true")
+    ap.add_argument("--no-train-token", action="store_true",
+                    help="bỏ bước encode train token PhoBERT — cho T8.6 (CafeBERT tự encode cache riêng)")
     args = ap.parse_args()
 
     if not Path("src/vietjobs").exists():
@@ -151,7 +153,7 @@ def main() -> None:
     mydrive = mount_drive(Path(args.drive_root))
     restore_splits(mydrive)
     restore_small_cache(mydrive, families)
-    for fam in families:
+    for fam in [] if args.no_train_token else families:
         train_token_cache(mydrive, fam, args.copy_train_token_from_mac)
     if not args.skip_tests:
         run_tests()

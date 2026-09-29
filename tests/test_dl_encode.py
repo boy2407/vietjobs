@@ -49,6 +49,18 @@ def test_cache_paths_are_distinct_and_keep_the_old_name():
     assert ENC.cache_path("dev", C.TASK_SALARY, MAX_LEN, "tok").name.startswith("dev-masked-")
 
 
+def test_other_encoder_gets_its_own_cache_and_phobert_keeps_the_old_name():
+    """T8.6: cache CafeBERT không được đè lên cache PhoBERT 30 GB đã có."""
+    for kind in ("pooled", "tok", "mask"):
+        old = ENC.cache_path("train", C.TASK_CATEGORY, MAX_LEN, kind)
+        assert old == ENC.cache_path("train", C.TASK_CATEGORY, MAX_LEN, kind, "phobert")
+        assert old.name.startswith("train-")
+        cafe = ENC.cache_path("train", C.TASK_CATEGORY, MAX_LEN, kind, "cafebert")
+        assert cafe != old and cafe.name.startswith("cafebert-train-")
+    assert ENC.hidden_of("cafebert") == 1024 and ENC.HIDDEN == 768
+    assert not ENC.ENCODERS["cafebert"]["segmented"]
+
+
 @_needs_cache
 @pytest.mark.parametrize("split,task", COMBOS_PARAM)
 def test_masked_mean_of_token_cache_equals_pooled_cache(split, task):

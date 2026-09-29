@@ -65,7 +65,8 @@ def load_head(run_dir: Path, out_dim: int):
 
     cfg = json.loads((run_dir / "config.json").read_text(encoding="utf-8"))
     sc = np.load(run_dir / "scaler.npz")
-    head = DenseHead(ENC.HIDDEN, cfg["hidden"], out_dim, cfg["dropout"])
+    head = DenseHead(ENC.HIDDEN, cfg["hidden"], out_dim, cfg["dropout"],
+                     pre_hidden=cfg.get("pre_hidden", 0))
     head.load_state_dict(torch.load(run_dir / "best.pt", map_location="cpu"))
     head.eval()
     return head, sc["mean"], sc["std"], cfg

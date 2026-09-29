@@ -37,8 +37,19 @@ from .. import config as C
 from .. import dataset as D
 from . import text as T
 
-MODEL_NAME = "vinai/phobert-base-v2"
-HIDDEN = 768
+# T8.6: encoder là một tham số. ``phobert`` giữ nguyên tên cache cũ (không phải
+# nhúng lại 30 GB); encoder khác mang tiền tố riêng trong tên file. CafeBERT là
+# XLM-R-large (SentencePiece), học trên văn bản **chưa** tách từ — đưa nó chuỗi
+# có dấu ``_`` của underthesea là đưa nó thứ nó chưa từng thấy lúc tiền huấn luyện.
+ENCODERS = {
+    "phobert": {"name": "vinai/phobert-base-v2", "hidden": 768,
+                "segmented": True, "use_fast": False},
+    "cafebert": {"name": "uitnlp/CafeBERT", "hidden": 1024,
+                 "segmented": False, "use_fast": True},
+}
+DEFAULT_ENCODER = "phobert"
+MODEL_NAME = ENCODERS[DEFAULT_ENCODER]["name"]   # alias cho script cũ
+HIDDEN = ENCODERS[DEFAULT_ENCODER]["hidden"]
 CACHE_DIR = C.ARTIFACT_DIR / "embeddings"
 
 
@@ -47,9 +58,15 @@ def family(task: str) -> str:
     return "masked" if task in C.MASKED_TASKS else "raw"
 
 
-def cache_path(split: str, task: str, max_len: int, kind: str = "pooled") -> Path:
+def hidden_of(encoder: str) -> int:
+    return ENCODERS[encoder]["hidden"]
+
+
+def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
+               encoder: str = DEFAULT_ENCODER) -> Path:
     """``kind``: ``pooled`` (tên cũ, giữ nguyên để cache đã có vẫn hợp lệ), ``tok``, ``mask``."""
-    stem = f"{split}-{family(task)}-len{max_len}"
+    prefix = "" if encoder == DEFAULT_ENCODER else f"{encoder}-"
+    stem = f"{prefix}{split}-{family(task)}-len{max_len}"
     if kind == "pooled":
         return CACHE_DIR / f"{stem}.npy"
     if kind == "tok":
@@ -59,16 +76,17 @@ def cache_path(split: str, task: str, max_len: int, kind: str = "pooled") -> Pat
     raise ValueError(f"kind lạ: {kind}")
 
 
-def _load_model(device: str):
-    """Tokenizer + PhoBERT đóng băng, dùng chung cho cả hai mức cache."""
+def _load_model(device: str, encoder: str = DEFAULT_ENCODER):
+    """Tokenizer + encoder đóng băng, dùng chung cho cả hai mức cache."""
     import torch
     from transformers import AutoModel, AutoTokenizer
 
     # PhoBERT chỉ có tokenizer "chậm"; ghim use_fast=False để một bản
     # transformers sau này không đổi tokenizer âm thầm — cache .npy sẽ lệch
     # mà không có lỗi nào. Lớp tokenizer thật được ghi vào sidecar .json.
-    tok = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=False)
-    model = AutoModel.from_pretrained(MODEL_NAME).eval().to(pick_device(device))
+    spec = ENCODERS[encoder]
+    tok = AutoTokenizer.from_pretrained(spec["name"], use_fast=spec["use_fast"])
+    model = AutoModel.from_pretrained(spec["name"]).eval().to(pick_device(device))
     return tok, model, next(model.parameters()).device
 
 
@@ -94,7 +112,8 @@ def pick_device(name: str = "auto"):
 
 
 def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
-                 device: str = "auto", quiet: bool = False) -> np.ndarray:
+                 device: str = "auto", quiet: bool = False,
+                 encoder: str = DEFAULT_ENCODER) -> np.ndarray:
     """Trả về ``[n, 768]`` — trung bình có mặt nạ của lớp ẩn cuối.
 
     Dùng mean pooling thay cho vector ``<s>``: với PhoBERT chưa tinh chỉnh, vector
@@ -103,8 +122,8 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
     """
     import torch
 
-    tok, model, dev = _load_model(device)
-    out = np.zeros((len(texts), HIDDEN), dtype=np.float32)
+    tok, model, dev = _load_model(device, encoder)
+    out = np.zeros((len(texts), hidden_of(encoder)), dtype=np.float32)
     t0 = time.time()
     with torch.no_grad():
         for i in range(0, len(texts), batch):
@@ -120,7 +139,8 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
 
 
 def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: int = 256,
-                  batch: int = 32, device: str = "auto", quiet: bool = False) -> None:
+                  batch: int = 32, device: str = "auto", quiet: bool = False,
+                  encoder: str = DEFAULT_ENCODER) -> None:
     """Ghi lớp ẩn cuối **từng token** vào ``tok_out [n, max_len, 768]`` float16 và
     mặt nạ vào ``mask_out [n, max_len]`` uint8 — không gộp gì cả.
 
@@ -130,7 +150,7 @@ def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: i
     """
     import torch
 
-    tok, model, dev = _load_model(device)
+    tok, model, dev = _load_model(device, encoder)
     t0 = time.time()
     with torch.no_grad():
         for i in range(0, len(texts), batch):
@@ -151,24 +171,28 @@ def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: i
 
 
 def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
-                   device: str = "auto", force: bool = False) -> np.ndarray:
+                   device: str = "auto", force: bool = False,
+                   encoder: str = DEFAULT_ENCODER) -> np.ndarray:
     """Đọc cache nếu có, nếu chưa thì tính rồi ghi cache."""
-    path = cache_path(split, task, max_len)
+    path = cache_path(split, task, max_len, encoder=encoder)
     if path.exists() and not force:
         return np.load(path)
     df = D.load_split(split)
-    texts = T.build_text(df, task=task, segmented=True)
-    print(f"[{split}] {len(texts):,} tin · cột {T.columns_for(task)} · max_len={max_len}")
-    emb = encode_texts(texts, max_len=max_len, batch=batch, device=device)
+    seg = ENCODERS[encoder]["segmented"]
+    texts = T.build_text(df, task=task, segmented=seg)
+    print(f"[{split}] {encoder} · {len(texts):,} tin · cột {T.columns_for(task, segmented=seg)} · max_len={max_len}")
+    emb = encode_texts(texts, max_len=max_len, batch=batch, device=device, encoder=encoder)
     path.parent.mkdir(parents=True, exist_ok=True)
     np.save(path, emb)
-    _write_sidecar(path, split=split, task=task, max_len=max_len, n=len(texts))
+    _write_sidecar(path, split=split, task=task, max_len=max_len, n=len(texts),
+                   encoder=encoder, texts=texts)
     print(f"  -> {path}  {emb.shape}")
     return emb
 
 
 def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
-                    device: str = "auto", force: bool = False):
+                    device: str = "auto", force: bool = False,
+                    encoder: str = DEFAULT_ENCODER):
     """Trả về ``(tok, mask)`` — ``tok`` là memmap chỉ-đọc float16 ``[n, max_len, 768]``,
     ``mask`` là mảng uint8 ``[n, max_len]`` nạp hẳn vào RAM (vài MB).
 
@@ -176,29 +200,34 @@ def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 3
     ``open_memmap`` và điền từng batch, nên ``train`` 13,5 GB không bao giờ nằm
     trọn trong RAM — đọc lại cũng qua memmap, head lấy batch nào thì đĩa trả batch đó.
     """
-    tok_path = cache_path(split, task, max_len, "tok")
-    mask_path = cache_path(split, task, max_len, "mask")
+    tok_path = cache_path(split, task, max_len, "tok", encoder)
+    mask_path = cache_path(split, task, max_len, "mask", encoder)
+    hidden = hidden_of(encoder)
     if tok_path.exists() and mask_path.exists() and not force:
         return np.load(tok_path, mmap_mode="r"), np.load(mask_path)
     df = D.load_split(split)
-    texts = T.build_text(df, task=task, segmented=True)
-    print(f"[{split}] {len(texts):,} tin · cột {T.columns_for(task)} · max_len={max_len} · token-level")
+    seg = ENCODERS[encoder]["segmented"]
+    texts = T.build_text(df, task=task, segmented=seg)
+    print(f"[{split}] {encoder} · {len(texts):,} tin · cột {T.columns_for(task, segmented=seg)} · max_len={max_len} · token-level")
     tok_path.parent.mkdir(parents=True, exist_ok=True)
     tok_mm = np.lib.format.open_memmap(tok_path, mode="w+", dtype=np.float16,
-                                       shape=(len(texts), max_len, HIDDEN))
+                                       shape=(len(texts), max_len, hidden))
     mask = np.zeros((len(texts), max_len), dtype=np.uint8)
-    encode_tokens(texts, tok_mm, mask, max_len=max_len, batch=batch, device=device)
+    encode_tokens(texts, tok_mm, mask, max_len=max_len, batch=batch, device=device,
+                  encoder=encoder)
     del tok_mm  # đóng handle ghi trước khi mở lại chỉ-đọc
     np.save(mask_path, mask)
     _write_sidecar(tok_path, split=split, task=task, max_len=max_len, n=len(texts),
-                   pooling="none", dtype="float16", shape=[len(texts), max_len, HIDDEN])
-    print(f"  -> {tok_path}  ({len(texts):,}, {max_len}, {HIDDEN}) float16 · mask {mask_path.name}")
+                   pooling="none", dtype="float16", shape=[len(texts), max_len, hidden],
+                   encoder=encoder, texts=texts)
+    print(f"  -> {tok_path}  ({len(texts):,}, {max_len}, {hidden}) float16 · mask {mask_path.name}")
     return np.load(tok_path, mmap_mode="r"), mask
 
 
 def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int,
                    pooling: str = "masked_mean", dtype: str = "float32",
-                   shape: list | None = None) -> None:
+                   shape: list | None = None, encoder: str = DEFAULT_ENCODER,
+                   texts: list | None = None) -> None:
     """Ghi ``<cache>.json`` cạnh file ``.npy``: đúng những gì đã tạo ra các vector.
 
     Một cache ``.npy`` không tự nói nó được nhúng bằng tokenizer nào, cắt ở đâu,
@@ -207,18 +236,28 @@ def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int,
     """
     from transformers import AutoTokenizer
 
-    tok = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=False)
+    spec = ENCODERS[encoder]
+    tok = AutoTokenizer.from_pretrained(spec["name"], use_fast=spec["use_fast"])
+    # Tỷ lệ tin bị cắt đo lại cho từng tokenizer: con số 19,8 % là của BPE PhoBERT,
+    # SentencePiece của XLM-R chia chuỗi khác nên cắt ở chỗ khác.
+    truncated = None
+    if texts is not None:
+        lens = [len(tok(t, add_special_tokens=True)["input_ids"]) for t in texts]
+        truncated = float(np.mean([n_ > max_len for n_ in lens]))
     info = {
-        "model": MODEL_NAME,
+        "model": spec["name"],
+        "encoder": encoder,
+        "segmented": spec["segmented"],
+        "truncated_frac": truncated,
         "tokenizer_class": type(tok).__name__,
         "add_special_tokens": True,
         "max_len": max_len,
         "pooling": pooling,
         "dtype": dtype,
-        "shape": shape or [n, HIDDEN],
+        "shape": shape or [n, spec["hidden"]],
         "split": split,
         "family": family(task),
-        "columns": T.columns_for(task),
+        "columns": T.columns_for(task, segmented=spec["segmented"]),
         "n": n,
     }
     path.with_suffix(".json").write_text(
@@ -233,6 +272,8 @@ def main() -> None:
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--device", default="auto")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--encoder", default=DEFAULT_ENCODER, choices=list(ENCODERS),
+                    help="phobert (mặc định, cache cũ) | cafebert (T8.6, 1024 chiều, không tách từ)")
     ap.add_argument("--pooling", default="mean", choices=["mean", "none"],
                     help="mean: một vector 768/tin (mặc định, cache cũ); "
                          "none: giữ từng token [n, max_len, 768] float16 cho head đọc chuỗi (T8)")
@@ -243,10 +284,10 @@ def main() -> None:
     for split in args.splits:
         if args.pooling == "none":
             token_cache_for(split, args.task, max_len=args.max_len, batch=args.batch,
-                            device=args.device, force=args.force)
+                            device=args.device, force=args.force, encoder=args.encoder)
         else:
             embeddings_for(split, args.task, max_len=args.max_len, batch=args.batch,
-                           device=args.device, force=args.force)
+                           device=args.device, force=args.force, encoder=args.encoder)
 
 
 if __name__ == "__main__":

@@ -12,19 +12,23 @@ from torch import nn
 
 
 class DenseHead(nn.Module):
-    """768 → hidden → (hidden//2) → out.
+    """in_dim → [pre_hidden] → hidden → (hidden//2) → out.
 
     Hai lớp ẩn là baseline có chủ ý: một lớp thì gần như hồi quy tuyến tính trên
-    đặc trưng PhoBERT, ba lớp trở lên thì quá khớp nhanh trên 33k mẫu. Có số đo
-    rồi mới đổi.
+    đặc trưng encoder, ba lớp trở lên được cho là quá khớp nhanh trên 33k mẫu.
+    ``pre_hidden > 0`` thêm lớp thứ ba ngay sau LayerNorm để đo lại chính câu đó
+    (T8.10). ``pre_hidden = 0`` dựng đúng Sequential cũ — khoá state_dict không
+    đổi, ``best.pt`` cũ vẫn nạp được.
     """
 
     def __init__(self, in_dim: int = 768, hidden: int = 256, out_dim: int = 1,
-                 dropout: float = 0.3):
+                 dropout: float = 0.3, pre_hidden: int = 0):
         super().__init__()
+        pre = [nn.Linear(in_dim, pre_hidden), nn.GELU(), nn.Dropout(dropout)] if pre_hidden else []
         self.net = nn.Sequential(
             nn.LayerNorm(in_dim),
-            nn.Linear(in_dim, hidden),
+            *pre,
+            nn.Linear(pre_hidden or in_dim, hidden),
             nn.GELU(),
             nn.Dropout(dropout),
             nn.Linear(hidden, hidden // 2),

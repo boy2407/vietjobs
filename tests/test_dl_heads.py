@@ -89,6 +89,21 @@ def test_dense_head_accepts_and_ignores_mask():
     assert torch.allclose(head(x), head(x, torch.ones(4, 256)))
 
 
+def test_dense_default_keeps_the_old_state_dict_keys():
+    """pre_hidden=0 phải dựng đúng mạng cũ — best.pt của mọi run trước vẫn nạp được."""
+    keys = list(DenseHead(out_dim=16).state_dict())
+    assert keys == ["net.0.weight", "net.0.bias", "net.1.weight", "net.1.bias",
+                    "net.4.weight", "net.4.bias", "net.7.weight", "net.7.bias"]
+
+
+def test_dense_pre_hidden_adds_one_layer():
+    """T8.10: 1024 → 512 → 256 → 128 → 16."""
+    head = DenseHead(1024, 256, 16, pre_hidden=512).eval()
+    shapes = [tuple(m.weight.shape) for m in head.net if isinstance(m, nn.Linear)]
+    assert shapes == [(512, 1024), (256, 512), (128, 256), (16, 128)]
+    assert head(torch.randn(3, 1024)).shape == (3, 16)
+
+
 def test_padding_invariance():
     """Cùng token thật, thêm pad → đầu ra không đổi (pack_padded + pool có mặt nạ)."""
     x, mask = _tokens(b=1, T=100, lengths=(100,))

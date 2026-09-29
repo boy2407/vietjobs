@@ -49,7 +49,7 @@ def _git(*args: str) -> str:
         return ""
 
 
-def environment(device) -> dict:
+def environment(device, encoder: str = ENC.DEFAULT_ENCODER) -> dict:
     # numpy/pandas/sklearn nằm trong danh sách này vì một lý do đo được: ngày
     # 2026-09-20 `dl-cat-s2` (chạy 09-15) không tái lập được — 0,6025 → 0,6013,
     # khoảng 5/3812 tin đổi nhãn — trong khi mã nguồn cũ chạy lại hôm nay cũng
@@ -67,13 +67,14 @@ def environment(device) -> dict:
         "pandas": pd.__version__,
         "scikit_learn": sklearn.__version__,
         "device": str(device),
-        "encoder": ENC.MODEL_NAME,
+        "encoder": ENC.ENCODERS[encoder]["name"],
         "git_sha": _git("rev-parse", "HEAD") or "uncommitted",
         "git_dirty": bool(_git("status", "--porcelain")),
     }
 
 
-def load_task(split: str, task: str, max_len: int, head: str = "dense"):
+def load_task(split: str, task: str, max_len: int, head: str = "dense",
+              encoder: str = ENC.DEFAULT_ENCODER):
     """Trả về ``(X, mask, y, frame)`` — frame giữ lại để cắt lát kết quả theo ngành.
 
     ``head="dense"``  → ``X`` là ma trận ``[n, 768]`` đã gộp, ``mask`` là ``None``.
@@ -84,9 +85,9 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense"):
     """
     df = D.load_split(split)
     if head == "rnn":
-        X, mask = ENC.token_cache_for(split, task, max_len=max_len)
+        X, mask = ENC.token_cache_for(split, task, max_len=max_len, encoder=encoder)
     else:
-        X, mask = ENC.embeddings_for(split, task, max_len=max_len), None
+        X, mask = ENC.embeddings_for(split, task, max_len=max_len, encoder=encoder), None
     if len(X) != len(df):
         raise SystemExit(f"cache {split} có {len(X)} dòng nhưng split có {len(df)} "
                          "— chạy lại `python -m vietjobs.dl.encode --force`")
@@ -111,8 +112,9 @@ def token_stats(X, rows: np.ndarray, mask: np.ndarray, chunk: int = 512):
     Không gọi ``X.mean(0)``: mảng 13,5 GB sẽ được nạp trọn vào RAM. Một lượt cộng
     dồn ``sum`` và ``sum²`` là đủ, và cho đúng con số mà một lượt đầy đủ sẽ cho.
     """
-    total = np.zeros(ENC.HIDDEN, dtype=np.float64)
-    total_sq = np.zeros(ENC.HIDDEN, dtype=np.float64)
+    dim = X.shape[-1]
+    total = np.zeros(dim, dtype=np.float64)
+    total_sq = np.zeros(dim, dtype=np.float64)
     n_tok = 0
     t0 = time.time()
     for i in range(0, len(rows), chunk):
@@ -152,6 +154,9 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--weight-decay", type=float, default=1e-2)
     ap.add_argument("--hidden", type=int, default=256)
     ap.add_argument("--dropout", type=float, default=0.3)
+    ap.add_argument("--pre-hidden", type=int, default=0,
+                    help="chỉ dùng với --head dense: thêm một lớp ẩn cỡ này trước --hidden "
+                         "(vd 512 → 1024→512→256→128→out, T8.10); 0 = head hai lớp cũ")
     ap.add_argument("--head", default="dense", choices=["dense", "rnn"],
                     help="dense: đọc vector đã gộp trung bình (mặc định); "
                          "rnn: đọc từng token từ cache --pooling none, Bi-GRU ‖ Bi-LSTM "
@@ -163,6 +168,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--conv-channels", type=int, default=64,
                     help="chỉ dùng với --head rnn: số kênh Conv1d sau mỗi nhánh RNN. "
                          "Bài Tran–Vo–Luu 2022 dùng 50 (cùng --hidden 100)")
+    ap.add_argument("--encoder", default=ENC.DEFAULT_ENCODER, choices=list(ENC.ENCODERS),
+                    help="cache của encoder nào — chạy encode.py --encoder cùng tên trước (T8.6)")
     ap.add_argument("--max-len", type=int, default=256)
     ap.add_argument("--patience", type=int, default=8)
     ap.add_argument("--max-minutes", type=float, default=0,
@@ -204,6 +211,8 @@ def run(args: argparse.Namespace) -> dict:
     """
     if args.eval == "test" and not args.confirm_test:
         raise SystemExit("chấm test cần --confirm-test (docs/03-protocol.md, điều 2)")
+    if args.pre_hidden and args.head != "dense":
+        raise SystemExit("--pre-hidden chỉ dùng với --head dense")
     if args.loss == "focal" and args.task == C.TASK_SALARY:
         raise SystemExit("--loss focal chỉ dùng cho phân lớp, salary đã dùng Huber")
     if args.head == "rnn" and args.batch > 64 and args.device != "cuda":
@@ -218,8 +227,8 @@ def run(args: argparse.Namespace) -> dict:
     device = ENC.pick_device(args.device)
     is_reg = args.task == C.TASK_SALARY
 
-    Xtr, mtr, ytr, _ = load_task("train", args.task, args.max_len, args.head)
-    Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head)
+    Xtr, mtr, ytr, _ = load_task("train", args.task, args.max_len, args.head, args.encoder)
+    Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder)
     is_rnn = args.head == "rnn"
     n_train = len(ytr)
 
@@ -257,7 +266,7 @@ def run(args: argparse.Namespace) -> dict:
             xb = (np.asarray(arr[rows[order]], dtype=np.float32) - mu) / sigma
             return (torch.from_numpy(xb).to(device),
                     torch.from_numpy(mask[order].astype(np.uint8)).to(device))
-        in_dim = ENC.HIDDEN
+        in_dim = ENC.hidden_of(args.encoder)
     else:
         in_dim = Xtr.shape[1]
         Xtr_t = torch.tensor((Xtr - mu) / sigma, dtype=torch.float32)
@@ -276,7 +285,8 @@ def run(args: argparse.Namespace) -> dict:
                              conv_channels=args.conv_channels,
                              branches=args.branches).to(device)
     else:
-        model = DenseHead(in_dim, args.hidden, out_dim, args.dropout).to(device)
+        model = DenseHead(in_dim, args.hidden, out_dim, args.dropout,
+                          pre_hidden=args.pre_hidden).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
     if is_reg:
@@ -385,7 +395,7 @@ def run(args: argparse.Namespace) -> dict:
         pred_frame["proba"] = [row.tolist() for row in best_proba.astype(np.float32)]
     pd.DataFrame(pred_frame).to_parquet(out_dir / f"predictions_{args.eval}.parquet")
 
-    env = environment(device)
+    env = environment(device, args.encoder)
     arch = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches})"
             if is_rnn else "phobert-frozen+dense")
     # F1 "chuẩn" 2·P·R/(P+R) chỉ định nghĩa cho MỘT lớp; với 16 lớp là 16 con số,
@@ -403,7 +413,8 @@ def run(args: argparse.Namespace) -> dict:
         "seconds": seconds, "metrics": best_metrics, "per_class": per_class,
         "labels": labels,
         "config": vars(args), "env": env,
-        "columns": T.columns_for(args.task),
+        "encoder": args.encoder,
+        "columns": T.columns_for(args.task, segmented=ENC.ENCODERS[args.encoder]["segmented"]),
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 
     if is_reg:
@@ -435,9 +446,13 @@ def run(args: argparse.Namespace) -> dict:
                 encoding="utf-8")
         with path.open("a", encoding="utf-8") as fh:
             loss_tag = f",focal(g={args.focal_gamma:g})" if args.loss == "focal" else ""
-            base = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches}"
-                    if is_rnn else f"phobert-frozen+dense(h={args.hidden}")
-            prep = "segment+token-level" if is_rnn else "segment"
+            enc_tag = args.encoder
+            base = (f"{enc_tag}-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches}"
+                    if is_rnn else f"{enc_tag}-frozen+dense(h={args.hidden}"
+                    + (f",pre={args.pre_hidden}" if args.pre_hidden else ""))
+            prep = "segment" if ENC.ENCODERS[args.encoder]["segmented"] else "nosegment"
+            if is_rnn:
+                prep += "+token-level"
             if stopped_by == "time":
                 prep += "+time-capped"     # người đọc log biết run này chưa hội tụ tự nhiên
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "

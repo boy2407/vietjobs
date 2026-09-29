@@ -108,7 +108,8 @@ def dense_probs(run_dir: Path, labels: list[str]) -> np.ndarray:
     X, _, _, _ = load_task("dev", C.TASK_CATEGORY, cfg["max_len"], "dense")
     sc = np.load(run_dir / "scaler.npz")
     x = torch.tensor((X - sc["mean"]) / np.clip(sc["std"], 1e-6, None), dtype=torch.float32)
-    model = DenseHead(ENC.HIDDEN, cfg["hidden"], len(labels), cfg["dropout"])
+    model = DenseHead(ENC.HIDDEN, cfg["hidden"], len(labels), cfg["dropout"],
+                      pre_hidden=cfg.get("pre_hidden", 0))
     model.load_state_dict(torch.load(run_dir / "best.pt", map_location="cpu"))
     model.eval()
     with torch.no_grad():

@@ -110,6 +110,48 @@ hiện tại.
 | `dl-cat-focal-cpu-0920` | Dense, focal loss (γ=2) | 0,5972 | 0,6343 | 0,6427 | 11/19 |
 | `dl-cat-rnn-ce` | Bi-GRU‖Bi-LSTM→CNN (T8, GPU) | 0,6046 | 0,6567 | 0,6655 | 8/16 |
 | `dl-cat-rnn-focal` | như trên, focal loss (γ=2) | 0,6033 | 0,6451 | 0,6529 | 9/17 |
+| `probe-cafebert-cat` | LogReg trên vector **CafeBERT** (T8.6, 1024 chiều, 256 token) | 0,5999 | 0,6371 | 0,6461 | — |
+| `dl-cat-cafe-dense` | Dense như `dl-cat-ce-cpu-0920`, encoder **CafeBERT**, 256 token | 0,6058 | 0,6491 | 0,6571 | 13/21 |
+| `probe-cafebert-cat-512` | LogReg trên vector CafeBERT, 512 token | 0,6006 | 0,6326 | 0,6422 | — |
+| `dl-cat-cafe-dense-512` | Dense, encoder CafeBERT, 512 token | 0,6077 | 0,6426 | 0,6495 | 24/32 |
+| `dl-cat-cafe-dense-512-x512` | như trên + một lớp ẩn 512 (`--pre-hidden 512`, 1024→512→256→128→16, T8.10) | 0,5930 | 0,6389 | 0,6445 | 5/13 |
+
+**Đổi encoder (T8.6).** `uitnlp/CafeBERT` (XLM-R-large) đóng băng thay PhoBERT; split, head,
+siêu tham số và `cpu` giữ nguyên. CafeBERT đọc văn bản **chưa tách từ** (tokenizer
+SentencePiece). Cùng một tin nó sinh nhiều token hơn PhoBERT (trung vị 257 so 185 trên
+`dev`), nên ở 256 token có 50,3 % tin `dev` bị cắt (PhoBERT 22,4 %); ở 512, giới hạn của
+XLM-R, còn 5,7 %. So cặp bootstrap với `dl-cat-ce-cpu-0920`: 256 token Δ +0,0029,
+KTC 95 % [−0,011, +0,018], P=0,645; 512 token Δ +0,0045, KTC [−0,013, +0,024], P=0,677 —
+**cả hai không phân biệt được với nhiễu**. Vì vậy head rnn trên CafeBERT (T8.7) không chạy.
+
+**Thêm một lớp ẩn (T8.10).** `--pre-hidden 512` chèn lớp 1024→512 trước head hai lớp; tham số head tăng từ khoảng 0,30 M lên 0,69 M, mọi thứ khác giữ nguyên. macro-F1 giảm còn 0,5930; so cặp với `dl-cat-cafe-dense-512`: Δ −0,0147, KTC 95 % [−0,033, +0,003], P(sâu hơn thắng)=0,046. Epoch tốt nhất lùi từ 24 về 5: loss train vẫn giảm (1,192 → 1,041 từ epoch 5 đến 13) trong khi macro-F1 `dev` đi ngang ~0,59 — mạng sâu hơn quá khớp sớm hơn, đúng như docstring `DenseHead` giả định. `f1_macro_no_junk` 0,6354 so 0,6458. *Kết luận này bị T8.12 bác bỏ — xem ngay dưới.*
+
+**Nhiễu theo seed (T8.12, 2026-09-28).** Trên `cpu` cùng seed cho đúng một số, nên nhiễu chỉ đo được bằng cách đổi seed. Mỗi cấu hình chạy 5 seed (42–46), CafeBERT 512, cùng mọi tham số khác:
+
+| Cấu hình | macro-F1 5 seed | trung bình | độ lệch chuẩn | min–max |
+|---|---|---|---|---|
+| Dense, CE | 0,6077 · 0,6069 · 0,6034 · 0,6010 · 0,5992 | **0,6037** | 0,0037 | 0,5992–0,6077 |
+| Dense + lớp 512, CE | 0,5930 · 0,6098 · 0,5999 · 0,6018 · 0,5993 | 0,6008 | 0,0061 | 0,5930–0,6098 |
+| Dense, focal (γ=2) | 0,6000 · 0,6038 · 0,5955 · 0,5974 · 0,6020 | 0,5997 | 0,0034 | 0,5955–0,6038 |
+| Dense + lớp 512, focal | 0,5969 · 0,5949 · 0,5867 · 0,5961 · 0,5970 | 0,5943 | 0,0043 | 0,5867–0,5970 |
+
+Hiệu ghép theo seed: +512 so CE gốc −0,0029 (thắng 3/5 seed); focal so CE −0,0039 (1/5); focal+512 so focal −0,0054 (0/5). Hai hệ quả: (1) Δ −0,0147 của T8.10 ở seed 42 là **nhiễu khởi tạo**, không phải bằng chứng lớp thêm làm kém — ở seed 43 chính cấu hình đó cao nhất (0,6098); bootstrap trên `dev` không đo được loại nhiễu này. (2) 0,6077 của `dl-cat-cafe-dense-512` là seed tốt nhất trong 5; trung bình 0,6037 gần như trùng PhoBERT Dense 0,6030 (một seed). Chênh giữa các cấu hình nhỏ hơn hoặc ngang dải seed (~0,008), nên không cấu hình nào vượt Dense CE một cách đo được.
+
+**PhoBERT cũng 5 seed (T8.13).** Dense PhoBERT 256 token, seed 42 là `dl-cat-{ce,focal}-cpu-0920`, 43–46 là `dl-cat-{ce,focal}-cpu-s4x`:
+
+| Encoder, loss | trung bình | độ lệch chuẩn |
+|---|---|---|
+| PhoBERT, CE | 0,6032 | 0,0029 |
+| PhoBERT, focal | 0,5978 | 0,0033 |
+| CafeBERT 512, CE | 0,6037 | 0,0037 |
+| CafeBERT 512, focal | 0,5997 | 0,0034 |
+
+Ghép theo seed: CafeBERT − PhoBERT với CE **+0,0004** (thắng 2/5), với focal +0,0019 (4/5) — hai encoder **không phân biệt được**. Focal − CE trên PhoBERT −0,0054, thua ở cả 5/5 seed; trên CafeBERT −0,0039 (1/5): focal kém CE nhất quán, dù khoảng cách nhỏ.
+CafeBERT 512 **thêm lớp 512** so PhoBERT, ghép theo seed: CE 0,6008 so 0,6032 (−0,0025, thắng 2/5); focal 0,5943 so 0,5978 (−0,0035, 2/5) — lớp thêm không kéo CafeBERT vượt PhoBERT.
+
+> **Nguồn số liệu:** `artifacts/dl-cat-cafe-dense{,-512}/metrics.json`, các dòng
+> `dl-cat-cafe-dense*`, `probe-cafebert-cat*` trong `04-results.md`,
+> `artifacts/embeddings/cafebert-*-len{256,512}.json` (`truncated_frac`).
 
 Ba lần chạy này đo trên `cpu` và **tái lập được từng chữ số** — xem §5.5 về lý
 do điều đó không hiển nhiên. `F1` là F1 trung bình có trọng số theo số mẫu mỗi
@@ -199,6 +241,18 @@ cải thiện.
 đoán trung vị*. Cùng đặc trưng, cùng nhãn; khác biệt là khối dense chuẩn hóa
 đầu vào và học một hàm phi tuyến. Ở v1 kết luận là tín hiệu nằm trong các vector
 nhưng không ở dạng tuyến tính; ở v2 kết luận này đảo ngược (bảng trên).
+
+**CafeBERT cho bài lương (T8.8, T8.11, 2026-09-28).** CafeBERT 512 token, họ `masked` (tin bị cắt: `dev` 5,7 %, `train` 4,5 %), head Dense cùng cấu hình `dl-sal-cpu-0920`, 5 seed (42–46); PhoBERT Dense cũng chạy đủ 5 seed (`dl-sal-cpu-s4x`). `dev`, 2.698 tin có công bố lương:
+
+| Cấu hình | MAE (triệu) | RMSE | R²log | R²raw | ±20 % |
+|---|---|---|---|---|---|
+| PhoBERT 256, Dense | 4,143 ± 0,021 | 8,155 | 0,512 | 0,363 | 52,4 % |
+| CafeBERT 512, Dense | 4,130 ± 0,022 | 8,237 | 0,513 | 0,350 | 52,0 % |
+| CafeBERT 512, + lớp 512 | 4,117 ± 0,048 | 8,203 | 0,519 | 0,355 | 51,8 % |
+
+Ghép theo seed, ΔMAE: CafeBERT − PhoBERT −0,013 (tốt hơn 3/5 seed); + lớp 512 − PhoBERT −0,026 (2/5); + lớp 512 − CafeBERT −0,014 (3/5). Mọi khác biệt nằm trong dải seed (~0,05 triệu) — **không phân biệt được**. Ridge probe trên vector CafeBERT: MAE 4,36 (PhoBERT 4,42). Vì T8.8 không thắng, head rnn trên CafeBERT (T8.9) không chạy.
+
+> **Nguồn số liệu:** `artifacts/dl-sal-cafe-dense-512*/metrics.json`, `artifacts/dl-sal-cpu-{0920,s43..s46}/metrics.json`, `artifacts/embeddings/cafebert-*-masked-len512.json`.
 
 ### 5.3 Nó sai ở đâu
 

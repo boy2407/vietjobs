@@ -38,6 +38,17 @@ def test_masked_tasks_never_see_a_number(task):
     assert "<SALARY>" in blob
 
 
+@pytest.mark.parametrize("task", sorted(C.MASKED_TASKS))
+def test_unsegmented_masked_tasks_still_never_see_a_number(task):
+    """CafeBERT (T8.6) đọc cột chưa tách từ — che lương vẫn phải giữ nguyên."""
+    for col in T.columns_for(task, segmented=False):
+        assert "masked" in col and not col.endswith("_seg"), col
+    blob = T.build_text(_frame(), task=task, segmented=False)[0]
+    assert "20 triệu" not in blob
+    assert "<SALARY>" in blob
+    assert "_" not in blob.replace("<SALARY>", "")
+
+
 def test_category_reads_raw_text():
     cols = T.columns_for(C.TASK_CATEGORY, segmented=True)
     assert not any("masked" in c for c in cols)
