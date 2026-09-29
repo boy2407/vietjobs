@@ -505,4 +505,86 @@ training run" row of the Rule 1 table, and item 8 of `TASKS.md` §3.
 
 - No `Co-Authored-By: Claude…` trailer, no "Generated with…" line, no mention of
   AI anywhere in the git history.
-- Commit only when asked. Never commit `data/`, `artifacts/`, `.venv/`.
+- Commit in small steps: **commit once the uncommitted change reaches about 100
+  lines of diff**, and keep each commit at or under about 100 changed lines,
+  split by logical unit (code + its test together). This is a standing request
+  from the author (2026-09-29); pushing still happens only when asked.
+- Never commit `data/`, `artifacts/`, `.venv/`.
+
+## 6. Coding discipline
+
+Behavioural guidelines against common LLM coding mistakes. They bias toward
+caution over speed; for trivial tasks, use judgment. The project rules above
+take precedence where the two overlap.
+
+### 6.1 Think before coding
+
+Don't assume. Don't hide confusion. Surface tradeoffs. Before implementing:
+
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them — don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+### 6.2 Simplicity first
+
+Write the minimum code that solves the problem. Nothing speculative.
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes,
+simplify.
+
+### 6.3 Surgical changes
+
+Touch only what you must. Clean up only your own mess. When editing existing
+code:
+
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match the existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it — don't delete it.
+
+When your changes create orphans:
+
+- Remove imports, variables and functions that **your** changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: every changed line should trace directly to the user's request.
+
+### 6.4 Goal-driven execution
+
+Define success criteria, then loop until they are verified. Turn each task into a
+goal you can check:
+
+- "Add validation" → write tests for invalid inputs, then make them pass.
+- "Fix the bug" → write a test that reproduces it, then make it pass.
+- "Refactor X" → ensure tests pass before and after.
+
+For a multi-step task, state a brief plan with a check for each step:
+
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop on your own. Weak criteria ("make it work")
+require constant clarification.
+
+These guidelines are working if diffs contain fewer unnecessary changes, fewer
+rewrites are needed because of overcomplication, and clarifying questions come
+before implementation rather than after mistakes.
+
+### 6.5 Model choice for executing a plan
+
+Do **not** execute a plan with Sonnet. Once a plan is approved, carry it out
+with the same model that wrote it. Do not hand the implementation to a
+subagent, workflow or tool run with `model: sonnet`, and do not switch the
+session to Sonnet for the implementation step. Read-only search helpers may use
+any model, but every change that follows a plan is written by the planning
+model.
