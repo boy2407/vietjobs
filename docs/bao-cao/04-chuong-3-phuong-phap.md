@@ -598,6 +598,16 @@ là một kết quả thực nghiệm, không phải một lựa chọn thiết 
 
 ---
 
+### 3.7.4. Trunk dùng chung cho hai bài toán (T4.1)
+
+**Nguyên lý.** Học đa nhiệm cho hai bài dùng chung một phần thân (trunk). Mỗi bài giữ một đầu ra riêng. Thân nhận gradient từ cả hai loss.
+
+**Áp dụng ở đây.** Thân đọc họ `masked`, vì bài lương chỉ được đọc cột đã che (§3.4). Thân: LayerNorm → Linear 1024→256 → GELU → Dropout 0,3, trên vectơ CafeBERT 512 token đã gộp. Hai đầu, mỗi đầu Linear 256→128 → GELU → Dropout → Linear ra 16 lớp hoặc 1 giá trị `log1p` lương. Loss là `CE + α · SmoothL1`; phần lương chia cho số tin có lương trong batch, nên 28,5 % tin không có lương chỉ góp vào loss phân lớp.
+
+**Khác mặc định.** α = 5 thay vì 1: ở α = 1, loss lương chỉ bằng 0,06 lần loss phân lớp, nên thân gần như chỉ học cho phân lớp. α được chọn bằng quét trên `dev` (§4.4.3).
+
+> **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a1-s42/history.jsonl` (epoch 9), `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/metrics.json`.
+
 ## 3.8. Các độ đo đánh giá
 
 ### 3.8.1. Bài toán phân loại ngành nghề
