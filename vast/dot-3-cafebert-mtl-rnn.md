@@ -1,6 +1,6 @@
-# Đợt 3: CafeBERT 512-token + trunk RNN đa nhiệm (T4.1) — CHƯA THUÊ
+# Đợt 3: CafeBERT 512-token + trunk RNN đa nhiệm (T4.1) — ĐANG THUÊ
 
-Script: `scripts/vast_run_cafe_mtl.sh` | Instance: — (GPU, VRAM, disk, RAM, IP, port, $/h)
+Script: `scripts/vast_run_cafe_mtl.sh` | Instance: **RTX 5060 Ti 16 GB, EPYC 9534, RAM container 85 GiB, disk 80 GB**, CUDA 12.8, torch 2.11 (`/venv/main`), ~$0.22/h. SSH proxy: `ssh -p 28081 root@ssh2.vast.ai` (direct `85.10.218.46:45028` bị refused)
 
 Phạm vi trước mắt: **chỉ 1 run seed 42** (`gate`). Seed 43, 44 để quyết định sau khi có kết quả, không chạy trong lần thuê này.
 
@@ -31,8 +31,8 @@ Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 
 
 | # | Bước | Trạng thái | Ghi chú |
 |---|---|---|---|
-| 1 | Thuê máy theo mục "Chọn máy" | todo | |
-| 2 | Gắn SSH key + kết nối | todo | |
+| 1 | Thuê máy theo mục "Chọn máy" | done | 2026-10-02, disk 80 GB (đủ: cache ~41 GB) |
+| 2 | Gắn SSH key + kết nối | done | key `id_ed25519`; chỉ proxy vào được |
 | 3 | Đẩy code + splits lên | todo | không cần embeddings |
 | 4 | Cài thư viện Python | todo | |
 | 5 | `gate`: pytest → encode masked train+dev → seed 42 | todo | |
@@ -47,14 +47,15 @@ Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 
 
 ```bash
 cd ~/Documents/TrNghia/VietJob/vietjobs
-rsync -avzR -e "ssh -p PORT" src scripts tests pyproject.toml data/processed/splits \
-  root@IP:/workspace/vietjobs/
+rsync -avzR -e "ssh -p 28081" src scripts tests pyproject.toml data/processed/splits \
+  root@ssh2.vast.ai:/workspace/vietjobs/
 ```
 
 ### Lệnh chạy (máy thuê)
 
 ```bash
 cd /workspace/vietjobs
+source /venv/main/bin/activate   # bắt buộc: không có lệnh `python` ngoài venv
 pip install "transformers>=4.38,<4.47" sentencepiece protobuf pandas scikit-learn pyarrow underthesea pyvi pytest
 tmux new -s mtl
 bash scripts/vast_run_cafe_mtl.sh gate
@@ -78,7 +79,7 @@ Ghi vào "Nhật ký sự cố" khi gặp: GPU util < 30 % kéo dài (nghẽn I/
 Không dùng rsync (openrsync của macOS bị treo). **Không** thêm `--exclude=best.pt`.
 
 ```bash
-ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - artifacts/dl-mtl-cafe-rnn-a5-s42 logs" | tar xzf - -C .
+ssh -p 28081 root@ssh2.vast.ai "cd /workspace/vietjobs && tar czf - artifacts/dl-mtl-cafe-rnn-a5-s42 logs" | tar xzf - -C .
 ls artifacts/dl-mtl-cafe-rnn-a5-s42/{metrics.json,history.jsonl,best.pt,best_sal.pt}
 ```
 
