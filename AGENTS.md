@@ -474,7 +474,6 @@ Changing this rule means editing **two** places: this rule and the status line i
 Changing this rule means editing **three** places: this rule, the "Finished a
 training run" row of the Rule 1 table, and item 8 of `TASKS.md` §3.
 
-
 ---
 
 ## Rule 14 — every vast.ai rental has its own file under `vast/`
@@ -496,6 +495,7 @@ training run" row of the Rule 1 table, and item 8 of `TASKS.md` §3.
 
 Changing this rule means editing **two** places: this rule and the `vast/` row
 of the layout table in §2.
+
 ---
 
 ## 3. Code style
