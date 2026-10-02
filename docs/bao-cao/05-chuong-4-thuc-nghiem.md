@@ -363,6 +363,39 @@ riêng, so với `dl-cat-rnn-ce` 0,6046 cả hai nhánh) — xem `TASKS.md` T8.5
 
 ---
 
+### 4.4.3. T4.1 — hợp nhất đa nhiệm, trunk dense
+
+**Lần chạy.** `PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_mtl --encoder cafebert --max-len 512 --alpha-sal α --epochs E --seed S`, `.venv-dl`, `cpu`, 02/10/2026. Đọc `train` (34.354 tin), chấm trên `dev` (3.812 tin cho phân lớp, 2.698 tin có lương cho hồi quy).
+
+**Mô hình.** Vectơ CafeBERT 512 token đã gộp, họ `masked`. Trunk chung LayerNorm → Linear 1024→256 → GELU → Dropout 0,3, hai đầu riêng 256→128→out (kiến trúc ở §3.7.4). Loss `CE + α · SmoothL1`, phần lương chỉ tính trên tin có lương. Mỗi bài chọn best epoch riêng, như khi chạy đơn nhiệm.
+
+**Quét α (seed 42).** Ở α = 1, loss lương chỉ bằng 0,06 lần loss phân lớp tại epoch 9.
+
+**Bảng 4.15: Quét hệ số α của loss lương, trunk dense, seed 42**
+
+| Run | α | macro-F1 | MAE (triệu) |
+|---|---|---|---|
+| `dl-mtl-cafe512-a1-s42` | 1 | 0,6065 | 4,22 |
+| `dl-mtl-cafe512-a5-s42` | 5 | 0,6175 | 4,16 |
+| `dl-mtl-cafe512-a10-s42` | 10 | 0,6020 | 4,15 |
+| `dl-mtl-cafe512-a20-s42` | 20 | 0,5954 | 4,13 |
+
+Luật chọn đặt trước: MAE thấp nhất trong các α có macro-F1 không kém α = 1 quá 0,003 → α = 5. Chạy lại α = 1 và α = 5 với 3 seed (42–44), trần 80 epoch.
+
+**Bảng 4.16: Trunk dense đa nhiệm so với Dense đơn nhiệm CafeBERT 512, seed 42–44**
+
+| Cấu hình | macro-F1 | MAE (triệu) | Δ macro-F1 ghép seed | Δ MAE ghép seed |
+|---|---|---|---|---|
+| Đa nhiệm, α = 1 | 0,6056 ± 0,0067 | 4,199 ± 0,023 | −0,0004 (thắng 1/3) | +0,081 (tốt hơn 0/3) |
+| Đa nhiệm, α = 5 | 0,6103 ± 0,0085 | 4,146 ± 0,027 | +0,0043 (thắng 2/3) | +0,028 (tốt hơn 1/3) |
+| Đơn nhiệm Dense | 0,6060 | 4,118 | — | — |
+
+Với α = 5, phân lớp nhích lên nhưng nằm trong dải seed. Bài lương vẫn kém đơn nhiệm. Trunk dense chung chưa thắng đơn nhiệm ở bài nào một cách phân biệt được với nhiễu.
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** cái giá của việc che trên đầu phân lớp (T4.1).
+
+> **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/`, `artifacts/dl-mtl-cafe512-a{1,5}-e80-s{42,43,44}/metrics.json`, `artifacts/dl-{cat,sal}-cafe-dense-512*/metrics.json`, các dòng tương ứng trong `04-results.md`.
+
 ## 4.5. Phân tích lỗi
 
 ### 4.5.1. Lỗi của bài toán phân loại
