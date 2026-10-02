@@ -48,6 +48,11 @@ Alongside that:
 - **One corpus for the whole answer.** Switching corpora midway loses the reader.
   If an illustration genuinely needs a different one (you tried merging and it
   broke), say why the split was necessary.
+- **Stay on the example under discussion.** Once the reader is working through an
+  example, every number, table and step comes from that example only. Do not reuse
+  numbers or sentences from an earlier example or an earlier answer, and do not
+  introduce a hypothetical size ("a 300-token posting") next to the real one. If a
+  value is missing from the current run, re-run it on this example.
 - Design the corpus **backwards from what you want to show**. To expose a symptom,
   build the corpus so the symptom is forced to appear, then run it to confirm that
   it really does.
@@ -77,7 +82,9 @@ Anticipate them and put a warning block right there:
 
 A few known ones in this project: `n` is a fixed number of columns, not the number
 of words in the input sentence · `df` counts **documents**, not **occurrences** ·
-**spelling**, not **meaning** · the label is never a feature.
+**spelling**, not **meaning** · the label is never a feature · the 300 rows of a
+GRU `W_in` are 3 blocks × `hidden` 100, not a number of tokens — the number of RNN
+steps equals the number of tokens in *this* posting.
 
 ## Rule 5 — when a case comes out wrong, keep it
 

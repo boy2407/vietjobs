@@ -119,6 +119,10 @@ invent a `docs/` link that does not exist.
 If the user asks a follow-up within the same topic, drop the five-block template
 and answer their actual question. The template is an opening, not a cage.
 
+Stay on the example under discussion. Every number and step in a follow-up comes
+from the example the user is asking about; do not bring back numbers from an
+earlier example or answer, and do not add a hypothetical size next to the real one.
+
 ## Avoid
 
 - **Quoting numbers from memory.** Read the source file first. The numbers in
