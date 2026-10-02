@@ -35,7 +35,7 @@ Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 
 | 2 | Gắn SSH key + kết nối | done | key `id_ed25519`; chỉ proxy vào được |
 | 3 | Đẩy code + splits lên | done | rsync push ok, splits 322 MB |
 | 4 | Cài thư viện Python | done | `uv pip` trong `/venv/main`: transformers 4.46.3; pytest dl 19 passed, 14 skipped (chưa có cache) |
-| 5 | `gate`: pytest → encode masked train+dev → seed 42 | todo | |
+| 5 | `gate`: pytest → encode masked train+dev → seed 42 | doing | lần 1 lỗi: thiếu `data/processed/manifest.json` → đẩy thêm, chạy lại; encode train ~30 tin/s (~19 phút) |
 | 6 | Kiểm tra gate | todo | |
 | 7 | `rest` (seed 43, 44) | skip | trước mắt chỉ train 1 lần |
 | 8 | Kéo kết quả **kèm `best.pt` + `best_sal.pt`** về Mac | todo | |
@@ -47,7 +47,7 @@ Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 
 
 ```bash
 cd ~/Documents/TrNghia/VietJob/vietjobs
-rsync -avzR -e "ssh -p 28081" src scripts tests pyproject.toml data/processed/splits \
+rsync -avzR -e "ssh -p 28081" src scripts tests pyproject.toml data/processed/splits data/processed/manifest.json \
   root@ssh2.vast.ai:/workspace/vietjobs/
 ```
 
@@ -87,7 +87,7 @@ ls artifacts/dl-mtl-cafe-rnn-a5-s42/{metrics.json,history.jsonl,best.pt,best_sal
 
 | Thời điểm | Hiện tượng | Xử lý |
 |---|---|---|
-| | | |
+| 2026-10-02 | encode dừng: `manifest.json missing` | rsync thêm `data/processed/manifest.json`, chạy lại `gate` |
 
 ### Kết quả bước 11
 
