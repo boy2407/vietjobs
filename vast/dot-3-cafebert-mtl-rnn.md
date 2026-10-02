@@ -33,8 +33,8 @@ Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 
 |---|---|---|---|
 | 1 | Thuê máy theo mục "Chọn máy" | done | 2026-10-02, disk 80 GB (đủ: cache ~41 GB) |
 | 2 | Gắn SSH key + kết nối | done | key `id_ed25519`; chỉ proxy vào được |
-| 3 | Đẩy code + splits lên | todo | không cần embeddings |
-| 4 | Cài thư viện Python | todo | |
+| 3 | Đẩy code + splits lên | done | rsync push ok, splits 322 MB |
+| 4 | Cài thư viện Python | done | `uv pip` trong `/venv/main`: transformers 4.46.3; pytest dl 19 passed, 14 skipped (chưa có cache) |
 | 5 | `gate`: pytest → encode masked train+dev → seed 42 | todo | |
 | 6 | Kiểm tra gate | todo | |
 | 7 | `rest` (seed 43, 44) | skip | trước mắt chỉ train 1 lần |
