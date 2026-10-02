@@ -28,3 +28,9 @@
 2. **GPU Standardization:** Chuyển phép trừ $\mu$ và chia $\sigma$ lên GPU (dùng CUDA cores tính trong 0.001s thay vì tính trên CPU).
 3. **Lưu cache `float16`:** Vừa giữ trọn 512 token vừa giảm 50% kích thước dữ liệu.
 
+
+### 5. Đợt 3 (đo 2026-10-02)
+- **Đẩy lên phải kèm `data/processed/manifest.json`**, không chỉ `splits/`: `load_split` đọc kiểu cột từ đó, thiếu là encode dừng ngay.
+- **Kéo về qua SSH proxy (`sshN.vast.ai`): `tar czf - … | tar xzf -` treo** (dừng ở 5,6/14 MB). `scp` từng file chạy được; so `md5sum` hai đầu cho `best*.pt`.
+- Image PyTorch của vast: không có `python` ngoài venv → `source /venv/main/bin/activate`; login đã ở trong tmux → dùng `tmux switch-client -t mtl` thay vì `attach`.
+- RTX 5060 Ti + EPYC 9534, CafeBERT 512 token-level: encode ~30,8 tin/s; trunk RNN đa nhiệm 142,7 s/epoch.

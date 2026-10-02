@@ -1,4 +1,4 @@
-# Đợt 3: CafeBERT 512-token + trunk RNN đa nhiệm (T4.1) — ĐANG THUÊ
+# Đợt 3: CafeBERT 512-token + trunk RNN đa nhiệm (T4.1) — XONG (gate FAIL, chờ destroy)
 
 Script: `scripts/vast_run_cafe_mtl.sh` | Instance: **RTX 5060 Ti 16 GB, EPYC 9534, RAM container 85 GiB, disk 80 GB**, CUDA 12.8, torch 2.11 (`/venv/main`), ~$0.22/h. SSH proxy: `ssh -p 28081 root@ssh2.vast.ai` (direct `85.10.218.46:45028` bị refused)
 
@@ -16,7 +16,7 @@ Cấu hình: `--head rnn --encoder cafebert --max-len 512 --hidden 100 --conv-ch
 
 | Run | cat macro-F1 | sal MAE | best ep cat / sal | epochs_run | s/epoch | Thời gian | Ghi chú |
 |---|---|---|---|---|---|---|---|
-| `dl-mtl-cafe-rnn-a5-s42` | | | | | | | gate |
+| `dl-mtl-cafe-rnn-a5-s42` | **0.6063** | **4.02 tr** | 18 / 4 | 26 (patience) | 142.7 | 61.8 phút | gate ❌ |
 | `dl-mtl-cafe-rnn-a5-s43` | | | | | | | chưa chạy (để sau) |
 | `dl-mtl-cafe-rnn-a5-s44` | | | | | | | chưa chạy (để sau) |
 
@@ -35,13 +35,13 @@ Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 
 | 2 | Gắn SSH key + kết nối | done | key `id_ed25519`; chỉ proxy vào được |
 | 3 | Đẩy code + splits lên | done | rsync push ok, splits 322 MB |
 | 4 | Cài thư viện Python | done | `uv pip` trong `/venv/main`: transformers 4.46.3; pytest dl 19 passed, 14 skipped (chưa có cache) |
-| 5 | `gate`: pytest → encode masked train+dev → seed 42 | doing | lần 1 lỗi: thiếu `data/processed/manifest.json` → đẩy thêm, chạy lại; encode train ~30 tin/s (~19 phút) |
-| 6 | Kiểm tra gate | todo | |
+| 5 | `gate`: pytest → encode masked train+dev → seed 42 | done | lần 1 lỗi: thiếu `data/processed/manifest.json` → đẩy thêm, chạy lại; encode train ~30 tin/s (~19 phút) |
+| 6 | Kiểm tra gate | done | **FAIL**: cat 0.6063 < 0.6172 (Δ −0.0109), MAE 4.02 > 3.89 (Δ +0.13) |
 | 7 | `rest` (seed 43, 44) | skip | trước mắt chỉ train 1 lần |
-| 8 | Kéo kết quả **kèm `best.pt` + `best_sal.pt`** về Mac | todo | |
-| 9 | Checklist trong `README.md` | todo | |
-| 10 | Destroy instance | todo | |
-| 11 | Phân tích seed 42: so với đơn nhiệm cùng seed và MTL dense α=5 s42 | todo | |
+| 8 | Kéo kết quả **kèm `best.pt` + `best_sal.pt`** về Mac | done | tar qua proxy treo ở 5,6/14 MB → scp từng file; md5 hai `best*.pt` khớp |
+| 9 | Checklist trong `README.md` | done | đủ metrics/history/log/best.pt/best_sal.pt; dòng `04-results.md` đã thêm |
+| 10 | Destroy instance | todo | tác giả bấm trên web (Mac không có `vastai` CLI) |
+| 11 | Phân tích seed 42: so với đơn nhiệm cùng seed và MTL dense α=5 s42 | done | xem bên dưới |
 
 ### Lệnh đẩy lên (terminal Mac)
 
@@ -79,7 +79,9 @@ Ghi vào "Nhật ký sự cố" khi gặp: GPU util < 30 % kéo dài (nghẽn I/
 Không dùng rsync (openrsync của macOS bị treo). **Không** thêm `--exclude=best.pt`.
 
 ```bash
-ssh -p 28081 root@ssh2.vast.ai "cd /workspace/vietjobs && tar czf - artifacts/dl-mtl-cafe-rnn-a5-s42 logs" | tar xzf - -C .
+# tar qua proxy bị treo (2026-10-02); dùng scp từng file:
+for f in config.json metrics.json history.jsonl scaler.npz predictions_dev.parquet best.pt best_sal.pt; do
+  scp -P 28081 root@ssh2.vast.ai:/workspace/vietjobs/artifacts/dl-mtl-cafe-rnn-a5-s42/$f artifacts/dl-mtl-cafe-rnn-a5-s42/; done
 ls artifacts/dl-mtl-cafe-rnn-a5-s42/{metrics.json,history.jsonl,best.pt,best_sal.pt}
 ```
 
@@ -87,8 +89,19 @@ ls artifacts/dl-mtl-cafe-rnn-a5-s42/{metrics.json,history.jsonl,best.pt,best_sal
 
 | Thời điểm | Hiện tượng | Xử lý |
 |---|---|---|
+| 2026-10-02 | kéo kết quả bằng tar qua proxy treo ở 5,6/14 MB | scp từng file, so md5 |
 | 2026-10-02 | encode dừng: `manifest.json missing` | rsync thêm `data/processed/manifest.json`, chạy lại `gate` |
 
 ### Kết quả bước 11
 
-(điền sau khi chạy)
+Nguồn: `artifacts/<run_id>/metrics.json`, dev (cat n=3812, sal n=2698), seed 42.
+
+| Run | cat macro-F1 | sal MAE (tr) | sal R² log |
+|---|---|---|---|
+| `dl-mtl-cafe-rnn-a5-s42` (trunk RNN đa nhiệm) | 0.6063 | 4.02 | 0.574 |
+| `dl-cat-cafe-rnn-ce-s42` / `dl-sal-cafe-rnn-s42` (RNN đơn nhiệm) | 0.6172 | 3.89 | — |
+| `dl-mtl-cafe512-a5-e80-s42` (trunk dense đa nhiệm) | 0.6175 | 4.16 | 0.523 |
+
+- So với RNN đơn nhiệm: kém cả hai đầu (Δ macro-F1 −0.0109, Δ MAE +0.13 tr) → gate fail, không chạy s43/s44.
+- So với trunk dense đa nhiệm: MAE tốt hơn 0.14 tr, macro-F1 kém 0.0112.
+- Đầu salary đạt tốt nhất ở epoch 4 rồi không giảm nữa; `train_loss_sal` ≈ 0.035 so với `train_loss_cat` ≈ 1.0 ở epoch 15–16. Một seed, chưa có bootstrap.
