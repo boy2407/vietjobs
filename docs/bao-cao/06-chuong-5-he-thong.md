@@ -52,6 +52,7 @@ Phần mã nguồn trong `src/vietjobs/` mà đề tài dùng gồm **10 mô-đu
 | `dl/encode.py` | 153 | PhoBERT đóng băng → vectơ 768 chiều, lưu đệm `.npy` theo họ `raw`/`masked` |
 | `dl/heads.py` | 37 | Phần dày đặc: 768 → h → h/2 → out |
 | `dl/train_dl.py` | 275 | Một lần chạy = một dòng trong `04-results.md` + `history.jsonl` từng epoch |
+| `dl/train_mtl.py` | 323 | Đa nhiệm (T4.1): một trunk đọc họ `masked`, hai đầu phân lớp và lương, loss `CE + α · SmoothL1` |
 | `external.py` | 278 | Đọc VietJobs-37K, ánh xạ 60 → 16 nhãn, lọc tin trùng với ba tập chia (§4.8) |
 
 ### 5.2.1. Ba bất biến giữ cả hệ thống đứng vững
