@@ -426,3 +426,36 @@ mốc so sánh cho hai lần chạy `--branches gru` và `--branches lstm`.
 > tụ tự nhiên ở 0,6046 (`stopped_by: patience`) — con số trong bảng trên là lần
 > sau.
 
+
+### 5.7 T4.1 — đa nhiệm, trunk dense (2026-10-02)
+
+**Mô hình.** `src/vietjobs/dl/train_mtl.py`, lớp `MultiTaskHead` trong `heads.py`. Vector CafeBERT 512 token đã gộp, họ `masked` (trunk của cả hai bài chỉ đọc bản đã che). Trunk chung: LayerNorm → Linear 1024→256 → GELU → Dropout 0,3. Hai đầu riêng, mỗi đầu 256→128→out (16 lớp / 1 giá trị `log1p` lương). Loss:
+
+`loss = CE(cat) + α · SmoothL1(sal)`, phần lương chia cho số tin có lương trong batch — 28,5 % tin không có lương chỉ góp vào loss phân lớp.
+
+Mỗi bài giữ best epoch riêng (cat theo macro-F1, sal theo MAE, `best.pt` / `best_sal.pt`), dừng sớm khi cả hai cùng không cải thiện 8 epoch. AdamW lr 3e-4, batch 256, `cpu`. `dev`: 3.812 tin (cat), 2.698 tin có lương (sal).
+
+**Quét α, seed 42.** Ở α = 1, loss lương chỉ bằng 0,06 lần loss phân lớp (epoch 9, `history.jsonl`) — trunk gần như chỉ học cho bài phân lớp.
+
+| Run | α | macro-F1 | MAE (triệu) | α·loss_sal / loss_cat (epoch 9) |
+|---|---|---|---|---|
+| `dl-mtl-cafe512-a1-s42` | 1 | 0,6065 | 4,22 | 0,06 |
+| `dl-mtl-cafe512-a5-s42` | 5 | 0,6175 | 4,16 | 0,25 |
+| `dl-mtl-cafe512-a10-s42` | 10 | 0,6020 | 4,15 | 0,47 |
+| `dl-mtl-cafe512-a20-s42` | 20 | 0,5954 | 4,13 | 0,89 |
+
+Luật chọn, đặt trước khi đọc bảng: MAE thấp nhất trong các α có macro-F1 không kém α = 1 quá 0,003 → **α = 5**. Run α = 5 đạt best ở đúng trần 40 epoch, nên chạy lại với `--epochs 80` trên 3 seed.
+
+**Ba seed (42–44), `--epochs 80`, so với Dense đơn nhiệm CafeBERT 512 cùng seed** (`dl-cat-cafe-dense-512*`, `dl-sal-cafe-dense-512*`):
+
+| Cấu hình | macro-F1 | MAE (triệu) | Δ macro-F1 ghép seed | Δ MAE ghép seed |
+|---|---|---|---|---|
+| MTL α = 1 | 0,6056 ± 0,0067 | 4,199 ± 0,023 | −0,0004 (thắng 1/3) | +0,081 (tốt hơn 0/3) |
+| MTL α = 5 | 0,6103 ± 0,0085 | 4,146 ± 0,027 | +0,0043 (thắng 2/3) | +0,028 (tốt hơn 1/3) |
+| Đơn nhiệm Dense | 0,6060 | 4,118 | — | — |
+
+Δ là MTL trừ đơn nhiệm; Δ MAE dương nghĩa là MTL kém hơn. Với α = 5, phân lớp nhích lên nhưng nằm trong dải seed (độ lệch chuẩn 0,0085). Bài lương vẫn kém đơn nhiệm. Trunk dense chung **chưa thắng** đơn nhiệm ở bài nào một cách phân biệt được với nhiễu. α = 5 được giữ cho trunk RNN (đợt vast.ai thứ 3, `scripts/vast_run_cafe_mtl.sh`).
+
+> ⛔ **Chưa có số liệu** cái giá của việc che trên đầu phân lớp (T4.1).
+
+> **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/`, `artifacts/dl-mtl-cafe512-a{1,5}-e80-s{42,43,44}/` (`metrics.json`, `history.jsonl`), các dòng tương ứng trong [04-results.md](04-results.md).
