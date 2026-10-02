@@ -4,9 +4,11 @@ Script: `scripts/vast_run_cafe_mtl.sh` | Instance: —
 
 | Run | cat macro-F1 | sal MAE | Ghi chú |
 |---|---|---|---|
-| `dl-mtl-cafe-rnn-s42` | | | gate |
-| `dl-mtl-cafe-rnn-s43` | | | |
-| `dl-mtl-cafe-rnn-s44` | | | |
+| `dl-mtl-cafe-rnn-a5-s42` | | | gate |
+| `dl-mtl-cafe-rnn-a5-s43` | | | |
+| `dl-mtl-cafe-rnn-a5-s44` | | | |
+
+Cấu hình: `--alpha-sal 5 --epochs 80` (α chọn từ quét trên trunk dense, xem `docs/06` §5.7).
 
 Ngưỡng gate (đơn nhiệm cùng seed 42): `dl-cat-cafe-rnn-ce-s42` 0.6172, `dl-sal-cafe-rnn-s42` 3.89 tr.
 

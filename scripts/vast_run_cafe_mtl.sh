@@ -7,6 +7,8 @@
 # Chạy trong tmux từ thư mục gốc repo. Chỉ cần cache `masked` (task salary):
 # train ~36 GB + dev ~4,5 GB float16 → RAM ≥ 48 GB, disk ≥ 100 GB.
 # Cấu hình head giống T8.16 (hidden 100, conv 50) để so với run đơn nhiệm.
+# α = 5 chọn từ quét α trên trunk dense (dl-mtl-cafe512-a{1,5,10,20}-s42, 3 seed a1/a5-e80);
+# --epochs 80 vì α = 5 dense chạm trần 40 epoch.
 # Ngưỡng gate (seed 42): dl-cat-cafe-rnn-ce-s42 macro-F1 0.6172, dl-sal-cafe-rnn-s42 MAE 3.89 tr.
 set -euo pipefail
 PYTHON=${PYTHON:-$(command -v python)}
@@ -18,6 +20,7 @@ run() {  # seed run_id [extra args]
   $PYTHON -m vietjobs.dl.train_mtl \
     --head rnn --encoder cafebert --max-len 512 \
     --device cuda --hidden 100 --conv-channels 50 \
+    --alpha-sal 5 --epochs 80 \
     --seed "$seed" --run-id "$rid" "$@" 2>&1 | tee "logs/$rid.txt"
 }
 
@@ -38,5 +41,5 @@ case "${1:-}" in
 esac
 
 for s in $seeds; do
-  run "$s" "dl-mtl-cafe-rnn-s$s"
+  run "$s" "dl-mtl-cafe-rnn-a5-s$s"
 done
