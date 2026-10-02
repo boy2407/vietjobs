@@ -191,12 +191,16 @@ def run(args: argparse.Namespace) -> dict:
     hist_path.write_text("", encoding="utf-8")
 
     gen = torch.Generator().manual_seed(args.seed)
-    best_score, best_epoch, best_state, waited = -np.inf, -1, None, 0
+    # Mỗi task giữ best epoch riêng (cat theo macro-F1, sal theo MAE), giống run đơn
+    # nhiệm; dừng sớm khi cả hai cùng không cải thiện `patience` epoch liền.
+    best_f1, best_epoch, best_state = -np.inf, -1, None
+    best_mae, best_epoch_sal, best_state_sal = np.inf, -1, None
+    waited = 0
     t0 = time.time()
 
     for epoch in range(1, args.epochs + 1):
         model.train()
-        total_loss, seen = 0.0, 0
+        total_loss, sum_cat, sum_sal, seen = 0.0, 0.0, 0.0, 0
         for idx in batches(n_train, args.batch, True, gen):
             xb, mb = take(Xtr, mtr, idx)
             yc_b = y_cat_tr_t[idx].to(device)
@@ -218,6 +222,8 @@ def run(args: argparse.Namespace) -> dict:
             opt.step()
             
             total_loss += loss.detach().item() * len(idx)
+            sum_cat += l_cat.detach().item() * len(idx)
+            sum_sal += l_sal.detach().item() * len(idx)
             seen += len(idx)
 
         model.eval()
@@ -242,7 +248,6 @@ def run(args: argparse.Namespace) -> dict:
         m_sal = E.regression_metrics(yev_sal_valid, pred_log_sal_valid)
         
         # Score is combined: macro_f1 (higher is better) + somewhat normalized R2 or we just use F1
-        score = m_cat["f1_macro"] # Focus on cat F1 to select best epoch, or average
         
         line = {
             "val_macro_f1": m_cat["f1_macro"],
@@ -252,28 +257,33 @@ def run(args: argparse.Namespace) -> dict:
 
         with hist_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps({"epoch": epoch, "train_loss": total_loss / seen,
+                                 "train_loss_cat": sum_cat / seen, "train_loss_sal": sum_sal / seen,
                                  "seconds": round(time.time() - t0, 1), **line},
                                 ensure_ascii=False) + "\n")
         print(f"  epoch {epoch:>3}  loss {total_loss / seen:.4f}  "
               + "  ".join(f"{k} {v:.4f}" for k, v in line.items()), flush=True)
 
-        if score > best_score:
-            best_score, best_epoch, waited = score, epoch, 0
+        improved = False
+        if m_cat["f1_macro"] > best_f1:
+            best_f1, best_epoch, improved = m_cat["f1_macro"], epoch, True
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
-            best_m_cat = m_cat
-            best_m_sal = m_sal
-            best_pred_cat = pred_cat
-            best_pred_sal = pred_log_sal
-            best_proba_cat = proba_cat
+            best_m_cat, best_pred_cat, best_proba_cat = m_cat, pred_cat, proba_cat
+        if m_sal["mae_trieu"] < best_mae:
+            best_mae, best_epoch_sal, improved = m_sal["mae_trieu"], epoch, True
+            best_state_sal = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+            best_m_sal, best_pred_sal = m_sal, pred_log_sal
+        if improved:
+            waited = 0
         else:
             waited += 1
             if waited >= args.patience:
-                print(f"  dừng sớm ở epoch {epoch} (tốt nhất: {best_epoch})")
+                print(f"  dừng sớm ở epoch {epoch} (tốt nhất: cat {best_epoch}, sal {best_epoch_sal})")
                 break
 
     seconds = time.time() - t0
     model.load_state_dict(best_state)
-    torch.save(best_state, out_dir / "best.pt")
+    torch.save(best_state, out_dir / "best.pt")            # theo cat macro-F1
+    torch.save(best_state_sal, out_dir / "best_sal.pt")    # theo sal MAE
     np.savez(out_dir / "scaler.npz", mean=mu, std=sigma)
 
     pred_frame = {
@@ -289,7 +299,7 @@ def run(args: argparse.Namespace) -> dict:
     (out_dir / "config.json").write_text(json.dumps(vars(args), indent=2), encoding="utf-8")
     (out_dir / "metrics.json").write_text(json.dumps({
         "run_id": run_id, "task": "mtl", "model": f"{args.encoder}-frozen+{args.head}-mtl",
-        "eval": args.eval, "best_epoch": best_epoch, "epochs_run": epoch,
+        "eval": args.eval, "best_epoch": best_epoch, "best_epoch_sal": best_epoch_sal, "epochs_run": epoch,
         "seconds": seconds, "metrics_cat": best_m_cat, "metrics_sal": best_m_sal,
         "labels": labels, "config": vars(args), "env": env, "encoder": args.encoder
     }, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -306,7 +316,7 @@ def run(args: argparse.Namespace) -> dict:
                      f"| mtl | {args.encoder}-frozen+{args.head}-mtl(h={args.hidden}) "
                      f"| title+desc+req | mask+nosegment | {args.eval} | {len(y_cat_ev)} | {headline} | {seconds:.1f}s |\n")
 
-    print(f"\n[{run_id}] MTL · best epoch {best_epoch}/{epoch} · {headline}")
+    print(f"\n[{run_id}] MTL · best epoch cat {best_epoch} · sal {best_epoch_sal} / {epoch} · {headline}")
     return {"run_id": run_id, "out_dir": out_dir}
 
 if __name__ == "__main__":
