@@ -56,6 +56,7 @@ still runs, it just loses one measurement axis. Do not wrap them in new
 | Path | What it is |
 |---|---|
 | `TASKS.md` | **The work board** — read it first in every session: active task, dependencies, evidence, log. [docs/09-lo-trinh.md](docs/09-lo-trinh.md) is the strategy; this is the operations |
+| `vast/` | **Rented-GPU log** — one file per vast.ai rental (`dot-N-<topic>.md`), an index in `vast/README.md`, shared lessons in `vast/kinh-nghiem.md`. Written in Vietnamese. See Rule 14 |
 | `tasks/` | Detail sheets for board sections that outgrew `TASKS.md` (one file per section, TASKS.md §3 Rule 7). `TASKS.md` keeps the pointer; status lives in the sheet |
 | `src/vietjobs/` | 5 shared modules. Role of each file: [docs/08-ma-nguon.md](docs/08-ma-nguon.md) |
 | `src/vietjobs/dl/` | The main track: `text.py` (input) · `encode.py` (PhoBERT) · `heads.py` (dense) · `train_dl.py` (CLI) |
@@ -473,6 +474,28 @@ Changing this rule means editing **two** places: this rule and the status line i
 Changing this rule means editing **three** places: this rule, the "Finished a
 training run" row of the Rule 1 table, and item 8 of `TASKS.md` §3.
 
+
+---
+
+## Rule 14 — every vast.ai rental has its own file under `vast/`
+
+1. **One rental = one file**, `vast/dot-N-<topic>.md` (N counts up, never
+   reused). It holds: the task IDs, the script, the instance (GPU, disk, RAM,
+   IP/port), a run table, a step table with status, and the exact upload /
+   run / download commands. Created **before** renting, with status `CHƯA THUÊ`.
+2. **`vast/README.md` is the index**: one row per file, with task, script and
+   status. Update it whenever a file's status changes.
+3. **Update the file during the rental**, step by step — not afterwards from
+   memory. A number in the run table comes from `artifacts/<run_id>/metrics.json`.
+4. **Do not destroy an instance before the checklist in `vast/README.md`
+   passes** — every run's `metrics.json`, logs and `best.pt` are on the Mac.
+5. **Lessons that apply to every rental go in `vast/kinh-nghiem.md`**, marked
+   as measured or as an untested estimate. Do not keep them inside one rental's file.
+6. These files are an operations log, like `TASKS.md`: they are not cited in
+   `docs/bao-cao/`, and results still go to `04-results.md` and `docs/` (Rule 1, 7).
+
+Changing this rule means editing **two** places: this rule and the `vast/` row
+of the layout table in §2.
 ---
 
 ## 3. Code style
