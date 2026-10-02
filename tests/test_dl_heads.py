@@ -183,3 +183,16 @@ def test_max_minutes_stops_and_records_reason():
         assert out["stopped_by"] == "time" and m["stopped_by"] == "time"
         assert m["epochs_run"] < 5
         assert m["best_epoch"] >= 1
+
+
+def test_multitask_rnn_two_outputs_and_trunk_shared():
+    from vietjobs.dl.heads import MultiTaskRnn
+    torch.manual_seed(0)
+    m = MultiTaskRnn(in_dim=12, hidden=8, n_classes=5, conv_channels=4).eval()
+    x = torch.randn(3, 7, 12)
+    mask = torch.ones(3, 7, dtype=torch.uint8)
+    mask[1, 4:] = 0
+    cat, sal = m(x, mask)
+    assert cat.shape == (3, 5) and sal.shape == (3, 1)
+    assert torch.allclose(cat, m.head_cat(m.features(x, mask)))
+    assert not hasattr(m, "out")

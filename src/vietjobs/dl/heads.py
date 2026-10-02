@@ -11,6 +11,37 @@ import torch
 from torch import nn
 
 
+class MultiTaskHead(nn.Module):
+    """Trunk chung (chung dense layer), hai đầu ra: phân lớp và hồi quy lương."""
+    def __init__(self, in_dim: int = 768, hidden: int = 256, n_classes: int = 16,
+                 dropout: float = 0.3, pre_hidden: int = 0):
+        super().__init__()
+        pre = [nn.Linear(in_dim, pre_hidden), nn.GELU(), nn.Dropout(dropout)] if pre_hidden else []
+        self.trunk = nn.Sequential(
+            nn.LayerNorm(in_dim),
+            *pre,
+            nn.Linear(pre_hidden or in_dim, hidden),
+            nn.GELU(),
+            nn.Dropout(dropout),
+        )
+        self.head_cat = nn.Sequential(
+            nn.Linear(hidden, hidden // 2),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden // 2, n_classes),
+        )
+        self.head_sal = nn.Sequential(
+            nn.Linear(hidden, hidden // 2),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden // 2, 1),
+        )
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+        h = self.trunk(x)
+        return self.head_cat(h), self.head_sal(h)
+
+
 class DenseHead(nn.Module):
     """in_dim → [pre_hidden] → hidden → (hidden//2) → out.
 
@@ -89,6 +120,10 @@ class BiGruLstmCnn(nn.Module):
 
     def forward(self, x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         """``x [b, T, 768]`` float32 · ``mask [b, T]`` (1 = token thật)."""
+        return self.out(self.features(x, mask))
+
+    def features(self, x: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+        """Thân RNN → CNN → avg ‖ max có mặt nạ, trước lớp ra — trunk của T4.1."""
         mask = mask.bool()
         lengths = mask.sum(1)
         total = x.shape[1]
@@ -104,5 +139,33 @@ class BiGruLstmCnn(nn.Module):
             avg = (c * m).sum(2) / lengths.clamp(min=1).unsqueeze(1)
             mx = c.masked_fill(~m, float("-inf")).max(2).values
             feats += [avg, mx]
-        return self.out(torch.cat(feats, dim=1))
+        return torch.cat(feats, dim=1)
+
+
+class MultiTaskRnn(BiGruLstmCnn):
+    """Trunk RNN chung (thân của ``BiGruLstmCnn``), hai đầu ra: phân lớp và hồi quy lương.
+
+    Mỗi đầu đúng bằng ``out`` của head đơn nhiệm (LayerNorm → dense → out), nên
+    khác biệt so với run đơn nhiệm chỉ còn là thân được chia sẻ.
+    """
+
+    def __init__(self, in_dim: int = 768, hidden: int = 128, n_classes: int = 16,
+                 dropout: float = 0.3, spatial_dropout: float = 0.2,
+                 conv_channels: int = 64, branches: str = "both"):
+        super().__init__(in_dim, hidden, n_classes, dropout, spatial_dropout,
+                         conv_channels, branches)
+        self.head_cat = self.out
+        del self.out
+        feat = len(self.rnns) * 2 * conv_channels
+        self.head_sal = nn.Sequential(
+            nn.LayerNorm(feat),
+            nn.Linear(feat, hidden),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden, 1),
+        )
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        h = self.features(x, mask)
+        return self.head_cat(h), self.head_sal(h)
 
