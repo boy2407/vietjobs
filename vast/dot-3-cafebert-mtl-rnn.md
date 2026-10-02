@@ -2,6 +2,8 @@
 
 Script: `scripts/vast_run_cafe_mtl.sh` | Instance: — (GPU, VRAM, disk, RAM, IP, port, $/h)
 
+Phạm vi trước mắt: **chỉ 1 run seed 42** (`gate`). Seed 43, 44 để quyết định sau khi có kết quả, không chạy trong lần thuê này.
+
 Cấu hình: `--head rnn --encoder cafebert --max-len 512 --hidden 100 --conv-channels 50 --alpha-sal 5 --epochs 80 --device cuda`, family `masked` (α chọn từ quét trên trunk dense, xem `docs/06` §5.7).
 
 ### Chọn máy
@@ -15,15 +17,15 @@ Cấu hình: `--head rnn --encoder cafebert --max-len 512 --hidden 100 --conv-ch
 | Run | cat macro-F1 | sal MAE | best ep cat / sal | epochs_run | s/epoch | Thời gian | Ghi chú |
 |---|---|---|---|---|---|---|---|
 | `dl-mtl-cafe-rnn-a5-s42` | | | | | | | gate |
-| `dl-mtl-cafe-rnn-a5-s43` | | | | | | | |
-| `dl-mtl-cafe-rnn-a5-s44` | | | | | | | |
+| `dl-mtl-cafe-rnn-a5-s43` | | | | | | | chưa chạy (để sau) |
+| `dl-mtl-cafe-rnn-a5-s44` | | | | | | | chưa chạy (để sau) |
 
 ### Gate (seed 42, so với đơn nhiệm cùng seed)
 
 Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 tr.
 
-- **Pass** nếu cat macro-F1 ≥ 0.6172 **hoặc** sal MAE ≤ 3.89 tr, với điều kiện đầu còn lại không tệ hơn quá ngưỡng: Δ macro-F1 > −0.01, Δ MAE < +0.10 tr. Khi pass thì chạy `rest`.
-- **Fail** thì không chạy `rest`. Kéo kết quả về, làm checklist rồi destroy.
+- **Pass** nếu cat macro-F1 ≥ 0.6172 **hoặc** sal MAE ≤ 3.89 tr, với điều kiện đầu còn lại không tệ hơn quá ngưỡng: Δ macro-F1 > −0.01, Δ MAE < +0.10 tr. Khi pass, seed 43/44 là ứng viên cho lần thuê sau.
+- Pass hay fail đều kéo kết quả về, làm checklist rồi destroy ngay sau run seed 42.
 
 ### Tiến độ
 
@@ -35,11 +37,11 @@ Mốc: `dl-cat-cafe-rnn-ce-s42` macro-F1 0.6172, `dl-sal-cafe-rnn-s42` MAE 3.89 
 | 4 | Cài thư viện Python | todo | |
 | 5 | `gate`: pytest → encode masked train+dev → seed 42 | todo | |
 | 6 | Kiểm tra gate | todo | |
-| 7 | `rest` (seed 43, 44) | todo | chỉ khi gate pass |
+| 7 | `rest` (seed 43, 44) | skip | trước mắt chỉ train 1 lần |
 | 8 | Kéo kết quả **kèm `best.pt` + `best_sal.pt`** về Mac | todo | |
 | 9 | Checklist trong `README.md` | todo | |
 | 10 | Destroy instance | todo | |
-| 11 | Phân tích: mean ± sd 3 seed, so cặp với đơn nhiệm cùng seed và MTL dense α=5 | todo | |
+| 11 | Phân tích seed 42: so với đơn nhiệm cùng seed và MTL dense α=5 s42 | todo | |
 
 ### Lệnh đẩy lên (terminal Mac)
 
@@ -56,8 +58,7 @@ cd /workspace/vietjobs
 pip install "transformers>=4.38,<4.47" sentencepiece protobuf pandas scikit-learn pyarrow underthesea pyvi pytest
 tmux new -s mtl
 bash scripts/vast_run_cafe_mtl.sh gate
-# Sau khi gate pass:
-bash scripts/vast_run_cafe_mtl.sh rest
+# Trước mắt chỉ chạy gate (seed 42), không chạy rest.
 ```
 
 ### Theo dõi lúc train (cửa sổ ssh thứ hai)
@@ -77,8 +78,8 @@ Ghi vào "Nhật ký sự cố" khi gặp: GPU util < 30 % kéo dài (nghẽn I/
 Không dùng rsync (openrsync của macOS bị treo). **Không** thêm `--exclude=best.pt`.
 
 ```bash
-ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - artifacts/dl-mtl-cafe-rnn-a5-s4? logs" | tar xzf - -C .
-ls artifacts/dl-mtl-cafe-rnn-a5-s4?/{metrics.json,history.jsonl,best.pt,best_sal.pt}
+ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - artifacts/dl-mtl-cafe-rnn-a5-s42 logs" | tar xzf - -C .
+ls artifacts/dl-mtl-cafe-rnn-a5-s42/{metrics.json,history.jsonl,best.pt,best_sal.pt}
 ```
 
 ### Nhật ký sự cố
