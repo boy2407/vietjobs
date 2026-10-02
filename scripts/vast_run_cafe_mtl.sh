@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # T4.1: trunk RNN chung (CafeBERT 512, family `masked`) → hai đầu category + salary, trên vast.ai GPU.
 #
-#   bash scripts/vast_run_cafe_mtl.sh gate   # encode token cache masked, smoke 1 epoch, chạy seed 42
+#   bash scripts/vast_run_cafe_mtl.sh gate   # encode token cache masked, chạy seed 42
 #   bash scripts/vast_run_cafe_mtl.sh rest   # seed 43 44 (chỉ sau khi gate pass)
 #
 # Chạy trong tmux từ thư mục gốc repo. Chỉ cần cache `masked` (task salary):
@@ -31,11 +31,6 @@ case "${1:-}" in
     $PYTHON -m vietjobs.dl.encode --task salary --splits train dev \
       --encoder cafebert --max-len 512 --pooling none --device cuda
     du -sh artifacts/embeddings
-
-    echo "=== Smoke: 1 epoch, không ghi 04-results ==="
-    $PYTHON -m vietjobs.dl.train_mtl --head rnn --encoder cafebert --max-len 512 \
-      --device cuda --hidden 100 --conv-channels 50 --epochs 1 --no-log --run-id smoke-mtl-cafe-rnn
-    rm -rf artifacts/smoke-mtl-cafe-rnn
 
     seeds="42" ;;
   rest) seeds="43 44" ;;
