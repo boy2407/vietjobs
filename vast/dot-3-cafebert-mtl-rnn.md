@@ -104,4 +104,4 @@ Nguồn: `artifacts/<run_id>/metrics.json`, dev (cat n=3812, sal n=2698), seed 4
 
 - So với RNN đơn nhiệm: kém cả hai đầu (Δ macro-F1 −0.0109, Δ MAE +0.13 tr) → gate fail, không chạy s43/s44.
 - So với trunk dense đa nhiệm: MAE tốt hơn 0.14 tr, macro-F1 kém 0.0112.
-- Đầu salary đạt tốt nhất ở epoch 4 rồi không giảm nữa; `train_loss_sal` ≈ 0.035 so với `train_loss_cat` ≈ 1.0 ở epoch 15–16. Một seed, chưa có bootstrap.
+- Đầu salary đạt tốt nhất ở epoch 4 rồi không giảm nữa; `train_loss_sal` ≈ 0.035 so với `train_loss_cat` ≈ 1.0 ở epoch 15–16. Bootstrap ghép cặp (B=2000, seed 20260826) so với RNN đơn nhiệm s42: cat Δ −0.0109, CI95 [−0.0261, +0.0039] → không phân biệt được; sal MAE Δ +0.132 tr, CI95 [+0.039, +0.226], P=0.996 → kém thật. Một seed.
