@@ -1,0 +1,45 @@
+162|DL|DL|quản lý nhà hàng
+246|MKT|MKT|thực tập marketing nội dung
+671|NS|NS|tuyển dụng đào tạo
+2222|NONG|NONG,DIEN|thiết kế điện mặt trời
+469|MKT|MKT|trade marketing
+88|KD|KD,DL|sales dịch vụ khách sạn
+3721|TC|TC|tư vấn đầu tư chứng khoán
+249|MKT|MKT|marketing nội dung cộng đồng
+2199|TK|TK|thiết kế đồ hoạ
+121|DL|DL|quản lý nhà hàng
+1433|IT|IT|kỹ sư hệ thống lập trình
+57|KD|KD,DL|giám sát cửa hàng bán lẻ F&B
+1648|KD|KD,XD|kinh doanh bất động sản
+1492|IT|IT,DIEN|kỹ sư mạng
+2475|SX|SX,DIEN|test độ tin cậy sản phẩm nhà máy
+988|TC|TC|kế toán giá thành
+3256|KD|KD|kinh doanh phần mềm
+1414|LOG|LOG|xuất nhập khẩu
+963|TC|TC|kế toán tổng hợp
+2943|KD|KD|nhân viên kinh doanh
+2312|SX|SX,LOG|kế hoạch sản xuất
+1771|XD|XD|chỉ huy trưởng công trình
+3248|KD|KD|trợ lý kinh doanh bán hàng
+3084|KD|KD|kinh doanh dịch vụ môi trường
+707|NS|NS|hành chính nhân sự
+2560|SX|SX,NN|sinh quản đơn hàng dệt
+1629|IT|IT|phân tích dữ liệu
+3184|KD|KD|management trainee kinh doanh
+1429|KD|KD|kinh doanh phần mềm
+3159|KD|KD|kinh doanh bao bì
+1264|GD|GD|giáo viên IELTS
+3209|KD|KD|tiếp nhận đơn, báo giá bán hàng
+540|MKT|MKT,TK|viết kịch bản video content
+1515|IT|IT,NN|BrSE cầu nối Nhật
+366|MKT|MKT|chạy ads
+1891|KD|KD|tổng đài CSKH
+3780|TC|TC|phân tích tài chính
+2990|KD|KD|ASM quản lý vùng bán hàng
+3472|SX|SX|bảo trì cơ khí tiện phay
+244|MKT|MKT|chạy ads thời trang
+845|TC|TC|kế toán công nợ
+3805|TC|TC|kế toán đầu tư xây dựng
+1475|IT|IT|pentest bảo mật
+1740|XD|XD|chỉ huy trưởng công trình
+3316|KD|KD|kinh doanh thiết bị thẩm mỹ

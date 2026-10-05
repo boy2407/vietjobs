@@ -1,0 +1,53 @@
+/Users/admin/Documents/TrNghia/VietJob/vietjobs/.venv-dl/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+  epoch   1  loss 3.6281  val_macro_f1 0.4671  val_mae_trieu 4.8937  val_r2_log 0.3237
+  epoch   2  loss 1.8959  val_macro_f1 0.5343  val_mae_trieu 4.3803  val_r2_log 0.4533
+  epoch   3  loss 1.7276  val_macro_f1 0.5562  val_mae_trieu 4.3519  val_r2_log 0.4666
+  epoch   4  loss 1.6366  val_macro_f1 0.5696  val_mae_trieu 4.2546  val_r2_log 0.4887
+  epoch   5  loss 1.5827  val_macro_f1 0.5803  val_mae_trieu 4.2095  val_r2_log 0.4987
+  epoch   6  loss 1.5405  val_macro_f1 0.5843  val_mae_trieu 4.2580  val_r2_log 0.4985
+  epoch   7  loss 1.5119  val_macro_f1 0.5901  val_mae_trieu 4.2019  val_r2_log 0.5117
+  epoch   8  loss 1.4780  val_macro_f1 0.5869  val_mae_trieu 4.2448  val_r2_log 0.5081
+  epoch   9  loss 1.4486  val_macro_f1 0.5924  val_mae_trieu 4.2489  val_r2_log 0.5072
+  epoch  10  loss 1.4236  val_macro_f1 0.5889  val_mae_trieu 4.1958  val_r2_log 0.5130
+  epoch  11  loss 1.4061  val_macro_f1 0.5945  val_mae_trieu 4.1979  val_r2_log 0.5156
+  epoch  12  loss 1.3865  val_macro_f1 0.5918  val_mae_trieu 4.2625  val_r2_log 0.5020
+  epoch  13  loss 1.3713  val_macro_f1 0.5960  val_mae_trieu 4.2976  val_r2_log 0.5032
+  epoch  14  loss 1.3511  val_macro_f1 0.5837  val_mae_trieu 4.4127  val_r2_log 0.4855
+  epoch  15  loss 1.3344  val_macro_f1 0.5954  val_mae_trieu 4.2645  val_r2_log 0.4978
+  epoch  16  loss 1.3245  val_macro_f1 0.5925  val_mae_trieu 4.2276  val_r2_log 0.5054
+  epoch  17  loss 1.3086  val_macro_f1 0.5959  val_mae_trieu 4.3086  val_r2_log 0.4975
+  epoch  18  loss 1.2893  val_macro_f1 0.6015  val_mae_trieu 4.1605  val_r2_log 0.5232
+  epoch  19  loss 1.2817  val_macro_f1 0.5962  val_mae_trieu 4.2435  val_r2_log 0.5061
+  epoch  20  loss 1.2595  val_macro_f1 0.5913  val_mae_trieu 4.2056  val_r2_log 0.5164
+  epoch  21  loss 1.2518  val_macro_f1 0.5945  val_mae_trieu 4.2383  val_r2_log 0.5132
+  epoch  22  loss 1.2440  val_macro_f1 0.5905  val_mae_trieu 4.2713  val_r2_log 0.5009
+  epoch  23  loss 1.2265  val_macro_f1 0.5886  val_mae_trieu 4.3512  val_r2_log 0.4983
+  epoch  24  loss 1.2145  val_macro_f1 0.5928  val_mae_trieu 4.2813  val_r2_log 0.5095
+  epoch  25  loss 1.2065  val_macro_f1 0.5822  val_mae_trieu 4.3798  val_r2_log 0.4884
+  epoch  26  loss 1.1955  val_macro_f1 0.6015  val_mae_trieu 4.3343  val_r2_log 0.4950
+  epoch  27  loss 1.1830  val_macro_f1 0.5937  val_mae_trieu 4.3458  val_r2_log 0.4951
+  epoch  28  loss 1.1737  val_macro_f1 0.5974  val_mae_trieu 4.4103  val_r2_log 0.4882
+  epoch  29  loss 1.1682  val_macro_f1 0.6037  val_mae_trieu 4.2965  val_r2_log 0.5059
+  epoch  30  loss 1.1566  val_macro_f1 0.6112  val_mae_trieu 4.4057  val_r2_log 0.4933
+  epoch  31  loss 1.1482  val_macro_f1 0.6037  val_mae_trieu 4.3315  val_r2_log 0.4937
+  epoch  32  loss 1.1387  val_macro_f1 0.6092  val_mae_trieu 4.2969  val_r2_log 0.5019
+  epoch  33  loss 1.1343  val_macro_f1 0.6049  val_mae_trieu 4.5659  val_r2_log 0.4683
+  epoch  34  loss 1.1154  val_macro_f1 0.6048  val_mae_trieu 4.3747  val_r2_log 0.4995
+  epoch  35  loss 1.1160  val_macro_f1 0.6073  val_mae_trieu 4.3391  val_r2_log 0.4963
+  epoch  36  loss 1.0981  val_macro_f1 0.6002  val_mae_trieu 4.2540  val_r2_log 0.5070
+  epoch  37  loss 1.0978  val_macro_f1 0.6067  val_mae_trieu 4.2502  val_r2_log 0.5123
+  epoch  38  loss 1.0840  val_macro_f1 0.6123  val_mae_trieu 4.5385  val_r2_log 0.4756
+  epoch  39  loss 1.0817  val_macro_f1 0.6042  val_mae_trieu 4.4570  val_r2_log 0.4832
+  epoch  40  loss 1.0793  val_macro_f1 0.6175  val_mae_trieu 4.2741  val_r2_log 0.5089
+  epoch  41  loss 1.0637  val_macro_f1 0.6051  val_mae_trieu 4.4213  val_r2_log 0.4950
+  epoch  42  loss 1.0659  val_macro_f1 0.6119  val_mae_trieu 4.3394  val_r2_log 0.5014
+  epoch  43  loss 1.0546  val_macro_f1 0.6063  val_mae_trieu 4.3028  val_r2_log 0.5066
+  epoch  44  loss 1.0534  val_macro_f1 0.6032  val_mae_trieu 4.3678  val_r2_log 0.5004
+  epoch  45  loss 1.0426  val_macro_f1 0.6071  val_mae_trieu 4.4097  val_r2_log 0.4887
+  epoch  46  loss 1.0343  val_macro_f1 0.6052  val_mae_trieu 4.3709  val_r2_log 0.4948
+  epoch  47  loss 1.0312  val_macro_f1 0.6035  val_mae_trieu 4.2582  val_r2_log 0.5142
+  epoch  48  loss 1.0240  val_macro_f1 0.6126  val_mae_trieu 4.3307  val_r2_log 0.4982
+  dừng sớm ở epoch 48 (tốt nhất: cat 40, sal 18)
+
+[dl-mtl-cafe512-a5-e80-s42] MTL · best epoch cat 40 · sal 18 / 48 · macroF1=0.6175 · MAE=4.16tr · R2log=0.523

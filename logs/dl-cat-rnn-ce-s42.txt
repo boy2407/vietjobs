@@ -1,0 +1,27 @@
+  thống kê chuẩn hoá: 5,120/34,354 dòng (14.9%,     5s)
+  thống kê chuẩn hoá: 10,240/34,354 dòng (29.8%,    10s)
+  thống kê chuẩn hoá: 15,360/34,354 dòng (44.7%,    15s)
+  thống kê chuẩn hoá: 20,480/34,354 dòng (59.6%,    20s)
+  thống kê chuẩn hoá: 25,600/34,354 dòng (74.5%,    25s)
+  thống kê chuẩn hoá: 30,720/34,354 dòng (89.4%,    30s)
+  epoch   1  loss 1.8850  val_macro_f1 0.4136  val_f1_micro 0.5879  val_f1_weighted 0.5509  val_accuracy 0.5879
+  epoch   2  loss 1.3746  val_macro_f1 0.5511  val_f1_micro 0.6506  val_f1_weighted 0.6401  val_accuracy 0.6506
+  epoch   3  loss 1.2553  val_macro_f1 0.5710  val_f1_micro 0.6558  val_f1_weighted 0.6478  val_accuracy 0.6558
+  epoch   4  loss 1.2080  val_macro_f1 0.5700  val_f1_micro 0.6490  val_f1_weighted 0.6365  val_accuracy 0.6490
+  epoch   5  loss 1.1635  val_macro_f1 0.5931  val_f1_micro 0.6647  val_f1_weighted 0.6583  val_accuracy 0.6647
+  epoch   6  loss 1.1360  val_macro_f1 0.5836  val_f1_micro 0.6582  val_f1_weighted 0.6479  val_accuracy 0.6582
+  epoch   7  loss 1.1047  val_macro_f1 0.5904  val_f1_micro 0.6569  val_f1_weighted 0.6452  val_accuracy 0.6569
+  epoch   8  loss 1.0875  val_macro_f1 0.5999  val_f1_micro 0.6584  val_f1_weighted 0.6495  val_accuracy 0.6584
+  epoch   9  loss 1.0624  val_macro_f1 0.6038  val_f1_micro 0.6553  val_f1_weighted 0.6465  val_accuracy 0.6553
+  epoch  10  loss 1.0449  val_macro_f1 0.5888  val_f1_micro 0.6422  val_f1_weighted 0.6342  val_accuracy 0.6422
+  epoch  11  loss 1.0228  val_macro_f1 0.5882  val_f1_micro 0.6477  val_f1_weighted 0.6364  val_accuracy 0.6477
+  epoch  12  loss 1.0029  val_macro_f1 0.5889  val_f1_micro 0.6524  val_f1_weighted 0.6425  val_accuracy 0.6524
+  epoch  13  loss 0.9859  val_macro_f1 0.5929  val_f1_micro 0.6445  val_f1_weighted 0.6329  val_accuracy 0.6445
+  epoch  14  loss 0.9622  val_macro_f1 0.5905  val_f1_micro 0.6401  val_f1_weighted 0.6289  val_accuracy 0.6401
+  epoch  15  loss 0.9495  val_macro_f1 0.5872  val_f1_micro 0.6409  val_f1_weighted 0.6322  val_accuracy 0.6409
+  epoch  16  loss 0.9324  val_macro_f1 0.5862  val_f1_micro 0.6327  val_f1_weighted 0.6204  val_accuracy 0.6327
+  epoch  17  loss 0.9170  val_macro_f1 0.5880  val_f1_micro 0.6320  val_f1_weighted 0.6203  val_accuracy 0.6320
+  dừng sớm ở epoch 17 (tốt nhất: 9)
+
+[dl-cat-rnn-ce-s42] category · best epoch 9/17 · macroF1=0.6038 · F1=0.6465 · microF1=0.6553 · acc=0.6553
+  -> artifacts/dl-cat-rnn-ce-s42/

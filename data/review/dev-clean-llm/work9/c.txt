@@ -1,0 +1,184 @@
+#200 row=1177 | Giáo Viên Tiếng Anh
+ D: 'Giáo viên part-time, giảng dạy chương trình IELTS/Giao tiếp/Ngữ pháp đa dạng lứa tuổi dựa trên giáo trình có sẵn của trung tâm. Thiết kế bài giảng và giáo án phù hợp với trình độ của từng học viên. Đánh giá tiến bộ của học viên trong quá trình học.'
+ R: 'Ứng viên đã tốt nghiệp Đại học chuyên ngành Ngôn ngữ Anh, Sư phạm Anh hoặc có chứng chỉ giảng dạy quốc tế TESOL. Có chứng chỉ hoặc năng lực ngôn ngữ tương đương IELTS 7.5+. Có kinh nghiệm giảng dạy ti'
+
+#201 row=347 | Nhân Viên Marketing Chạy Ads
+ D: 'Phát triển và quản lý các chiến dịch chạy số trên các kênh online marketing như Facebook Ad, Tik Tok, lập kế hoạch tối ưu và tăng hiệu quả cho các chiến dịch với ngân sách lớn. Sử dụng các công cụ hỗ trợ để đảm bảo cho yêu cầu của chiến dịch, phân tích, tối ưu việc sử dụng các công cụ để đạt được KPI đã đề ra, phối hợp với team nội dung để xây dựng được hệ thống quảng cáo chuẩn, đầy đủ và đạt hiệu'
+ R: 'Đam mê về Marketing nói chung và Digital Marketing nói riêng• Có kinh nghiệm chạy các kênh quảng cáo Facebook (hoặc Google)... 1 năm trở lên• Thích tìm tòi sáng tạo trong lĩnh vực FnB, FMCG, Thương mạ'
+
+#202 row=2782 | Nhân Viên Bán Hàng (Thời Trang Nữ)
+ D: 'Tiếp đón và tư vấn, giới thiệu cho khách hàng các sản phẩm, chương trình khuyến mại phù hợp; Cung cấp dịch vụ tốt nhất cho khách hàng để khuyến khích khách hàng mua sắm cho lần tiếp theo. Lịch sự, niềm nở lắng nghe nhu cầu của khách hàng. Đảm bảo dịch vụ chăm sóc khách hàng tốt nhất vào mọi lúc. Nhận và chuyển thông tin đến cấp Quản lý/Giám sát để giải quyết khiếu nại của khách hàng. Trưng bày sản'
+ R: 'Nữ. Tuổi 18 - 28 tuổi. Có kỹ năng tư vấn, chăm sóc và thấu hiểu tâm lý khách hàng. Có kiến thức về thời trang là một lợi thế. Ưu tiên ứng viên có kinh nghiệm làm việc trong ngành thời trang, bán lẻ. N'
+
+#203 row=3120 | Quản Lý Tuyển Sinh
+ D: 'Chịu trách nhiệm điều hành và quản lý toàn bộ các hoạt động kinh doanh trong phạm vi được giao; Lập kế hoạch chiến lược phát triển kinh doanh theo kế hoạch được giao và phạm vi quản lý. Đề xuất các giải pháp cần thiết để thực hiện đạt kế hoạch kinh doanh trong kỳ do Ban Giám đốc đề ra; Phát triển mạng lưới khách hàng qua các kênh online, offline hoặc các hội nhóm,...mà không phụ thuộc vào nguồn từ'
+ R: 'Tốt nghiệp Đại học; Có kinh nghiệm sales từ 3 năm trở lên hoặc 1 năm ở vị trí tương đương; Ưu tiên ứng viên có kinh nghiệm lĩnh vực giáo dục; Có tiếng Anh là một lợi thế; Có kỹ năng bán hàng, giới thi'
+
+#204 row=3483 | Nhân Viên Cơ Khí Biết Hàn Cắt
+ D: 'Hàn, cắt, gia công, lắp ráp các thiết bị nhà xưởng Sửa chữa, bảo trì thiết bị trong sản xuất của công ty Hỗ trợ lắp đặt sửa chữa các hệ thống phụ trợ, hỗ trợ cho sản xuất (khí nén, vệ sinh đường ống, phòng cháy chữa cháy,..) Đọc hiểu bản vẽ kỹ thuật và ra kích thước phôi cho việc đưa vào máy cắt; đục, chạm khắc các loại sản phẩm theo yêu cầu Thực hiện công việc theo sự điều động phân công của cấp '
+ R: 'Tốt nghiệp trung cấp trở lên chuyên nghành cơ khí Có kinh nghiệm ít nhất 1 năm, làm việc trong lĩnh vực cơ khí, xây lắp công trình cơ khí, biết hàn cắt, CO2,..'
+
+#205 row=3762 | Kế Toán Trưởng
+ D: '1. Hoạt động quản trị nhân sự: Phát triển đội ngũ, quản lý công việc, tiếp nhận nhân sự, quan hệ lao động, tổ chức các hoạt động gắn kết. 2. Hoạt động quản trị vận hành: Tổ chức vận hành kinh doanh, quản trị ngân sách, lập báo cáo tài chính. 3. Hoạt động quản trị tuân thủ chuẩn mực: Quan sát và cảnh báo các tình huống vi phạm. 4. Các nhiệm vụ theo sự phân công của Ban lãnh đạo.'
+ R: '1. Trình độ học vấn: Tốt nghiệp Đại học chính quy chuyên ngành Tài chính kế toán, kiểm toán trở lên. 2. Kinh nghiệm làm việc: Tối thiểu 8 năm kinh nghiệm trong lĩnh vực tài chính kế toán, 3 năm ở vị t'
+
+#206 row=1504 | Kỹ sư phần mềm (Lãnh đạo)
+ D: 'Cyberworks là một sản phẩm sản được định hướng phát triển trở thành một platform cung cấp dịch vụ xử lý dữ liệu số hàng đầu Việt Nam, cung cấp dịch vụ không chỉ trong trong nước mà hướng tới toàn cầu. Sản phẩm được thiết kế kiến trúc microservice với nhiều công nghệ kỹ thuật tiên tiến nhằm đáp ứng quy mô người dùng lớn, khả năng tích hợp các công nghệ xử lý ảnh, xử lý dữ liệu thông minh với LLM. K'
+ R: 'Có 3+ năm kinh nghiệm phát triển ứng dụng nền tảng web. Có kinh nghiệm với .NET Core MVC/Web API / C# / Blazor. Có kinh nghiệm với HTML / CSS / Javascript. Có kinh nghiệm làm việc với MongoDB, Postgre'
+
+#207 row=12 | Kỹ Sư Nông Nghiệp Trồng Hoa
+ D: 'Nghiên cứu, triển khai và giám sát các dự án trồng hoa, rau màu, phát triển nông nghiệp cho khu du lịch bao gồm: Lập kế hoạch trồng và chăm sóc hoa, cây trồng đảm bảo cảnh quan luôn đẹp, đúng tiến độ để cho khách tham quan, bao gồm nhưng không giới hạn bởi: Lên kế hoạch xử lý đất, lên kế hoạch về loại, số lượng giống hoa/ cây, phân bổ và chịu trách nhiệm đảm bảo nhân sự trồng và chăm sóc, lên kế h'
+ R: 'Nam/ nữ - độ tuổi: không giới hạn. Tốt nghiệp các chuyên ngành Nông học, Công nghệ sinh học, Bảo vệ thực vật, Công nghệ thực phẩm hoặc các chuyên ngành Nông Lâm nghiệp có liên quan. Có ít nhất 2 năm k'
+
+#208 row=1612 | Quản lý dự án - Hệ thống ứng dụng (ERP/PLM)
+ D: 'Xác định các yêu cầu hệ thống với các bên liên quan từ việc bán hàng, lập kế hoạch, hoạt động của nhà máy và R & D. Trưởng nhóm đánh giá và lựa chọn nhà cung cấp ERP/PLM. Giám sát tuỳ chỉnh hệ thống, cấu hình và tích hợp với các hệ thống Bravo và nhà máy. Đảm bảo di chuyển dữ liệu trơn tru và quy trình quản lý thay đổi. Căn chỉnh lộ trình dự án ERP/PLM với các mục tiêu kinh doanh của công ty. Phát'
+ R: '5+ years of experience in ERP/PLM implementation projects, ideally in the apparel or manufacturing sector. Strong background as a Business Analyst (BA), with experience in gathering and translating bu'
+
+#209 row=1005 | Nhân Viên Kế Toán Tổng Hợp
+ D: '1. Kiểm tra, đối chiếu và quản lý dữ liệu: Kiểm tra đối chiếu số liệu giữa các đơn vị nội bộ, dữ liệu chi tiết và tổng hợp. Kiểm tra các định khoản các nghiệp vụ phát sinh. Kiểm tra sự cân đối giữa số liệu kế toán chi tiết và tổng hợp. Kiểm tra số dư cuối kỳ có hợp lý và Khớp đúng với các báo cáo chi tiết. Thống kê và tổng hợp số liệu kế toán khi có yêu cầu. Cung cấp số liệu Cho Ban Giám Đốc hoặc '
+ R: 'Trình độ: Tốt nghiệp Đại học thuộc ngành kế toán, kiểm toán, tài chính. · Có năng lực nghiệp vụ kế toán, có khả năng tổng hợp, nắm vững chế độ kế toán. · Tự tổ chức, sắp xếp và xây dựng kế hoạch để th'
+
+#210 row=1907 | Nhân Viên Chăm Sóc Khách Hàng Kênh Online
+ D: 'Liên lạc, tư vấn với khách hàng qua điện thoại và các sàn TMĐT (Tiki, Shopee, Lazada, TikTok Shopee, Sen đỏ). Hỗ trợ và tham gia livestream trên tiktok, shopee. Theo dõi đơn hàng trên sàn. Trả lời tin nhắn, tiếp nhận thông tin, tư vấn sản phẩm cho khách hàng trên Fanpage, sàn Droppii, các sàn Thương mại điện tử, Livechat. Các công việc phát sinh liên quan khác do Quản lý trực tiếp yêu cầu.'
+ R: 'Ưu tiên ứng viên có kinh nghiệm chăm sóc khách hàng trong ngành TMĐT hoặc dịch vụ, chưa có kinh nghiệm sẽ được đào tạo. Khả năng giao tiếp, lắng nghe và xử lý tình huống tốt. Thái độ: Nhiệt tình, kiên'
+
+#211 row=1481 | Trưởng Phòng Giải Pháp Công Nghệ Thông Tin
+ D: 'Tổ chức, giám sát việc thực hiện các chiến lược phát triển sản phẩm dịch vụ, triển khai dịch vụ công nghệ thông tin Đánh giá xu hướng công nghệ để có phương án tư vấn, chuyển đổi chiến lược và xây dựng sản phẩm dịch vụ công nghệ thông tin theo xu hướng công nghệ. Định hướng và phát triển nguồn lực kỹ thuật đáp ứng nhu cầu thực hiện dịch vụ công nghệ thông tin Nghiên cứu, tư vấn đề xuất giải pháp c'
+ R: 'Tốt nghiệp Đại học trở lên chuyên ngành Công nghệ thông tin. Có ít nhất 2 năm kinh nghiệm ở vị trí tương đương. Có kiến thức chuyên môn và tổng quát rộng về lĩnh vực công nghệ thông tin, khả năng tư v'
+
+#212 row=3307 | Nhân Viên Bán Hàng
+ D: 'Chia sẽ kiến thức, tư vấn kỹ thuật nông nghiệp, giới thiệu sản phẩm dịch vụ công ty. Hỗ trợ bà con lựa chọn giống cây trồng, kỹ thuật chăm sóc, thu hoạch và bảo quản. Thực hiện các thủ tục bán hàng, thanh toán, giao hàng. Báo cáo kết quả công việc, chia sẽ những sáng kiến, ý tưởng mới, đóng góp vào nền nông nghiệp địa phương và tổ chức doanh nghiệp.'
+ R: 'Nam độ tuổi từ 20 - 30 Tốt nghiệp THPT. Có khả năng giao tiếp, đàm phát thuyết phục, xử lý tình huống. Tinh thần cầu tiến, siêng năng, chịu khó học hỏi. Ưu tiên ứng viên có kinh nghiệm làm việc trong '
+
+#213 row=3051 | Nhân Viên Kinh Doanh
+ D: 'NHÂN VIÊN KINH DOANH DỰ ÁN (MẢNG THẦU) Khu vực phụ trách: Hà Nội và thành phố Hồ Chí Minh Tìm kiếm và phát triển khách hàng trong lĩnh vực liên quan. Xây dựng và duy trì mối quan hệ với các đối tác. Nắm bắt và theo dõi thông tin các dự án đang triển khai, chuẩn bị mở thầu. Phối hợp với các phòng ban liên quan trong quá trình cung cấp hồ sơ, báo giá, nghiệm thu công trình, dự án. Thực hiện các công'
+ R: 'Yêu cầu ứng viên Tốt nghiệp các ngành liên quan. Có kinh nghiệm ít nhất 1 năm trong lĩnh vực Nam, nữ có ngoại hình ưa nhìn. Giao tiếp tốt, tự tin. Có thể đi công tác, làm việc tại thành phố Hồ Chí Min'
+
+#214 row=261 | Nhân Viên Marketing
+ D: 'Thực hiện triển khai các chiến dịch marketing để quảng bá điểm đến (khu vui chơi, nhà hàng, khách sạn,… trong khu đô thị Meyhomes Capital Phú Quốc).'
+ R: 'Tốt nghiệp ĐH trở lên chuyên ngành Marketing, Báo chí,...hoặc liên quan Có ít nhất 2 năm kinh nghiệm tại vị trí tương đương trong các ngành du lịch, khách sạn, khu vui chơi, điểm đến, bất động sản,...'
+
+#215 row=3198 | Nhân Viên Bán Hàng - Trạm Xăng Dầu
+ D: 'Bán hàng trực tiếp tại trụ bơm. Bảo quản tài sản, hàng hoá tại cửa hàng. Báo cáo với cửa hàng trưởng.'
+ R: 'Ứng viên nam/nữ độ tuổi từ 20t. Sức khoẻ tốt. Nhanh Nhẹn, chịu khó trong công việc. Kỹ năng giao tiếp tốt.'
+
+#216 row=2477 | Nhân Viên Kế Hoạch Sản Xuất
+ D: 'Xác nhận đơn đặt hàng, kế hoạch vật tư và đảm bảo chính xác của vật tư được yêu cầu; Theo dõi kế hoạch sản xuất, đảm bảo vật tư được giao đúng hạn; Lập kế hoạch sản xuất, thống kê kế hoạch sản xuất hàng ngày và phân tích nguyên nếu không đạt kế hoạch; Theo dõi tiến độ sản xuất thực tế của từng bộ phận và điều chỉnh hợp lý.'
+ R: 'Học vấn: Trung cấp trở lên; Yêu cầu: Tiếng Trung nghe-nói-đọc-viết; Có từ 1 năm kinh nghiệm trong lĩnh vực kế hoạch sản xuất hoặc vị trí tương đương; Cẩn thận, tỉ mỉ, có tinh thần trách nhiệm cao và k'
+
+#217 row=3751 | Nhân Viên Thu Hồi Nợ Qua Điện Thoại
+ D: 'Thông qua điện thoại, nhắn tin, các phương tiện khác thuyết phục khách hàng có liên quan trả khoản vay nợ, trao đổi qua điện thoại, chỉ dẫn khách hàng các phương thức thanh toán chính xác, đảm bảo. Nhận thông tin, nhập thông tin và cập nhật thông tin của các khách hàng cần phải thu hồi nợ. Cập nhật kịp thời, bổ sung tài liệu của khách hàng và bảo đảm tài liệu mang tính xác thực. Hoàn thành mục tiê'
+ R: 'Ứng viên ở thành phố hồ chí minh Có khả năng giao tiếp với nhiều khách hàng khác nhau. Kiên trì, thái độ làm việc tích cực, khả năng ứng biến tốt. Biết sử dụng tin học văn phòng. Có laptop/ PC và tai '
+
+#218 row=848 | Kế Toán Doanh Thu
+ D: 'Đối soát doanh thu cửa hàng về đầy đủ. Đối soát doanh thu trên sàn TMĐT và giao hàng. Báo cáo doanh thu chốt hàng tháng. Hoàn thiện cập nhật lên phần mềm MISA. Chốt công nợ phải thu hàng tháng. Xử lý dữ liệu kho và kiểm kê.'
+ R: 'Trình độ chuyên môn: Tốt nghiệp Cao đẳng trở lên, ưu tiên các chuyên ngành Kế toán, Tài chính, Ngân hàng, Kế toán doanh nghiệp, Kiểm toán, Thuế… Kinh nghiệm tối thiểu: 01 năm tại vị trí tương đương. Ư'
+
+#219 row=2013 | Nhân Viên Chăm Sóc Khách Hàng
+ D: 'Trả lời tin nhắn của khách trên sàn thương mại điện tử (Tiktok, Shopee,...). Nhập thông tin đơn hàng vào hệ thống. Xử lí những đơn hàng có vấn đề. Trực và chốt đơn trên các sàn thương mại điện tử.'
+ R: 'Nam nữ từ 18-25 tuổi. Nhanh nhẹn, trách nhiệm và chăm chỉ. Có khả năng làm việc nhóm, kĩ năng giao tiếp khá. Kĩ năng xử lý tình huống tốt, đáp ứng được nhu cầu công việc. Tuân thủ đầy đủ các quy trình'
+
+#220 row=2303 | Nhân Viên QC (Phòng Đo CMM)
+ D: 'QC đo kiểm chất lượng gia công cơ khí. Nhận hàng gia công của xưởng sản xuất. Kiểm tra kích thước theo bản vẽ. Sử dụng các loại dụng cụ đo lường (thước kẹp, banme, máy CMM), đọc và phân tích kết quả đo. Kiểm tra, giám sát chất lượng theo tiêu chuẩn. Điền thông tin vào báo cáo. Phân loại, phát hiện các sai hỏng và yêu cầu các bộ phận liên quan xử lý, sửa chữa. Làm việc xoay ca từ T2-T7 (xoay ca 1 t'
+ R: 'Trình độ trung cấp trở lên. Không yêu cầu kinh nghiệm, có kinh nghiệm là một lợi thế. Có tinh thần trách nhiệm trong công việc. Kỹ năng sử dụng máy tính, công nghệ, phần mềm kỹ thuật. Kỹ năng kiểm soá'
+
+#221 row=753 | Nhân Viên Sales Admin
+ D: 'Tiếp nhận và xử lý đơn hàng, quản lý thông tin hồ sơ khách hàng, quản lý số liệu, soạn thảo các văn bản, hợp đồng.'
+ R: 'Tốt nghiệp Cao đẳng (chuyên ngành Kế toán là lợi thế), Tiếng anh đọc và viết cơ bản, Kinh nghiệm từ 1 năm ở vị trí tương đương, Kỹ năng Word, Excel đáp ứng nhu cầu công việc, Am hiểu quy trình hành ch'
+
+#222 row=2355 | Trưởng Nhóm Kho SOC
+ D: 'Quản lý, điều phối hoạt động của kho: Lập kế hoạch, tổ chức, giám sát và kiểm soát hoạt động của kho hàng, đảm bảo vận hành trơn tru, hiệu quả. Quản lý nhân viên kho: Phân công công việc, đào tạo, hướng dẫn, đánh giá hiệu quả công việc của nhân viên kho. Kiểm soát hàng hoá: Kiểm tra, giám sát việc nhập, xuất, tồn kho, đảm bảo hàng hoá được quản lý chặt chẽ, chính xác, đầy đủ. Quản lý hệ thống kho:'
+ R: 'Kinh nghiệm >3 năm quản lý vận hành kho. Nắm vững kiến thức về quản lý kho hàng, xuất nhập kho, quản lý tồn kho. Có khả năng làm việc độc lập và quản lý đội ngũ. Năng động, nhiệt tình, có tinh thần tr'
+
+#223 row=3102 | Quản lý dịch vụ và bán hàng chi nhánh
+ D: 'Thúc đẩy và lãnh đạo đội ngũ bán hàng với năng lượng và sức thu hút cao. • Đặt và giám sát các mục tiêu hiệu suất, thực hiện các biện pháp chủ động để giải quyết sự kém hiệu quả và nhận ra những thành tựu đặc biệt. • Đảm bảo khách hàng nhận được sự chào đón nồng nhiệt và trải nghiệm tích cực từ đội ngũ bán hàng. • Tiến hành các buổi họp trực tiếp thường xuyên để tăng cường kỹ thuật bán hàng, kiến '
+ R: 'Strong leadership, communication, and organizational skills. • Ability to travel between mall locations. • Resilience under pressure while maintaining positivity. • Good command of English. • Proficie'
+
+#224 row=957 | Kế Toán Nội Bộ
+ D: 'Báo giá, lên đơn hàng, soạn hàng. Xuất hoá đơn VAT. Đối chiếu theo dõi công nợ khách hàng, nhà cung cấp. Theo dõi hoá đơn đầu vào, đầu ra. Lưu trữ hồ sơ, chứng từ. Hỗ trợ công việc kế toán thuế. Theo dõi xuất nhập tồn kho hàng hoá. Các công việc liên quan khác theo sự chỉ đạo của Cấp trên.'
+ R: 'Thông thạo vi tính văn phòng word, excel. Trung thực, cẩn thận, chăm chỉ, có trách nhiệm. Biết sử dụng phần mềm bán hàng, kế toán. Có kinh nghiệm ở vị trí kế toán nội bộ 1 năm trở lên.'
+
+#225 row=3287 | Nhân Viên Kinh Doanh Phát Triển Đại Lý
+ D: 'Tiếp xúc Khách hàng là các đại lý, nhà phân phối Gạch, Thiết bị vệ sinh... ở khu vực Hà Nội và 1 số tỉnh lân cận: Địa bàn Hà Nội được chia đều cho các Nhân viên kinh doanh và phụ trách thêm 1 số tỉnh miền Bắc (Sắp xếp thị trường phù hợp với kinh nghiệm của ứng viên). Đi thị trường tỉnh có xe Công ty và nếu đi qua đêm có công tác phí. Hỗ trợ, chăm sóc đại lý cũ và tìm kiếm thêm đại lý mới. Tiếp nhậ'
+ R: 'Tốt nghiệp trung cấp/cao đẳng trở lên Vui vẻ, hoà đồng, giao tiếp tự tin Chăm chỉ, nhiệt tình, năng nổ Ưu tiên các bạn có kinh nghiệm trong lĩnh vực bất động sản/ Nội thất/ Vật liệu xây dựng'
+
+#226 row=1658 | Kỹ Sư Bóc Tách Khối Lượng Và Dự Toán
+ D: 'Công tác bóc tách khối lượng dự thầu. Dựa vào bản vẽ thiết kế, kiểm tra và bóc tách khối lượng thi công các hạng mục công trình. Khảo sát và phân tích thị trường của các nhà cung ứng nguyên vật tư, vật liệu, máy móc, thiết bị và đơn giá của các thầu phụ thi công; Làm các công việc khác theo yêu cầu của Ban giám đốc.'
+ R: 'Tốt nghiệp cao đẳng trở lên chuyên ngành kinh tế xây dựng, kiến trúc, xây dựng và kỹ thuật công trình, Có kỹ năng phân tích, đánh giá chuyên sâu. Có kỹ năng tập hợp và xử lý các thông tin liên quan nh'
+
+#227 row=800 | Hành Chính Nhân Sự
+ D: 'Tuyển dụng, Sàng lọc hồ sơ, phỏng vấn và đề xuất ứng viên phù hợp khi công ty có nhu cầu tuyển thêm nhân sự. Cập nhật và lưu trữ hồ sơ nhân sự. Quản lý hợp đồng lao động, Đơn nghỉ việc. Kê khai lao động báo tăng/giảm/thai sản/đau ốm của bảo hiểm xã hội, y tế... Theo dõi máy chấm công hàng ngày: ngày công, nghỉ phép, tăng ca và các thông tin liên quan đến người lao động. Lập danh sách ứng lương nhâ'
+ R: 'Kinh nghiệm tối thiểu 3 năm ở vị trí tương đương. Tốt nghiệp ở các trường Đại học, Cao đẳng. Nhanh nhẹn, trung thực và có khả năng xử lý vấn đề tốt.'
+
+#228 row=931 | Nhân Viên Kế Toán Quản Trị
+ D: 'Kiểm tra và phân tích chi phí sản xuất thực tế và chi phí sản xuất theo ngân sách của các sản phẩm trong khối sản xuất. Rà soát các nguồn đã ghi nhận để xác định costs pools, cost drivers để phân bổ chi phí sản xuất chung và chi phí các phòng ban liên quan đến sản xuất và giá thành sản phẩm. Theo dõi kế hoạch sản xuất của từng chu kỳ để đánh giá và nhận định hiệu quả sản xuất và các nhân tố ảnh hư'
+ R: 'Tốt nghiệp Cao đẳng, Đại học chuyên ngành liên quan về kế toán. Yêu cầu kinh nghiệm 02 - 03 năm, ưu tiên ứng viên có tư duy phân tích và đam mê kế toán quản trị, đã từng làm qua doanh nghiệp có quy mô'
+
+#229 row=1973 | Quản Lý Vận Hành
+ D: 'Quản lý vận hành hoạt động kinh doanh của chuỗi cửa hàng. Quản lý doanh thu, chi phí của từng CH, nghiên cứu và đề xuất các giải pháp giảm chi phí, tăng doanh thu. Nghiên cứu, tìm hiểu, thu thập thông tin tình hình thị trường, giá cả, tình hình hoạt động kinh doanh bán hàng của các đối thủ cạnh tranh. Huấn luyện, đào tạo đội ngũ nhân sự CH nâng cao kiến thức, kỹ năng, nghiệp vụ bán hàng; Thúc đẩy '
+ R: '1. Tốt nghiệp Cao đẳng, Đại Học, Quản trị kinh doanh hoặc tương đương. 2. Ưu tiên ứng viên có kinh nghiệm làm việc tại các Công ty bán lẻ , chuỗi nhà hàng... 3. Có trách nhiệm trong công việc.'
+
+#230 row=2070 | Nhân Viên Editor (Thương Mại Điện Tử)
+ D: 'Quay phim, chụp ảnh các sản phẩm của Công ty. Phối hợp cùng Designer thiết kế tạo hình ảnh, nội dung, hiệu ứng cho video. Biên tập, chỉnh sửa, cắt ghép hình ảnh, âm thanh thành video hoàn chỉnh để đăng trên các kênh Facebook, website, TikTok,... Lên ý tưởng quay chụp để mang lại hiệu quả tốt nhất.'
+ R: 'Có khả năng tự lên ý tưởng thiết kế, dựng phim, chỉnh sửa video. Có khả năng sáng tạo đa dạng. Sáng tạo, linh hoạt, đa nhiệm. Tư duy tốt. Am hiểu và sử dụng thành thạo các trang thiết bị chụp ảnh và q'
+
+#231 row=3790 | Kế Toán Trưởng
+ D: 'Công ty trách nhiệm hữu hạn TM-DV TRANFA chuyên cung cấp thiết bị y tế, thiết bị thẩm mỹ nhập khẩu trực tiếp từ Mỹ, Italia cung cấp cho các đối tác là các Bệnh viện, Thẩm mỹ viện và Spa hàng đầu tại Việt Nam. Tổng quan về vị trí:** Chúng tôi đang tìm kiếm một Trưởng phòng Tài chính kiêm Nhân sự để giám sát và điều hành toàn bộ các hoạt động kế toán, thuế và quản lý nhân sự. Trách nhiệm của vị trí '
+ R: 'Bằng cử nhân chuyên ngành Tài chính, Kế toán, Quản trị Nhân sự hoặc các ngành liên quan. Có kinh nghiệm làm việc (ít nhất 3 năm) trong lĩnh vực quản lý tài chính, kế toán. Hiểu biết sâu về các nguyên '
+
+#232 row=2163 | Kỹ sư phần mềm
+ D: 'Chúng tôi đang tìm kiếm một kỹ sư phần mềm tài năng để tham gia nhóm của chúng tôi. Bạn sẽ chịu trách nhiệm phát triển và duy trì các ứng dụng phần mềm. Trách nhiệm bao gồm: Viết sạch, mã hiệu quả; thiết kế và triển khai các tính năng phần mềm; và hợp tác với các kỹ sư khác. Chúng tôi đang tìm kiếm một kỹ sư phần mềm đam mê và lành nghề để tham gia nhóm đang phát triển của chúng tôi. Là một kỹ sư '
+ R: "Qualifications: Bachelor's degree in Computer Science or related field. 3+ years of experience in software development. Strong programming skills in Java and/or Python. Experience with SQL and relatio"
+
+#233 row=524 | Nhân Viên Seeding Marketing
+ D: 'Phát triển và thực hiện chiến lược nội dung marketing cho công ty, tập trung vào lĩnh vực logistics và vận tải. Nghiên cứu từ khoá và phân tích đối thủ cạnh tranh để tối ưu hoá nội dung. Viết bài blog, bài đăng trên mạng xã hội, bài viết website và các ấn phẩm marketing khác. Quản lý và cập nhật nội dung trên website và các kênh truyền thông xã hội. Tạo ra nội dung hấp dẫn, chất lượng cao và phù h'
+ R: 'Tốt nghiệp Cao đẳng, Đại học chuyên ngành Marketing, Truyền thông, hoặc các ngành liên quan. Có ít nhất 1 năm kinh nghiệm trong lĩnh vực Content Marketing. Kỹ năng viết tốt, khả năng diễn đạt lưu loát'
+
+#234 row=3513 | Nhân Viên Vận Hành & Bảo Trì Hệ Thống UHT
+ D: 'Vận hành hệ thống UHT và các thiết bị liên quan. Thực hiện bảo trì bảo dưỡng (BTBD) máy móc thiết bị (MMTB), đảm bảo MMTB không hư hỏng đột suất xuất phát từ nguyên nhân chủ quan do không thực hiện đúng lịch BTBD. Chịu trách nhiệm theo dõi và đề xuất mua Spare part + Thiết bị dự trù thay thế cho các Máy móc thiết bị đảm bảo không xảy ra tình trạng Không có để thay thế khi Máy hư hỏng đột suất. Đảm'
+ R: 'Tốt nghiệp cao Đẳng, Đại học chuyên ngành Điện/ hoặc các ngành liên quan đến Cơ khí máy móc Thiết bị. Ưu tiên ứng viên đã Có kinh nghiệm vận hành hệ thống UHT/ và hoặc có kinh nghiệm bảo trì hệ thống '
+
+#235 row=2124 | Thiết kế đồ hoạ
+ D: 'Dựng video quảng cáo cho sản phẩm app, game (theo dạng motion graphic, animation, hoặc cắt dựng video theo kịch bản). Thiết kế sản phẩm truyền thông: poster, banner,... cho các dự án. Thiết kế creative assets cho app/game (App Store, Google Play Store), bao gồm screenshot, icon, banner, preview video,... Thiết kế giao diện UI cho game, app. Phối hợp với đội ngũ Marketing đưa ra giải pháp thiết kế '
+ R: 'Bắt buộc: Thành thạo các phần mềm thiết kế chuyên dụng: After Effects (AE): dựng và xử lý video/motion graphic. Photoshop (PTS), Illustrator (AI): xử lý hình ảnh, thiết kế ấn phẩm tĩnh. Sử dụng cơ bản'
+
+#236 row=1002 | Nhân Viên Kế Toán Tổng Hợp
+ D: 'Thực hiện hạch toán kế toán trên phần mềm kế toán. Lập báo cáo tài chính và quyết toán thuế. Kiểm tra tình hình lưu trữ giấy tờ, số liệu sổ sách kế toán. Giải trình số liệu và cung cấp hồ sơ, số liệu cho cơ quan thuế, kiểm toán, thanh tra kiểm tra theo yêu cầu của phụ trách phòng Tài chính - Kế toán. Thống kê và tổng hợp số liệu kế toán khi có yêu cầu. Thực hiện các nhiệm vụ khác do Ban giám đốc v'
+ R: 'Tốt nghiệp chuyên ngành Kế toán, tài chính.... Kinh nghiệm từ 02 năm trở lên (Ưu tiên có kinh nghiệm trong lĩnh vực đầu tư, xây dựng) Sử dụng thành thạo các phần mềm văn phòng (Word, Excel, Powerpoint'
+
+#237 row=386 | Nhân Viên Booking KOC/KOL
+ D: 'Lên kế hoạch phát triển và quản lý mạng lưới KOC/KOL. Tối ưu hiệu quả booking KOC/KOL và phối hợp phòng ban.'
+ R: 'Ưu tiên ứng viên có khả năng xử lý tình huống nhanh, có trách nhiệm trong công việc, ứng viên đã từng làm trong Agency Marketing, Brand đã từng thực hiện các chiến lược Booking KOC/KOL. Ưu tiên các ứn'
+
+#238 row=1398 | Chuyên Viên Mua Hàng
+ D: 'Báo cáo trực tiếp: Trưởng phòng Mua hàng Tìm kiếm, đánh giá và lựa chọn nhà cung cấp phù hợp về giá cả, chất lượng và khả năng giao hàng đúng hạn. Thiết lập và duy trì mối quan hệ hiệu quả với nhà cung cấp hiện tại và tiềm năng. Tiếp nhận yêu cầu mua hàng, thương lượng giá, đặt hàng và theo dõi tiến độ giao hàng. Phối hợp với các bộ phận Bán hàng, Marketing, Hậu mãi để dự báo nhu cầu và đảm bảo mứ'
+ R: 'Trình độ học vấn: Đại học chuyên ngành Kinh doanh, Chuỗi cung ứng, Logistics hoặc lĩnh vực liên quan Kinh nghiệm: Tối thiểu 4 năm ở vị trí mua hàng, ưu tiên ứng viên từng làm trong lĩnh vực ô tô, sản '
+
+#239 row=2985 | Cộng Tác Viên Bán Hàng Đồng Phục - Thời Trang
+ D: 'Tìm kiếm và chăm sóc khách hàng. Tư vấn, giải đáp thắc mắc khách hàng qua điện thoại, zalo, sms, email... Thông tin chi tiết sẽ được thảo luận trong buổi phỏng vấn.'
+ R: 'Khả năng giao tiếp và xử lý tình huống tốt. Ưu tiên đã có kinh nghiệm làm telesales, tư vấn... Không yêu cầu về bằng cấp. Nhiệt tình, mong muốn làm việc gắn bó lâu dài.'
+
+#240 row=1397 | Thực Tập Sinh Tìm Kiếm Và Phát Triển Sản Phẩm
+ D: 'Hỗ trợ việc ra mắt sản phẩm mới. Phối hợp với các thành viên trong bộ phận cùng lên ý tưởng về các phiên bản mới của sản phẩm. Có thể đề xuất hướng giải quyết giúp tiết kiệm chi phí đồng thời nâng cao chất lượng sản phẩm. Hỗ trợ thực hiện các công việc chuyên môn như thu thập hoặc mua hàng hoá và dịch vụ nhằm phục vụ cho hoạt động sản xuất, kinh doanh của doanh nghiệp. Hỗ trợ các công việc Hành ch'
+ R: 'Sinh viên năm 3, năm cuối các Trường Đại học theo các chuyên ngành như: Kinh tế đối ngoại, Kinh tế quốc tế, Kinh doanh quốc tế, Quản trị kinh doanh, Xuất nhập khẩu, Kinh doanh Thương mại, Logistic và '
+
+#241 row=50 | Nhân Viên Điều Hành Tour
+ D: 'Xây dựng và cập nhật bộ dữ liệu (databases) đối tác khách sạn, resort, nhà hàng, hãng hàng không và chính sách giá, xe du lịch, vé tàu hoả, hướng dẫn viên…; trình Giám đốc công ty Ký kết hợp đồng nguyên tắc phục vụ việc hợp tác; Hỗ trợ nhân viên kinh doanh trong việc xây dựng chương trình tour, báo giá tour, dịch vụ và phối hợp chặt chẽ với nhân viên kinh doanh trong việc đàm phán với đối tác để đ'
+ R: 'Trình độ cử nhân đại học, cao đẳng chuyên ngành du lịch lữ hành, khách sạn, marketing, quản trị kinh doanh; Làm việc cẩn thận, chi tiết; Kỹ năng giao tiếp tốt, đàm phán tốt, khả năng thuyết phục cao; '
+
+#242 row=2240 | Thiết kế đồ hoạ
+ D: 'Tổng quan: Ứng viên lý tưởng sẽ có các kỹ năng sáng tạo mạnh mẽ và danh mục công việc thể hiện niềm đam mê thiết kế và kiểu chữ minh hoạ của họ. Ứng viên này sẽ có kinh nghiệm làm việc với nhiều nền tảng thiết kế khác nhau như các hình thức kỹ thuật số và in ấn. Trách nhiệm: Hợp tác với nhóm để đảm bảo tính nhất quán của các thiết kế trên các phương tiện truyền thông khác nhau Tạo logo, thiết kế, '
+ R: "Qualifications: Bachelor's degree in graphic design or related field 2-4 years of experience in graphic design Proficient in Adobe Creative Suite Experienced in hospitality Strong communication, conce"
+
+#243 row=2423 | Kỹ Sư Quy Trình Tiếng Trung - Không Kinh Nghiệm
+ D: '▸Quản lý chất lượng sản xuất và tiến độ giao hàng▸Lập kế hoạch thông số kỹ thuật sản xuất, nguyên vật liệu, dây chuyền sản xuất, máy móc và chi phí▸ Cải tiến tỷ lệ lỗi quy trình và phế phẩm/hàng lỗi, đánh giá quy trình sản xuất sản phẩm tối ưu, xây dựng quy trình và tiêu chuẩn sản xuất▸ Duy trì môi trường làm việc an toàn và đảm bảo các tiêu chuẩn an toàn lao động▸ Soạn thảo và triển khai các quy '
+ R: '▸ Không yêu cầu kinh nghiệm. Ứng viên chỉ cần có khả năng tiếng Trung và định hướng phát triển theo hướng kỹ sư – sẽ được đào tạo bài bản từ đầu▸ Tốt nghiệp Cao đẳng trở lên các chuyên ngành▸ Kỹ năng '
+
+#244 row=866 | Kế Toán Tổng Hợp
+ D: 'Tổng hợp, kiểm tra và đảm bảo tất cả các khoản phát sinh được theo dõi, cập nhật hợp thời, chính xác. Lập báo cáo tài chính, báo cáo thuế, báo cáo quản trị theo định kỳ. Kiểm tra, rà soát chứng từ kế toán, đảm bảo tuân thủ đúng quy định pháp luật và quy chế công ty. Đối chiếu, kiểm tra sổ sách kế toán nội bộ và với các đơn vị liên quan. Hướng dẫn, hỗ trợ kế toán viên và các bộ phận liên quan về hạ'
+ R: 'Tốt nghiệp đại học chuyên ngành kế toán, tài chính hoặc các ngành liên quan. Độ tuổi từ 26 – 40 tuổi. Tiếng Trung giao tiếp (ưu tiên tiếng Trung tốt), có tối thiểu 3 năm kinh nghiệm ở vị trí kế toán t'
+
+#245 row=1641 | Kỹ Sư Hiện Trường
+ D: 'Tổ chức thi công và triển khai công việc tại hiện trường theo phân công của Chỉ huy trưởng. Làm việc với Tư vấn giám sát, đại diện Chủ đầu tư về các vấn đề kỹ thuật. Theo dõi, kiểm tra và đánh giá tiến độ, chất lượng thi công. Quản lý tổ đội, nhà thầu phụ thi công tại công trường. Chủ động xử lý và đề xuất phương án kỹ thuật khi có phát sinh. Kiểm soát vật tư, thiết bị thi công. Lập hồ sơ nghiệm t'
+ R: 'Tốt nghiệp Đại học chuyên ngành Xây dựng hoặc các ngành liên quan. Có ít nhất 3 năm kinh nghiệm ở vị trí tương đương. Ưu tiên ứng viên có kinh nghiệm làm việc tại các dự án biệt thự, resort, công trìn'
+

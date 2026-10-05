@@ -1,0 +1,132 @@
+Fri Oct  2 13:24:33 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.105.08             Driver Version: 580.105.08     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 5060 Ti     On  |   00000000:85:00.0 Off |                  N/A |
+|  0%   20C    P8              2W /  180W |       0MiB /  16311MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+               total        used        free      shared  buff/cache   available
+Mem:             251         105         106           1          42         145
+Swap:              0           0           0
+..ssssssssssss................ss.                                        [100%]
+19 passed, 14 skipped in 3.27s
+=== Encode CafeBERT 512 token cache (masked = task salary, train + dev) ===
+[train] cafebert · 34,354 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/34,354    25.4 tin/s  còn ~ 22.5 phút
+     672/34,354    30.6 tin/s  còn ~ 18.4 phút
+   1,312/34,354    30.6 tin/s  còn ~ 18.0 phút
+   1,952/34,354    30.8 tin/s  còn ~ 17.6 phút
+   2,592/34,354    31.1 tin/s  còn ~ 17.0 phút
+   3,232/34,354    31.2 tin/s  còn ~ 16.6 phút
+   3,872/34,354    30.9 tin/s  còn ~ 16.4 phút
+   4,512/34,354    30.9 tin/s  còn ~ 16.1 phút
+   5,152/34,354    30.8 tin/s  còn ~ 15.8 phút
+   5,792/34,354    30.7 tin/s  còn ~ 15.5 phút
+   6,432/34,354    30.6 tin/s  còn ~ 15.2 phút
+   7,072/34,354    30.5 tin/s  còn ~ 14.9 phút
+   7,712/34,354    30.4 tin/s  còn ~ 14.6 phút
+   8,352/34,354    30.5 tin/s  còn ~ 14.2 phút
+   8,992/34,354    30.5 tin/s  còn ~ 13.8 phút
+   9,632/34,354    30.5 tin/s  còn ~ 13.5 phút
+  10,272/34,354    30.6 tin/s  còn ~ 13.1 phút
+  10,912/34,354    30.7 tin/s  còn ~ 12.7 phút
+  11,552/34,354    30.7 tin/s  còn ~ 12.4 phút
+  12,192/34,354    30.7 tin/s  còn ~ 12.0 phút
+  12,832/34,354    30.7 tin/s  còn ~ 11.7 phút
+  13,472/34,354    30.6 tin/s  còn ~ 11.4 phút
+  14,112/34,354    30.6 tin/s  còn ~ 11.0 phút
+  14,752/34,354    30.6 tin/s  còn ~ 10.7 phút
+  15,392/34,354    30.5 tin/s  còn ~ 10.3 phút
+  16,032/34,354    30.5 tin/s  còn ~ 10.0 phút
+  16,672/34,354    30.5 tin/s  còn ~  9.7 phút
+  17,312/34,354    30.5 tin/s  còn ~  9.3 phút
+  17,952/34,354    30.6 tin/s  còn ~  8.9 phút
+  18,592/34,354    30.6 tin/s  còn ~  8.6 phút
+  19,232/34,354    30.6 tin/s  còn ~  8.2 phút
+  19,872/34,354    30.6 tin/s  còn ~  7.9 phút
+  20,512/34,354    30.6 tin/s  còn ~  7.5 phút
+  21,152/34,354    30.6 tin/s  còn ~  7.2 phút
+  21,792/34,354    30.6 tin/s  còn ~  6.8 phút
+  22,432/34,354    30.7 tin/s  còn ~  6.5 phút
+  23,072/34,354    30.8 tin/s  còn ~  6.1 phút
+  23,712/34,354    30.8 tin/s  còn ~  5.8 phút
+  24,352/34,354    30.8 tin/s  còn ~  5.4 phút
+  24,992/34,354    30.8 tin/s  còn ~  5.1 phút
+  25,632/34,354    30.9 tin/s  còn ~  4.7 phút
+  26,272/34,354    30.9 tin/s  còn ~  4.4 phút
+  26,912/34,354    30.9 tin/s  còn ~  4.0 phút
+  27,552/34,354    30.9 tin/s  còn ~  3.7 phút
+  28,192/34,354    30.9 tin/s  còn ~  3.3 phút
+  28,832/34,354    30.9 tin/s  còn ~  3.0 phút
+  29,472/34,354    31.0 tin/s  còn ~  2.6 phút
+  30,112/34,354    31.0 tin/s  còn ~  2.3 phút
+  30,752/34,354    31.0 tin/s  còn ~  1.9 phút
+  31,392/34,354    31.0 tin/s  còn ~  1.6 phút
+  32,032/34,354    31.1 tin/s  còn ~  1.2 phút
+  32,672/34,354    31.1 tin/s  còn ~  0.9 phút
+  33,312/34,354    31.0 tin/s  còn ~  0.6 phút
+  33,952/34,354    31.0 tin/s  còn ~  0.2 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (564 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/cafebert-train-masked-len512-tok.f16.npy  (34,354, 512, 1024) float16 · mask cafebert-train-masked-len512-mask.npy
+[dev] cafebert · 3,812 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/3,812    31.1 tin/s  còn ~  2.0 phút
+     672/3,812    30.1 tin/s  còn ~  1.7 phút
+   1,312/3,812    30.1 tin/s  còn ~  1.4 phút
+   1,952/3,812    29.9 tin/s  còn ~  1.0 phút
+   2,592/3,812    29.8 tin/s  còn ~  0.7 phút
+   3,232/3,812    30.0 tin/s  còn ~  0.3 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (570 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/cafebert-dev-masked-len512-tok.f16.npy  (3,812, 512, 1024) float16 · mask cafebert-dev-masked-len512-mask.npy
+38G	artifacts/embeddings
+  thống kê chuẩn hoá: 5,120/34,354 dòng (14.9%,    16s)
+  thống kê chuẩn hoá: 10,240/34,354 dòng (29.8%,    29s)
+  thống kê chuẩn hoá: 15,360/34,354 dòng (44.7%,    42s)
+  thống kê chuẩn hoá: 20,480/34,354 dòng (59.6%,    55s)
+  thống kê chuẩn hoá: 25,600/34,354 dòng (74.5%,    68s)
+  thống kê chuẩn hoá: 30,720/34,354 dòng (89.4%,    81s)
+  epoch   1  loss 3.2835  val_macro_f1 0.2406  val_mae_trieu 4.3443  val_r2_log 0.4731
+  epoch   2  loss 1.9429  val_macro_f1 0.4128  val_mae_trieu 4.4455  val_r2_log 0.4570
+  epoch   3  loss 1.7155  val_macro_f1 0.5334  val_mae_trieu 4.1153  val_r2_log 0.5458
+  epoch   4  loss 1.5902  val_macro_f1 0.5477  val_mae_trieu 4.0212  val_r2_log 0.5735
+  epoch   5  loss 1.5136  val_macro_f1 0.5744  val_mae_trieu 4.0943  val_r2_log 0.5396
+  epoch   6  loss 1.4540  val_macro_f1 0.5724  val_mae_trieu 4.2088  val_r2_log 0.5150
+  epoch   7  loss 1.4102  val_macro_f1 0.5882  val_mae_trieu 4.0486  val_r2_log 0.5436
+  epoch   8  loss 1.3731  val_macro_f1 0.5789  val_mae_trieu 4.1496  val_r2_log 0.5173
+  epoch   9  loss 1.3433  val_macro_f1 0.5926  val_mae_trieu 4.0977  val_r2_log 0.5388
+  epoch  10  loss 1.3139  val_macro_f1 0.6002  val_mae_trieu 4.1783  val_r2_log 0.5136
+  epoch  11  loss 1.2861  val_macro_f1 0.6016  val_mae_trieu 4.0227  val_r2_log 0.5511
+  epoch  12  loss 1.2595  val_macro_f1 0.5935  val_mae_trieu 4.0397  val_r2_log 0.5569
+  epoch  13  loss 1.2370  val_macro_f1 0.6001  val_mae_trieu 4.0782  val_r2_log 0.5526
+  epoch  14  loss 1.2154  val_macro_f1 0.5849  val_mae_trieu 4.1009  val_r2_log 0.5149
+  epoch  15  loss 1.1857  val_macro_f1 0.5902  val_mae_trieu 4.2078  val_r2_log 0.4966
+  epoch  16  loss 1.1758  val_macro_f1 0.5927  val_mae_trieu 4.1330  val_r2_log 0.5223
+  epoch  17  loss 1.1588  val_macro_f1 0.5907  val_mae_trieu 4.0659  val_r2_log 0.5467
+  epoch  18  loss 1.1409  val_macro_f1 0.6063  val_mae_trieu 4.0868  val_r2_log 0.5302
+  epoch  19  loss 1.1200  val_macro_f1 0.5930  val_mae_trieu 4.0897  val_r2_log 0.5203
+  epoch  20  loss 1.1063  val_macro_f1 0.5890  val_mae_trieu 4.0505  val_r2_log 0.5250
+  epoch  21  loss 1.0917  val_macro_f1 0.6053  val_mae_trieu 4.0249  val_r2_log 0.5308
+  epoch  22  loss 1.0738  val_macro_f1 0.5987  val_mae_trieu 4.2814  val_r2_log 0.4530
+  epoch  23  loss 1.0588  val_macro_f1 0.5933  val_mae_trieu 4.1184  val_r2_log 0.5343
+  epoch  24  loss 1.0449  val_macro_f1 0.5977  val_mae_trieu 4.1150  val_r2_log 0.5006
+  epoch  25  loss 1.0356  val_macro_f1 0.5945  val_mae_trieu 4.1214  val_r2_log 0.5581
+  epoch  26  loss 1.0199  val_macro_f1 0.5950  val_mae_trieu 4.0536  val_r2_log 0.5422
+  dừng sớm ở epoch 26 (tốt nhất: cat 18, sal 4)
+
+[dl-mtl-cafe-rnn-a5-s42] MTL · best epoch cat 18 · sal 4 / 26 · macroF1=0.6063 · MAE=4.02tr · R2log=0.574

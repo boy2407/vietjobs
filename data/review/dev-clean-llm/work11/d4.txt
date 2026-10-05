@@ -1,0 +1,45 @@
+1093|TC|TC|kế toán viên
+926|TC|TC|kế toán tổng hợp
+3167|KD|KD|sale sữa
+1037|TC|TC|kế toán nội bộ
+3234|DL|DL,KD|tư vấn dịch vụ spa
+2363|SX|SX,LOG|quản lý đơn hàng may mặc
+1247|GD|GD|giáo viên toán
+364|MKT|MKT|booking KOL
+2235|TK|TK,MKT|thiết kế banner
+1666|XD|XD|kỹ sư hiện trường
+2977|KD|KD|sale xe nâng B2B
+3027|KD|KD,YT|quản lý trình dược viên
+1572|IT|IT|lập trình Java
+758|NS|NS|thực tập nhân sự
+986|TC|TC|kế toán
+1425|IT|IT|kiểm thử phần mềm
+200|MKT|MKT|marketing executive
+669|NS|NS|trưởng phòng nhân sự
+3566|LOG|LOG|lái xe
+2277|SX|SX|QC nguyên vật liệu
+2321|SX|SX|kỹ thuật máy gia công sau in
+2793|KD|KD|bán hàng thời trang
+3290|KD|KD|giám đốc kinh doanh
+633|NS|NS,TC|tiền lương phúc lợi
+546|MKT|MKT|content social
+134|DL|DL,KD|trưởng ca cửa hàng F&B
+1644|XD|XD,DIEN|thiết kế HVAC công trình
+2317|SX|SX|thiết kế cơ khí sản phẩm
+995|TC|TC,NS|quản lý hành chính kế toán, báo cáo thuế
+329|MKT|MKT,TK|ý tưởng và quảng cáo POD
+3361|KD|KD,LOG|trợ lý kinh doanh than đá
+1041|LOG|LOG,TC|kế toán kho xuất nhập
+1173|GD|GD|phát triển chương trình dạy
+3108|KD|KD|kinh doanh nội thất
+1413|LOG|LOG,KD|trợ lý thu mua ngành hàng
+2874|KD|KD|quản lý cửa hàng điện thoại
+3460|KD|KD,YT|kinh doanh thiết bị implant
+2975|KD|KD|nhân viên kinh doanh
+611|NS|NS|hành chính nhân sự
+770|NS|NS|tuyển dụng
+3677|NS|NS|pháp lý doanh nghiệp
+500|MKT|MKT|kịch bản video TikTok
+3228|GD|GD,KD|giám đốc trung tâm Anh ngữ
+2876|KD|KD|kinh doanh FMCG
+2403|SX|SX|kỹ thuật máy ép nhựa

@@ -1,0 +1,1677 @@
+[
+ {
+  "row": 140,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "phụ bếp nhà hàng"
+ },
+ {
+  "row": 3729,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "quản lý cửa hàng bán lẻ trang sức"
+ },
+ {
+  "row": 603,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm"
+  ],
+  "ly_do": "trưởng nhóm telesales vay tín dụng"
+ },
+ {
+  "row": 1965,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "lễ tân CSKH phòng khám"
+ },
+ {
+  "row": 3652,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "nông_nghiệp_năng_lượng_môi_trường"
+  ],
+  "ly_do": "thiết kế cảnh quan cây xanh công trình"
+ },
+ {
+  "row": 2727,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "cố vấn dịch vụ xưởng ô tô"
+ },
+ {
+  "row": 1415,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "thực tập sales xuất khẩu"
+ },
+ {
+  "row": 883,
+  "nhan_tot_nhat": "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+  "cac_nhan_hop_ly": [
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm"
+  ],
+  "ly_do": "kế toán tổng hợp"
+ },
+ {
+  "row": 2859,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "xây dựng, báo giá chương trình tour"
+ },
+ {
+  "row": 2781,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "tư vấn bán hàng showroom"
+ },
+ {
+  "row": 303,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí"
+  ],
+  "ly_do": "quay dựng video, content marketing"
+ },
+ {
+  "row": 1978,
+  "nhan_tot_nhat": "giáo_dục_đào_tạo_nghiên_cứu",
+  "cac_nhan_hop_ly": [
+   "giáo_dục_đào_tạo_nghiên_cứu",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "quản lý lớp học trung tâm"
+ },
+ {
+  "row": 2409,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales đi thị trường thiết bị máy"
+ },
+ {
+  "row": 48,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "bếp trưởng bếp bánh"
+ },
+ {
+  "row": 2213,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "kiến trúc sư thiết kế công trình"
+ },
+ {
+  "row": 2805,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales kênh Horeca"
+ },
+ {
+  "row": 3296,
+  "nhan_tot_nhat": "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+  "cac_nhan_hop_ly": [
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "chuyên viên KHDN ngân hàng"
+ },
+ {
+  "row": 3557,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "nông_nghiệp_năng_lượng_môi_trường"
+  ],
+  "ly_do": "nhân viên an toàn lao động"
+ },
+ {
+  "row": 2573,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "thợ điện công nghiệp"
+ },
+ {
+  "row": 3265,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "sales dịch vụ marketing"
+ },
+ {
+  "row": 2780,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "tìm và thuê mặt bằng kinh doanh"
+ },
+ {
+  "row": 3612,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "kỹ thuật viên bảo trì máy móc"
+ },
+ {
+  "row": 2998,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "kỹ sư bán hàng giải pháp tự động hoá"
+ },
+ {
+  "row": 2567,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "QC thực phẩm sản xuất"
+ },
+ {
+  "row": 3160,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "phát triển sản phẩm SaaS"
+ },
+ {
+  "row": 602,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "xây dựng mô hình chuỗi nhượng quyền"
+ },
+ {
+  "row": 3304,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "trưởng nhóm sale tour"
+ },
+ {
+  "row": 1842,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "hỗ trợ đối tác nhà hàng"
+ },
+ {
+  "row": 196,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "phụ bếp"
+ },
+ {
+  "row": 453,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "thiết kế đồ hoạ"
+ },
+ {
+  "row": 3563,
+  "nhan_tot_nhat": "giáo_dục_đào_tạo_nghiên_cứu",
+  "cac_nhan_hop_ly": [
+   "giáo_dục_đào_tạo_nghiên_cứu"
+  ],
+  "ly_do": "học vụ trung tâm tiếng Anh"
+ },
+ {
+  "row": 2848,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "cửa hàng trưởng siêu thị"
+ },
+ {
+  "row": 1338,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "mua hàng, quản lý đơn hàng"
+ },
+ {
+  "row": 144,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "nhân viên bếp"
+ },
+ {
+  "row": 3455,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "hồ sơ thầu thiết bị y tế"
+ },
+ {
+  "row": 2664,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "vận chuyển giao hàng"
+ },
+ {
+  "row": 39,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "phục vụ nhà hàng"
+ },
+ {
+  "row": 3504,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "bếp salad"
+ },
+ {
+  "row": 1984,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "vận hành livestream"
+ },
+ {
+  "row": 608,
+  "nhan_tot_nhat": "ngôn_ngữ_dịch_thuật",
+  "cac_nhan_hop_ly": [
+   "ngôn_ngữ_dịch_thuật",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "trợ lý kiêm phiên dịch tiếng Trung"
+ },
+ {
+  "row": 10,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "nông_nghiệp_năng_lượng_môi_trường",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "an toàn lao động nhà máy"
+ },
+ {
+  "row": 3719,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "dựng video"
+ },
+ {
+  "row": 1649,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "sales bất động sản"
+ },
+ {
+  "row": 52,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "kiểm soát chất lượng F&B"
+ },
+ {
+  "row": 2690,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales, CSKH thời trang"
+ },
+ {
+  "row": 1526,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "phần mềm nhúng điều khiển động cơ"
+ },
+ {
+  "row": 2109,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "kiến trúc sư triển khai"
+ },
+ {
+  "row": 210,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "thiết kế đồ hoạ game"
+ },
+ {
+  "row": 1257,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "digital marketing"
+ },
+ {
+  "row": 2867,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "nhân viên kho"
+ },
+ {
+  "row": 1618,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "phân tích nghiệp vụ hệ thống (BA)"
+ },
+ {
+  "row": 127,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "phụ bếp nóng"
+ },
+ {
+  "row": 1721,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "nông_nghiệp_năng_lượng_môi_trường"
+  ],
+  "ly_do": "HSE an toàn vệ sinh lao động nhà máy"
+ },
+ {
+  "row": 1187,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "trưởng phòng dịch vụ khách hàng"
+ },
+ {
+  "row": 2761,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "bán hàng kiêm thu ngân"
+ },
+ {
+  "row": 1808,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "điều hành tour"
+ },
+ {
+  "row": 1276,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "nhân viên kho"
+ },
+ {
+  "row": 2833,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "content truyền thông"
+ },
+ {
+  "row": 342,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "thiết kế hình ảnh, dựng video"
+ },
+ {
+  "row": 2570,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "kiểm soát chất lượng CSKH"
+ },
+ {
+  "row": 2806,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales ngành F&B"
+ },
+ {
+  "row": 2191,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "kiến trúc sư"
+ },
+ {
+  "row": 2939,
+  "nhan_tot_nhat": "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+  "cac_nhan_hop_ly": [
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "quan hệ KHDN ngân hàng"
+ },
+ {
+  "row": 193,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sale và xử lý hồ sơ visa"
+ },
+ {
+  "row": 547,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "phát triển đối tác publisher"
+ },
+ {
+  "row": 2246,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "thiết kế ấn phẩm marketing"
+ },
+ {
+  "row": 1167,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "nhân viên hồ bơi toà nhà"
+ },
+ {
+  "row": 1510,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "chuyển đổi số nội bộ"
+ },
+ {
+  "row": 2331,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "trưởng kỹ thuật thiết bị y tế"
+ },
+ {
+  "row": 3776,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "phát triển năng lực bán hàng"
+ },
+ {
+  "row": 2159,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "khoa học dữ liệu"
+ },
+ {
+  "row": 2156,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "kỹ sư kết cấu"
+ },
+ {
+  "row": 3749,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm"
+  ],
+  "ly_do": "xử lý nợ bằng pháp lý, tố tụng"
+ },
+ {
+  "row": 3067,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "quản lý cộng đồng, affiliate Web3"
+ },
+ {
+  "row": 2062,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí"
+  ],
+  "ly_do": "thiết kế rập may mặc"
+ },
+ {
+  "row": 2106,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "quản lý hợp đồng xây dựng"
+ },
+ {
+  "row": 3206,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "bán hàng online, livestream"
+ },
+ {
+  "row": 1514,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "kinh doanh giải pháp phần mềm"
+ },
+ {
+  "row": 3556,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "giám sát tuân thủ nội quy"
+ },
+ {
+  "row": 2616,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "nhóm_nghề_khác",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "phục hồi, sửa chữa đồ da hiệu"
+ },
+ {
+  "row": 2771,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "telesales dịch vụ thẩm mỹ"
+ },
+ {
+  "row": 2263,
+  "nhan_tot_nhat": "giáo_dục_đào_tạo_nghiên_cứu",
+  "cac_nhan_hop_ly": [
+   "giáo_dục_đào_tạo_nghiên_cứu"
+  ],
+  "ly_do": "phát triển học liệu tiếng Anh"
+ },
+ {
+  "row": 3808,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "dịch vụ khách hàng viễn thông"
+ },
+ {
+  "row": 3089,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "trưởng phòng xuất nhập khẩu"
+ },
+ {
+  "row": 2794,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "tư vấn bán thẻ tập gym"
+ },
+ {
+  "row": 83,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "quản lý nhà ăn"
+ },
+ {
+  "row": 1230,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "giáo_dục_đào_tạo_nghiên_cứu"
+  ],
+  "ly_do": "trưởng nhóm tư vấn tuyển sinh"
+ },
+ {
+  "row": 2596,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "trợ lý kinh doanh"
+ },
+ {
+  "row": 776,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "admin hỗ trợ kinh doanh bất động sản"
+ },
+ {
+  "row": 3633,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "giám sát cơ điện công trình"
+ },
+ {
+  "row": 2718,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales ngành làm đẹp qua điện thoại"
+ },
+ {
+  "row": 1845,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "quản trị kênh TikTok, nội dung"
+ },
+ {
+  "row": 2083,
+  "nhan_tot_nhat": "giáo_dục_đào_tạo_nghiên_cứu",
+  "cac_nhan_hop_ly": [
+   "giáo_dục_đào_tạo_nghiên_cứu",
+   "ngôn_ngữ_dịch_thuật"
+  ],
+  "ly_do": "chuyên viên học thuật tiếng Thái"
+ },
+ {
+  "row": 655,
+  "nhan_tot_nhat": "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+  "cac_nhan_hop_ly": [
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "chính sách rủi ro, chống gian lận"
+ },
+ {
+  "row": 2149,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "kinh doanh ngành cửa"
+ },
+ {
+  "row": 2729,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "nhân viên kinh doanh B2B"
+ },
+ {
+  "row": 1250,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "giáo_dục_đào_tạo_nghiên_cứu"
+  ],
+  "ly_do": "tư vấn tuyển sinh"
+ },
+ {
+  "row": 251,
+  "nhan_tot_nhat": "giáo_dục_đào_tạo_nghiên_cứu",
+  "cac_nhan_hop_ly": [
+   "giáo_dục_đào_tạo_nghiên_cứu"
+  ],
+  "ly_do": "phát triển chương trình học tiếng Anh"
+ },
+ {
+  "row": 2673,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "nông_nghiệp_năng_lượng_môi_trường"
+  ],
+  "ly_do": "sales đại lý phân bón"
+ },
+ {
+  "row": 1480,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "phần mềm nhúng Autosar"
+ },
+ {
+  "row": 338,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "marketing website, SEO, kênh online"
+ },
+ {
+  "row": 2964,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "trợ lý kinh doanh"
+ },
+ {
+  "row": 2178,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "thiết kế khuôn mẫu cơ khí"
+ },
+ {
+  "row": 16,
+  "nhan_tot_nhat": "nông_nghiệp_năng_lượng_môi_trường",
+  "cac_nhan_hop_ly": [
+   "nông_nghiệp_năng_lượng_môi_trường",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "sơ chế cà phê nông sản"
+ },
+ {
+  "row": 3539,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "nhân viên kho vận"
+ },
+ {
+  "row": 2261,
+  "nhan_tot_nhat": "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+  "cac_nhan_hop_ly": [
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm"
+  ],
+  "ly_do": "kế toán công trình"
+ },
+ {
+  "row": 1483,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "quản trị hệ thống, hỗ trợ IT"
+ },
+ {
+  "row": 1598,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "upsell khách hàng cũ"
+ },
+ {
+  "row": 1806,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "điều hành lô hàng xuất nhập khẩu"
+ },
+ {
+  "row": 2989,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "sale admin xử lý đơn hàng"
+ },
+ {
+  "row": 2519,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "thiết kế bản vẽ cơ khí"
+ },
+ {
+  "row": 2672,
+  "nhan_tot_nhat": "nhóm_nghề_khác",
+  "cac_nhan_hop_ly": [
+   "nhóm_nghề_khác",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "bảo vệ an ninh"
+ },
+ {
+  "row": 1349,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "kiểm tra giá cước lô hàng"
+ },
+ {
+  "row": 1200,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "giáo_dục_đào_tạo_nghiên_cứu"
+  ],
+  "ly_do": "tư vấn bán khoá học tiếng Anh"
+ },
+ {
+  "row": 3247,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "logistics_vận_tải_chuỗi_cung_ứng",
+   "ngôn_ngữ_dịch_thuật"
+  ],
+  "ly_do": "phát triển khách logistics tiếng Trung"
+ },
+ {
+  "row": 2717,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "giám sát bán hàng đại lý mỹ phẩm"
+ },
+ {
+  "row": 3081,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "trưởng phòng kinh doanh dược kênh ETC"
+ },
+ {
+  "row": 2375,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "kiểm soát xuất nhập than tại bãi"
+ },
+ {
+  "row": 3038,
+  "nhan_tot_nhat": "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học",
+  "cac_nhan_hop_ly": [
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "dược sĩ bán thuốc"
+ },
+ {
+  "row": 3131,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "sale dịch vụ lưu trú, hội thảo"
+ },
+ {
+  "row": 3331,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "trưởng phòng bán dự án bất động sản"
+ },
+ {
+  "row": 1691,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí"
+  ],
+  "ly_do": "thiết kế nội thất công trình"
+ },
+ {
+  "row": 3665,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "kỹ sư điện tự động hoá"
+ },
+ {
+  "row": 129,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "trưởng nhóm bán tour outbound"
+ },
+ {
+  "row": 3607,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "quản lý thi công công trình"
+ },
+ {
+  "row": 3273,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "quản lý kinh doanh TMĐT"
+ },
+ {
+  "row": 3484,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "thu ngân cửa hàng"
+ },
+ {
+  "row": 2698,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "tư vấn chốt đơn"
+ },
+ {
+  "row": 1313,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "trưởng nhóm kinh doanh"
+ },
+ {
+  "row": 85,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "thư ký hành chính bộ phận lưu trú"
+ },
+ {
+  "row": 447,
+  "nhan_tot_nhat": "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học",
+  "cac_nhan_hop_ly": [
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "nghiên cứu phát triển sản phẩm y sinh"
+ },
+ {
+  "row": 3555,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "bảo dưỡng sửa chữa xe tải"
+ },
+ {
+  "row": 664,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "video TikTok tuyển dụng"
+ },
+ {
+  "row": 2128,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+   "giáo_dục_đào_tạo_nghiên_cứu"
+  ],
+  "ly_do": "đào tạo và phát triển nhân sự"
+ },
+ {
+  "row": 3650,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "giám sát thi công cơ điện"
+ },
+ {
+  "row": 2290,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "thiết kế chế tạo xe chuyên dụng"
+ },
+ {
+  "row": 343,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "chỉnh ảnh, dựng video"
+ },
+ {
+  "row": 1996,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "quản lý vận hành toà nhà"
+ },
+ {
+  "row": 3394,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "mua hàng dự án thiết bị điện"
+ },
+ {
+  "row": 3501,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí"
+  ],
+  "ly_do": "cắt rập thời trang"
+ },
+ {
+  "row": 2681,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "kỹ thuật viên phần cứng máy tính"
+ },
+ {
+  "row": 777,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "hành chính phòng vận tải"
+ },
+ {
+  "row": 2797,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng",
+   "nhóm_nghề_khác"
+  ],
+  "ly_do": "lái xe văn phòng"
+ },
+ {
+  "row": 448,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí"
+  ],
+  "ly_do": "quản trị kênh YouTube"
+ },
+ {
+  "row": 3589,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "giám sát cơ điện, PCCC công trình"
+ },
+ {
+  "row": 224,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "quay dựng video"
+ },
+ {
+  "row": 3158,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "quản lý phòng game"
+ },
+ {
+  "row": 2019,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "booking KOL, KOC"
+ },
+ {
+  "row": 2609,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales online"
+ },
+ {
+  "row": 2582,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "hành chính văn phòng"
+ },
+ {
+  "row": 409,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí"
+  ],
+  "ly_do": "social marketing, nội dung fanpage"
+ },
+ {
+  "row": 1839,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "điều phối, tiếp đón bệnh nhân phòng khám"
+ },
+ {
+  "row": 3640,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "trưởng ca kỹ thuật điện toà nhà"
+ },
+ {
+  "row": 1732,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "tuân thủ trách nhiệm xã hội, hành chính nhà máy"
+ },
+ {
+  "row": 3232,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "tìm nhà cung cấp, mua hàng, điều vận đơn"
+ },
+ {
+  "row": 3538,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "thu ngân bán lẻ"
+ },
+ {
+  "row": 2845,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales thức ăn thú cưng"
+ },
+ {
+  "row": 3461,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "telesales dược phẩm"
+ },
+ {
+  "row": 787,
+  "nhan_tot_nhat": "tài_chính_kế_toán_ngân_hàng_bảo_hiểm",
+  "cac_nhan_hop_ly": [
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm"
+  ],
+  "ly_do": "trợ lý tài chính, kế toán thu chi"
+ },
+ {
+  "row": 458,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "quay video nội dung"
+ },
+ {
+  "row": 2323,
+  "nhan_tot_nhat": "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học",
+  "cac_nhan_hop_ly": [
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "quản lý kiểm nghiệm chất lượng dược"
+ },
+ {
+  "row": 2556,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "QA/QC sản xuất"
+ },
+ {
+  "row": 2262,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng",
+   "xây_dựng_kiến_trúc_bất_động_sản"
+  ],
+  "ly_do": "thu mua vật tư nội thất"
+ },
+ {
+  "row": 1896,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "seller TikTok Shop"
+ },
+ {
+  "row": 574,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "trưởng phòng kinh doanh NPP"
+ },
+ {
+  "row": 3662,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "trưởng nhóm sửa chữa bảo trì máy"
+ },
+ {
+  "row": 2590,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "tư vấn bán ô tô"
+ },
+ {
+  "row": 3244,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "bán hàng tại quầy"
+ },
+ {
+  "row": 616,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+   "ngôn_ngữ_dịch_thuật"
+  ],
+  "ly_do": "lễ tân văn phòng tiếng Anh"
+ },
+ {
+  "row": 1394,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "sales dịch vụ logistics"
+ },
+ {
+  "row": 3367,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales thị trường đồ uống"
+ },
+ {
+  "row": 797,
+  "nhan_tot_nhat": "nhân_sự_hành_chính_pháp_chế_tư_vấn",
+  "cac_nhan_hop_ly": [
+   "nhân_sự_hành_chính_pháp_chế_tư_vấn"
+  ],
+  "ly_do": "thực tập tuyển dụng"
+ },
+ {
+  "row": 2863,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "bán hàng online, offline"
+ },
+ {
+  "row": 817,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng",
+   "nhóm_nghề_khác"
+  ],
+  "ly_do": "lái xe lãnh đạo"
+ },
+ {
+  "row": 1647,
+  "nhan_tot_nhat": "xây_dựng_kiến_trúc_bất_động_sản",
+  "cac_nhan_hop_ly": [
+   "xây_dựng_kiến_trúc_bất_động_sản",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "dự toán MEP xây dựng"
+ },
+ {
+  "row": 3606,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "phát triển đại lý dịch vụ xe"
+ },
+ {
+  "row": 3658,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "sửa chữa đồ điện gia dụng"
+ },
+ {
+  "row": 2675,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học"
+  ],
+  "ly_do": "sales thực phẩm chức năng"
+ },
+ {
+  "row": 535,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "thực tập marketing đa kênh"
+ },
+ {
+  "row": 1479,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "kỹ thuật lắp đặt camera, mạng, thiết bị"
+ },
+ {
+  "row": 163,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ"
+  ],
+  "ly_do": "dịch vụ visa, passport du lịch"
+ },
+ {
+  "row": 1807,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "vận hành gian hàng TikTok"
+ },
+ {
+  "row": 1251,
+  "nhan_tot_nhat": "giáo_dục_đào_tạo_nghiên_cứu",
+  "cac_nhan_hop_ly": [
+   "giáo_dục_đào_tạo_nghiên_cứu",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "chăm sóc học viên, quản lý lớp"
+ },
+ {
+  "row": 2313,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "bảo trì điện công nghiệp"
+ },
+ {
+  "row": 2326,
+  "nhan_tot_nhat": "sản_xuất_lao_động_phổ_thông_cơ_khí",
+  "cac_nhan_hop_ly": [
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "trưởng bộ phận QA sản xuất"
+ },
+ {
+  "row": 2155,
+  "nhan_tot_nhat": "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+  "cac_nhan_hop_ly": [
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí",
+   "marketing_truyền_thông_quảng_cáo_nội_dung"
+  ],
+  "ly_do": "quay dựng video marketing"
+ },
+ {
+  "row": 3191,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+   "kỹ_thuật_điện_điện_tử_viễn_thông"
+  ],
+  "ly_do": "kỹ sư bán hàng tự động hoá"
+ },
+ {
+  "row": 3789,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số",
+   "tài_chính_kế_toán_ngân_hàng_bảo_hiểm"
+  ],
+  "ly_do": "phân tích dữ liệu sản phẩm"
+ },
+ {
+  "row": 1728,
+  "nhan_tot_nhat": "công_nghệ_thông_tin_kỹ_thuật_số",
+  "cac_nhan_hop_ly": [
+   "công_nghệ_thông_tin_kỹ_thuật_số"
+  ],
+  "ly_do": "kỹ sư phần mềm"
+ },
+ {
+  "row": 2723,
+  "nhan_tot_nhat": "logistics_vận_tải_chuỗi_cung_ứng",
+  "cac_nhan_hop_ly": [
+   "logistics_vận_tải_chuỗi_cung_ứng"
+  ],
+  "ly_do": "giao hàng xe máy"
+ },
+ {
+  "row": 228,
+  "nhan_tot_nhat": "marketing_truyền_thông_quảng_cáo_nội_dung",
+  "cac_nhan_hop_ly": [
+   "marketing_truyền_thông_quảng_cáo_nội_dung",
+   "thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí"
+  ],
+  "ly_do": "content, quay dựng video"
+ },
+ {
+  "row": 3104,
+  "nhan_tot_nhat": "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng",
+  "cac_nhan_hop_ly": [
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "bán hàng thời trang"
+ },
+ {
+  "row": 2649,
+  "nhan_tot_nhat": "kỹ_thuật_điện_điện_tử_viễn_thông",
+  "cac_nhan_hop_ly": [
+   "kỹ_thuật_điện_điện_tử_viễn_thông",
+   "sản_xuất_lao_động_phổ_thông_cơ_khí"
+  ],
+  "ly_do": "bảo trì điện lạnh"
+ },
+ {
+  "row": 2880,
+  "nhan_tot_nhat": "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+  "cac_nhan_hop_ly": [
+   "du_lịch_nhà_hàng_khách_sạn_dịch_vụ",
+   "kinh_doanh_bán_hàng_chăm_sóc_khách_hàng"
+  ],
+  "ly_do": "sales, làm giá chương trình tour"
+ }
+]

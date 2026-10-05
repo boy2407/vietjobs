@@ -95,3 +95,87 @@ Việc chọn mô hình sử dụng `dev` (các dòng trước 2026-09-09 ghi `v
 | dl-sal-cafe-dense-512-s46 | 09-28 15:35 | salary | cafebert-frozen+dense(h=256) | title+desc+req | nosegment | dev | 2698 | MAE=4.15tr · RMSE=8.23tr · R2log=0.504 · R2raw=0.351 · ±20%=52.6% | 5.3s | 723039a8+dirty |
 | dl-sal-cafe-dense-512-x512-s46 | 09-28 15:35 | salary | cafebert-frozen+dense(h=256,pre=512) | title+desc+req | nosegment | dev | 2698 | MAE=4.15tr · RMSE=8.20tr · R2log=0.513 · R2raw=0.356 · ±20%=51.1% | 7.6s | 723039a8+dirty |
 | dl-sal-cpu-s46 | 09-28 15:35 | salary | phobert-frozen+dense(h=256) | title+desc+req | segment | dev | 2698 | MAE=4.14tr · RMSE=8.21tr · R2log=0.506 · R2raw=0.355 · ±20%=52.4% | 6.3s | 723039a8+dirty |
+| dl-cat-rnn-ce-s42 | 09-30 08:27 | category | phobert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | segment+token-level+cuda | dev | 3812 | macroF1=0.6038 · F1=0.6465 · microF1=0.6553 · acc=0.6553 | 987.4s | uncommit |
+| dl-cat-rnn-ce-s43 | 09-30 08:56 | category | phobert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | segment+token-level+cuda | dev | 3812 | macroF1=0.6176 · F1=0.6594 · microF1=0.6666 · acc=0.6666 | 1050.2s | uncommit |
+| dl-cat-rnn-ce-s44 | 09-30 09:29 | category | phobert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | segment+token-level+cuda | dev | 3812 | macroF1=0.6078 · F1=0.6525 · microF1=0.6598 · acc=0.6598 | 937.0s | uncommit |
+| dl-sal-rnn-s42 | 09-30 08:36 | salary | phobert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | segment+token-level+cuda | dev | 2698 | MAE=3.96tr · RMSE=8.03tr · R2log=0.564 · R2raw=0.382 · ±20%=54.2% | 540.0s | uncommit |
+| dl-sal-rnn-s43 | 09-30 09:12 | salary | phobert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | segment+token-level+cuda | dev | 2698 | MAE=3.87tr · RMSE=8.07tr · R2log=0.585 · R2raw=0.376 · ±20%=56.9% | 935.0s | uncommit |
+| dl-sal-rnn-s44 | 09-30 09:38 | salary | phobert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | segment+token-level+cuda | dev | 2698 | MAE=3.99tr · RMSE=8.10tr · R2log=0.561 · R2raw=0.372 · ±20%=53.9% | 557.3s | uncommit |
+| dl-cat-cafe-rnn-ce-s42 | 09-30 11:56 | category | cafebert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | nosegment+token-level+cuda | dev | 3812 | macroF1=0.6172 · F1=0.6607 · microF1=0.6679 · acc=0.6679 | 1636.5s | uncommit |
+| dl-cat-cafe-rnn-ce-s43 | 09-30 13:04 | category | cafebert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | nosegment+token-level+cuda | dev | 3812 | macroF1=0.6223 · F1=0.6606 · microF1=0.6666 · acc=0.6666 | 2440.7s | uncommit |
+| dl-cat-cafe-rnn-ce-s44 | 09-30 14:01 | category | cafebert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | nosegment+token-level+cuda | dev | 3812 | macroF1=0.6060 · F1=0.6395 · microF1=0.6451 · acc=0.6451 | 2413.3s | uncommit |
+| dl-sal-cafe-rnn-s42 | 09-30 12:17 | salary | cafebert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | nosegment+token-level+cuda | dev | 2698 | MAE=3.89tr · RMSE=7.91tr · R2log=0.594 · R2raw=0.401 · ±20%=55.1% | 1174.6s | uncommit |
+| dl-sal-cafe-rnn-s43 | 09-30 13:20 | salary | cafebert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | nosegment+token-level+cuda | dev | 2698 | MAE=3.84tr · RMSE=7.77tr · R2log=0.596 · R2raw=0.422 · ±20%=54.7% | 899.1s | uncommit |
+| dl-sal-cafe-rnn-s44 | 09-30 14:21 | salary | cafebert-frozen+bigru-lstm-cnn(h=100,c=50,both) | title+desc+req | nosegment+token-level+cuda | dev | 2698 | MAE=3.84tr · RMSE=7.77tr · R2log=0.597 · R2raw=0.421 · ±20%=55.9% | 1111.0s | uncommit |
+| dl-mtl-h256-a1.0-1001-0746 | 10-01 00:47 | mtl | phobert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6038 · MAE=4.21tr · R2log=0.508 | 28.7s |
+| dl-mtl-cafe512-s42 | 10-01 13:16 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6065 · MAE=4.45tr · R2log=0.470 | 18.1s |
+| dl-mtl-cafe512-a1-s42 | 10-02 03:39 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6065 · MAE=4.22tr · R2log=0.497 | 18.5s |
+| dl-mtl-cafe512-a5-s42 | 10-02 03:39 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6175 · MAE=4.16tr · R2log=0.523 | 24.4s |
+| dl-mtl-cafe512-a10-s42 | 10-02 03:40 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6020 · MAE=4.15tr · R2log=0.527 | 12.7s |
+| dl-mtl-cafe512-a20-s42 | 10-02 03:40 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.5954 · MAE=4.13tr · R2log=0.530 | 13.8s |
+| dl-mtl-cafe512-a1-e80-s42 | 10-02 03:41 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6065 · MAE=4.22tr · R2log=0.497 | 16.8s |
+| dl-mtl-cafe512-a1-e80-s43 | 10-02 03:42 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6117 · MAE=4.19tr · R2log=0.506 | 16.6s |
+| dl-mtl-cafe512-a1-e80-s44 | 10-02 03:42 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.5985 · MAE=4.18tr · R2log=0.512 | 11.9s |
+| dl-mtl-cafe512-a5-e80-s42 | 10-02 03:43 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6175 · MAE=4.16tr · R2log=0.523 | 23.9s |
+| dl-mtl-cafe512-a5-e80-s43 | 10-02 03:43 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6126 · MAE=4.12tr · R2log=0.528 | 23.1s |
+| dl-mtl-cafe512-a5-e80-s44 | 10-02 03:43 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6009 · MAE=4.16tr · R2log=0.523 | 12.5s |
+| dl-mtl-cafe-rnn-a5-s42 | 10-02 14:49 | mtl | cafebert-frozen+rnn-mtl(h=100,c=50,both,a=5) | title+desc+req | mask+nosegment+token-level+cuda | dev | 3812 | macroF1=0.6063 · MAE=4.02tr · R2log=0.574 | 3709.2s |
+| dl-mtl-cafe512-a30-e80-s42 | 10-03 07:58 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.5909 · MAE=4.14tr · R2log=0.529 | 14.7s |
+| dl-mtl-cafe512-a50-e80-s42 | 10-03 07:58 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.5853 · MAE=4.16tr · R2log=0.526 | 13.3s |
+| dl-mtl-cafe512-a100-e80-s42 | 10-03 07:58 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.5862 · MAE=4.13tr · R2log=0.532 | 26.0s |
+| dl-mtl-cafe512-a1.5-e80-s42 | 10-03 08:01 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6059 · MAE=4.20tr · R2log=0.508 | 10.2s |
+| dl-mtl-cafe512-a2-e80-s42 | 10-03 08:02 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6136 · MAE=4.18tr · R2log=0.516 | 17.3s |
+| dl-mtl-cafe512-a3-e80-s42 | 10-03 08:02 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6116 · MAE=4.16tr · R2log=0.521 | 18.8s |
+| dl-mtl-cafe512-a4.0-e80-s42 | 10-03 08:05 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6032 · MAE=4.15tr · R2log=0.523 | 11.4s |
+| dl-mtl-cafe512-a4.1-e80-s42 | 10-03 08:05 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6034 · MAE=4.15tr · R2log=0.523 | 13.0s |
+| dl-mtl-cafe512-a4.2-e80-s42 | 10-03 08:06 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6034 · MAE=4.15tr · R2log=0.523 | 11.8s |
+| dl-mtl-cafe512-a4.3-e80-s42 | 10-03 08:06 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6026 · MAE=4.15tr · R2log=0.523 | 12.3s |
+| dl-mtl-cafe512-a4.4-e80-s42 | 10-03 08:06 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6021 · MAE=4.16tr · R2log=0.523 | 11.0s |
+| dl-mtl-cafe512-a4.5-e80-s42 | 10-03 08:07 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6019 · MAE=4.16tr · R2log=0.523 | 11.7s |
+| dl-mtl-cafe512-a4.6-e80-s42 | 10-03 08:07 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6010 · MAE=4.16tr · R2log=0.523 | 12.5s |
+| dl-mtl-cafe512-a4.7-e80-s42 | 10-03 08:07 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6003 · MAE=4.16tr · R2log=0.523 | 13.6s |
+| dl-mtl-cafe512-a4.8-e80-s42 | 10-03 08:08 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6005 · MAE=4.16tr · R2log=0.523 | 12.5s |
+| dl-mtl-cafe512-a4.9-e80-s42 | 10-03 08:08 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6009 · MAE=4.16tr · R2log=0.523 | 12.2s |
+| dl-mtl-cafe512-a5.1-e80-s42 | 10-03 08:08 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6024 · MAE=4.16tr · R2log=0.523 | 11.6s |
+| dl-mtl-cafe512-a5.2-e80-s42 | 10-03 08:09 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6024 · MAE=4.16tr · R2log=0.523 | 14.0s |
+| dl-mtl-cafe512-a5.3-e80-s42 | 10-03 08:09 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6028 · MAE=4.16tr · R2log=0.523 | 14.1s |
+| dl-mtl-cafe512-a5.4-e80-s42 | 10-03 08:09 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6026 · MAE=4.16tr · R2log=0.523 | 12.6s |
+| dl-mtl-cafe512-a5.5-e80-s42 | 10-03 08:10 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6026 · MAE=4.17tr · R2log=0.523 | 12.3s |
+| dl-mtl-cafe512-a5.6-e80-s42 | 10-03 08:10 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6027 · MAE=4.17tr · R2log=0.523 | 12.3s |
+| dl-mtl-cafe512-a5.7-e80-s42 | 10-03 08:10 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6031 · MAE=4.17tr · R2log=0.523 | 12.5s |
+| dl-mtl-cafe512-a5.8-e80-s42 | 10-03 08:11 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6028 · MAE=4.17tr · R2log=0.523 | 11.2s |
+| dl-mtl-cafe512-a5.9-e80-s42 | 10-03 08:11 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6018 · MAE=4.17tr · R2log=0.523 | 11.9s |
+| dl-mtl-cafe512-a6.0-e80-s42 | 10-03 08:11 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6010 · MAE=4.17tr · R2log=0.523 | 11.8s |
+| dl-mtl-cafe512-a4.0-e80-p20-s42 | 10-03 08:19 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6162 · MAE=4.15tr · R2log=0.523 | 29.1s |
+| dl-mtl-cafe512-a4.1-e80-p20-s42 | 10-03 08:19 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6156 · MAE=4.15tr · R2log=0.523 | 29.3s |
+| dl-mtl-cafe512-a4.2-e80-p20-s42 | 10-03 08:20 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6157 · MAE=4.15tr · R2log=0.523 | 25.4s |
+| dl-mtl-cafe512-a4.3-e80-p20-s42 | 10-03 08:20 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6156 · MAE=4.15tr · R2log=0.523 | 25.1s |
+| dl-mtl-cafe512-a4.4-e80-p20-s42 | 10-03 08:21 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6162 · MAE=4.16tr · R2log=0.523 | 25.1s |
+| dl-mtl-cafe512-a4.5-e80-p20-s42 | 10-03 08:22 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6139 · MAE=4.16tr · R2log=0.523 | 25.1s |
+| dl-mtl-cafe512-a4.6-e80-p20-s42 | 10-03 08:22 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6148 · MAE=4.16tr · R2log=0.523 | 25.5s |
+| dl-mtl-cafe512-a4.7-e80-p20-s42 | 10-03 08:23 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6135 · MAE=4.16tr · R2log=0.523 | 25.4s |
+| dl-mtl-cafe512-a4.8-e80-p20-s42 | 10-03 08:23 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6138 · MAE=4.16tr · R2log=0.523 | 25.5s |
+| dl-mtl-cafe512-a4.9-e80-p20-s42 | 10-03 08:24 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6160 · MAE=4.16tr · R2log=0.523 | 25.7s |
+| dl-mtl-cafe512-a5.0-e80-p20-s42 | 10-03 08:24 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6175 · MAE=4.16tr · R2log=0.523 | 25.7s |
+| dl-mtl-cafe512-a5.1-e80-p20-s42 | 10-03 08:25 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6179 · MAE=4.16tr · R2log=0.523 | 25.1s |
+| dl-mtl-cafe512-a5.2-e80-p20-s42 | 10-03 08:25 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6180 · MAE=4.16tr · R2log=0.523 | 25.2s |
+| dl-mtl-cafe512-a5.3-e80-p20-s42 | 10-03 08:26 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6174 · MAE=4.16tr · R2log=0.523 | 25.0s |
+| dl-mtl-cafe512-a5.4-e80-p20-s42 | 10-03 08:26 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6173 · MAE=4.16tr · R2log=0.523 | 31.0s |
+| dl-mtl-cafe512-a5.5-e80-p20-s42 | 10-03 08:27 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6179 · MAE=4.17tr · R2log=0.523 | 30.2s |
+| dl-mtl-cafe512-a5.6-e80-p20-s42 | 10-03 08:28 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6179 · MAE=4.17tr · R2log=0.523 | 30.0s |
+| dl-mtl-cafe512-a5.7-e80-p20-s42 | 10-03 08:28 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6187 · MAE=4.17tr · R2log=0.523 | 29.2s |
+| dl-mtl-cafe512-a5.8-e80-p20-s42 | 10-03 08:29 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6177 · MAE=4.17tr · R2log=0.523 | 31.2s |
+| dl-mtl-cafe512-a5.9-e80-p20-s42 | 10-03 08:29 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6179 · MAE=4.17tr · R2log=0.523 | 33.1s |
+| dl-mtl-cafe512-a6.0-e80-p20-s42 | 10-03 08:30 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6173 · MAE=4.17tr · R2log=0.523 | 30.5s |
+| dl-mtl-cafe512-a0-s42 | 10-05 13:40 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6113 · MAE=14.93tr · R2log=-26.806 | 15.2s |
+| dl-mtl-cafe512-a0-s43 | 10-05 13:41 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6093 · MAE=14.98tr · R2log=-30.837 | 12.6s |
+| dl-mtl-cafe512-a0-s44 | 10-05 13:41 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6027 · MAE=14.98tr · R2log=-35.981 | 8.6s |
+| dl-cat-cafe-dense-512-p20-s42 | 10-05 13:51 | category | cafebert-frozen+dense(h=256) | title+desc+req | nosegment | dev | 3812 | macroF1=0.6077 · F1=0.6426 · microF1=0.6495 · acc=0.6495 | 18.4s | 82631d77+dirty |
+| dl-mtl-cafe512-a0-p20-s42 | 10-05 13:52 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6135 · MAE=14.93tr · R2log=-26.806 | 29.8s |
+| dl-mtl-cafe512-a5-p20-s42 | 10-05 13:52 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6175 · MAE=4.16tr · R2log=0.523 | 30.6s |
+| dl-cat-cafe-dense-512-p20-s43 | 10-05 13:53 | category | cafebert-frozen+dense(h=256) | title+desc+req | nosegment | dev | 3812 | macroF1=0.6069 · F1=0.6449 · microF1=0.6519 · acc=0.6519 | 16.2s | 82631d77+dirty |
+| dl-mtl-cafe512-a0-p20-s43 | 10-05 13:53 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6102 · MAE=14.98tr · R2log=-30.837 | 26.2s |
+| dl-mtl-cafe512-a5-p20-s43 | 10-05 13:54 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6126 · MAE=4.12tr · R2log=0.528 | 31.5s |
+| dl-cat-cafe-dense-512-p20-s44 | 10-05 13:54 | category | cafebert-frozen+dense(h=256) | title+desc+req | nosegment | dev | 3812 | macroF1=0.6034 · F1=0.6439 · microF1=0.6527 · acc=0.6527 | 12.9s | 82631d77+dirty |
+| dl-mtl-cafe512-a0-p20-s44 | 10-05 13:55 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6027 · MAE=14.98tr · R2log=-35.981 | 15.4s |
+| dl-mtl-cafe512-a5-p20-s44 | 10-05 13:55 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6034 · MAE=4.16tr · R2log=0.523 | 22.3s |

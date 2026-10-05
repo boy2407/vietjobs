@@ -1,0 +1,12 @@
+import json
+M={'IT':'công_nghệ_thông_tin_kỹ_thuật_số','DL':'du_lịch_nhà_hàng_khách_sạn_dịch_vụ','GD':'giáo_dục_đào_tạo_nghiên_cứu','KD':'kinh_doanh_bán_hàng_chăm_sóc_khách_hàng','DT':'kỹ_thuật_điện_điện_tử_viễn_thông','LG':'logistics_vận_tải_chuỗi_cung_ứng','MK':'marketing_truyền_thông_quảng_cáo_nội_dung','NN':'ngôn_ngữ_dịch_thuật','NS':'nhân_sự_hành_chính_pháp_chế_tư_vấn','KH':'nhóm_nghề_khác','NL':'nông_nghiệp_năng_lượng_môi_trường','SX':'sản_xuất_lao_động_phổ_thông_cơ_khí','TK':'thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí','TC':'tài_chính_kế_toán_ngân_hàng_bảo_hiểm','XD':'xây_dựng_kiến_trúc_bất_động_sản','YT':'y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học'}
+d=json.load(open('../batch9.json'))
+L={}
+for line in open('lab.txt',encoding='utf-8'):
+    line=line.strip()
+    if not line: continue
+    i,c,r=line.split('|',2); L[int(i)]=([M[x] for x in c.split(',')],r)
+assert sorted(L)==list(range(len(d))),(len(L),len(d))
+out=[{'row':x['row'],'nhan_tot_nhat':L[i][0][0],'cac_nhan_hop_ly':L[i][0],'ly_do':L[i][1]} for i,x in enumerate(d)]
+json.dump(out,open('../out9.json','w',encoding='utf-8'),ensure_ascii=False,indent=1)
+print(len(out))

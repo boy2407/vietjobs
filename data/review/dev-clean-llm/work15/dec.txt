@@ -1,0 +1,245 @@
+2900|KD|KD|tư vấn bán giải pháp in ấn
+703|NS|NS|trưởng bộ phận nhân sự
+1803|DL|DL,KD|quản lý vận hành chuỗi F&B
+1608|IT|IT|lập trình web fullstack
+1171|GD|GD,NN|thực tập sinh học thuật, trợ giảng
+2763|KD|KD|sales online trang sức
+2754|KD|KD,TC|giám sát thu ngân cửa hàng
+1323|LG|LG|pricing cước vận chuyển
+2929|KD|KD|kinh doanh dự án thiết bị
+3567|LG|LG|quản lý đội xe vận chuyển
+2624|KH|KH|giám sát an ninh
+2325|SX|SX,DT|kỹ thuật lắp đặt máy cơ khí
+3586|DT|DT,NL|kỹ sư điện dự án C&I
+1019|TC|TC|kế toán
+350|MK|MK|booking KOL/KOC
+3017|KD|KD|nhân viên kinh doanh
+1340|LG|LG,NN|phó phòng xuất nhập khẩu
+494|MK|MK|content marketing
+1906|KD|KD|chăm sóc khách hàng
+2133|TK|TK,MK|graphic designer
+708|NS|NS|hành chính tổng vụ
+2135|XD|XD,TK|kiến trúc sư cảnh quan
+2089|XD|XD,TK|triển khai bản vẽ nội thất
+2792|KD|KD,DL|cửa hàng trưởng bánh mì
+3169|KD|KD,IT|kinh doanh giải pháp CNTT
+3360|KD|KD|tư vấn bán hàng online
+3063|KD|KD,NN|kinh doanh cần tiếng Trung
+387|MK|MK,TK|content creator video
+2948|KD|KD,LG|tư vấn bán dịch vụ fulfillment
+2715|KD|KD|bán hàng trang sức
+465|MK|MK,KD|account executive agency marketing
+799|NS|NS,MK|thương hiệu tuyển dụng
+1989|GD|GD|quản lý lớp học
+1970|KD|KD|chăm sóc khách hàng
+2890|KD|KD,NL|bán hàng điện mặt trời
+1825|KD|KD|tiếp đón khách hàng dịch vụ xe
+925|TC|TC|kế toán trưởng
+2711|KD|KD|sales B2B socola
+1110|NN|NN|biên phiên dịch tiếng Trung
+1045|TC|TC,LG|kế toán kho
+3142|KD|KD|trưởng nhóm kinh doanh
+1343|LG|LG,KD|nhân viên mua hàng
+236|MK|MK|trưởng phòng branding
+3755|TC|TC|chính sách quản trị tài chính
+1709|XD|XD,SX|giám sát an toàn lao động dự án
+967|TC|TC|kế toán tổng hợp
+2488|SX|SX|kỹ sư dây chuyền sơn
+1969|KD|KD|telesale chăm sóc khách hàng mỹ phẩm
+3135|KD|KD,GD|telesale tuyển sinh
+895|TC|TC|kế toán viên
+1248|GD|GD|giáo viên tiểu học
+1798|KD|KD,LG|dịch vụ khách hàng, điều phối đơn hàng
+3263|KD|KD,XD|giám đốc sàn bất động sản
+425|MK|MK|content marketing
+1684|XD|XD|kỹ sư xây dựng giám sát thi công
+1081|TC|TC|kế toán trưởng
+760|NS|NS|trợ lý giám đốc
+2097|TK|TK,SX|thiết kế thời trang
+1|NL|NL|quan trắc môi trường
+1007|TC|TC|kế toán thuế
+521|MK|MK|digital marketing dự án BĐS
+417|MK|MK|content SEO
+2444|SX|SX|kỹ sư hoá công nghệ sản xuất
+1317|LG|LG|pricing cước tàu/bay
+1685|XD|XD,NL|kỹ sư giám sát thi công lắp đặt
+2643|KD|KD|kinh doanh thị trường kombucha
+870|TC|TC|kế toán tổng hợp
+62|DL|DL|điều hành tour inbound
+747|NS|NS|admin tuyển dụng, hành chính
+1986|KD|KD,MK|vận hành sàn TMĐT
+672|NS|NS|chuyên viên tuyển dụng
+872|TC|TC|kế toán tổng hợp
+1015|TC|TC|kế toán nội bộ
+1339|LG|LG,KD,NN|tìm nguồn hàng Trung Quốc
+2658|DL|DL|quản lý nhà hàng
+1681|XD|XD|kỹ sư cầu đường
+273|MK|MK|social media
+304|TK|TK|designer POD
+2216|IT|IT|kỹ sư phần mềm
+2972|KD|KD|nhân viên kinh doanh đại lý
+677|NS|NS|HRBP
+1967|KD|KD|chăm sóc khách hàng qua Zalo
+3274|KD|KD|cửa hàng trưởng thời trang
+554|MK|MK|content marketing
+3310|KD|KD|bán hàng tại cửa hàng
+2247|TK|TK,MK|thiết kế đồ hoạ
+1145|GD|GD|giáo viên tiếng Anh
+2512|SX|SX|tiêu chuẩn kỹ thuật ngành may
+1443|IT|IT|triển khai hỗ trợ phần mềm
+3416|YT|YT|dược sĩ cấp phát thuốc
+26|NL|NL|vận hành xử lý nước thải
+195|DL|DL|điều hành tour
+1135|KD|KD,GD|tư vấn du học
+1827|KD|KD|tổng đài CSKH nhà mạng
+332|MK|MK|marketing social, tài trợ
+3245|KD|KD|bán hàng thời trang
+2295|SX|SX|trưởng nhóm sản xuất
+3352|KD|KD,NN|trợ lý kinh doanh tiếng Trung
+3573|IT|IT,DT|kỹ sư mạng bảo mật
+356|MK|MK|Google Ads
+552|MK|MK|chạy quảng cáo
+460|MK|MK|trưởng phòng marketing
+795|NS|NS,GD|tuyển dụng giáo viên
+505|MK|MK,KD|trưởng nhóm livestream bán hàng
+1357|LG|LG|vận hành kho
+1351|LG|LG|điều phối vận chuyển
+1420|IT|IT|lập trình front-end
+59|DL|DL|lễ tân thu ngân salon
+2404|KD|KD|kinh doanh máy công nghiệp
+3018|KD|KD|nhân viên kinh doanh
+3549|NS|NS,NN|admin văn phòng tiếng Trung
+2892|TC|TC,KD|quản lý khách hàng ngân hàng
+3178|KD|KD|giám sát bán hàng B2B
+3294|KD|KD|nhân viên kinh doanh
+117|KD|KD,DL|sales booking khu nghỉ
+2482|SX|SX|giám sát sản xuất cơ khí
+1240|GD|GD|trưởng nhóm tiếng Anh mầm non
+948|TC|TC|kế toán thuế
+3722|TC|TC,KD|bán sản phẩm cho vay ngân hàng
+1006|TC|TC|kế toán trưởng
+1254|KD|KD,GD|tư vấn bán khoá học
+3201|KD|KD,MK|quản lý kênh TMĐT
+871|TC|TC|kế toán tổng hợp
+2031|KD|KD,MK|quản lý vận hành marketing-TMĐT
+2493|LG|LG|kế hoạch vật tư
+2429|SX|SX|QC sản xuất thực phẩm
+2472|SX|SX,DT|QA đối ứng khách hàng nhà máy
+935|TC|TC|kế toán tổng hợp
+878|TC|TC|kế toán thuế
+502|MK|MK|brand marketing
+630|NS|NS|trợ lý giám đốc
+3259|KD|KD,MK|vận hành shop TikTok
+1392|LG|LG,DL|thu mua cho nhà hàng
+938|TC|TC|kế toán
+762|NS|NS|thực tập tuyển dụng
+2333|SX|SX,LG|kỹ sư RMA hàng trả về
+2337|IT|IT,DT|phần mềm AI kiểm tra sản xuất
+1589|IT|IT|lập trình iOS
+2069|TK|TK,SX|thiết kế rập thời trang
+3417|YT|YT|vật lý trị liệu
+2414|LG|LG,SX|quản lý kho khuôn
+3308|KD|KD,XD|kinh doanh bất động sản
+1555|IT|IT|lập trình fullstack
+2417|SX|SX|kiểm hàng xưởng may
+836|TC|TC|kế toán tổng hợp
+1028|TC|TC|kế toán thanh toán
+802|NS|NS|trưởng nhóm tuyển dụng
+73|DL|DL,KD|trưởng ca cửa hàng trà sữa
+2834|DL|DL,GD,KH|hướng dẫn workshop thủ công
+2914|KD|KD|nhân viên kinh doanh
+710|NS|NS|trưởng phòng HCNS
+510|KD|KD,MK|tư vấn bán dịch vụ truyền thông
+201|MK|MK|digital marketing ads
+166|DL|DL|điều hành tour
+1348|LG|LG|trưởng nhóm logistics
+218|MK|MK|content marketing
+3002|KD|KD|phó phòng kinh doanh
+936|TC|TC|kế toán tổng hợp
+177|KD|KD,DL|bán tour du lịch
+956|TC|TC|kế toán tổng hợp
+464|MK|MK|content writer
+3591|DT|DT,SX,YT|hiệu chuẩn thiết bị tiện ích nhà máy dược
+198|KD|KD,DL|kinh doanh tour outbound
+516|MK|MK|content marketing
+55|DL|DL|phục vụ quán cà phê
+1909|KD|KD|chăm sóc khách hàng
+2360|DT|DT,SX|kỹ thuật thiết bị đo lường
+2908|KD|KD|giám sát bán hàng FMCG
+651|NS|NS|tuyển dụng
+1919|KD|KD|CSKH chốt đơn dịch vụ
+1406|LG|LG|chứng từ booking hãng tàu
+3614|DT|DT|kỹ thuật viên viễn thông
+691|XD|XD,DT,NS|bảo trì cơ sở vật chất
+466|MK|MK,KD|thực tập account agency marketing
+2398|LG|LG|thủ kho
+1460|IT|IT|kiểm thử phần mềm
+3708|TK|TK,MK|quay dựng video
+3445|YT|YT|bác sĩ thận nhân tạo
+191|KD|KD,TC|thu ngân cửa hàng
+2292|YT|YT,SX|trưởng phòng QA nhà máy dược
+491|MK|MK,KD|trưởng nhóm livestream TikTok
+1570|IT|IT|quản trị mạng bảo mật
+3261|KD|KD|tư vấn chốt đơn đồng phục
+2322|SX|SX,LG|kế hoạch sản xuất
+2645|KD|KD|bán hàng trực tiếp đại lý
+3078|KD|KD|quản lý ngành hàng tươi sống siêu thị
+41|DL|DL|phục vụ nhà hàng
+1039|TC|TC|kế toán trưởng
+1487|IT|IT,TC|phân tích hệ thống dữ liệu ngân hàng
+1539|IT|IT|IT help desk
+539|MK|MK|truyền thông kênh social
+1590|IT|IT|quản lý dự án phần mềm
+2454|SX|SX,NN|trợ lý sản xuất tiếng Trung
+2334|SX|SX,LG|kế hoạch sản xuất
+981|TC|TC|kế toán tổng hợp
+637|NS|NS|C&B lương thưởng
+416|MK|MK,TK|content video ngắn
+1603|IT|IT|lập trình game Unity
+1245|GD|GD,NN|giáo viên tiếng Đức
+445|MK|MK|content marketing SEO
+319|KD|KD,MK|bán dịch vụ agency marketing
+23|NL|NL,XD,DT|giám sát dự án điện mặt trời
+3635|KD|KD,DT|kỹ sư bán thiết bị điện
+3437|YT|YT|bác sĩ y học cổ truyền
+295|MK|MK,KD|livestream review sản phẩm
+2941|KD|KD,DT|kỹ sư bán hàng thiết bị bơm
+733|NS|NS|hành chính nhân sự tuyển dụng
+2357|SX|SX,DT|bảo trì máy
+3656|DT|DT,XD|kỹ sư BMS tự động hoá toà nhà
+934|TC|TC|kế toán tổng hợp
+1365|LG|LG|xuất nhập khẩu
+3428|YT|YT|điều dưỡng
+19|NL|NL|xử lý nước thải
+1144|KD|KD,DL|kinh doanh tư vấn du lịch
+2425|SX|SX|vận hành máy
+3091|KD|KD|sales B2B
+2390|SX|SX,DT|kỹ thuật cơ điện máy CNC
+3301|KD|KD|nhân viên sale dịch vụ
+2076|TK|TK,MK|2D artist quảng cáo game
+1114|NN|NN|phiên dịch tiếng Trung
+2484|SX|SX,DT|bảo dưỡng máy nhà máy
+515|MK|MK|digital marketing
+389|MK|MK|trưởng phòng marketing
+960|TC|TC|kế toán thuế
+3443|YT|YT|kỹ thuật viên gây mê
+1700|XD|XD|kỹ sư kết cấu
+1955|KD|KD|CSKH sàn TMĐT
+2974|KD|KD|kinh doanh kênh GT
+2380|SX|SX|thợ máy sửa chữa thiết bị
+3421|YT|YT|bác sĩ nha khoa
+3403|KD|KD,LG|điều phối đơn hàng, khảo sát thị trường dược
+2377|SX|SX|quản lý chuyền may
+1994|KD|KD,MK|vận hành sàn TMĐT
+2384|SX|SX|hoá nghiệm QC
+1117|NN|NN,LG|phiên dịch tiếng Trung, theo dõi đơn hàng
+3251|KD|KD|trưởng bộ phận kinh doanh
+910|TC|TC|kế toán
+2483|SX|SX|thực tập cơ khí
+2176|TK|TK|thiết kế thời trang
+1501|IT|IT|kỹ thuật bảo trì máy tính mạng
+826|TC|TC|kế toán nội bộ
+179|KD|KD|thu ngân cửa hàng bán lẻ
+865|TC|TC|kế toán thuế
+759|NS|NS,GD|chuyên viên đào tạo nội bộ
+623|NS|NS|hành chính nhân sự

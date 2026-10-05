@@ -1,0 +1,40 @@
+1304|LOG|LOG|mua hàng, quản lý nhà cung cấp
+1822|KD|KD|trưởng bộ phận CSKH
+644|NS|NS|tuyển dụng nhân sự
+2916|KD|KD,DL|tư vấn bán gói nghỉ dưỡng
+1918|KD|KD,MKT|vận hành sàn TMĐT, doanh số
+1851|KD|KD|telesale CSKH đặt lịch
+993|TC|TC|kế toán tổng hợp
+3117|KD|KD|trưởng nhóm kinh doanh khoá học
+580|MKT|MKT|trưởng nhóm marketing
+1228|KD|KD,GD|tuyển sinh tư vấn khoá học
+3617|DIEN|DIEN|lập trình PLC tự động hoá
+774|LOG|LOG|lái xe
+662|NS|NS|hành chính nhân sự
+588|MKT|MKT|quản lý thương hiệu
+3712|TK|TK,MKT|biên kịch, sản xuất video sự kiện
+2935|KD|KD|quản lý đội sale
+2829|KD|KD,DL|thực tập kinh doanh tour
+3006|KD|KD|kinh doanh B2B
+1112|NN|NN,NS|trợ lý kiêm phiên dịch tiếng Trung
+3034|KD|KD,MKT|vận hành gian hàng TMĐT
+349|MKT|MKT,TK|livestream, content TikTok
+576|MKT|MKT|chạy quảng cáo TikTok
+2678|KD|KD|bán hàng siêu thị
+496|MKT|MKT|trợ lý brand marketing
+3587|DIEN|DIEN,XD|bảo trì điện nước toà nhà
+2588|LOG|LOG,YT|thủ kho dược
+2063|TK|TK|chỉnh sửa webtoon Photoshop
+3763|TC|TC|tư vấn đầu tư chứng khoán
+158|DL|DL|trưởng lễ tân khách sạn
+3777|TC|TC|giải pháp thanh toán ngân hàng
+3666|XD|XD,DIEN|giám sát thi công MEP
+3509|DL|DL|quản lý suất ăn căn-tin
+1817|KD|KD,NN|CSKH tiếng Trung
+3028|KD|KD|telesale
+1042|TC|TC|kế toán trưởng
+1626|IT|IT|lập trình fullstack
+1757|XD|XD|chỉ huy thi công nội thất
+569|MKT|MKT|chạy quảng cáo digital
+3717|TK|TK,MKT|quay dựng video
+985|TC|TC|kế toán nội bộ

@@ -1,0 +1,24 @@
+  thống kê chuẩn hoá: 5,120/24,622 dòng (20.8%,    11s)
+  thống kê chuẩn hoá: 10,240/24,622 dòng (41.6%,    23s)
+  thống kê chuẩn hoá: 15,360/24,622 dòng (62.4%,    34s)
+  thống kê chuẩn hoá: 20,480/24,622 dòng (83.2%,    45s)
+  epoch   1  loss 0.2217  val_mae_trieu 4.3223  val_r2_log 0.4754
+  epoch   2  loss 0.0762  val_mae_trieu 4.0882  val_r2_log 0.5400
+  epoch   3  loss 0.0682  val_mae_trieu 3.9785  val_r2_log 0.5620
+  epoch   4  loss 0.0632  val_mae_trieu 3.8479  val_r2_log 0.5953
+  epoch   5  loss 0.0585  val_mae_trieu 3.9160  val_r2_log 0.5885
+  epoch   6  loss 0.0545  val_mae_trieu 3.8708  val_r2_log 0.5869
+  epoch   7  loss 0.0517  val_mae_trieu 3.8884  val_r2_log 0.5797
+  epoch   8  loss 0.0481  val_mae_trieu 3.8375  val_r2_log 0.5969
+  epoch   9  loss 0.0450  val_mae_trieu 3.8978  val_r2_log 0.5877
+  epoch  10  loss 0.0438  val_mae_trieu 3.9272  val_r2_log 0.5828
+  epoch  11  loss 0.0403  val_mae_trieu 3.9389  val_r2_log 0.5902
+  epoch  12  loss 0.0385  val_mae_trieu 3.9943  val_r2_log 0.5650
+  epoch  13  loss 0.0374  val_mae_trieu 4.0126  val_r2_log 0.5600
+  epoch  14  loss 0.0357  val_mae_trieu 3.9677  val_r2_log 0.5642
+  epoch  15  loss 0.0342  val_mae_trieu 4.0275  val_r2_log 0.5529
+  epoch  16  loss 0.0328  val_mae_trieu 3.9520  val_r2_log 0.5786
+  dừng sớm ở epoch 16 (tốt nhất: 8)
+
+[dl-sal-cafe-rnn-s44] salary · best epoch 8/16 · MAE=3.84tr · RMSE=7.77tr · R2log=0.597 · R2raw=0.421 · ±20%=55.9%
+  -> artifacts/dl-sal-cafe-rnn-s44/

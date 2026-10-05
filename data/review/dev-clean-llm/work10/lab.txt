@@ -1,0 +1,246 @@
+2478|SX||kiểm soát chất lượng sản xuất
+54|DL||giám sát vận hành nhà hàng
+136|KD|DL|quản lý cửa hàng bán lẻ thực phẩm
+3379|KD||bán hàng B2B
+279|TK|MK|dẫn livestream biểu diễn
+2586|SX|GD|R&D công thức sản phẩm nước giải khát
+583|MK||trade marketing
+3558|KD||tư vấn bán phụ kiện ô tô
+2979|KD|TC|quản lý nhóm bán sản phẩm tài chính
+578|MK||chạy quảng cáo Facebook
+2516|SX||quản lý chuyền sản xuất
+1290|LG||điều phối nhập khẩu, hải quan
+254|MK|TK|sản xuất nội dung social
+605|KD|DL|tư vấn dịch vụ visa
+217|MK||quản lý phòng marketing
+1410|LG|KD|chứng từ xuất khẩu
+270|MK||quảng cáo từ khoá
+123|DL|LG|ký hợp đồng nhà cung cấp dịch vụ du lịch
+480|MK||viết nội dung fanpage
+2994|KD||kinh doanh dự án điều hoà
+1056|TC||kế toán doanh thu
+1025|TC||học việc kế toán
+1578|IT||lập trình backend
+1903|MK|KD|vận hành sàn TMĐT, quảng cáo
+2605|KD||bán hàng đại lý gia dụng
+1311|LG||mua hàng quốc tế
+2583|SX||QC dây chuyền
+255|MK||SEO website
+477|MK||thực tập marketing
+2978|KD||quản lý bán lẻ
+951|TC||kế toán thuế
+3422|YT||bác sĩ chỉnh nha
+241|KD|YT|tư vấn đặt lịch, CSKH nha khoa
+3015|KD|XD|phát triển mạng lưới đối tác bán hàng BĐS
+2209|KD||quản lý nhóm kinh doanh vật liệu
+3312|KD||tư vấn bán hàng tại cửa hàng
+2345|LG||quản lý nhập xuất kho
+977|TC||kế toán tổng hợp
+2466|SX|LG|kế hoạch đơn hàng sản xuất may
+626|NS||hồ sơ nhân sự, hợp đồng lao động
+3221|KD||quản lý team telesale
+1523|IT||lập trình Android
+1267|LG||chứng từ xuất nhập khẩu
+407|MK||quản lý marketing, nội dung social
+1346|LG||lập kế hoạch vận chuyển hàng xuất
+1004|TC||kế toán công nợ
+3276|KD||tư vấn, ký hợp đồng khách hàng
+2500|SX||lập kế hoạch sản xuất
+1147|GD||quản lý trung tâm giáo dục
+316|MK||thực tập content marketing
+835|TC||kế toán tổng hợp
+2172|TK|MK|quay dựng video, chụp ảnh
+125|DL||quản lý F&B khách sạn
+896|TC||kế toán tổng hợp
+3696|TK|MK|quản lý sản xuất video
+1508|KD||bán hàng phân phối
+1987|KD||CSKH trên sàn TMĐT
+3116|KD||kinh doanh B2B OEM
+924|TC||kế toán tổng hợp
+2520|SX||kỹ sư cơ khí xử lý new model
+2448|SX|DT,NL|bảo trì máy móc, vận hành xử lý nước thải
+3631|DT||sửa chữa thiết bị viễn thông
+1312|LG||mua hàng, nhà cung cấp
+735|NS||thực tập hành chính nhân sự
+798|NS||thực tập tuyển dụng
+441|TK||thiết kế đồ hoạ
+2021|KD||chăm sóc khách hàng
+1524|IT||lập trình full-stack
+2273|SX||quản lý QC nhà máy
+294|MK||quảng cáo Google
+2456|SX||kỹ sư quy trình lắp ráp ô tô
+922|TC||kế toán tổng hợp
+1956|NS||kiểm soát nội bộ, ISO
+2638|KD||bán hàng tại quầy
+620|NS||lễ tân hành chính văn phòng
+462|MK||digital marketing
+2204|KD|XD|sale hợp đồng thiết kế nội thất
+1812|GD|KD,NS|đào tạo kỹ năng bán hàng
+1550|IT||DevOps
+1516|IT||lãnh đạo kỹ thuật ReactJS
+3519|LG||thủ kho
+87|DL||giám sát chuỗi nhà hàng
+942|TC||kế toán tổng hợp
+563|MK|YT,KD|marketing sản phẩm y tế
+1471|IT||DevOps
+357|MK|TK|content, edit video
+2206|XD||quản lý thiết kế hạ tầng
+1011|TC||kế toán nội bộ
+1924|KD||CSKH chữ ký số
+1452|IT||thực tập lập trình
+697|NS||pháp chế, soạn hợp đồng
+393|TK|MK|thiết kế hình ảnh marketing
+2007|KD|MK|vận hành sàn TMĐT
+1008|TC||kế toán toà nhà
+258|MK||digital marketing Google Ads
+3188|KD||giám đốc kinh doanh B2B
+887|TC||kế toán tổng hợp
+1621|IT||lập trình game Unity
+1432|IT||lập trình full-stack
+2378|SX||kiểm tra chất lượng sản phẩm
+731|NS||hành chính nhân sự
+885|TC||kế toán
+1055|TC||kế toán tổng hợp
+420|MK||booking KOL/KOC
+424|MK|KD|lập kế hoạch chiến dịch thương mại xã hội
+3659|DT||kỹ thuật viên viễn thông
+680|NS|NN|đối ngoại, quản lý hợp tác
+1916|LG|SX,KD|điều hành chuỗi cung ứng, sản xuất thời trang
+1457|IT||phân tích dữ liệu
+3059|KD||điều hành kinh doanh đại lý ô tô
+1459|IT||lập trình full-stack
+1995|KD|DL|CSKH app du lịch
+3533|YT|DL|chăm sóc da spa
+3170|KD||trưởng phòng kinh doanh
+2050|TK|MK|quay dựng video
+3594|DT|TK|bảo trì thiết bị kỹ thuật rạp phim
+311|TK||thực tập thiết kế
+334|MK||performance marketing
+726|NS||thực tập tuyển dụng
+705|NS||tuyển dụng quốc tế
+3524|KD||tư vấn bán điện thoại tại cửa hàng
+997|TC||kế toán tổng hợp khách sạn
+1057|TC||phó phòng kế toán
+1234|KD|GD|telesale khoá học
+3378|KD||kinh doanh thiết bị MEP
+1564|IT||lập trình full-stack
+3176|KD||bán dịch vụ workshop
+171|KD|DL|bán tour du lịch
+2301|SX|LG,NL|vận hành bơm, bồn chứa, nhập xuất hàng
+2427|SX||giám sát lắp đặt thiết bị nhà máy
+711|NS||hành chính nhân sự
+65|DL|KD|chăm sóc khách lưu trú khách sạn
+1342|LG||khai thác hàng hoá tại kho
+2164|IT||kỹ sư phần mềm
+1576|IT||lập trình iOS
+3486|KH||bảo vệ
+1674|XD||dự toán đấu thầu xây dựng
+1326|LG|XD|thu mua vật tư dự án
+318|MK||sản xuất nội dung social
+351|MK||content SEO
+857|TC||kế toán tổng hợp
+1527|KD|KH|xác minh dữ liệu qua điện thoại
+1314|LG||khai báo hải quan
+839|TC||kế toán nội bộ
+1210|GD|NN|dạy tiếng Trung phồn thể
+388|MK|IT|nội dung sản phẩm app
+1449|IT||lập trình frontend
+2555|SX||bảo dưỡng máy móc
+1535|TK|IT|thiết kế game
+1249|GD|NS|quản lý học vụ lớp học
+832|TC||kế toán tổng hợp
+3200|KD|IT|tư vấn bán phần mềm
+658|NS||tuyển dụng
+1044|TC|KD|theo dõi công nợ, thanh toán khách hàng
+812|TC|NS|hợp đồng, thanh toán
+1359|LG||quản lý mua hàng, cung ứng
+2611|DT|SX|lắp đặt sửa máy lọc nước
+3321|KD|SX|kỹ sư bán hàng sản phẩm cơ khí
+3099|KD|XD|quản lý kinh doanh bất động sản
+2634|KD||bán hàng cửa hàng
+1653|KD|XD|kinh doanh dịch vụ xây dựng
+1309|LG||op hiện trường hải quan
+2330|SX||kiểm soát chất lượng sản xuất
+1370|LG||chứng từ xuất nhập khẩu
+3372|KD||trợ lý kinh doanh
+3510|DL||phụ bếp
+1531|DT||thiết kế phần cứng truyền thông
+1384|LG||điều phối bưu cục giao nhận
+1759|XD||mô hình BIM MEP
+3447|YT||điều dưỡng
+1027|TC||kế toán tổng hợp
+1203|GD||quản lý vận hành trường học
+1352|LG||thủ tục xuất nhập khẩu
+772|KD|LG|xử lý đơn hàng, theo dõi giao hàng
+1395|LG||mua hàng
+3364|KD||sales admin
+2544|KD||kiểm soát chất lượng cuộc gọi telesale
+1792|KD|IT|customer success B2B
+53|DL||buồng phòng
+834|TC||kế toán nội bộ
+3480|DL||phụ bếp chế biến món
+1238|GD|NN|dạy tiếng Trung
+2381|SX||quản lý chất lượng cơ khí
+3571|XD|SX|quản lý dự án lắp đặt thang máy
+2824|KD||kinh doanh mỹ phẩm
+2245|TK|MK|thiết kế đồ hoạ
+2194|TK|MK|thiết kế hình ảnh truyền thông
+913|TC||kế toán trưởng
+2896|KD|MK|vận hành kênh bán hàng online
+3400|KD|MK|quản lý bán hàng TMĐT
+989|TC||kế toán trưởng
+622|NS||thực tập tuyển dụng
+442|MK||quản lý digital marketing
+3647|LG||quản lý dự án logistics
+1188|GD||hiệu trưởng mầm non
+959|TC||quản lý dịch vụ kiểm toán
+1079|TC||kế toán giá thành
+365|MK|TK|livestream, video quảng bá du lịch
+1764|XD||kỹ sư kinh tế xây dựng
+2593|SX|LG|quản lý đơn hàng sản xuất
+309|MK||quản lý marketing
+367|MK||marketing nội dung, hình ảnh
+1794|KD|NN|CSKH tiếng Nhật
+3530|KD|TC|thu ngân cửa hàng
+859|TC||kế toán khách sạn
+923|TC||kế toán tổng hợp
+28|NL||kỹ sư trồng cây ăn trái
+3663|NL|XD,DT|quản lý dự án điện mặt trời
+359|MK||SEO content
+2336|SX||kiểm tra chất lượng sản phẩm
+1820|KD|YT|vận hành chuỗi clinic làm đẹp
+3611|DT||kỹ sư viễn thông
+1889|DL||vận hành tiệc catering
+3362|KD||bán hàng đại lý cây hoa
+2196|TK|MK|quay dựng video
+2362|KD||báo giá, theo dõi đơn hàng khách
+856|TC||kế toán trưởng
+536|MK||chiến dịch truyền thông, sự kiện
+1616|IT||lập trình frontend Angular
+2549|SX||kiểm tra chất lượng đầu ra
+182|KD|DL|thực tập kinh doanh sản phẩm du lịch
+1953|KD|DL|tư vấn sản phẩm nghỉ dưỡng
+1972|KD||giám sát chất lượng tổng đài CSKH
+3295|KD||bán hàng thị trường
+143|KD|DL|điều phối ca cửa hàng bán lẻ/F&B
+1696|XD||kỹ sư cầu đường
+1545|IT||lập trình Java backend
+1295|LG||chứng từ xuất nhập khẩu
+2419|SX||học việc sửa chữa ô tô
+1747|XD||kế hoạch dự án xây dựng
+2422|KD||tư vấn bán ô tô
+1823|TC|KD|quản lý phòng giao dịch tài chính
+522|MK||trưởng phòng marketing
+2952|KD|XD|telesale dự án bất động sản
+843|TC||kế toán tổng hợp
+3279|KD|MK|quản lý team bán hàng online
+3118|KD|IT|quản lý dự án kinh doanh sản phẩm số
+1450|IT||lập trình Salesforce
+3203|KD||trưởng bộ phận kinh doanh
+734|KD|NS|admin phòng kinh doanh, thanh toán hợp đồng
+492|MK||viết content bán hàng
+2234|TK|SX|chế bản bình file in
+1455|IT||kiểm thử phần mềm
+1755|XD||chỉ huy thi công nội thất
+947|TC||kế toán tổng hợp
+1988|KD|MK|vận hành bán hàng sàn TMĐT

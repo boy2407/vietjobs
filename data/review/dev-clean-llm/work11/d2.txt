@@ -1,0 +1,45 @@
+3675|NS|NS|pháp chế tố tụng
+1329|LOG|LOG,KD|lập kế hoạch dự báo nhu cầu cung ứng
+3373|KD|KD|giám đốc kinh doanh khu vực
+2432|SX|SX,YT|QA-QC thực phẩm
+449|MKT|MKT,TK|content creator kiêm VJ
+2309|SX|SX|kiểm tra chất lượng sản phẩm
+2379|LOG|LOG|thủ kho nguyên phụ liệu
+474|MKT|MKT|quảng cáo UA game mobile
+3737|KD|KD|thực tập kinh doanh ngân hàng
+2043|SX|SX,TK,XD|bản vẽ kỹ thuật đèn trang trí
+2459|SX|SX,KD|kỹ thuật ô tô máy công trình
+919|TC|TC|kế toán tổng hợp
+3522|LOG|LOG,SX|phụ kho đóng gói
+78|DL|DL|sản phẩm tour nội địa
+586|MKT|MKT|viết content
+1579|IT|IT|kiểm thử tự động
+1738|XD|XD|thiết kế kết cấu
+1708|XD|XD|kỹ sư hiện trường xây dựng
+1073|TC|TC|kế toán công nợ
+709|NS|NS|thực tập tuyển dụng
+741|NS|NS,KD|trợ lý giám đốc
+155|DL|DL,KD|sale OTA khách sạn
+673|NS|NS|tuyển dụng
+8|NONG|NONG,YT|quan trắc môi trường lao động
+1407|KD|KD,LOG|sales dịch vụ logistics
+395|MKT|MKT|content creator
+15|NONG|NONG|tư vấn hồ sơ môi trường
+978|TC|TC|kế toán tổng hợp
+3146|KD|KD|kinh doanh đồng phục B2B
+1880|KD|KD|CSKH đại lý ô tô
+1785|KD|KD|tư vấn CSKH online
+754|KD|KD,XD|sales admin bất động sản
+1930|KD|KD|CSKH phụ huynh
+992|TC|TC|kế toán thuế
+3165|KD|KD|tư vấn bán hàng
+3398|TC|TC,KD|kế toán cửa hàng
+1735|TC|TC,XD|kiểm toán quyết toán dự án
+3451|YT|YT,KD|dược sĩ bán thuốc
+1615|IT|IT|hạ tầng ERP, mạng
+1962|KD|KD,IT|CSKH game master
+3024|KD|KD,DL|quản lý cơ sở thẩm mỹ, doanh thu
+3441|YT|YT|kỹ thuật viên X quang
+2585|SX|SX|kế hoạch sản xuất
+2928|KD|KD|telesale sữa
+1594|IT|IT|lập trình web PHP

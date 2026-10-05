@@ -1,0 +1,245 @@
+0|TC||kế toán tổng hợp, thuế
+1|NS|TC|xử lý nợ bằng tố tụng, pháp lý
+2|KD|MK|vận hành kinh doanh sàn TMĐT
+3|KD||nhân viên kinh doanh sản phẩm công nghiệp
+4|TC||kế toán thuế
+5|KD||hỗ trợ, chăm sóc seller
+6|TC||kế toán
+7|SX||thợ mộc sản xuất nội thất
+8|KD||sales online tư vấn bán hàng
+9|TK|MK|quay chụp, thiết kế ấn phẩm
+10|MK|NS|trợ lý dự án truyền thông
+11|KD||kinh doanh vải bọc
+12|NS||thực tập nhân sự C&B
+13|KD|DT|bán hàng kỹ thuật thiết bị điện tử
+14|KD|LG|sales admin theo dõi đơn hàng
+15|KD||bán hàng thời trang
+16|NS||chuyên viên C&B
+17|TC|KD|thu hồi công nợ
+18|KD|DL|sale tour du lịch
+19|YT||kỹ thuật viên gây mê
+20|KD||sale thị trường điện máy
+21|DT||sửa chữa điện thoại
+22|TK|MK|quay dựng video
+23|KD|NN|kinh doanh B2B tiếng Trung
+24|DL||phục vụ nhà hàng
+25|TC||kế toán thuế
+26|KD|YT|trình dược viên bán thuốc
+27|KD|MK|vận hành sàn Tiktok
+28|KD||thực tập tư vấn bán hàng
+29|KD||nhân viên kinh doanh
+30|XD|TK|trưởng nhóm thiết kế nội thất
+31|LG|KD|thu mua vật tư
+32|TC||kế toán công nợ
+33|NS||chuyên viên C&B
+34|KD||sales executive găng tay
+35|KD||kinh doanh xe đạp
+36|NS||văn thư lưu trữ
+37|TK|MK|thiết kế bảng giá, trưng bày
+38|NN|NS|trợ lý phiên dịch tiếng Trung
+39|SX|XD|kỹ thuật cơ khí, giám sát xưởng
+40|NS|MK,TK|văn hóa doanh nghiệp, truyền thông nội bộ
+41|MK||content digital marketing
+42|SX||kiểm soát chất lượng sản xuất
+43|MK||trưởng phòng marketing
+44|KD||trưởng phòng kinh doanh B2B
+45|TC||kế toán viên
+46|GD||giáo viên tiếng Anh
+47|KD||quản lý cửa hàng
+48|XD||kỹ sư xây dựng
+49|XD||kiến trúc sư
+50|NS||nhân viên nhân sự
+51|IT||DevOps
+52|KD||cửa hàng trưởng
+53|KD||trưởng nhóm kinh doanh
+54|KD|NS|chuyên viên đấu thầu
+55|MK||chuyên viên marketing
+56|GD|KH|giáo viên chăm trẻ tại gia
+57|TC|NS|hành chính kế toán, thuế
+58|KD||đại diện bán hàng kênh đại lý
+59|IT||kiểm thử phần mềm
+60|GD||giáo viên tiếng Trung
+61|MK|KD|trade marketing đi thị trường
+62|LG||xuất nhập khẩu
+63|XD|NL,DT|giám sát thi công điện mặt trời áp mái
+64|KD||sales sản phẩm cơ khí
+65|KD||trưởng phòng kinh doanh
+66|GD||giáo viên tiếng Nhật
+67|LG|TC|mua hàng, chọn nhà cung cấp
+68|TC||kế toán thanh toán, tỷ giá
+69|TC||trưởng phòng kế toán
+70|NS||tuyển dụng đào tạo
+71|LG||nhân viên kho
+72|SX|DL|QA/QC an toàn thực phẩm nhà hàng
+73|DT|NL|kỹ sư điện công nghiệp
+74|TC||chuyên viên kế toán
+75|NL||chăm sóc cây xanh cảnh quan
+76|IT|DT|kỹ sư mạng, bảo mật
+77|XD|SX|bản vẽ shop drawing
+78|MK|IT|phân tích dữ liệu SEO
+79|TK||thiết kế bao bì
+80|TK|MK|dựng video
+81|KD||tư vấn bán khóa học
+82|MK||chạy quảng cáo digital
+83|TC||kế toán thanh toán
+84|TC||kế toán công nợ
+85|NS||trưởng nhóm tuyển dụng
+86|TC||trưởng phòng kế toán
+87|NS||hành chính nhân sự
+88|LG||trợ lý kho
+89|XD||QA/QC thi công xây dựng
+90|KD|NS|sale admin hỗ trợ kinh doanh
+91|MK||trợ lý quản lý thương hiệu
+92|TC||kế toán tổng hợp
+93|DL||phục vụ nhà hàng
+94|MK||viết nội dung marketing
+95|NL|YT|nghiên cứu dinh dưỡng thức ăn chăn nuôi
+96|TC||kế toán tổng hợp thuế
+97|KD||tư vấn, chăm sóc học viên khóa học
+98|XD||kỹ sư trắc địa xây dựng
+99|LG||hỗ trợ xuất nhập khẩu, kho
+100|TC||kế toán tổng hợp
+101|TC|IT|mô hình đo lường rủi ro tín dụng ngân hàng
+102|MK||chạy quảng cáo Facebook
+103|TC||kế toán nội bộ
+104|LG||xuất nhập khẩu
+105|SX||giác sơ đồ ngành may
+106|IT||kiến trúc giải pháp CNTT
+107|KD|NL|bán phân bón B2B
+108|KD||nhân viên kinh doanh
+109|TC||trưởng phòng tài chính
+110|KD||sale thị trường
+111|TK|MK|thiết kế đồ họa, dựng video
+112|NS||trưởng nhóm HCNS
+113|LG|KD|tìm nguồn cung, theo dõi hàng
+114|SX|DT|sửa chữa bảo trì xe nâng
+115|TC|KD|kế toán bán hàng, công nợ
+116|XD|TC|kinh tế xây dựng dự toán
+117|TK||thiết kế print on demand
+118|GD|DL|giảng viên đào tạo pha chế
+119|KD|DL|kinh doanh vé máy bay
+120|DL|NN|điều hành tour
+121|XD||QC công trình xây dựng
+122|MK|KD|nội dung affiliate
+123|MK||booking KOL/KOC
+124|LG||hoạch định cung ứng, tồn kho
+125|KD||tư vấn bán hàng online
+126|KD||kinh doanh tư vấn bán hàng PCCC
+127|MK||SEO và quảng cáo số
+128|TK|SX|thiết kế thời trang
+129|KD||bán hàng quốc tế
+130|KD||kinh doanh thị trường
+131|DT|XD|kỹ thuật cơ điện lập hồ sơ thầu
+132|TK||chỉnh sửa ảnh
+133|KD||bán hàng thời trang
+134|TC|NS|trợ lý tài chính kế toán
+135|KD|TC|tư vấn cho vay trả góp
+136|DL||giám sát nhà hàng
+137|TC|KD|môi giới chứng khoán
+138|KD|DL|phụ trách khách hàng dịch vụ du lịch doanh nghiệp
+139|IT|KD|presale giải pháp mạng
+140|LG||điều xe container
+141|MK|TK|trưởng nhóm social media
+142|XD||giám sát thi công nội thất
+143|NS||thực tập nhân sự HR&GA
+144|KD|MK|vận hành sàn TMĐT
+145|IT||quản lý dự án phần mềm
+146|KD|MK|phát triển kinh doanh
+147|KD|XD|chăm sóc khách thuê BĐS công nghiệp
+148|KD||trực page tư vấn chốt đơn
+149|TC||kế toán nội bộ
+150|KD||kinh doanh quà tặng doanh nghiệp
+151|NS||trợ lý chủ tịch
+152|NL|SX|kỹ thuật lò hơi nhà máy nhiệt điện
+153|KD||bán xe ô tô
+154|TK|MK|dựng video
+155|DT|SX|bảo dưỡng hệ thống điện lạnh
+156|NS||thực tập tuyển dụng
+157|SX||công nghệ may mặc
+158|NS||chuyên viên nhân sự
+159|MK||content creator
+160|TK|MK|thiết kế đồ họa
+161|KD||chăm sóc khách hàng, telesale
+162|KD||trưởng phòng kinh doanh
+163|TC||kế toán viên
+164|MK||content marketing
+165|LG|KD|soạn đơn hàng tại cửa hàng
+166|KD|XD|trưởng phòng kinh doanh bất động sản
+167|MK||local marketing cửa hàng
+168|MK||thực tập digital marketing
+169|NS||tuyển dụng
+170|SX||kỹ thuật may rập mẫu
+171|KD||bán hàng online livestream
+172|MK||digital marketing
+173|KD||bán hàng B2B nội thất
+174|IT||quản trị hệ thống
+175|KD||sales admin
+176|IT||lập trình frontend
+177|KD|NL|kinh doanh thức ăn chăn nuôi
+178|DL||trợ lý quản lý nhà hàng
+179|KD|MK|vận hành sàn, livestream bán hàng
+180|XD||quản lý thiết kế dự án BĐS
+181|SX|DT|sửa chữa máy lọc nước
+182|MK||thực tập content
+183|KD||chăm sóc khách hàng qua điện thoại
+184|GD||giáo viên tiếng Anh
+185|KD||kinh doanh in ấn
+186|KD||phát triển kinh doanh, bán hàng MEP
+187|KD||bán hàng nội thất tại showroom
+188|KD|TC|trưởng nhóm kinh doanh tài chính
+189|KD|TC|thu ngân cửa hàng lên bill
+190|XD||kỹ sư hạ tầng
+191|KD|MK|vận hành bán hàng đa kênh TMĐT
+192|MK||content marketing
+193|TC||phân tích đầu tư
+194|MK|TK|thực tập content, thiết kế hình ảnh
+195|TC||kế toán nội bộ
+196|DL||điều hành tour
+197|XD||QS khối lượng xây dựng
+198|SX||thiết kế cơ khí 3D CAD
+199|MK||digital marketing
+200|KD||sales engineer
+201|KD|XD|sale admin dự án BĐS
+202|KD|NN|CSKH bằng tiếng Trung
+203|SX|DT|sửa chữa cẩu tháp
+204|KD||bán hàng online
+205|XD||kỹ sư thiết kế xây dựng
+206|TC||phó phòng kế toán
+207|NS||thực tập tuyển dụng
+208|KD|MK|livestream bán hàng
+209|IT||kiểm thử phần mềm thủ công
+210|MK||trưởng nhóm marketing
+211|NS||hành chính nhân sự nhà máy
+212|TK|MK|dựng video
+213|MK|DL|marketing sự kiện, social nhà hàng
+214|TC||kế toán trưởng
+215|SX||bảo dưỡng sửa chữa máy móc
+216|SX||kỹ sư khuôn đúc
+217|TC||kế toán tổng hợp giá thành
+218|MK||quản lý thương hiệu
+219|KD|GD|giám sát bán hàng trung tâm giáo dục
+220|SX||kỹ sư cơ khí lắp đặt, bảo trì
+221|DL||quản lý ca nhà hàng
+222|KD|NN|kinh doanh xử lý đơn hàng tiếng Nhật
+223|MK||thực tập marketing TikTok
+224|MK||thực tập content marketing
+225|KD||telesales tư vấn
+226|GD||giáo viên mỹ thuật
+227|TK|MK|thực tập thiết kế đồ họa
+228|DT||sửa chữa bảo hành điện tử
+229|DL|KD|quản lý quầy bánh mì
+230|KD||thu ngân, hậu mãi siêu thị
+231|TC||kế toán thuế
+232|NS||phó phòng HCNS
+233|DL|KD|giám sát ca nhà hàng
+234|KD||nhân viên bán hàng
+235|KD||bán máy giặt công nghiệp
+236|TC||kế toán tổng hợp
+237|MK||điều hành marketing
+238|XD|DT|giám sát thi công cấp thoát nước, PCCC
+239|LG||cung ứng vận tải
+240|GD||giáo viên tiếng Anh
+241|KD||cửa hàng trưởng ô tô xe máy
+242|NS|XD|pháp lý dự án BĐS
+243|DL||quản lý khách sạn
+244|DL|KD|hỗ trợ bán hàng, vận hành du lịch

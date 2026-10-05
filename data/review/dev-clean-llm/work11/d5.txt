@@ -1,0 +1,40 @@
+2371|SX|SX,LOG|bảo trì sửa chữa xe tải
+128|DL|DL|phụ bếp salad nhà hàng
+1143|GD|GD|phó hiệu trưởng tiểu học
+1566|IT|IT|scrum master phần mềm
+2033|KD|KD,NN|giám sát chất lượng CSKH tiếng Trung
+537|MKT|MKT|chuyên viên marketing
+3628|DIEN|DIEN|kỹ thuật viễn thông lắp internet
+2365|SX|SX|kiểm tra độ tin cậy phòng thí nghiệm
+2298|SX|SX|phó giám đốc nhà máy
+1778|KD|KD|kinh doanh chăn ga nệm
+1716|XD|XD|kinh tế xây dựng hợp đồng
+2350|SX|SX,DIEN|kỹ sư quy trình dây chuyền motor
+1026|TC|TC|kế toán nội bộ
+1866|KD|KD|tư vấn báo giá khách hàng
+2269|SX|SX|tiện CNC khuôn mẫu
+2160|TK|TK,MKT|quay dựng video
+133|DL|DL|phụ bếp
+1256|GD|GD|giáo viên tiếng Anh
+2051|XD|XD,SX|thiết kế kết cấu thép
+323|MKT|MKT,TK|quản lý đối tác content creator
+3153|KD|KD|kinh doanh dịch vụ viễn thông
+3704|TK|TK,MKT|quay dựng video
+2577|YT|YT|nghiên cứu lên men công nghệ sinh học
+1865|KD|KD,IT,NN|hỗ trợ kỹ thuật tổng đài tiếng Nhật
+3061|MKT|MKT|quản lý khách hàng agency
+3540|LOG|LOG,KD|dữ liệu QC, khiếu nại chuyển phát
+3797|TC|TC|thẩm định tín dụng
+3583|DIEN|DIEN|kỹ thuật viễn thông
+3600|DIEN|DIEN,XD|chỉ huy công trình điện
+1586|IT|IT,TC|phân tích BI dữ liệu
+3252|KD|KD,LOG|kinh doanh dịch vụ logistics
+1992|KD|KD|phát triển khách hàng, báo giá
+1533|IT|IT|kiểm thử phần mềm
+1543|IT|IT|thực tập lập trình web
+18|NONG|NONG,XD|cấp thoát nước thuỷ lợi nông nghiệp
+2040|XD|XD,TK|thiết kế cảnh quan
+1948|KD|KD|trưởng nhóm CSKH
+296|KD|KD,MKT|livestream bán hàng
+2494|SX|SX|kỹ thuật cơ khí nhà máy
+2250|KD|KD|kinh doanh thảm

@@ -1,0 +1,31 @@
+314|MKT|MKT|copywriter sale page, landing page
+1991|NS|NS,GD|thực tập vận hành nhân sự trung tâm
+1706|XD|XD|trưởng phòng thi công nội thất
+943|TC|TC|kế toán
+3080|KD|KD|phát triển đội CTV bán hàng
+202|MKT|MKT|growth marketing
+370|MKT|MKT|content marketing
+1174|GD|GD,NS|điều phối học vụ
+1643|XD|XD,TK|thiết kế nội thất 3D
+3262|KD|KD|trưởng phòng kinh doanh
+1690|KD|KD,XD|giám đốc dự án kinh doanh BĐS
+3386|KD|KD,GD|tư vấn tuyển sinh
+846|TC|TC|kế toán thuế
+408|MKT|MKT|chuyên viên marketing
+503|MKT|MKT|chạy Facebook ads
+3621|DIEN|DIEN,XD|kỹ sư điện công trường
+1009|TC|TC|kế toán nội bộ
+587|MKT|MKT|quản lý thương hiệu
+698|NN|NN,NS|trợ lý kiêm dịch tiếng Trung
+3598|DIEN|DIEN|bảo trì điện nước phòng khám
+2521|SX|SX|hệ thống chất lượng nhà máy may
+899|TC|TC|kế toán công nợ
+2438|SX|SX|quản đốc phân xưởng
+3679|NS|NS,TC|pháp lý tố tụng xử lý nợ
+1611|IT|IT|lập trình Java/Python
+3412|KD|KD|sale online
+3748|TC|TC|giám đốc tài chính
+1445|IT|IT|kiểm thử phần mềm
+2455|SX|SX|vận hành máy sóng carton
+1724|XD|XD|QS bóc khối lượng đấu thầu
+3217|KD|KD,MKT|trưởng kinh doanh sàn TMĐT

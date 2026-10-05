@@ -1,0 +1,31 @@
+/Users/admin/Documents/TrNghia/VietJob/vietjobs/.venv-dl/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+  epoch   1  loss 5.4699  val_macro_f1 0.4385  val_mae_trieu 4.9323  val_r2_log 0.3148
+  epoch   2  loss 2.4381  val_macro_f1 0.5199  val_mae_trieu 4.3596  val_r2_log 0.4595
+  epoch   3  loss 2.1598  val_macro_f1 0.5354  val_mae_trieu 4.3431  val_r2_log 0.4716
+  epoch   4  loss 2.0202  val_macro_f1 0.5498  val_mae_trieu 4.2294  val_r2_log 0.4978
+  epoch   5  loss 1.9384  val_macro_f1 0.5668  val_mae_trieu 4.2067  val_r2_log 0.5022
+  epoch   6  loss 1.8801  val_macro_f1 0.5707  val_mae_trieu 4.2328  val_r2_log 0.5034
+  epoch   7  loss 1.8380  val_macro_f1 0.5786  val_mae_trieu 4.1720  val_r2_log 0.5146
+  epoch   8  loss 1.7853  val_macro_f1 0.5831  val_mae_trieu 4.2311  val_r2_log 0.5110
+  epoch   9  loss 1.7478  val_macro_f1 0.5912  val_mae_trieu 4.2190  val_r2_log 0.5094
+  epoch  10  loss 1.7108  val_macro_f1 0.5906  val_mae_trieu 4.1781  val_r2_log 0.5170
+  epoch  11  loss 1.6858  val_macro_f1 0.5889  val_mae_trieu 4.1914  val_r2_log 0.5161
+  epoch  12  loss 1.6560  val_macro_f1 0.5872  val_mae_trieu 4.2540  val_r2_log 0.5022
+  epoch  13  loss 1.6349  val_macro_f1 0.5901  val_mae_trieu 4.3198  val_r2_log 0.5023
+  epoch  14  loss 1.6100  val_macro_f1 0.5768  val_mae_trieu 4.3539  val_r2_log 0.4909
+  epoch  15  loss 1.5894  val_macro_f1 0.5903  val_mae_trieu 4.2419  val_r2_log 0.5040
+  epoch  16  loss 1.5724  val_macro_f1 0.5910  val_mae_trieu 4.1973  val_r2_log 0.5120
+  epoch  17  loss 1.5492  val_macro_f1 0.5921  val_mae_trieu 4.2259  val_r2_log 0.5115
+  epoch  18  loss 1.5248  val_macro_f1 0.6020  val_mae_trieu 4.1512  val_r2_log 0.5265
+  epoch  19  loss 1.5160  val_macro_f1 0.5879  val_mae_trieu 4.2365  val_r2_log 0.5066
+  epoch  20  loss 1.4878  val_macro_f1 0.5817  val_mae_trieu 4.1951  val_r2_log 0.5184
+  epoch  21  loss 1.4801  val_macro_f1 0.5933  val_mae_trieu 4.2047  val_r2_log 0.5151
+  epoch  22  loss 1.4701  val_macro_f1 0.5882  val_mae_trieu 4.2362  val_r2_log 0.5077
+  epoch  23  loss 1.4447  val_macro_f1 0.5877  val_mae_trieu 4.2681  val_r2_log 0.5114
+  epoch  24  loss 1.4269  val_macro_f1 0.5855  val_mae_trieu 4.3002  val_r2_log 0.5053
+  epoch  25  loss 1.4226  val_macro_f1 0.5849  val_mae_trieu 4.4187  val_r2_log 0.4816
+  epoch  26  loss 1.4035  val_macro_f1 0.5941  val_mae_trieu 4.2969  val_r2_log 0.4991
+  dừng sớm ở epoch 26 (tốt nhất: cat 18, sal 18)
+
+[dl-mtl-cafe512-a10-s42] MTL · best epoch cat 18 · sal 18 / 26 · macroF1=0.6020 · MAE=4.15tr · R2log=0.527

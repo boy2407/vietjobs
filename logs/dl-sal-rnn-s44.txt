@@ -1,0 +1,21 @@
+  thống kê chuẩn hoá: 5,120/24,622 dòng (20.8%,     5s)
+  thống kê chuẩn hoá: 10,240/24,622 dòng (41.6%,    10s)
+  thống kê chuẩn hoá: 15,360/24,622 dòng (62.4%,    16s)
+  thống kê chuẩn hoá: 20,480/24,622 dòng (83.2%,    21s)
+  epoch   1  loss 0.2648  val_mae_trieu 4.3487  val_r2_log 0.4741
+  epoch   2  loss 0.0783  val_mae_trieu 4.1259  val_r2_log 0.5266
+  epoch   3  loss 0.0712  val_mae_trieu 4.0320  val_r2_log 0.5386
+  epoch   4  loss 0.0658  val_mae_trieu 4.0211  val_r2_log 0.5562
+  epoch   5  loss 0.0619  val_mae_trieu 3.9874  val_r2_log 0.5605
+  epoch   6  loss 0.0576  val_mae_trieu 4.0129  val_r2_log 0.5521
+  epoch   7  loss 0.0543  val_mae_trieu 4.1473  val_r2_log 0.5094
+  epoch   8  loss 0.0502  val_mae_trieu 4.0585  val_r2_log 0.5462
+  epoch   9  loss 0.0469  val_mae_trieu 4.0047  val_r2_log 0.5559
+  epoch  10  loss 0.0450  val_mae_trieu 4.0287  val_r2_log 0.5542
+  epoch  11  loss 0.0426  val_mae_trieu 4.0268  val_r2_log 0.5725
+  epoch  12  loss 0.0411  val_mae_trieu 4.0485  val_r2_log 0.5478
+  epoch  13  loss 0.0389  val_mae_trieu 4.0759  val_r2_log 0.5420
+  dừng sớm ở epoch 13 (tốt nhất: 5)
+
+[dl-sal-rnn-s44] salary · best epoch 5/13 · MAE=3.99tr · RMSE=8.10tr · R2log=0.561 · R2raw=0.372 · ±20%=53.9%
+  -> artifacts/dl-sal-rnn-s44/
