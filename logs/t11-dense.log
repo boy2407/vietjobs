@@ -1,0 +1,65 @@
+/Users/admin/Documents/TrNghia/VietJob/vietjobs/.venv-dl/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+  epoch   1  loss 1.8288  val_macro_f1 0.4326  val_f1_micro 0.5672  val_f1_weighted 0.5399  val_accuracy 0.5672
+  epoch   2  loss 1.4845  val_macro_f1 0.5089  val_f1_micro 0.6060  val_f1_weighted 0.5910  val_accuracy 0.6060
+  epoch   3  loss 1.4085  val_macro_f1 0.5200  val_f1_micro 0.6112  val_f1_weighted 0.5970  val_accuracy 0.6112
+  epoch   4  loss 1.3697  val_macro_f1 0.5244  val_f1_micro 0.6128  val_f1_weighted 0.5983  val_accuracy 0.6128
+  epoch   5  loss 1.3399  val_macro_f1 0.5431  val_f1_micro 0.6201  val_f1_weighted 0.6110  val_accuracy 0.6201
+  epoch   6  loss 1.3129  val_macro_f1 0.5361  val_f1_micro 0.6165  val_f1_weighted 0.6054  val_accuracy 0.6165
+  epoch   7  loss 1.2951  val_macro_f1 0.5412  val_f1_micro 0.6238  val_f1_weighted 0.6109  val_accuracy 0.6238
+  epoch   8  loss 1.2773  val_macro_f1 0.5420  val_f1_micro 0.6199  val_f1_weighted 0.6075  val_accuracy 0.6199
+  epoch   9  loss 1.2600  val_macro_f1 0.5523  val_f1_micro 0.6251  val_f1_weighted 0.6139  val_accuracy 0.6251
+  epoch  10  loss 1.2452  val_macro_f1 0.5450  val_f1_micro 0.6222  val_f1_weighted 0.6104  val_accuracy 0.6222
+  epoch  11  loss 1.2309  val_macro_f1 0.5560  val_f1_micro 0.6238  val_f1_weighted 0.6147  val_accuracy 0.6238
+  epoch  12  loss 1.2211  val_macro_f1 0.5477  val_f1_micro 0.6233  val_f1_weighted 0.6119  val_accuracy 0.6233
+  epoch  13  loss 1.2055  val_macro_f1 0.5614  val_f1_micro 0.6291  val_f1_weighted 0.6190  val_accuracy 0.6291
+  epoch  14  loss 1.1955  val_macro_f1 0.5471  val_f1_micro 0.6194  val_f1_weighted 0.6082  val_accuracy 0.6194
+  epoch  15  loss 1.1831  val_macro_f1 0.5634  val_f1_micro 0.6288  val_f1_weighted 0.6200  val_accuracy 0.6288
+  epoch  16  loss 1.1801  val_macro_f1 0.5591  val_f1_micro 0.6301  val_f1_weighted 0.6202  val_accuracy 0.6301
+  epoch  17  loss 1.1584  val_macro_f1 0.5623  val_f1_micro 0.6262  val_f1_weighted 0.6187  val_accuracy 0.6262
+  epoch  18  loss 1.1551  val_macro_f1 0.5665  val_f1_micro 0.6254  val_f1_weighted 0.6174  val_accuracy 0.6254
+  epoch  19  loss 1.1451  val_macro_f1 0.5632  val_f1_micro 0.6241  val_f1_weighted 0.6152  val_accuracy 0.6241
+  epoch  20  loss 1.1315  val_macro_f1 0.5659  val_f1_micro 0.6270  val_f1_weighted 0.6173  val_accuracy 0.6270
+  epoch  21  loss 1.1260  val_macro_f1 0.5643  val_f1_micro 0.6264  val_f1_weighted 0.6191  val_accuracy 0.6264
+  epoch  22  loss 1.1160  val_macro_f1 0.5639  val_f1_micro 0.6291  val_f1_weighted 0.6214  val_accuracy 0.6291
+  epoch  23  loss 1.1093  val_macro_f1 0.5652  val_f1_micro 0.6322  val_f1_weighted 0.6237  val_accuracy 0.6322
+  epoch  24  loss 1.0992  val_macro_f1 0.5723  val_f1_micro 0.6299  val_f1_weighted 0.6221  val_accuracy 0.6299
+  epoch  25  loss 1.0878  val_macro_f1 0.5604  val_f1_micro 0.6222  val_f1_weighted 0.6121  val_accuracy 0.6222
+  epoch  26  loss 1.0831  val_macro_f1 0.5648  val_f1_micro 0.6267  val_f1_weighted 0.6180  val_accuracy 0.6267
+  epoch  27  loss 1.0747  val_macro_f1 0.5603  val_f1_micro 0.6230  val_f1_weighted 0.6133  val_accuracy 0.6230
+  epoch  28  loss 1.0649  val_macro_f1 0.5613  val_f1_micro 0.6262  val_f1_weighted 0.6186  val_accuracy 0.6262
+  epoch  29  loss 1.0600  val_macro_f1 0.5637  val_f1_micro 0.6241  val_f1_weighted 0.6167  val_accuracy 0.6241
+  epoch  30  loss 1.0473  val_macro_f1 0.5600  val_f1_micro 0.6222  val_f1_weighted 0.6131  val_accuracy 0.6222
+  epoch  31  loss 1.0401  val_macro_f1 0.5621  val_f1_micro 0.6270  val_f1_weighted 0.6198  val_accuracy 0.6270
+  epoch  32  loss 1.0352  val_macro_f1 0.5575  val_f1_micro 0.6236  val_f1_weighted 0.6149  val_accuracy 0.6236
+  dừng sớm ở epoch 32 (tốt nhất: 24)
+
+[dl-cat-visobert-dense-512] category · best epoch 24/32 · macroF1=0.5723 · F1=0.6221 · microF1=0.6299 · acc=0.6299
+  -> artifacts/dl-cat-visobert-dense-512/
+/Users/admin/Documents/TrNghia/VietJob/vietjobs/.venv-dl/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+  epoch   1  loss 0.4534  val_mae_trieu 5.2859  val_r2_log 0.1876
+  epoch   2  loss 0.1211  val_mae_trieu 4.9491  val_r2_log 0.2650
+  epoch   3  loss 0.1018  val_mae_trieu 4.8082  val_r2_log 0.3232
+  epoch   4  loss 0.0920  val_mae_trieu 4.7525  val_r2_log 0.3412
+  epoch   5  loss 0.0843  val_mae_trieu 4.6886  val_r2_log 0.3655
+  epoch   6  loss 0.0789  val_mae_trieu 4.6799  val_r2_log 0.3770
+  epoch   7  loss 0.0747  val_mae_trieu 4.6141  val_r2_log 0.3913
+  epoch   8  loss 0.0717  val_mae_trieu 4.5689  val_r2_log 0.4059
+  epoch   9  loss 0.0685  val_mae_trieu 4.5219  val_r2_log 0.4129
+  epoch  10  loss 0.0666  val_mae_trieu 4.5317  val_r2_log 0.4216
+  epoch  11  loss 0.0650  val_mae_trieu 4.5268  val_r2_log 0.4268
+  epoch  12  loss 0.0630  val_mae_trieu 4.4917  val_r2_log 0.4277
+  epoch  13  loss 0.0622  val_mae_trieu 4.5210  val_r2_log 0.4299
+  epoch  14  loss 0.0605  val_mae_trieu 4.5386  val_r2_log 0.4287
+  epoch  15  loss 0.0592  val_mae_trieu 4.5198  val_r2_log 0.4279
+  epoch  16  loss 0.0577  val_mae_trieu 4.6546  val_r2_log 0.4110
+  epoch  17  loss 0.0563  val_mae_trieu 4.5044  val_r2_log 0.4279
+  epoch  18  loss 0.0552  val_mae_trieu 4.5447  val_r2_log 0.4279
+  epoch  19  loss 0.0540  val_mae_trieu 4.4933  val_r2_log 0.4416
+  epoch  20  loss 0.0523  val_mae_trieu 4.6476  val_r2_log 0.4078
+  dừng sớm ở epoch 20 (tốt nhất: 12)
+
+[dl-sal-visobert-dense-512] salary · best epoch 12/20 · MAE=4.49tr · RMSE=8.68tr · R2log=0.428 · R2raw=0.279 · ±20%=47.3%
+  -> artifacts/dl-sal-visobert-dense-512/
+DENSE_DONE visobert

@@ -371,6 +371,13 @@ _BARE_RANGE = re.compile(
 )
 
 
+# "Lương cứng 7 - 10 triệu | Thu nhập 10 - 15 triệu": the platform field of
+# VietJobs.csv holds the income range, not the base pay (T10.4). When a posting
+# states both, the base-pay figures are dropped.
+_BASE_PAY = re.compile(r"\s*:?\s*(?:cứng|cung|cơ bản|co ban|cố định|co dinh|basic)\b", re.IGNORECASE)
+_INCOME_WORD = re.compile(r"thu nhập|thu nhap|income", re.IGNORECASE)
+
+
 def _scan(s: str) -> Tuple[List[float], List[str], List[str]]:
     """Walk every pay-word anchor once: figures read, snippets, refusal codes.
 
@@ -378,7 +385,7 @@ def _scan(s: str) -> Tuple[List[float], List[str], List[str]]:
     :func:`audit_salary` takes the codes — so the audit can never describe a
     rule the extractor does not apply.
     """
-    values: List[float] = []
+    read: List[Tuple[str, float]] = []   # (kind, figure); kind ∈ base / income / ""
     snippets: List[str] = []
     reasons: List[str] = []
     read_to = 0
@@ -401,11 +408,19 @@ def _scan(s: str) -> Tuple[List[float], List[str], List[str]]:
             if figures is None:
                 reasons.append(why)
                 break
-            values.extend(figures)
+            if cursor == anchor.end():
+                kind = ("income" if _INCOME_WORD.fullmatch(anchor.group(0))
+                        else "base" if _BASE_PAY.match(s, anchor.end()) else "")
+            elif _INCOME_WORD.search(window[: m.start()]):   # a ladder rung names income
+                kind = "income"
+            read.extend((kind, f) for f in figures)
             cursor, limit = cursor + m.end(), _CHAIN_MAX
         if cursor > anchor.end():
             snippets.append(s[anchor.start(): cursor].strip())
             read_to = cursor
+    kinds = {k for k, _ in read}
+    drop = "base" if {"base", "income"} <= kinds else None
+    values = [f for k, f in read if k != drop]
     return values, snippets, reasons
 
 
@@ -425,6 +440,71 @@ def extract_salary(text: object) -> Optional[Tuple[float, float, str]]:
     if not values:
         return _bare_range(s)
     return min(values), max(values), " | ".join(dict.fromkeys(snippets))
+
+
+# Second net: any amount of money, pay or perk — "(18 - 22M)", "30 triệuThưởng",
+# "13.000.000. VNĐ", "8tr5". A unit that only means money (triệu, tr, đ, …), a
+# range, or dong written out in full is masked anywhere; a lone "15M", "35k" or
+# "500.000" only next to a pay word — "3M" the brand, "2k" the generation,
+# "10.000 subs" are not money.
+_N = r"\d+(?:[.,]\d+)*"
+_RNG = r"\s*(?:-|–|—|~|đến|tới)\s*"
+_MONEY_ANY = re.compile(
+    rf"(?<![\w.,]){_N}(?:{_RNG}{_N})?\s*(?:triệu|trieu|tr(?=\W|$)|củ|vnđ|vnd|đồng|đ(?=\W|$))"
+    rf"|(?<![\w.,]){_N}{_RNG}{_N}\s*[mk](?=\W|$)"
+    rf"|(?<![\w.,])\d{{1,3}}(?:[.,]\d{{3}}){{2,}}(?![\d])"
+    rf"|(?<![\w.,])\d+tr\d+(?!\w)"          # "8tr5", "1tr500" = 8.5, 1.5 triệu
+    rf"|(?<=\])[.,]\d{{3}}(?:[.,]\d{{3}})+",   # "[COMPANY].000.000" — de-id ate the head
+    re.IGNORECASE,
+)
+_MONEY_NEAR_PAY = re.compile(
+    rf"(?<![\w.,])(?:\d+(?:[.,]\d)?\s*[mk]|\d{{1,3}}[.,]\d{{3}})(?=\W|$)", re.IGNORECASE)
+_PAY_NEAR = re.compile(
+    r"(?:lương|thu nhập|thưởng|phụ cấp|trợ cấp|hỗ trợ|hoa hồng|quyền lợi|upto|up to|\bup\b|lên (?:đến|tới)"
+    r"|\blc\b|lcb|cứng|cơ bản|salary|income)\W(?:[^.;\n]|\.(?=\d)){0,30}$", re.IGNORECASE)
+_PER_PERIOD = re.compile(r"^\s*/?\s*(?:tháng|ngày|bữa|ca|giờ|người|lần|suất)\b", re.IGNORECASE)
+# Not money: user counts, file sizes, heights, street numbers.
+_NOT_MONEY_AFTER = re.compile(r"^\s*(?:người dùng|người theo dõi|lượt|khách|users?|thành viên|học viên|sản phẩm|căn|m2|m²|nhân viên|đơn)", re.IGNORECASE)
+_NOT_MONEY_BEFORE = re.compile(r"(?:dung lượng|file|cao|chiều cao|địa chỉ|số nhà|đường)\W[^.;\n]{0,20}$", re.IGNORECASE)
+
+
+def _not_money(s: str, m: "re.Match") -> bool:
+    return bool(_NOT_MONEY_AFTER.match(s[m.end(): m.end() + 15])
+                or _NOT_MONEY_BEFORE.search(s[max(0, m.start() - 30): m.start()]))
+
+
+def _mask_money(s: str, token: str) -> str:
+    s = _MONEY_ANY.sub(lambda m: m.group(0) if _not_money(s, m) else token, s)
+    return _MONEY_NEAR_PAY.sub(
+        lambda m: token if (not _not_money(s, m)
+                            and (_PAY_NEAR.search(s[max(0, m.start() - 40): m.start()])
+                                 or _PER_PERIOD.match(s[m.end(): m.end() + 8]))) else m.group(0), s)
+
+
+def mask_salary_strict(text: object, token: str = "<SALARY>") -> str:
+    """Che mọi con số mà :func:`extract_salary` còn đọc được — chỉ dùng cho 37K.
+
+    ``vitext.mask_salary`` (đường train) bỏ sót các dạng "30M", "8.000.000"
+    không đơn vị, "Quyền lợi- 3.000.000 …" (T10.5: 21.7 % tin 37K). Ở đây lặp:
+    đọc lương, thay các con số trong đoạn vừa đọc, đến khi không còn gì đọc được.
+    """
+    s = V.normalize_unicode(text)
+    s = _mask_money(s, token)
+    for _ in range(20):
+        found = extract_salary(s)
+        if not found:
+            break
+        changed = False
+        for snip in found[2].split(" | "):
+            i = s.find(snip)
+            if i < 0:
+                continue
+            masked = _SALARY_FIGURE.sub(
+                lambda m: token if re.search(r"\d", m.group(0)) else m.group(0), snip)
+            s, changed = s[:i] + masked + s[i + len(snip):], changed or masked != snip
+        if not changed:
+            break
+    return s
 
 
 def _bare_range(s: str) -> Optional[Tuple[float, float, str]]:

@@ -204,6 +204,21 @@ def test_extract_salary_refuses_unreadable(text):
 # --- T9.2: one accept + one refuse per widening rule ------------------------
 
 
+# --- T10.4: base pay and income both stated → the income range (platform convention)
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("Lương cứng: 8.100.000 - 10.000.000 đồng; Thu nhập: 15.000.000 - 25.000.000 đồng", (15.0, 25.0)),
+    ("Lương cứng 7.000.000. Thu nhập 12m-20m", (12.0, 20.0)),
+    # Base pay alone stays readable.
+    ("Lương cứng 7 triệu", (7.0, 7.0)),
+    # A plain "lương" next to "thu nhập" is not base pay: both kept.
+    ("Lương 9 triệu, thu nhập 12 triệu", (9.0, 12.0)),
+])
+def test_extract_salary_prefers_income_over_base(text, expected):
+    assert X.extract_salary(text)[:2] == expected
+
+
 @pytest.mark.parametrize("text, expected", [
     # (a) a section header anchors the figure — the ad never says "lương".
     ("3. Quyền lợi:- 3.000.000 - 16.000.000 VNĐ, theo năng suất lao động", (3.0, 16.0)),
@@ -284,3 +299,36 @@ def test_audit_buckets_are_exhaustive():
     assert buckets[0] == "read"
     assert buckets[3] == "negotiable"
     assert buckets[4] == buckets[5] == "no_figure"
+
+
+@pytest.mark.parametrize("text", [
+    "Thu nhập 30-40M bao gồm lương cứng",
+    "Lương cơ bản 10.000.000 13.000.000",
+    "3. Quyền lợi:- 3.000.000 - 16.000.000 VNĐ, theo năng suất lao động",
+    "Lương cứng 7.000.000. Thu nhập 12m-20m",
+    "Kỹ Sư Dự Toán Cơ Điện (18 - 22M) Tại Hà Nội",
+    "SENIOR TRADE MARKETING - UP 28M",
+    "Mức lương 25 - 30 triệuThưởng dự án",
+    "1. Chuyên ngành học: . 13.000.000. VNĐ Tháng",
+    "Phụ cấp cơm 40k ngày, hỗ trợ điện thoại 200.000 tháng",
+    "phụ cấp 200.000 gửi xe, 100.000 trang điểm/tháng",
+    "Mức lương từ 8tr5 đến 12 triệu, thưởng 1tr500 tháng",
+    "Mức lương: upto 20 triệu 1,5M trợ cấp Onsite",
+])
+def test_mask_salary_strict_leaves_nothing_readable(text):
+    out = X.mask_salary_strict(text)
+    assert "<SALARY>" in out and X.extract_salary(out) is None
+
+
+@pytest.mark.parametrize("text", [
+    "Làm việc 8 giờ, nghỉ 2 ngày",
+    "Fintech với 30 triệu người dùng",
+    "file pdf dung lượng không quá 10M",
+    "Nam, cao từ 1.68m trở lên",
+    "Giỏ hàng sẵn: Hơn 5.000 căn hộ",
+    "Giới tính: Nam/nữ (9x, 2k)",
+    "ưu tiên kênh >10.000 subs",
+    "phân phối thảm 3M tại Việt Nam",
+])
+def test_mask_salary_strict_keeps_other_numbers(text):
+    assert X.mask_salary_strict(text) == text

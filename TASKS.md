@@ -140,6 +140,10 @@ Architecture from Tran et al. 2021 (arXiv:2112.11052, `2112.11052.pdf` in the re
 
 Goal, measured baseline, the six sub-tasks (T9.1 audit → T9.2 extractor round 2 → T9.3 `salary_note` → T9.4 `template_id` → T9.5 human review → T9.6 rebuild) and their evidence live in **[tasks/T9-salary-37k.md](tasks/T9-salary-37k.md)** — status is kept there, not here. Ceiling is ~9,200 rows (24 %): the rest state no figure. Scope: `data/external/vietjobs37k/` only — the external set (VietJobs-37K, Zenodo), **not** the project's own `data/raw/VietJobs.csv`, whose salary columns come from the platform and are not touched. Out of scope: training on it (unmasked text, Rule 3/4).
 
+### T10 — is the 37K salary label the same quantity as the training label?
+
+Sheet: **[tasks/T10-salary-label-compare.md](tasks/T10-salary-label-compare.md)**. T10.1 done 2026-10-12: on `dev`, only 31 % of overlapping rows agree within ±10 % (n = 232) → `ext37k-sal.csv` should not score `salary`; T10.2/T10.3 wait for the author. T10.4 (income-over-base rule, 75.8 → 79.9 % exact) and T10.5 (MTL s42–44 on 37K, provisional: strict macroF1 0.509, salary MAE 5.50 tr, Spearman 0.577) done 2026-10-12. T10.6: 37K fully masked (`mask_salary_strict`); demo model `dl-mtl-cafe-rnn-a5-s42` on 37K: strict macroF1 0.596, MAE 4.55 tr, Spearman 0.712 (provisional).
+
 ### T11 — more frozen encoders: ViSoBERT, BamiBERT, XLM-R base × {Dense, RNN} × single task {`category`, `salary`}
 
 Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows compare: frozen encoder, `--max-len 512`, unsegmented text (XLM-R tokenizers), `raw` family for `category`, `masked` for `salary` (Rule 3), Dense config identical to `dl-cat-ce-cpu-0920` / `dl-sal-cpu-0920` on cpu, RNN config of T8.3 (h=100, c=50). Each run is compared to PhoBERT and CafeBERT with a paired bootstrap on `dev`. Prerequisite per encoder: add it to the encoder table in `dl/encode.py` and build the pooled cache (Dense) and the token cache (RNN, ≈ 27 GB train @512×768 f16 — Colab/vast). No gate between Dense and RNN: the author asked for both.

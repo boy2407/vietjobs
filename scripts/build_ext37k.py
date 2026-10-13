@@ -3,8 +3,9 @@
 The release has no salary field. ``external.extract_salary`` reads the pay a
 posting states in its own text (silver, regex); ``dataset.derive_salary`` turns
 the two bounds into the same five columns VietJobs.csv carries. The text is
-kept **unmasked** — anyone training ``salary`` on this file must mask it first
-(``vitext.mask_salary``), or the model reads the answer off its input.
+kept **unmasked** in ``ext37k.csv``; ``ext37k-sal.csv`` also carries the
+``*_masked`` columns, built exactly as ``dataset.clean`` builds them, which are
+the only text a ``salary`` model may read.
 
     PYTHONPATH=src .venv/bin/python scripts/build_ext37k.py
 """
@@ -19,6 +20,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from vietjobs import dataset as D  # noqa: E402
 from vietjobs import external as X  # noqa: E402
+from vietjobs import vitext as V  # noqa: E402
 
 OUT = X.EXTERNAL_DIR / "ext37k.csv"
 # Only the postings with a salary, each text once (gold repeats part of test).
@@ -132,7 +134,13 @@ def main() -> None:
         return
     df.to_csv(args.out, index=False)
     sal = (df[df["salary_disclosed"] == 1]
-           .drop_duplicates(["job_title", "description", "requirements_text"]))
+           .drop_duplicates(["job_title", "description", "requirements_text"]).copy())
+    # Same preprocessing as the training columns of the same name (dataset.clean).
+    for src, dst in (("job_title", "job_title_masked"), ("description", "description_masked"),
+                     ("requirements_text", "requirements_masked")):
+        # 37K only: then remove every figure the extractor still reads (author, 2026-10-12).
+        sal[dst] = sal[src].map(lambda s: X.mask_salary_strict(
+            V.preprocess(s, tone=True, abbrev=True, mask=True)))
     sal.to_csv(OUT_SAL, index=False)
 
     has = df["salary_disclosed"] == 1
