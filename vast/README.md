@@ -8,6 +8,7 @@ Script chạy nằm ở `scripts/vast_run_*.sh`; kết quả gốc nằm ở `ar
 | 1 | [dot-1-phobert-rnn.md](dot-1-phobert-rnn.md) | T8.14/T8.15 | `scripts/vast_run_rnn.sh` | xong |
 | 2 | [dot-2-cafebert-rnn.md](dot-2-cafebert-rnn.md) | T8.16/T8.17 | `scripts/vast_run_cafe_rnn.sh` | xong |
 | 3 | [dot-3-cafebert-mtl-rnn.md](dot-3-cafebert-mtl-rnn.md) | T4.1 | `scripts/vast_run_cafe_mtl.sh` | xong, chờ destroy |
+| 4 | [dot-4-t11-encode-dense.md](dot-4-t11-encode-dense.md) | T11 encode + Dense, RNN, MTL (ViSoBERT/XLM-R 512, BamiBERT 1024) | `scripts/vast_run_t11_encode.sh` | chưa thuê |
 
 Kinh nghiệm chung cho mọi đợt: [kinh-nghiem.md](kinh-nghiem.md).
 
