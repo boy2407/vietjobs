@@ -179,3 +179,6 @@ Việc chọn mô hình sử dụng `dev` (các dòng trước 2026-09-09 ghi `v
 | dl-cat-cafe-dense-512-p20-s44 | 10-05 13:54 | category | cafebert-frozen+dense(h=256) | title+desc+req | nosegment | dev | 3812 | macroF1=0.6034 · F1=0.6439 · microF1=0.6527 · acc=0.6527 | 12.9s | 82631d77+dirty |
 | dl-mtl-cafe512-a0-p20-s44 | 10-05 13:55 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6027 · MAE=14.98tr · R2log=-35.981 | 15.4s |
 | dl-mtl-cafe512-a5-p20-s44 | 10-05 13:55 | mtl | cafebert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6034 · MAE=4.16tr · R2log=0.523 | 22.3s |
+| dl-cat-visobert-dense-512 | 10-12 15:29 | category | visobert-frozen+dense(h=256) | title+desc+req | nosegment | dev | 3812 | macroF1=0.5723 · F1=0.6221 · microF1=0.6299 · acc=0.6299 | 14.4s | e156cfde+dirty |
+| dl-sal-visobert-dense-512 | 10-12 15:29 | salary | visobert-frozen+dense(h=256) | title+desc+req | nosegment | dev | 2698 | MAE=4.49tr · RMSE=8.68tr · R2log=0.428 · R2raw=0.279 · ±20%=47.3% | 6.0s | e156cfde+dirty |
+| dl-mtl-visobert512-a5-e80-s42 | 10-12 15:47 | mtl | visobert-frozen+dense-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.5578 · MAE=4.45tr · R2log=0.429 | 16.0s |

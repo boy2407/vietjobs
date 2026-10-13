@@ -46,6 +46,13 @@ ENCODERS = {
                 "segmented": True, "use_fast": False},
     "cafebert": {"name": "uitnlp/CafeBERT", "hidden": 1024,
                  "segmented": False, "use_fast": True},
+    # T11: ba encoder SentencePiece/BPE khác, đều 768 chiều, học trên chuỗi chưa tách từ.
+    "visobert": {"name": "uitnlp/visobert", "hidden": 768,
+                 "segmented": False, "use_fast": True},
+    "bamibert": {"name": "Qualcomm-AI-Research/BamiBERT", "hidden": 768,
+                 "segmented": False, "use_fast": True},
+    "xlmr": {"name": "FacebookAI/xlm-roberta-base", "hidden": 768,
+             "segmented": False, "use_fast": True},
 }
 DEFAULT_ENCODER = "phobert"
 MODEL_NAME = ENCODERS[DEFAULT_ENCODER]["name"]   # alias cho script cũ

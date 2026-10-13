@@ -140,6 +140,33 @@ Architecture from Tran et al. 2021 (arXiv:2112.11052, `2112.11052.pdf` in the re
 
 Goal, measured baseline, the six sub-tasks (T9.1 audit → T9.2 extractor round 2 → T9.3 `salary_note` → T9.4 `template_id` → T9.5 human review → T9.6 rebuild) and their evidence live in **[tasks/T9-salary-37k.md](tasks/T9-salary-37k.md)** — status is kept there, not here. Ceiling is ~9,200 rows (24 %): the rest state no figure. Scope: `data/external/vietjobs37k/` only — the external set (VietJobs-37K, Zenodo), **not** the project's own `data/raw/VietJobs.csv`, whose salary columns come from the platform and are not touched. Out of scope: training on it (unmasked text, Rule 3/4).
 
+### T11 — more frozen encoders: ViSoBERT, BamiBERT, XLM-R base × {Dense, RNN} × single task {`category`, `salary`}
+
+Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows compare: frozen encoder, `--max-len 512`, unsegmented text (XLM-R tokenizers), `raw` family for `category`, `masked` for `salary` (Rule 3), Dense config identical to `dl-cat-ce-cpu-0920` / `dl-sal-cpu-0920` on cpu, RNN config of T8.3 (h=100, c=50). Each run is compared to PhoBERT and CafeBERT with a paired bootstrap on `dev`. Prerequisite per encoder: add it to the encoder table in `dl/encode.py` and build the pooled cache (Dense) and the token cache (RNN, ≈ 27 GB train @512×768 f16 — Colab/vast). No gate between Dense and RNN: the author asked for both.
+
+| ID | Task | Status | Owner | Depends on | Done when (evidence) |
+|---|---|---|---|---|---|
+| T11.0 | Confirm HF ids: ViSoBERT `uitnlp/visobert`, XLM-R `FacebookAI/xlm-roberta-base`, BamiBERT `Qualcomm-AI-Research/BamiBERT` (config.json 2026-10-12: all three hidden 768, 12 layers; max tokens 512 / 512 / 2048; vocab 15,004 / 250,002 / 20,481); record hidden size, max positions, tokenizer, truncation % @512 on `dev` | todo | — | — | three ids in `encode.py`, truncation numbers in this row |
+| T11.1 | ViSoBERT · Dense · `category` | todo | — | T11.0 | `dl-cat-visobert-dense-512` macroF1 + bootstrap vs PhoBERT/CafeBERT Dense |
+| T11.2 | ViSoBERT · Dense · `salary` | todo | — | T11.0 | `dl-sal-visobert-dense-512` MAE + bootstrap vs `dl-sal-cpu-0920` |
+| T11.3 | ViSoBERT · RNN · `category` | todo | — | T11.1 (token cache) | `dl-cat-visobert-rnn-512` vs `dl-cat-rnn-ce` |
+| T11.4 | ViSoBERT · RNN · `salary` | todo | — | T11.2 (token cache) | `dl-sal-visobert-rnn-512` vs `dl-sal-rnn` |
+| T11.5 | BamiBERT · Dense · `category` | todo | — | T11.0 | `dl-cat-bamibert-dense-1024` |
+| T11.6 | BamiBERT · Dense · `salary` | todo | — | T11.0 | `dl-sal-bamibert-dense-1024` |
+| T11.7 | BamiBERT · RNN · `category` | todo | — | T11.5 | `dl-cat-bamibert-rnn-1024` |
+| T11.8 | BamiBERT · RNN · `salary` | todo | — | T11.6 | `dl-sal-bamibert-rnn-1024` |
+| T11.9 | XLM-R base · Dense · `category` | todo | — | T11.0 | `dl-cat-xlmr-dense-512` |
+| T11.10 | XLM-R base · Dense · `salary` | todo | — | T11.0 | `dl-sal-xlmr-dense-512` |
+| T11.11 | XLM-R base · RNN · `category` | todo | — | T11.9 | `dl-cat-xlmr-rnn-512` |
+| T11.12 | XLM-R base · RNN · `salary` | todo | — | T11.10 | `dl-sal-xlmr-rnn-512` |
+| T11.14 | ViSoBERT · MTL Dense (`train_mtl`, `masked` family, α=5 as T4.1) | todo | — | T11.1, T11.2 | `dl-mtl-visobert512-a5-e80-s42`: cat macroF1 + sal MAE, bootstrap vs T11.1 / T11.2 |
+| T11.15 | ViSoBERT · MTL RNN | todo | — | T11.3, T11.4 | `dl-mtl-visobert-rnn512-a5-s42` vs T11.3 / T11.4 |
+| T11.16 | BamiBERT · MTL Dense | todo | — | T11.5, T11.6 | `dl-mtl-bamibert1024-a5-e80-s42` vs T11.5 / T11.6 |
+| T11.17 | BamiBERT · MTL RNN | todo | — | T11.7, T11.8 | `dl-mtl-bamibert-rnn1024-a5-s42` vs T11.7 / T11.8 |
+| T11.18 | XLM-R base · MTL Dense | todo | — | T11.9, T11.10 | `dl-mtl-xlmr512-a5-e80-s42` vs T11.9 / T11.10 |
+| T11.19 | XLM-R base · MTL RNN | todo | — | T11.11, T11.12 | `dl-mtl-xlmr-rnn512-a5-s42` vs T11.11 / T11.12 |
+| T11.13 | One encoder-comparison table (PhoBERT, CafeBERT, + the three; single task and MTL) in docs/06 and ch.4 | todo | — | T11.1–T11.12, T11.14–T11.19 | table + bootstrap column |
+
 ### Backlog (not scheduled)
 
 - Salary edge cases: 15 postings > 200M, plus the sub-2M group (T1.1 is done but did not produce this count — still unmeasured)
@@ -240,3 +267,10 @@ Goal, measured baseline, the six sub-tasks (T9.1 audit → T9.2 extractor round 
 | 2026-10-03 | Claude | T4.1 diagnosis: why MTL dense cat looks high and MTL RNN low (s42, `history.jsonl`). Configs identical except head; same standardization. Dev macroF1 peak vs mean from epoch 8: MTL dense 0.6175 @ep40 / 0.5997 (41 epochs) ≈ ST dense 0.6077 @ep24 / 0.5992; MTL RNN 0.6063 @ep18 / 0.5946 vs ST RNN 0.6172 @ep9 / 0.6064. The dense "gain" is a max over a longer, noisy curve (epoch sd ≈ 0.008); on the plateau MTL dense = ST dense. The RNN gap is real (~0.012 on the plateau, cat train loss lags ST by 0.06–0.25 at the same epoch). Open confound: MTL reads the `masked` family for cat, ST cat reads `raw` (= the T4.1 masking-cost item) |
 | 2026-10-05 | Claude | T4.1 B1 (dense, patience 8, s42–44): `train_mtl --alpha-sal 0` = cat-only on `masked` (`dl-mtl-cafe512-a0-s4*`; sal head untrained, MAE 14.9). Peak macroF1 mean: ST raw 0.6060 ± 0.0023, ST masked (α=0) 0.6078 ± 0.0045, MTL α=5 0.6103 ± 0.0085; plateau (mean from ep 8) 0.5984 / 0.5964 / 0.5965. Paired bootstrap per seed: masked − raw +0.0018 (all 3 CIs include 0) → **masking costs nothing on dense**; MTL − α=0 +0.0026 (all CIs include 0) → **task sharing gives nothing on dense**. MTL peak lead tracks run length only (48/50/25 epochs vs 29/25/18) |
 | 2026-10-05 | Claude | T4.1 B2 (dense, `--patience 20 --epochs 80`, s42–44): peak macroF1 ST raw 0.6060 ± 0.0023 (identical to patience 8: no new best after ep 24/21/10), ST masked α=0 0.6088 ± 0.0055, MTL α=5 0.6112 ± 0.0071; plateau 0.5976 / 0.5981 / 0.5969. Paired bootstrap: masked − raw +0.0028, MTL − α=0 +0.0024, all 6 CIs include 0. Conclusion on dense: neither masking nor task sharing nor patience changes the plateau (~0.597); the MTL "lead" is a peak picked from a longer noisy curve. Side note: `train_mtl` runs keep finding late peaks (ep 32–42), `train_dl` ones do not — unexplained, within noise |
+| 2026-10-12 | Claude | T11 created at the author's request: ViSoBERT, BamiBERT, XLM-R base × {Dense, RNN} × {`category`, `salary`}, single task, 512 tokens, frozen (T11.0–T11.13). BamiBERT rows blocked until its HF id is confirmed. No runs yet. |
+| 2026-10-12 | Claude | T11.14–T11.19 added at the author's request: MTL (Dense, RNN) for ViSoBERT, BamiBERT, XLM-R base, config of T4.1 (α=5, `masked` trunk, s42). T11.13 now also covers MTL. No runs yet. |
+| 2026-10-12 | Claude | T11.0 partly: BamiBERT found on HF as `Qualcomm-AI-Research/BamiBERT`; config.json of the three encoders read (hidden 768 each; max 512/512/2048 tokens). BamiBERT rows unblocked. Truncation % not measured yet. |
+| 2026-10-12 | Claude | T11 Dense paused at the author's request. Done: `encode.py` gained `visobert`/`bamibert`/`xlmr`; ViSoBERT 512 caches (raw + masked, dev truncation 6.1 %); `dl-cat-visobert-dense-512` macroF1 0.5723 (ep 24), `dl-sal-visobert-dense-512` MAE 4.49 tr, R²log 0.428 (ep 12), cpu, seed 42. Not yet: bootstrap, docs. XLM-R encode killed at train raw 6,432/34,354 (8.9 tin/s, no file written); BamiBERT not started. Resume with `logs/t11-*` scripts. |
+| 2026-10-12 | Claude | Vast rental planned: `vast/dot-4-t11-encode-dense.md` (CHƯA THUÊ) + `scripts/vast_run_t11_encode.sh` — encode XLM-R @512 and BamiBERT @2048 pooled only; all 9 T11 Dense runs (single task + MTL α=5) on the Mac cpu. BamiBERT run ids now `-2048`. |
+| 2026-10-12 | Claude | T11.14 `dl-mtl-visobert512-a5-e80-s42` (cpu, s42): macroF1 0.5578 (ep 28), MAE 4.45 tr, R²log 0.429 (ep 16), 36 epochs. Bootstrap pending. |
+| 2026-10-12 | Claude | Đợt 4 re-scoped at the author's request: on vast, encode + all T11 runs (Dense/MTL dense cpu, RNN/MTL RNN cuda), then pull results + pooled caches. Max tokens measured (train+dev): 1,553 / 1,609 / 1,641 (BamiBERT / XLM-R / ViSoBERT); >1024 only 0.1–0.2 %. Author chose BamiBERT 1024 for every run; run ids renamed `-1024`. Token caches (~240 GB) do not fit the Mac (74 GB free). |
