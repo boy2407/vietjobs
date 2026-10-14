@@ -1,0 +1,47 @@
+  thống kê chuẩn hoá: 5,120/24,669 dòng (20.8%,    77s)
+  thống kê chuẩn hoá: 10,240/24,669 dòng (41.5%,   117s)
+  thống kê chuẩn hoá: 15,360/24,669 dòng (62.3%,   156s)
+  thống kê chuẩn hoá: 20,480/24,669 dòng (83.0%,   215s)
+  epoch   1  loss 0.2530  val_mae_trieu 4.7434  val_r2_log 0.4262
+  epoch   2  loss 0.0825  val_mae_trieu 4.4017  val_r2_log 0.5218
+  epoch   3  loss 0.0737  val_mae_trieu 4.3916  val_r2_log 0.5146
+  epoch   4  loss 0.0690  val_mae_trieu 4.3651  val_r2_log 0.5494
+  epoch   5  loss 0.0634  val_mae_trieu 4.2762  val_r2_log 0.5614
+  epoch   6  loss 0.0584  val_mae_trieu 4.2060  val_r2_log 0.5637
+  epoch   7  loss 0.0530  val_mae_trieu 4.5146  val_r2_log 0.5316
+  epoch   8  loss 0.0491  val_mae_trieu 4.2262  val_r2_log 0.5505
+  epoch   9  loss 0.0462  val_mae_trieu 4.1791  val_r2_log 0.5589
+  epoch  10  loss 0.0432  val_mae_trieu 4.1223  val_r2_log 0.5651
+  epoch  11  loss 0.0415  val_mae_trieu 4.1604  val_r2_log 0.5707
+  epoch  12  loss 0.0381  val_mae_trieu 4.1608  val_r2_log 0.5556
+  epoch  13  loss 0.0372  val_mae_trieu 4.2443  val_r2_log 0.5587
+  epoch  14  loss 0.0359  val_mae_trieu 4.1458  val_r2_log 0.5729
+  epoch  15  loss 0.0343  val_mae_trieu 4.1283  val_r2_log 0.5578
+  epoch  16  loss 0.0328  val_mae_trieu 4.1747  val_r2_log 0.5649
+  epoch  17  loss 0.0321  val_mae_trieu 4.1462  val_r2_log 0.5599
+  epoch  18  loss 0.0310  val_mae_trieu 4.0706  val_r2_log 0.5775
+  epoch  19  loss 0.0293  val_mae_trieu 4.1468  val_r2_log 0.5527
+  epoch  20  loss 0.0288  val_mae_trieu 4.0837  val_r2_log 0.5697
+  epoch  21  loss 0.0285  val_mae_trieu 4.0649  val_r2_log 0.5733
+  epoch  22  loss 0.0282  val_mae_trieu 4.0733  val_r2_log 0.5680
+  epoch  23  loss 0.0274  val_mae_trieu 4.1347  val_r2_log 0.5599
+  epoch  24  loss 0.0267  val_mae_trieu 4.1003  val_r2_log 0.5755
+  epoch  25  loss 0.0262  val_mae_trieu 4.0838  val_r2_log 0.5694
+  epoch  26  loss 0.0262  val_mae_trieu 4.0707  val_r2_log 0.5845
+  epoch  27  loss 0.0259  val_mae_trieu 4.1003  val_r2_log 0.5779
+  epoch  28  loss 0.0253  val_mae_trieu 4.0230  val_r2_log 0.5890
+  epoch  29  loss 0.0244  val_mae_trieu 4.0564  val_r2_log 0.5739
+  epoch  30  loss 0.0240  val_mae_trieu 4.0221  val_r2_log 0.5774
+  epoch  31  loss 0.0243  val_mae_trieu 4.0799  val_r2_log 0.5860
+  epoch  32  loss 0.0239  val_mae_trieu 4.0575  val_r2_log 0.5781
+  epoch  33  loss 0.0233  val_mae_trieu 4.0683  val_r2_log 0.5756
+  epoch  34  loss 0.0229  val_mae_trieu 4.0486  val_r2_log 0.5891
+  epoch  35  loss 0.0223  val_mae_trieu 4.0264  val_r2_log 0.5811
+  epoch  36  loss 0.0223  val_mae_trieu 3.9628  val_r2_log 0.5937
+  epoch  37  loss 0.0223  val_mae_trieu 3.9938  val_r2_log 0.5900
+  epoch  38  loss 0.0220  val_mae_trieu 4.0465  val_r2_log 0.5822
+  epoch  39  loss 0.0220  val_mae_trieu 4.0302  val_r2_log 0.5821
+  epoch  40  loss 0.0215  val_mae_trieu 3.9943  val_r2_log 0.5843
+
+[dl-sal-visobert-rnn-512] salary · best epoch 36/40 · MAE=3.96tr · RMSE=8.24tr · R2log=0.594 · R2raw=0.425 · ±20%=55.5%
+  -> artifacts/dl-sal-visobert-rnn-512/

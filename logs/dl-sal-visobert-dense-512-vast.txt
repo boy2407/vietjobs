@@ -1,0 +1,31 @@
+  epoch   1  loss 0.4554  val_mae_trieu 5.2964  val_r2_log 0.2242
+  epoch   2  loss 0.1207  val_mae_trieu 5.0477  val_r2_log 0.3023
+  epoch   3  loss 0.1016  val_mae_trieu 4.9513  val_r2_log 0.3299
+  epoch   4  loss 0.0902  val_mae_trieu 4.8085  val_r2_log 0.3835
+  epoch   5  loss 0.0839  val_mae_trieu 4.7553  val_r2_log 0.4020
+  epoch   6  loss 0.0776  val_mae_trieu 4.7127  val_r2_log 0.4154
+  epoch   7  loss 0.0739  val_mae_trieu 4.7204  val_r2_log 0.4182
+  epoch   8  loss 0.0708  val_mae_trieu 4.6862  val_r2_log 0.4337
+  epoch   9  loss 0.0686  val_mae_trieu 4.6936  val_r2_log 0.4325
+  epoch  10  loss 0.0664  val_mae_trieu 4.6605  val_r2_log 0.4363
+  epoch  11  loss 0.0641  val_mae_trieu 4.6251  val_r2_log 0.4453
+  epoch  12  loss 0.0630  val_mae_trieu 4.6674  val_r2_log 0.4410
+  epoch  13  loss 0.0620  val_mae_trieu 4.6576  val_r2_log 0.4400
+  epoch  14  loss 0.0593  val_mae_trieu 4.5985  val_r2_log 0.4557
+  epoch  15  loss 0.0585  val_mae_trieu 4.6288  val_r2_log 0.4522
+  epoch  16  loss 0.0577  val_mae_trieu 4.6027  val_r2_log 0.4609
+  epoch  17  loss 0.0559  val_mae_trieu 4.6087  val_r2_log 0.4555
+  epoch  18  loss 0.0546  val_mae_trieu 4.6653  val_r2_log 0.4421
+  epoch  19  loss 0.0536  val_mae_trieu 4.5856  val_r2_log 0.4622
+  epoch  20  loss 0.0518  val_mae_trieu 4.6810  val_r2_log 0.4417
+  epoch  21  loss 0.0515  val_mae_trieu 4.6074  val_r2_log 0.4547
+  epoch  22  loss 0.0503  val_mae_trieu 4.6264  val_r2_log 0.4488
+  epoch  23  loss 0.0491  val_mae_trieu 4.6252  val_r2_log 0.4572
+  epoch  24  loss 0.0483  val_mae_trieu 4.6968  val_r2_log 0.4404
+  epoch  25  loss 0.0470  val_mae_trieu 4.6648  val_r2_log 0.4394
+  epoch  26  loss 0.0468  val_mae_trieu 4.7353  val_r2_log 0.4434
+  epoch  27  loss 0.0465  val_mae_trieu 4.6707  val_r2_log 0.4433
+  dừng sớm ở epoch 27 (tốt nhất: 19)
+
+[dl-sal-visobert-dense-512-vast] salary · best epoch 19/27 · MAE=4.59tr · RMSE=8.96tr · R2log=0.462 · R2raw=0.320 · ±20%=47.5%
+  -> artifacts/dl-sal-visobert-dense-512-vast/

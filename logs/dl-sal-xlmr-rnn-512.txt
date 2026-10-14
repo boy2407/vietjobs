@@ -1,0 +1,22 @@
+  thống kê chuẩn hoá: 5,120/24,669 dòng (20.8%,    12s)
+  thống kê chuẩn hoá: 10,240/24,669 dòng (41.5%,    24s)
+  thống kê chuẩn hoá: 15,360/24,669 dòng (62.3%,    35s)
+  thống kê chuẩn hoá: 20,480/24,669 dòng (83.0%,    46s)
+  epoch   1  loss 0.2470  val_mae_trieu 4.5405  val_r2_log 0.5125
+  epoch   2  loss 0.0764  val_mae_trieu 4.2099  val_r2_log 0.5705
+  epoch   3  loss 0.0689  val_mae_trieu 4.3293  val_r2_log 0.5395
+  epoch   4  loss 0.0646  val_mae_trieu 4.2443  val_r2_log 0.5837
+  epoch   5  loss 0.0604  val_mae_trieu 4.0006  val_r2_log 0.6181
+  epoch   6  loss 0.0556  val_mae_trieu 3.9847  val_r2_log 0.6186
+  epoch   7  loss 0.0512  val_mae_trieu 4.3730  val_r2_log 0.5755
+  epoch   8  loss 0.0485  val_mae_trieu 4.2489  val_r2_log 0.5464
+  epoch   9  loss 0.0458  val_mae_trieu 4.0903  val_r2_log 0.5877
+  epoch  10  loss 0.0430  val_mae_trieu 4.0734  val_r2_log 0.5917
+  epoch  11  loss 0.0409  val_mae_trieu 4.0257  val_r2_log 0.6077
+  epoch  12  loss 0.0383  val_mae_trieu 4.0383  val_r2_log 0.5962
+  epoch  13  loss 0.0371  val_mae_trieu 4.1005  val_r2_log 0.5983
+  epoch  14  loss 0.0367  val_mae_trieu 4.0008  val_r2_log 0.6122
+  dừng sớm ở epoch 14 (tốt nhất: 6)
+
+[dl-sal-xlmr-rnn-512] salary · best epoch 6/14 · MAE=3.98tr · RMSE=8.32tr · R2log=0.619 · R2raw=0.413 · ±20%=53.8%
+  -> artifacts/dl-sal-xlmr-rnn-512/

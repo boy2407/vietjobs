@@ -1,0 +1,33 @@
+  epoch   1  loss 0.4725  val_mae_trieu 5.0665  val_r2_log 0.3167
+  epoch   2  loss 0.1141  val_mae_trieu 4.7719  val_r2_log 0.3930
+  epoch   3  loss 0.0939  val_mae_trieu 4.6793  val_r2_log 0.4322
+  epoch   4  loss 0.0827  val_mae_trieu 4.5854  val_r2_log 0.4610
+  epoch   5  loss 0.0755  val_mae_trieu 4.4949  val_r2_log 0.4823
+  epoch   6  loss 0.0704  val_mae_trieu 4.4812  val_r2_log 0.4863
+  epoch   7  loss 0.0661  val_mae_trieu 4.5502  val_r2_log 0.4800
+  epoch   8  loss 0.0633  val_mae_trieu 4.4771  val_r2_log 0.4982
+  epoch   9  loss 0.0613  val_mae_trieu 4.3816  val_r2_log 0.5098
+  epoch  10  loss 0.0584  val_mae_trieu 4.4183  val_r2_log 0.5052
+  epoch  11  loss 0.0561  val_mae_trieu 4.3816  val_r2_log 0.5134
+  epoch  12  loss 0.0552  val_mae_trieu 4.4187  val_r2_log 0.5071
+  epoch  13  loss 0.0541  val_mae_trieu 4.4354  val_r2_log 0.5055
+  epoch  14  loss 0.0518  val_mae_trieu 4.4015  val_r2_log 0.5126
+  epoch  15  loss 0.0510  val_mae_trieu 4.4330  val_r2_log 0.4996
+  epoch  16  loss 0.0500  val_mae_trieu 4.3301  val_r2_log 0.5194
+  epoch  17  loss 0.0486  val_mae_trieu 4.4436  val_r2_log 0.5020
+  epoch  18  loss 0.0477  val_mae_trieu 4.4388  val_r2_log 0.4980
+  epoch  19  loss 0.0469  val_mae_trieu 4.4072  val_r2_log 0.5112
+  epoch  20  loss 0.0454  val_mae_trieu 4.4436  val_r2_log 0.5044
+  epoch  21  loss 0.0449  val_mae_trieu 4.3198  val_r2_log 0.5144
+  epoch  22  loss 0.0435  val_mae_trieu 4.3796  val_r2_log 0.5101
+  epoch  23  loss 0.0424  val_mae_trieu 4.3586  val_r2_log 0.5104
+  epoch  24  loss 0.0419  val_mae_trieu 4.4124  val_r2_log 0.5045
+  epoch  25  loss 0.0406  val_mae_trieu 4.3478  val_r2_log 0.5160
+  epoch  26  loss 0.0404  val_mae_trieu 4.3928  val_r2_log 0.5054
+  epoch  27  loss 0.0394  val_mae_trieu 4.4625  val_r2_log 0.4971
+  epoch  28  loss 0.0387  val_mae_trieu 4.3734  val_r2_log 0.5090
+  epoch  29  loss 0.0377  val_mae_trieu 4.3287  val_r2_log 0.5212
+  dừng sớm ở epoch 29 (tốt nhất: 21)
+
+[dl-sal-bamibert-dense-1024] salary · best epoch 21/29 · MAE=4.32tr · RMSE=8.67tr · R2log=0.514 · R2raw=0.364 · ±20%=49.3%
+  -> artifacts/dl-sal-bamibert-dense-1024/

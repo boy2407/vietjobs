@@ -1,6 +1,6 @@
-# Đợt 4: T11 — ViSoBERT, XLM-R base, BamiBERT: encode + Dense, RNN, MTL — CHƯA THUÊ
+# Đợt 4: T11 — ViSoBERT, XLM-R base, BamiBERT: encode + Dense, RNN, MTL — XONG, đã kéo kết quả về (chờ destroy)
 
-Script: `scripts/vast_run_t11_encode.sh` (đối số `all` | `visobert` | `xlmr` | `bamibert`) | Instance: — (chưa thuê)
+Script: `scripts/vast_run_t11_encode.sh` (đối số `all` | `visobert` | `xlmr` | `bamibert`) | Instance: **RTX 5060 Ti 16 GB, Intel Core Ultra 9 285K (24 luồng), RAM 125 GB, overlay 300 GB**, SSH `ssh -p 47372 root@49.0.90.52`, chạy trong tmux `t11` từ 03:40 đến 16:06 UTC 2026-10-13 (~12,5 giờ)
 
 Phạm vi: trên máy thuê, encode rồi train **mọi run seed 42** của T11 (bảng dưới). Dense và MTL dense chạy `--device cpu` (Rule 13 item 5), RNN và MTL RNN chạy `cuda`. Sau đó kéo cache và kết quả về Mac như các đợt trước.
 
@@ -49,21 +49,21 @@ Chi phí: máy ≈ $0,22–0,35/h (Đợt 3 trả $0,22/h; disk 300 GB làm giá
 | T11.1 | `dl-cat-visobert-dense-512` | Dense · cpu (Mac) | 0.5723 | — | done |
 | T11.2 | `dl-sal-visobert-dense-512` | Dense · cpu (Mac) | — | 4.49 | done |
 | T11.14 | `dl-mtl-visobert512-a5-e80-s42` | MTL dense · cpu (Mac) | 0.5578 | 4.45 | done |
-| T11.3 | `dl-cat-visobert-rnn-512` | RNN · cuda | | | todo |
-| T11.4 | `dl-sal-visobert-rnn-512` | RNN · cuda | | | todo |
-| T11.15 | `dl-mtl-visobert-rnn512-a5-s42` | MTL RNN · cuda | | | todo |
-| T11.9 | `dl-cat-xlmr-dense-512` | Dense · cpu | | | todo |
-| T11.10 | `dl-sal-xlmr-dense-512` | Dense · cpu | | | todo |
-| T11.18 | `dl-mtl-xlmr512-a5-e80-s42` | MTL dense · cpu | | | todo |
-| T11.11 | `dl-cat-xlmr-rnn-512` | RNN · cuda | | | todo |
-| T11.12 | `dl-sal-xlmr-rnn-512` | RNN · cuda | | | todo |
-| T11.19 | `dl-mtl-xlmr-rnn512-a5-s42` | MTL RNN · cuda | | | todo |
-| T11.5 | `dl-cat-bamibert-dense-1024` | Dense · cpu | | | todo |
-| T11.6 | `dl-sal-bamibert-dense-1024` | Dense · cpu | | | todo |
-| T11.16 | `dl-mtl-bamibert1024-a5-e80-s42` | MTL dense · cpu | | | todo |
-| T11.7 | `dl-cat-bamibert-rnn-1024` | RNN · cuda | | | todo |
-| T11.8 | `dl-sal-bamibert-rnn-1024` | RNN · cuda | | | todo |
-| T11.17 | `dl-mtl-bamibert-rnn1024-a5-s42` | MTL RNN · cuda | | | todo |
+| T11.3 | `dl-cat-visobert-rnn-512` | RNN · cuda | 0.6046 | — | done |
+| T11.4 | `dl-sal-visobert-rnn-512` | RNN · cuda | — | 3.96 | done |
+| T11.15 | `dl-mtl-visobert-rnn512-a5-s42` | MTL RNN · cuda | 0.5971 | 4.22 | done |
+| T11.9 | `dl-cat-xlmr-dense-512` | Dense · cpu | 0.5953 | — | done |
+| T11.10 | `dl-sal-xlmr-dense-512` | Dense · cpu | — | 4.39 | done |
+| T11.18 | `dl-mtl-xlmr512-a5-e80-s42` | MTL dense · cpu | 0.5935 | 4.30 | done |
+| T11.11 | `dl-cat-xlmr-rnn-512` | RNN · cuda | 0.6134 | — | done |
+| T11.12 | `dl-sal-xlmr-rnn-512` | RNN · cuda | — | 3.98 | done |
+| T11.19 | `dl-mtl-xlmr-rnn512-a5-s42` | MTL RNN · cuda | 0.6065 | 3.98 | done |
+| T11.5 | `dl-cat-bamibert-dense-1024` | Dense · cpu | 0.5987 | — | done |
+| T11.6 | `dl-sal-bamibert-dense-1024` | Dense · cpu | — | 4.32 | done |
+| T11.16 | `dl-mtl-bamibert1024-a5-e80-s42` | MTL dense · cpu | 0.5884 | 4.33 | done |
+| T11.7 | `dl-cat-bamibert-rnn-1024` | RNN · cuda | 0.6056 | — | done |
+| T11.8 | `dl-sal-bamibert-rnn-1024` | RNN · cuda | — | 3.87 | done |
+| T11.17 | `dl-mtl-bamibert-rnn1024-a5-s42` | MTL RNN · cuda | 0.6102 | 4.03 | done |
 
 Cấu hình: Dense mặc định của `train_dl` (như `dl-cat-cafe-dense-512`); RNN `--hidden 100 --conv-channels 50` (như T8.16), `category` `--loss ce`; MTL `--alpha-sal 5 --epochs 80` (như T4.1). Run nào đã có `metrics.json` thì script bỏ qua → chạy lại sau sự cố được.
 
@@ -71,14 +71,14 @@ Cấu hình: Dense mặc định của `train_dl` (như `dl-cat-cafe-dense-512`)
 
 | # | Bước | Trạng thái | Ghi chú |
 |---|---|---|---|
-| 1 | Thuê máy theo mục "Chọn máy" | todo | tác giả thuê |
-| 2 | Gắn SSH key + kết nối | todo | |
-| 3 | Đẩy code + splits + `manifest.json` lên | todo | Đợt 3 quên `manifest.json` |
-| 4 | Cài thư viện, pytest | todo | script tự chạy pytest dl trước |
-| 5 | `bash scripts/vast_run_t11_encode.sh all` trong tmux | todo | |
-| 6 | Kéo kết quả **kèm `best.pt` / `best_sal.pt`** + pooled cache + log về Mac | todo | xem "Kéo về" |
-| 7 | Checklist `README.md` | todo | |
-| 8 | Destroy instance | todo | tác giả bấm trên web |
+| 1 | Thuê máy theo mục "Chọn máy" | done | tác giả thuê, RTX 5060 Ti, 300 GB |
+| 2 | Gắn SSH key + kết nối | done | key `id_ed25519` |
+| 3 | Đẩy code + splits + `manifest.json` lên | done | rsync src, scripts, tests, splits, manifest.json |
+| 4 | Cài thư viện, pytest | done | `/venv/main` có sẵn torch; pytest dl chạy qua trong script |
+| 5 | `bash scripts/vast_run_t11_encode.sh all` trong tmux | done | `all` chạy 03:40–16:06 UTC, mọi run có `metrics.json`, `ALL_DONE` in ra; 3 run ViSoBERT Dense chạy lại trên vast với đuôi `-vast` |
+| 6 | Kéo kết quả **kèm `best.pt` / `best_sal.pt`** + pooled cache + log về Mac | done | tar qua ssh chạy được; 21 thư mục run, 16 file pooled cache, 50 log; md5 `best.pt` khớp |
+| 7 | Checklist `README.md` | done | mọi run có metrics/history/config/best.pt (MTL thêm best_sal.pt); 2 run ViSoBERT Dense trên Mac không có log |
+| 8 | Destroy instance | todo | tác giả bấm trên web; token cache ~160 GB mất khi destroy |
 | 9 | Bootstrap so với PhoBERT/CafeBERT, board, docs/06, ch.4, `export_runs.py` | todo | trên Mac |
 
 ### Lệnh đẩy lên (terminal Mac)
@@ -113,3 +113,6 @@ ssh -p PORT root@IP "cd /workspace/vietjobs && ls -d artifacts/dl-*-{visobert,xl
 
 | Thời điểm | Hiện tượng | Xử lý |
 |---|---|---|
+| 2026-10-13 | log MTL RNN có cảnh báo `CUDACachingAllocator ... OOM`, free còn 0,5–0,8 GB / 16 GB | run vẫn chạy tiếp, không chết; không đổi batch |
+| 2026-10-13 | 3 run ViSoBERT Dense trên vast trùng run_id đã có trên Mac | đổi đuôi `-vast`; số khác Mac 0,0018 macroF1 / 0,09 tr MAE → dùng số Mac cho T11.1/2/14 |
+| 2026-10-13 | `export_runs.py` bỏ qua dòng log MTL (10 ô, script đòi ≥ 11) | chưa sửa script; số MTL lấy từ `metrics.json` |

@@ -1,0 +1,48 @@
+  thống kê chuẩn hoá: 5,120/34,354 dòng (14.9%,    12s)
+  thống kê chuẩn hoá: 10,240/34,354 dòng (29.8%,    21s)
+  thống kê chuẩn hoá: 15,360/34,354 dòng (44.7%,    30s)
+  thống kê chuẩn hoá: 20,480/34,354 dòng (59.6%,    40s)
+  thống kê chuẩn hoá: 25,600/34,354 dòng (74.5%,    50s)
+  thống kê chuẩn hoá: 30,720/34,354 dòng (89.4%,    59s)
+  epoch   1  loss 3.1105  val_macro_f1 0.2416  val_mae_trieu 4.6544  val_r2_log 0.4572
+[W1013 11:40:21.881685706 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 960495616 bytes (free: 815333376, total: 16584933376).
+  epoch   2  loss 2.0638  val_macro_f1 0.3845  val_mae_trieu 4.6171  val_r2_log 0.4649
+  epoch   3  loss 1.8555  val_macro_f1 0.4930  val_mae_trieu 4.3275  val_r2_log 0.5210
+  epoch   4  loss 1.7300  val_macro_f1 0.5243  val_mae_trieu 4.3052  val_r2_log 0.5334
+  epoch   5  loss 1.6454  val_macro_f1 0.5347  val_mae_trieu 4.3185  val_r2_log 0.5414
+  epoch   6  loss 1.5897  val_macro_f1 0.5498  val_mae_trieu 4.3390  val_r2_log 0.5315
+  epoch   7  loss 1.5335  val_macro_f1 0.5559  val_mae_trieu 4.3478  val_r2_log 0.5261
+  epoch   8  loss 1.4817  val_macro_f1 0.5503  val_mae_trieu 4.3222  val_r2_log 0.5345
+  epoch   9  loss 1.4439  val_macro_f1 0.5591  val_mae_trieu 4.2771  val_r2_log 0.5597
+  epoch  10  loss 1.4101  val_macro_f1 0.5620  val_mae_trieu 4.2237  val_r2_log 0.5662
+  epoch  11  loss 1.3732  val_macro_f1 0.5655  val_mae_trieu 4.3059  val_r2_log 0.5378
+  epoch  12  loss 1.3455  val_macro_f1 0.5512  val_mae_trieu 4.2529  val_r2_log 0.5556
+  epoch  13  loss 1.3210  val_macro_f1 0.5671  val_mae_trieu 4.3263  val_r2_log 0.5527
+  epoch  14  loss 1.2906  val_macro_f1 0.5631  val_mae_trieu 4.3838  val_r2_log 0.5146
+  epoch  15  loss 1.2778  val_macro_f1 0.5761  val_mae_trieu 4.6369  val_r2_log 0.4441
+  epoch  16  loss 1.2463  val_macro_f1 0.5725  val_mae_trieu 4.3770  val_r2_log 0.5257
+  epoch  17  loss 1.2245  val_macro_f1 0.5780  val_mae_trieu 4.4263  val_r2_log 0.5371
+  epoch  18  loss 1.2069  val_macro_f1 0.5845  val_mae_trieu 4.4440  val_r2_log 0.4897
+  epoch  19  loss 1.1836  val_macro_f1 0.5663  val_mae_trieu 4.3722  val_r2_log 0.5482
+  epoch  20  loss 1.1667  val_macro_f1 0.5745  val_mae_trieu 4.4179  val_r2_log 0.5032
+  epoch  21  loss 1.1503  val_macro_f1 0.5738  val_mae_trieu 4.2950  val_r2_log 0.5396
+  epoch  22  loss 1.1314  val_macro_f1 0.5861  val_mae_trieu 4.3356  val_r2_log 0.5384
+  epoch  23  loss 1.1167  val_macro_f1 0.5839  val_mae_trieu 4.3117  val_r2_log 0.5327
+  epoch  24  loss 1.1001  val_macro_f1 0.5783  val_mae_trieu 4.2984  val_r2_log 0.5362
+  epoch  25  loss 1.0803  val_macro_f1 0.5709  val_mae_trieu 4.3658  val_r2_log 0.5185
+  epoch  26  loss 1.0616  val_macro_f1 0.5749  val_mae_trieu 4.5660  val_r2_log 0.4499
+  epoch  27  loss 1.0559  val_macro_f1 0.5685  val_mae_trieu 4.3306  val_r2_log 0.5304
+  epoch  28  loss 1.0419  val_macro_f1 0.5899  val_mae_trieu 4.3056  val_r2_log 0.5486
+  epoch  29  loss 1.0242  val_macro_f1 0.5881  val_mae_trieu 4.3069  val_r2_log 0.5400
+  epoch  30  loss 1.0148  val_macro_f1 0.5971  val_mae_trieu 4.3291  val_r2_log 0.5329
+  epoch  31  loss 1.0111  val_macro_f1 0.5860  val_mae_trieu 4.2835  val_r2_log 0.5287
+  epoch  32  loss 0.9891  val_macro_f1 0.5799  val_mae_trieu 4.2557  val_r2_log 0.5340
+  epoch  33  loss 0.9828  val_macro_f1 0.5875  val_mae_trieu 4.3036  val_r2_log 0.5483
+  epoch  34  loss 0.9702  val_macro_f1 0.5787  val_mae_trieu 4.4302  val_r2_log 0.4851
+  epoch  35  loss 0.9574  val_macro_f1 0.5811  val_mae_trieu 4.4025  val_r2_log 0.5038
+  epoch  36  loss 0.9543  val_macro_f1 0.5788  val_mae_trieu 4.2534  val_r2_log 0.5490
+  epoch  37  loss 0.9397  val_macro_f1 0.5809  val_mae_trieu 4.2903  val_r2_log 0.5494
+  epoch  38  loss 0.9355  val_macro_f1 0.5778  val_mae_trieu 4.2872  val_r2_log 0.5433
+  dừng sớm ở epoch 38 (tốt nhất: cat 30, sal 10)
+
+[dl-mtl-visobert-rnn512-a5-s42] MTL · best epoch cat 30 · sal 10 / 38 · macroF1=0.5971 · MAE=4.22tr · R2log=0.566

@@ -1,0 +1,26 @@
+  epoch   1  loss 3.9217  val_macro_f1 0.4330  val_mae_trieu 4.9743  val_r2_log 0.3249
+  epoch   2  loss 1.9579  val_macro_f1 0.5231  val_mae_trieu 4.7888  val_r2_log 0.3981
+  epoch   3  loss 1.7728  val_macro_f1 0.5454  val_mae_trieu 4.5640  val_r2_log 0.4591
+  epoch   4  loss 1.6794  val_macro_f1 0.5577  val_mae_trieu 4.4943  val_r2_log 0.4720
+  epoch   5  loss 1.6130  val_macro_f1 0.5618  val_mae_trieu 4.4284  val_r2_log 0.5024
+  epoch   6  loss 1.5799  val_macro_f1 0.5676  val_mae_trieu 4.4597  val_r2_log 0.4969
+  epoch   7  loss 1.5445  val_macro_f1 0.5695  val_mae_trieu 4.4316  val_r2_log 0.5105
+  epoch   8  loss 1.5108  val_macro_f1 0.5662  val_mae_trieu 4.5450  val_r2_log 0.4931
+  epoch   9  loss 1.4808  val_macro_f1 0.5696  val_mae_trieu 4.3593  val_r2_log 0.5205
+  epoch  10  loss 1.4634  val_macro_f1 0.5624  val_mae_trieu 4.4122  val_r2_log 0.5188
+  epoch  11  loss 1.4364  val_macro_f1 0.5830  val_mae_trieu 4.3650  val_r2_log 0.5230
+  epoch  12  loss 1.4246  val_macro_f1 0.5765  val_mae_trieu 4.3905  val_r2_log 0.5187
+  epoch  13  loss 1.4034  val_macro_f1 0.5872  val_mae_trieu 4.3924  val_r2_log 0.5191
+  epoch  14  loss 1.3855  val_macro_f1 0.5830  val_mae_trieu 4.4240  val_r2_log 0.5186
+  epoch  15  loss 1.3690  val_macro_f1 0.5884  val_mae_trieu 4.3269  val_r2_log 0.5240
+  epoch  16  loss 1.3526  val_macro_f1 0.5841  val_mae_trieu 4.3986  val_r2_log 0.5153
+  epoch  17  loss 1.3326  val_macro_f1 0.5846  val_mae_trieu 4.3682  val_r2_log 0.5253
+  epoch  18  loss 1.3293  val_macro_f1 0.5868  val_mae_trieu 4.3932  val_r2_log 0.5176
+  epoch  19  loss 1.3123  val_macro_f1 0.5831  val_mae_trieu 4.4029  val_r2_log 0.5227
+  epoch  20  loss 1.2981  val_macro_f1 0.5807  val_mae_trieu 4.4368  val_r2_log 0.5070
+  epoch  21  loss 1.2821  val_macro_f1 0.5801  val_mae_trieu 4.4538  val_r2_log 0.5078
+  epoch  22  loss 1.2722  val_macro_f1 0.5854  val_mae_trieu 4.4173  val_r2_log 0.5172
+  epoch  23  loss 1.2590  val_macro_f1 0.5797  val_mae_trieu 4.4072  val_r2_log 0.5114
+  dừng sớm ở epoch 23 (tốt nhất: cat 15, sal 15)
+
+[dl-mtl-bamibert1024-a5-e80-s42] MTL · best epoch cat 15 · sal 15 / 23 · macroF1=0.5884 · MAE=4.33tr · R2log=0.524

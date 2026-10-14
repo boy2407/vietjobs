@@ -1,0 +1,42 @@
+  thống kê chuẩn hoá: 5,120/34,354 dòng (14.9%,    18s)
+  thống kê chuẩn hoá: 10,240/34,354 dòng (29.8%,    37s)
+  thống kê chuẩn hoá: 15,360/34,354 dòng (44.7%,    58s)
+  thống kê chuẩn hoá: 20,480/34,354 dòng (59.6%,    75s)
+  thống kê chuẩn hoá: 25,600/34,354 dòng (74.5%,    92s)
+  thống kê chuẩn hoá: 30,720/34,354 dòng (89.4%,   109s)
+  epoch   1  loss 1.9741  val_macro_f1 0.3597  val_f1_micro 0.5567  val_f1_weighted 0.5082  val_accuracy 0.5567
+  epoch   2  loss 1.4173  val_macro_f1 0.5431  val_f1_micro 0.6443  val_f1_weighted 0.6343  val_accuracy 0.6443
+  epoch   3  loss 1.2723  val_macro_f1 0.5721  val_f1_micro 0.6558  val_f1_weighted 0.6472  val_accuracy 0.6558
+  epoch   4  loss 1.2071  val_macro_f1 0.5708  val_f1_micro 0.6584  val_f1_weighted 0.6473  val_accuracy 0.6584
+  epoch   5  loss 1.1633  val_macro_f1 0.5948  val_f1_micro 0.6674  val_f1_weighted 0.6602  val_accuracy 0.6674
+  epoch   6  loss 1.1296  val_macro_f1 0.5915  val_f1_micro 0.6682  val_f1_weighted 0.6580  val_accuracy 0.6682
+  epoch   7  loss 1.1077  val_macro_f1 0.6006  val_f1_micro 0.6613  val_f1_weighted 0.6534  val_accuracy 0.6613
+  epoch   8  loss 1.0819  val_macro_f1 0.5975  val_f1_micro 0.6600  val_f1_weighted 0.6505  val_accuracy 0.6600
+  epoch   9  loss 1.0582  val_macro_f1 0.5959  val_f1_micro 0.6511  val_f1_weighted 0.6422  val_accuracy 0.6511
+  epoch  10  loss 1.0364  val_macro_f1 0.5960  val_f1_micro 0.6540  val_f1_weighted 0.6452  val_accuracy 0.6540
+  epoch  11  loss 1.0155  val_macro_f1 0.5996  val_f1_micro 0.6566  val_f1_weighted 0.6461  val_accuracy 0.6566
+  epoch  12  loss 0.9957  val_macro_f1 0.5992  val_f1_micro 0.6571  val_f1_weighted 0.6487  val_accuracy 0.6571
+  epoch  13  loss 0.9757  val_macro_f1 0.6029  val_f1_micro 0.6579  val_f1_weighted 0.6493  val_accuracy 0.6579
+  epoch  14  loss 0.9572  val_macro_f1 0.5955  val_f1_micro 0.6519  val_f1_weighted 0.6412  val_accuracy 0.6519
+  epoch  15  loss 0.9402  val_macro_f1 0.6036  val_f1_micro 0.6566  val_f1_weighted 0.6497  val_accuracy 0.6566
+  epoch  16  loss 0.9260  val_macro_f1 0.5979  val_f1_micro 0.6545  val_f1_weighted 0.6470  val_accuracy 0.6545
+  epoch  17  loss 0.9103  val_macro_f1 0.5986  val_f1_micro 0.6498  val_f1_weighted 0.6403  val_accuracy 0.6498
+[W1013 09:11:47.041922617 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 1010827264 bytes (free: 79233024, total: 16584933376).
+  epoch  18  loss 0.8920  val_macro_f1 0.5993  val_f1_micro 0.6535  val_f1_weighted 0.6458  val_accuracy 0.6535
+  epoch  19  loss 0.8797  val_macro_f1 0.5914  val_f1_micro 0.6532  val_f1_weighted 0.6454  val_accuracy 0.6532
+  epoch  20  loss 0.8664  val_macro_f1 0.5948  val_f1_micro 0.6527  val_f1_weighted 0.6439  val_accuracy 0.6527
+  epoch  21  loss 0.8541  val_macro_f1 0.6028  val_f1_micro 0.6537  val_f1_weighted 0.6479  val_accuracy 0.6537
+  epoch  22  loss 0.8421  val_macro_f1 0.5978  val_f1_micro 0.6432  val_f1_weighted 0.6373  val_accuracy 0.6432
+  epoch  23  loss 0.8268  val_macro_f1 0.6056  val_f1_micro 0.6503  val_f1_weighted 0.6467  val_accuracy 0.6503
+  epoch  24  loss 0.8169  val_macro_f1 0.5958  val_f1_micro 0.6503  val_f1_weighted 0.6418  val_accuracy 0.6503
+  epoch  25  loss 0.8025  val_macro_f1 0.5906  val_f1_micro 0.6390  val_f1_weighted 0.6297  val_accuracy 0.6390
+  epoch  26  loss 0.8017  val_macro_f1 0.6001  val_f1_micro 0.6472  val_f1_weighted 0.6426  val_accuracy 0.6472
+  epoch  27  loss 0.7877  val_macro_f1 0.5855  val_f1_micro 0.6369  val_f1_weighted 0.6277  val_accuracy 0.6369
+  epoch  28  loss 0.7776  val_macro_f1 0.5974  val_f1_micro 0.6519  val_f1_weighted 0.6450  val_accuracy 0.6519
+  epoch  29  loss 0.7711  val_macro_f1 0.5955  val_f1_micro 0.6424  val_f1_weighted 0.6360  val_accuracy 0.6424
+  epoch  30  loss 0.7600  val_macro_f1 0.6042  val_f1_micro 0.6482  val_f1_weighted 0.6414  val_accuracy 0.6482
+  epoch  31  loss 0.7558  val_macro_f1 0.5972  val_f1_micro 0.6448  val_f1_weighted 0.6391  val_accuracy 0.6448
+  dừng sớm ở epoch 31 (tốt nhất: 23)
+
+[dl-cat-bamibert-rnn-1024] category · best epoch 23/31 · macroF1=0.6056 · F1=0.6467 · microF1=0.6503 · acc=0.6503
+  -> artifacts/dl-cat-bamibert-rnn-1024/

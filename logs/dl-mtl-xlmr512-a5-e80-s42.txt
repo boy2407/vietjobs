@@ -1,0 +1,39 @@
+  epoch   1  loss 3.8131  val_macro_f1 0.4697  val_mae_trieu 5.2507  val_r2_log 0.2529
+  epoch   2  loss 1.9164  val_macro_f1 0.5360  val_mae_trieu 4.9768  val_r2_log 0.3469
+  epoch   3  loss 1.7515  val_macro_f1 0.5485  val_mae_trieu 4.5599  val_r2_log 0.4528
+  epoch   4  loss 1.6659  val_macro_f1 0.5610  val_mae_trieu 4.5708  val_r2_log 0.4522
+  epoch   5  loss 1.5993  val_macro_f1 0.5656  val_mae_trieu 4.4692  val_r2_log 0.4889
+  epoch   6  loss 1.5638  val_macro_f1 0.5763  val_mae_trieu 4.4783  val_r2_log 0.4821
+  epoch   7  loss 1.5339  val_macro_f1 0.5776  val_mae_trieu 4.4295  val_r2_log 0.4972
+  epoch   8  loss 1.4993  val_macro_f1 0.5764  val_mae_trieu 4.5075  val_r2_log 0.4884
+  epoch   9  loss 1.4746  val_macro_f1 0.5688  val_mae_trieu 4.4340  val_r2_log 0.4972
+  epoch  10  loss 1.4534  val_macro_f1 0.5765  val_mae_trieu 4.4418  val_r2_log 0.5069
+  epoch  11  loss 1.4349  val_macro_f1 0.5887  val_mae_trieu 4.4349  val_r2_log 0.5017
+  epoch  12  loss 1.4141  val_macro_f1 0.5773  val_mae_trieu 4.4167  val_r2_log 0.5127
+  epoch  13  loss 1.3965  val_macro_f1 0.5876  val_mae_trieu 4.3959  val_r2_log 0.5072
+  epoch  14  loss 1.3816  val_macro_f1 0.5875  val_mae_trieu 4.4625  val_r2_log 0.5001
+  epoch  15  loss 1.3603  val_macro_f1 0.5891  val_mae_trieu 4.3678  val_r2_log 0.5195
+  epoch  16  loss 1.3530  val_macro_f1 0.5824  val_mae_trieu 4.3790  val_r2_log 0.5163
+  epoch  17  loss 1.3365  val_macro_f1 0.5869  val_mae_trieu 4.3577  val_r2_log 0.5263
+  epoch  18  loss 1.3217  val_macro_f1 0.5847  val_mae_trieu 4.3630  val_r2_log 0.5223
+  epoch  19  loss 1.3126  val_macro_f1 0.5859  val_mae_trieu 4.3290  val_r2_log 0.5244
+  epoch  20  loss 1.2981  val_macro_f1 0.5874  val_mae_trieu 4.3657  val_r2_log 0.5191
+  epoch  21  loss 1.2766  val_macro_f1 0.5935  val_mae_trieu 4.4090  val_r2_log 0.5174
+  epoch  22  loss 1.2740  val_macro_f1 0.5905  val_mae_trieu 4.4068  val_r2_log 0.5188
+  epoch  23  loss 1.2630  val_macro_f1 0.5875  val_mae_trieu 4.3832  val_r2_log 0.5239
+  epoch  24  loss 1.2482  val_macro_f1 0.5839  val_mae_trieu 4.3324  val_r2_log 0.5228
+  epoch  25  loss 1.2342  val_macro_f1 0.5846  val_mae_trieu 4.4154  val_r2_log 0.5140
+  epoch  26  loss 1.2249  val_macro_f1 0.5903  val_mae_trieu 4.5279  val_r2_log 0.4996
+  epoch  27  loss 1.2154  val_macro_f1 0.5799  val_mae_trieu 4.4356  val_r2_log 0.5071
+  epoch  28  loss 1.2055  val_macro_f1 0.5914  val_mae_trieu 4.3005  val_r2_log 0.5273
+  epoch  29  loss 1.1872  val_macro_f1 0.5912  val_mae_trieu 4.3743  val_r2_log 0.5169
+  epoch  30  loss 1.1839  val_macro_f1 0.5863  val_mae_trieu 4.4091  val_r2_log 0.5122
+  epoch  31  loss 1.1754  val_macro_f1 0.5861  val_mae_trieu 4.3941  val_r2_log 0.5188
+  epoch  32  loss 1.1670  val_macro_f1 0.5882  val_mae_trieu 4.4900  val_r2_log 0.5002
+  epoch  33  loss 1.1556  val_macro_f1 0.5864  val_mae_trieu 4.3977  val_r2_log 0.5072
+  epoch  34  loss 1.1396  val_macro_f1 0.5845  val_mae_trieu 4.4210  val_r2_log 0.5013
+  epoch  35  loss 1.1410  val_macro_f1 0.5927  val_mae_trieu 4.4472  val_r2_log 0.5031
+  epoch  36  loss 1.1282  val_macro_f1 0.5918  val_mae_trieu 4.4467  val_r2_log 0.5026
+  dừng sớm ở epoch 36 (tốt nhất: cat 21, sal 28)
+
+[dl-mtl-xlmr512-a5-e80-s42] MTL · best epoch cat 21 · sal 28 / 36 · macroF1=0.5935 · MAE=4.30tr · R2log=0.527
