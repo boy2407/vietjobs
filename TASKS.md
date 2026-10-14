@@ -150,25 +150,25 @@ Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows c
 
 | ID | Task | Status | Owner | Depends on | Done when (evidence) |
 |---|---|---|---|---|---|
-| T11.0 | Confirm HF ids: ViSoBERT `uitnlp/visobert`, XLM-R `FacebookAI/xlm-roberta-base`, BamiBERT `Qualcomm-AI-Research/BamiBERT` (config.json 2026-10-12: all three hidden 768, 12 layers; max tokens 512 / 512 / 2048; vocab 15,004 / 250,002 / 20,481); record hidden size, max positions, tokenizer, truncation % @512 on `dev` | todo | — | — | three ids in `encode.py`, truncation numbers in this row |
-| T11.1 | ViSoBERT · Dense · `category` | todo | — | T11.0 | `dl-cat-visobert-dense-512` macroF1 + bootstrap vs PhoBERT/CafeBERT Dense |
-| T11.2 | ViSoBERT · Dense · `salary` | todo | — | T11.0 | `dl-sal-visobert-dense-512` MAE + bootstrap vs `dl-sal-cpu-0920` |
-| T11.3 | ViSoBERT · RNN · `category` | todo | — | T11.1 (token cache) | `dl-cat-visobert-rnn-512` vs `dl-cat-rnn-ce` |
-| T11.4 | ViSoBERT · RNN · `salary` | todo | — | T11.2 (token cache) | `dl-sal-visobert-rnn-512` vs `dl-sal-rnn` |
-| T11.5 | BamiBERT · Dense · `category` | todo | — | T11.0 | `dl-cat-bamibert-dense-1024` |
-| T11.6 | BamiBERT · Dense · `salary` | todo | — | T11.0 | `dl-sal-bamibert-dense-1024` |
-| T11.7 | BamiBERT · RNN · `category` | todo | — | T11.5 | `dl-cat-bamibert-rnn-1024` |
-| T11.8 | BamiBERT · RNN · `salary` | todo | — | T11.6 | `dl-sal-bamibert-rnn-1024` |
-| T11.9 | XLM-R base · Dense · `category` | todo | — | T11.0 | `dl-cat-xlmr-dense-512` |
-| T11.10 | XLM-R base · Dense · `salary` | todo | — | T11.0 | `dl-sal-xlmr-dense-512` |
-| T11.11 | XLM-R base · RNN · `category` | todo | — | T11.9 | `dl-cat-xlmr-rnn-512` |
-| T11.12 | XLM-R base · RNN · `salary` | todo | — | T11.10 | `dl-sal-xlmr-rnn-512` |
-| T11.14 | ViSoBERT · MTL Dense (`train_mtl`, `masked` family, α=5 as T4.1) | todo | — | T11.1, T11.2 | `dl-mtl-visobert512-a5-e80-s42`: cat macroF1 + sal MAE, bootstrap vs T11.1 / T11.2 |
-| T11.15 | ViSoBERT · MTL RNN | todo | — | T11.3, T11.4 | `dl-mtl-visobert-rnn512-a5-s42` vs T11.3 / T11.4 |
-| T11.16 | BamiBERT · MTL Dense | todo | — | T11.5, T11.6 | `dl-mtl-bamibert1024-a5-e80-s42` vs T11.5 / T11.6 |
-| T11.17 | BamiBERT · MTL RNN | todo | — | T11.7, T11.8 | `dl-mtl-bamibert-rnn1024-a5-s42` vs T11.7 / T11.8 |
-| T11.18 | XLM-R base · MTL Dense | todo | — | T11.9, T11.10 | `dl-mtl-xlmr512-a5-e80-s42` vs T11.9 / T11.10 |
-| T11.19 | XLM-R base · MTL RNN | todo | — | T11.11, T11.12 | `dl-mtl-xlmr-rnn512-a5-s42` vs T11.11 / T11.12 |
+| T11.0 | Confirm HF ids: ViSoBERT `uitnlp/visobert`, XLM-R `FacebookAI/xlm-roberta-base`, BamiBERT `Qualcomm-AI-Research/BamiBERT` (config.json 2026-10-12: all three hidden 768, 12 layers; max tokens 512 / 512 / 2048; vocab 15,004 / 250,002 / 20,481); record hidden size, max positions, tokenizer, truncation % @512 on `dev` | done | Claude | — | dev truncation @512: ViSoBERT 6.1 %, XLM-R 6.2 %; BamiBERT @1024 0.1 % (ids and hidden 768 in this row; longest posting 1,553 / 1,609 / 1,641 tokens) |
+| T11.1 | ViSoBERT · Dense · `category` | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.0 | `dl-cat-visobert-dense-512` macroF1 **0.5723** (ep 24/32); dev, seed 42, one seed, no bootstrap yet |
+| T11.2 | ViSoBERT · Dense · `salary` | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.0 | `dl-sal-visobert-dense-512` MAE **4.49** tr, R²log 0.428 (ep 12/20); dev, seed 42, one seed, no bootstrap yet |
+| T11.3 | ViSoBERT · RNN · `category` | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.1 (token cache) | `dl-cat-visobert-rnn-512` macroF1 **0.6046** (ep 31/39); dev, seed 42, one seed, no bootstrap yet |
+| T11.4 | ViSoBERT · RNN · `salary` | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.2 (token cache) | `dl-sal-visobert-rnn-512` MAE **3.96** tr, R²log 0.594 (ep 36/40); dev, seed 42, one seed, no bootstrap yet |
+| T11.5 | BamiBERT · Dense · `category` | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.0 | `dl-cat-bamibert-dense-1024` macroF1 **0.5987** (ep 22/30); dev, seed 42, one seed, no bootstrap yet |
+| T11.6 | BamiBERT · Dense · `salary` | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.0 | `dl-sal-bamibert-dense-1024` MAE **4.32** tr, R²log 0.514 (ep 21/29); dev, seed 42, one seed, no bootstrap yet |
+| T11.7 | BamiBERT · RNN · `category` | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.5 | `dl-cat-bamibert-rnn-1024` macroF1 **0.6056** (ep 23/31); dev, seed 42, one seed, no bootstrap yet |
+| T11.8 | BamiBERT · RNN · `salary` | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.6 | `dl-sal-bamibert-rnn-1024` MAE **3.87** tr, R²log 0.614 (ep 30/38); dev, seed 42, one seed, no bootstrap yet |
+| T11.9 | XLM-R base · Dense · `category` | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.0 | `dl-cat-xlmr-dense-512` macroF1 **0.5953** (ep 13/21); dev, seed 42, one seed, no bootstrap yet |
+| T11.10 | XLM-R base · Dense · `salary` | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.0 | `dl-sal-xlmr-dense-512` MAE **4.39** tr, R²log 0.506 (ep 11/19); dev, seed 42, one seed, no bootstrap yet |
+| T11.11 | XLM-R base · RNN · `category` | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.9 | `dl-cat-xlmr-rnn-512` macroF1 **0.6134** (ep 7/15); dev, seed 42, one seed, no bootstrap yet |
+| T11.12 | XLM-R base · RNN · `salary` | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.10 | `dl-sal-xlmr-rnn-512` MAE **3.98** tr, R²log 0.619 (ep 6/14); dev, seed 42, one seed, no bootstrap yet |
+| T11.14 | ViSoBERT · MTL Dense (`train_mtl`, `masked` family, α=5 as T4.1) | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.1, T11.2 | `dl-mtl-visobert512-a5-e80-s42` macroF1 **0.5578** (ep 28), MAE **4.45** tr, R²log 0.429 (ep 16); 36 epochs; dev, seed 42, one seed, no bootstrap yet |
+| T11.15 | ViSoBERT · MTL RNN | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.3, T11.4 | `dl-mtl-visobert-rnn512-a5-s42` macroF1 **0.5971** (ep 30), MAE **4.22** tr, R²log 0.566 (ep 10); 38 epochs; dev, seed 42, one seed, no bootstrap yet |
+| T11.16 | BamiBERT · MTL Dense | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.5, T11.6 | `dl-mtl-bamibert1024-a5-e80-s42` macroF1 **0.5884** (ep 15), MAE **4.33** tr, R²log 0.524 (ep 15); 23 epochs; dev, seed 42, one seed, no bootstrap yet |
+| T11.17 | BamiBERT · MTL RNN | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.7, T11.8 | `dl-mtl-bamibert-rnn1024-a5-s42` macroF1 **0.6102** (ep 21), MAE **4.03** tr, R²log 0.575 (ep 29); 37 epochs; dev, seed 42, one seed, no bootstrap yet |
+| T11.18 | XLM-R base · MTL Dense | doing (bootstrap + docs pending) | Claude (Mac cpu) | T11.9, T11.10 | `dl-mtl-xlmr512-a5-e80-s42` macroF1 **0.5935** (ep 21), MAE **4.30** tr, R²log 0.527 (ep 28); 36 epochs; dev, seed 42, one seed, no bootstrap yet |
+| T11.19 | XLM-R base · MTL RNN | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.11, T11.12 | `dl-mtl-xlmr-rnn512-a5-s42` macroF1 **0.6065** (ep 23), MAE **3.98** tr, R²log 0.608 (ep 28); 36 epochs; dev, seed 42, one seed, no bootstrap yet |
 | T11.13 | One encoder-comparison table (PhoBERT, CafeBERT, + the three; single task and MTL) in docs/06 and ch.4 | todo | — | T11.1–T11.12, T11.14–T11.19 | table + bootstrap column |
 
 ### Backlog (not scheduled)
@@ -278,3 +278,4 @@ Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows c
 | 2026-10-12 | Claude | Vast rental planned: `vast/dot-4-t11-encode-dense.md` (CHƯA THUÊ) + `scripts/vast_run_t11_encode.sh` — encode XLM-R @512 and BamiBERT @2048 pooled only; all 9 T11 Dense runs (single task + MTL α=5) on the Mac cpu. BamiBERT run ids now `-2048`. |
 | 2026-10-12 | Claude | T11.14 `dl-mtl-visobert512-a5-e80-s42` (cpu, s42): macroF1 0.5578 (ep 28), MAE 4.45 tr, R²log 0.429 (ep 16), 36 epochs. Bootstrap pending. |
 | 2026-10-12 | Claude | Đợt 4 re-scoped at the author's request: on vast, encode + all T11 runs (Dense/MTL dense cpu, RNN/MTL RNN cuda), then pull results + pooled caches. Max tokens measured (train+dev): 1,553 / 1,609 / 1,641 (BamiBERT / XLM-R / ViSoBERT); >1024 only 0.1–0.2 %. Author chose BamiBERT 1024 for every run; run ids renamed `-1024`. Token caches (~240 GB) do not fit the Mac (74 GB free). |
+| 2026-10-13 | Claude | T11 Dense/RNN/MTL run on vast rental 4 (RTX 5060 Ti 16 GB, 24 cores, 125 GB RAM, ~11 h, `scripts/vast_run_t11_encode.sh all` in tmux) and on the Mac (ViSoBERT Dense). 18 runs, all seed 42, dev: category macroF1 — ViSoBERT 0.5723 / 0.6046 (Dense / RNN), XLM-R 0.5953 / **0.6134**, BamiBERT@1024 0.5987 / 0.6056; salary MAE tr — ViSoBERT 4.49 / 3.96, XLM-R 4.39 / 3.98, BamiBERT 4.32 / **3.87**; MTL (cat / MAE) Dense: ViSoBERT 0.5578 / 4.45, XLM-R 0.5935 / 4.30, BamiBERT 0.5884 / 4.33; MTL RNN: ViSoBERT 0.5971 / 4.22, XLM-R 0.6065 / 3.98, BamiBERT **0.6102** / 4.03. Three ViSoBERT Dense reruns on vast (`*-vast`, cpu) differ from the Mac runs by 0.0018 macroF1 / 0.09 tr MAE (cross-machine noise, Rule 13 item 5); the Mac runs are the T11.1/T11.2/T11.14 numbers. Run rows appended to `docs/04-results.md` from the vast copy. Not done: paired bootstrap vs PhoBERT/CafeBERT, docs/06, ch.4. `best.pt` of every run is on the Mac under `artifacts/` (not committed, Rule 5). Token caches (~160 GB) stay on the rental and are lost on destroy. |
