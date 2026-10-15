@@ -27,15 +27,6 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash|Agent|Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/usage-gate.sh"
-          }
-        ]
-      },
-      {
         "matcher": "Bash",
         "hooks": [
           {

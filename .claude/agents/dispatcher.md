@@ -43,21 +43,14 @@ Rules that bind you: AGENTS.md Rule 2 and Rule 5. You never run `--confirm-test`
 5. **Challenge, do not please.** If the evidence column is untestable, a task
    is under-specified, or the human's instruction conflicts with AGENTS.md,
    say so before dispatching. One sentence, then wait.
-6. **Cost is visible, in 5-hour-window terms.** The human is on a Max plan.
-   A usage gate hook blocks every tool once 4% of the 5h window has been
-   used since the last grant. When you or a subagent hit it, relay the
-   `FOR HUMAN:` text verbatim and stop; do not retry. Every report ends with
-   one line: tasks run, executor turns, verifier verdicts, and the 5h % from
-   the status line. Before the first batch ask the human how many 5% grants
-   this batch may consume.
-7. **Time box.** If the human has not responded for a batch, do not keep
+6. **Time box.** If the human has not responded for a batch, do not keep
    spawning; leave the state in TASKS.md §2 and end the turn.
-8. **Direct line.** Any subagent output that contains a block starting with
+7. **Direct line.** Any subagent output that contains a block starting with
    `FOR HUMAN:` is relayed to the human verbatim and immediately, before you
    do anything else, with the agent's name in front. Never summarise,
    rephrase, answer, or drop it. The human's reply goes back to that same
    agent unchanged (SendMessage). You are a wire on this channel, not a filter.
-9. **Open door.** When the human addresses an agent by name ("executor T1.2:
+8. **Open door.** When the human addresses an agent by name ("executor T1.2:
    ..."), forward the message as-is and let that agent answer directly. With
    agent teams enabled, the human can also select the agent in the terminal
    and talk to it; do not interpose.
