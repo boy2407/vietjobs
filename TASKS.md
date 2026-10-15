@@ -184,7 +184,7 @@ Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows c
 
 | ID | Task | Status | Owner | Depends on | Done when (evidence) |
 |---|---|---|---|---|---|
-| T12.1 | Score the saved `best.pt` of every configuration on the author's results dashboard (34 configurations) on `test.csv` and on `ext37k-sal.csv`, with no retraining. Authority: AGENTS.md Rule 5 item 6 (author, 2026-10-15); `salary` on ext37k-sal scored despite T10.1, marked provisional | todo | — | — | Two sheets, `data/eda_xlsx/dashboard_test.csv` and `dashboard_ext37k_sal.csv`, with the dashboard's 11 columns and 34 rows; multi-seed configurations show mean ± sd over their seeds; any missing checkpoint is listed, not retrained; one `04-results.md` row per configuration and dataset, tagged `test: author override 2026-10-15` or `ext37k-sal: provisional, T10.1 overridden`; `pytest -q` green; `test.csv` sha256 unchanged |
+| T12.1 | Score the saved `best.pt` of every configuration on the author's results dashboard (34 configurations) on `test.csv` and on `ext37k-sal.csv`, with no retraining. Authority: AGENTS.md Rule 5 item 6 (author, 2026-10-15); `salary` on ext37k-sal scored despite T10.1, marked provisional | todo | wt:t12.1 | — | Two sheets, `data/eda_xlsx/dashboard_test.csv` and `dashboard_ext37k_sal.csv`, with the dashboard's 11 columns and 34 rows; multi-seed configurations show mean ± sd over their seeds; any missing checkpoint is listed, not retrained; one `04-results.md` row per configuration and dataset, tagged `test: author override 2026-10-15` or `ext37k-sal: provisional, T10.1 overridden`; `pytest -q` green; `test.csv` sha256 unchanged |
 
 ---
 
