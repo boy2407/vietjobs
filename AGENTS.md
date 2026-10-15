@@ -179,6 +179,7 @@ There is **no inference entry point right now** — T5.1 owns adding one.
    into `train:dev` = 9:1 → 34,354 / 3,812 / 9,541 rows. `dev` is small on
    purpose; the smallest class has 25 rows there, so read `f1_macro_no_junk`
    next to any per-class number and confirm on `test` at the end.
+6. **2026-10-15 exception (author):** every configuration on the results dashboard may be scored once on `test` from its saved `best.pt`, without retraining. These numbers are recorded as test-informed and are not used to claim a held-out final result.
 
 ## Rule 6 — language is per file, not per repository
 
