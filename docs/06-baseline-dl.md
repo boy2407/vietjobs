@@ -459,3 +459,27 @@ Luật chọn, đặt trước khi đọc bảng: MAE thấp nhất trong các �
 > ⛔ **Chưa có số liệu** cái giá của việc che trên đầu phân lớp (T4.1).
 
 > **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/`, `artifacts/dl-mtl-cafe512-a{1,5}-e80-s{42,43,44}/` (`metrics.json`, `history.jsonl`), các dòng tương ứng trong [04-results.md](04-results.md).
+
+### 5.8 T12.1 — nối vector PhoBERT và CafeBERT, head dense (2026-10-15)
+
+Hai encoder đông lạnh, không nhúng lại: PhoBERT 256 token (768 chiều) ‖ CafeBERT 512 token (1024 chiều) → head dense 1792 → 256 → 128 → 16 (phân lớp) hoặc 1 (lương). Cấu hình giữ nguyên `dl-cat-ce-cpu-0920` và `dl-sal-cpu-0920`: CE, không cân lớp, `--device cpu`, seed 42–46, chọn trên `dev`. Lệnh: `train_dl.py --task {category,salary} --max-len 256 --concat-encoder cafebert --concat-max-len 512 --seed S`. Bài lương dùng họ `masked` cho cả hai cache (Quy tắc 3).
+
+| Bài toán | Nối PhoBERT ‖ CafeBERT | PhoBERT Dense | CafeBERT Dense |
+|---|---|---|---|
+| `category`, macro-F1 | **0,6107** ± 0,0064 | 0,6032 ± 0,0029 | 0,6037 ± 0,0037 |
+| `salary`, MAE (triệu) | **4,0652** ± 0,0258 | 4,1430 ± 0,0211 | 4,1302 ± 0,0224 |
+
+Δ ghép theo seed (nối − tham chiếu), KTC 95 % bootstrap trên 5 seed, B = 2.000:
+
+| Bài toán | Tham chiếu | Δ | KTC 95 % | seed cải thiện |
+|---|---|---|---|---|
+| `category` | PhoBERT Dense | +0,0075 | [+0,0008; +0,0142] | 4/5 |
+| `category` | CafeBERT Dense | +0,0071 | [+0,0003; +0,0123] | 4/5 |
+| `salary` | PhoBERT Dense | −0,0778 | [−0,1008; −0,0526] | 5/5 |
+| `salary` | CafeBERT Dense | −0,0650 | [−0,0884; −0,0464] | 5/5 |
+
+Đọc kết quả: nối hai encoder cải thiện nhẹ phân lớp (+0,007 macro-F1, so với biên nhiễu 0,003 đo ở §5.5) và cải thiện rõ hơn bài lương (MAE thấp hơn khoảng 0,07 triệu, cả 5 seed đều tốt hơn). Các KTC chỉ dùng 5 seed nên rất thô; KTC của phân lớp sát 0. Chưa đo nhiễu cho từng tham chiếu theo dữ liệu, chưa có số trên `test`.
+
+Lớp tệ nhất ở seed 42 là `nhóm_nghề_khác` (F1 0,2069, 25 mẫu `dev`): hàng nhầm lẫn của lớp này (16 ô, mỗi ô là số mẫu đúng lớp này bị đoán thành lớp đó) nằm ở `artifacts/dl-cat-concat-cpu-s42/confusion_worst_row.csv`. Hàng đó rải trên nhiều lớp, ô lớn nhất là `sản_xuất_lao_động_phổ_thông_cơ_khí` (8 trên 25).
+
+> **Nguồn số liệu:** `artifacts/dl-{cat,sal}-concat-cpu-s{42..46}/metrics.json`; tham chiếu `artifacts/dl-cat-ce-cpu-{0920,s43..s46}`, `dl-cat-cafe-dense-512{,-s43..s46}`, `dl-sal-cpu-{0920,s43..s46}`, `dl-sal-cafe-dense-512{,-s43..s46}`; bảng và KTC từ `scripts/t121_concat_stats.py` → `artifacts/t121/summary.json`; các dòng trong [04-results.md](04-results.md).
