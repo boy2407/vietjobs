@@ -180,6 +180,14 @@ Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows c
 - Missing tests: `tests/test_predict.py` does not exist (Rule 4 unguarded), and nothing tests `dataset.clean` or `group_stratified_split` (moved here from bao-cao ch.5 §5.3.1 and docs/08, 2026-09-17)
 - `UNMASKED_COLUMNS` is hand-written; `soft_skills_text`, `qualifications_text` slipped once. Adding a text field means updating `_MASKABLE` **and** `UNMASKED_COLUMNS`
 
+### T12 — score saved models on test and ext37k-sal
+
+| ID | Task | Status | Owner | Depends on | Done when (evidence) |
+|---|---|---|---|---|---|
+| T12.1 | Score the saved `best.pt` of every configuration on the author's results dashboard (34 configurations) on `test.csv` and on `ext37k-sal.csv`, with no retraining. Authority: AGENTS.md Rule 5 item 6 (author, 2026-10-15); `salary` on ext37k-sal scored despite T10.1, marked provisional | todo | — | — | Two sheets, `data/eda_xlsx/dashboard_test.csv` and `dashboard_ext37k_sal.csv`, with the dashboard's 11 columns and 34 rows; multi-seed configurations show mean ± sd over their seeds; any missing checkpoint is listed, not retrained; one `04-results.md` row per configuration and dataset, tagged `test: author override 2026-10-15` or `ext37k-sal: provisional, T10.1 overridden`; `pytest -q` green; `test.csv` sha256 unchanged |
+
+---
+
 ---
 
 ## 3. Rules that bind every task
@@ -279,3 +287,4 @@ Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows c
 | 2026-10-12 | Claude | T11.14 `dl-mtl-visobert512-a5-e80-s42` (cpu, s42): macroF1 0.5578 (ep 28), MAE 4.45 tr, R²log 0.429 (ep 16), 36 epochs. Bootstrap pending. |
 | 2026-10-12 | Claude | Đợt 4 re-scoped at the author's request: on vast, encode + all T11 runs (Dense/MTL dense cpu, RNN/MTL RNN cuda), then pull results + pooled caches. Max tokens measured (train+dev): 1,553 / 1,609 / 1,641 (BamiBERT / XLM-R / ViSoBERT); >1024 only 0.1–0.2 %. Author chose BamiBERT 1024 for every run; run ids renamed `-1024`. Token caches (~240 GB) do not fit the Mac (74 GB free). |
 | 2026-10-13 | Claude | T11 Dense/RNN/MTL run on vast rental 4 (RTX 5060 Ti 16 GB, 24 cores, 125 GB RAM, ~11 h, `scripts/vast_run_t11_encode.sh all` in tmux) and on the Mac (ViSoBERT Dense). 18 runs, all seed 42, dev: category macroF1 — ViSoBERT 0.5723 / 0.6046 (Dense / RNN), XLM-R 0.5953 / **0.6134**, BamiBERT@1024 0.5987 / 0.6056; salary MAE tr — ViSoBERT 4.49 / 3.96, XLM-R 4.39 / 3.98, BamiBERT 4.32 / **3.87**; MTL (cat / MAE) Dense: ViSoBERT 0.5578 / 4.45, XLM-R 0.5935 / 4.30, BamiBERT 0.5884 / 4.33; MTL RNN: ViSoBERT 0.5971 / 4.22, XLM-R 0.6065 / 3.98, BamiBERT **0.6102** / 4.03. Three ViSoBERT Dense reruns on vast (`*-vast`, cpu) differ from the Mac runs by 0.0018 macroF1 / 0.09 tr MAE (cross-machine noise, Rule 13 item 5); the Mac runs are the T11.1/T11.2/T11.14 numbers. Run rows appended to `docs/04-results.md` from the vast copy. Not done: paired bootstrap vs PhoBERT/CafeBERT, docs/06, ch.4. `best.pt` of every run is on the Mac under `artifacts/` (not committed, Rule 5). Token caches (~160 GB) stay on the rental and are lost on destroy. |
+| 2026-10-15 | Nghĩa + Claude | Added the T12.1 row (new section T12) at the author's request: score saved `best.pt` of the 34 dashboard configurations on `test` and `ext37k-sal`, no retraining. Board only; nothing run |
