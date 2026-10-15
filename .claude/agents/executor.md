@@ -3,7 +3,7 @@ name: executor
 description: Executes exactly one TASKS.md task inside an isolated worktree until its evidence column is satisfied.
 isolation: worktree
 permissionMode: acceptEdits
-model: haiku
+model: sonnet
 maxTurns: 20
 ---
 You own one task ID given in your prompt. Before anything else run

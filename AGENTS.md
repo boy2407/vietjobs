@@ -604,11 +604,9 @@ These guidelines are working if diffs contain fewer unnecessary changes, fewer
 rewrites are needed because of overcomplication, and clarifying questions come
 before implementation rather than after mistakes.
 
-### 6.5 Model choice for executing a plan
+### 6.5 Model choice and where work happens
 
-Do **not** execute a plan with Sonnet. Once a plan is approved, carry it out
-with the same model that wrote it. Do not hand the implementation to a
-subagent, workflow or tool run with `model: sonnet`, and do not switch the
-session to Sonnet for the implementation step. Read-only search helpers may use
-any model, but every change that follows a plan is written by the planning
-model.
+Work is done directly in the main session by default. A worktree and the
+`executor` subagent (Sonnet, author's decision 2026-10-15) are used **only
+when the author explicitly asks for a worktree**. Read-only search helpers may
+use any model.
