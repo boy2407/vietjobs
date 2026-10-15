@@ -14,6 +14,8 @@ Các mốc cần vượt, đo trên cùng tập chia dữ liệu với cùng see
 | Ước lượng lương | MAE trên dev **5,70 triệu** (dự đoán trung vị) | [05 §7](05-phan-tich-du-lieu.md#7-ngưỡng-sàn--các-con-số-quyết-định-khớp-trên-train-chấm-điểm-trên-dev) |
 | Có công bố lương hay không | accuracy **0,7078** (luôn đoán "có") | nguồn như trên |
 
+Đã chạy (T12.1, chưa merge): nối vectơ PhoBERT ‖ CafeBERT cho head dense, 5 seed trên `cpu`. Phân loại macro-F1 **0,6107 ± 0,0064** so PhoBERT Dense 0,6032 (Δ +0,0075, KTC95 [+0,0008; +0,0142]); lương MAE **4,0652 ± 0,0258** tr so PhoBERT Dense 4,1430 (Δ −0,0778, KTC95 [−0,1008; −0,0526]). Chi tiết [06 §5.8](06-baseline-dl.md).
+
 ---
 
 ## ~~Ưu tiên 1~~ — hai mốc cơ sở học sâu tách riêng · **XONG**

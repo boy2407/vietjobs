@@ -407,6 +407,13 @@ Với α = 5, phân lớp nhích lên nhưng nằm trong dải seed. Bài lươn
 
 Δ ghép theo seed, KTC 95 % bootstrap trên 5 seed (B = 2.000): phân loại so PhoBERT +0,0075 [+0,0008; +0,0142], so CafeBERT +0,0071 [+0,0003; +0,0123]; lương so PhoBERT −0,0778 [−0,1008; −0,0526], so CafeBERT −0,0650 [−0,0884; −0,0464]. **Đọc kết quả.** Với 5 seed, KTC là thô; ở phân loại cận dưới gần 0, nên cải thiện đây là bằng chứng yếu. Ở lương, nối giảm MAE cả 5/5 seed so với hai mốc.
 
+**Hồ sơ lần chạy (Quy tắc 10).**
+1. *Đã chạy:* T12.1; `run_id` `dl-cat-concat-cpu-s{42..46}` và `dl-sal-concat-cpu-s{42..46}`; lệnh `PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_dl --task {category,salary} --loss ce --device cpu --max-len 256 --concat-encoder cafebert --concat-max-len 512 --eval dev --seed S --run-id ...`; ngày 2026-10-15; đọc `train` (34.354 dòng) và chấm `dev` (n = 3.812 phân loại, 2.698 lương).
+2. *Mô hình:* head dense 1792 → 256 → 128 → 16 hoặc 1, dropout 0,3, AdamW lr 3e-4, weight decay 0,01, batch 256, clip 1,0, patience 8, tối đa 40 epoch; CE, không cân lớp; chuẩn hoá theo `train`. Epoch tốt nhất: phân loại 7–18 (dừng do patience ở 15–26 epoch); lương 10–21 (dừng ở 18–29 epoch). Họ cache: `raw` cho phân loại, `masked` cho lương, cả hai encoder.
+3. *Xử lý dữ liệu:* phân chia v2 (8:2 rồi 9:1, seed 20260826) như §3.2–§3.5; số dòng `train`/`dev` theo manifest; lương dùng cột `*_masked` (Quy tắc 3, xác nhận: `encode.cache_path` cho `salary` trả về `cafebert-*-masked-len512.npy` và `*-masked-len256.npy`, `check_same_rows` từ chối khác họ).
+4. *Xử lý tiếng Việt:* PhoBERT 256 như §3.3 (19,8 % tin bị cắt, giữ 91,5 % token; `artifacts/eda/summary.json`); CafeBERT đọc văn bản chưa tách từ, 512 token, cắt 5,7 % `dev` và 4,5 % `train` (sidecar cache, `truncated_frac`).
+5. *Phân tích tiền xử lý và mốc:* mốc đa số phân loại macro-F1 0,0214 và mốc trung vị lương MAE 5,70 triệu (trên `dev`, khớp trên `train`, `artifacts/eda/summary.json` khoá `floors`); so với `dl-cat-ce-cpu-0920` và `dl-sal-cpu-0920`.
+
 > ⛔ **CHƯA CÓ SỐ LIỆU** (T12.1): kiểm tra trên `test` — chưa được chạm theo Quy tắc 5.
 
 > **Nguồn số liệu:** `artifacts/dl-{cat,sal}-concat-cpu-s{42..46}/metrics.json`; `artifacts/t121/summary.json` (từ `scripts/t121_concat_stats.py`); các dòng trong [04-results.md](../04-results.md); chi tiết trong [docs/06 §5.8](../06-baseline-dl.md).
