@@ -396,6 +396,21 @@ Với α = 5, phân lớp nhích lên nhưng nằm trong dải seed. Bài lươn
 
 > **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/`, `artifacts/dl-mtl-cafe512-a{1,5}-e80-s{42,43,44}/metrics.json`, `artifacts/dl-{cat,sal}-cafe-dense-512*/metrics.json`, các dòng tương ứng trong `04-results.md`.
 
+### 4.4.4. T12.1 — nối vectơ PhoBERT và CafeBERT (head dense)
+
+**Nguyên tắc.** Hai encoder đông lạnh cho hai vectơ khác nhau về mặt từ vựng; nối chúng là cách rẻ nhất để head thấy cả hai, không cần nhúng lại. **Áp dụng.** Vectơ PhoBERT 256 token (768 chiều, văn bản đã tách từ) và CafeBERT 512 token (1024 chiều, văn bản chưa tách từ) được ghép theo chiều đặc trưng thành 1792 chiều; mọi tham số còn lại như `dl-cat-ce-cpu-0920` và `dl-sal-cpu-0920`, chạy trên `cpu`, seed 42–46, chọn trên `dev`. Bài lương dùng họ `masked` cho cả hai cache. Hai cache được ghép khi sidecar của chúng cùng split, cùng họ và cùng số dòng (`encode.check_same_rows`). **Lý do khác mặc định.** Chỉ đổi đầu vào, không đổi head; kết quả so với hai mốc dense đơn encoder (§4.3, §4.4) theo từng seed.
+
+| Bài toán | Nối PhoBERT ‖ CafeBERT | PhoBERT Dense | CafeBERT Dense |
+|---|---|---|---|
+| Phân loại, macro-F1 | 0,6107 ± 0,0064 | 0,6032 ± 0,0029 | 0,6037 ± 0,0037 |
+| Lương, MAE (triệu) | 4,0652 ± 0,0258 | 4,1430 ± 0,0211 | 4,1302 ± 0,0224 |
+
+Δ ghép theo seed, KTC 95 % bootstrap trên 5 seed (B = 2.000): phân loại so PhoBERT +0,0075 [+0,0008; +0,0142], so CafeBERT +0,0071 [+0,0003; +0,0123]; lương so PhoBERT −0,0778 [−0,1008; −0,0526], so CafeBERT −0,0650 [−0,0884; −0,0464]. **Đọc kết quả.** Với 5 seed, KTC là thô; ở phân loại cận dưới gần 0, nên cải thiện đây là bằng chứng yếu. Ở lương, nối giảm MAE cả 5/5 seed so với hai mốc.
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T12.1): kiểm tra trên `test` — chưa được chạm theo Quy tắc 5.
+
+> **Nguồn số liệu:** `artifacts/dl-{cat,sal}-concat-cpu-s{42..46}/metrics.json`; `artifacts/t121/summary.json` (từ `scripts/t121_concat_stats.py`); các dòng trong [04-results.md](../04-results.md); chi tiết trong [docs/06 §5.8](../06-baseline-dl.md).
+
 ## 4.5. Phân tích lỗi
 
 ### 4.5.1. Lỗi của bài toán phân loại
