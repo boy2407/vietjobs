@@ -38,6 +38,36 @@ from .. import evaluate as E
 from . import encode as ENC
 from . import text as T
 from .focal_loss import FocalLoss  # bản của itakurah/focal-loss-pytorch
+
+
+class QuantileLoss(nn.Module):
+    """Pinball loss trên log-lương: đoán thấp bị phạt τ, đoán cao bị phạt 1 − τ.
+
+    τ > 0,5 đẩy dự đoán lên — câu hỏi T2.1 là liệu điều đó có kéo được đuôi phải
+    (≥ 30 tr) mà không làm hỏng phần giữa. τ = 0,5 là một nửa L1.
+    """
+
+    def __init__(self, tau: float = 0.5):
+        super().__init__()
+        self.tau = tau
+
+    def forward(self, pred, target):
+        r = target - pred
+        return torch.maximum(self.tau * r, (self.tau - 1) * r).mean()
+
+
+class AsymHuberLoss(nn.Module):
+    """Huber (SmoothL1) nhân 2τ khi đoán thấp, 2(1 − τ) khi đoán cao; τ = 0,5 ≡ Huber."""
+
+    def __init__(self, tau: float = 0.5):
+        super().__init__()
+        self.tau = tau
+
+    def forward(self, pred, target):
+        r = target - pred
+        base = nn.functional.smooth_l1_loss(pred, target, reduction="none")
+        w = torch.where(r > 0, 2 * self.tau, 2 * (1 - self.tau))
+        return (w * base).mean()
 from .heads import BiGruLstmCnn, DenseHead
 
 
@@ -177,11 +207,13 @@ def build_parser() -> argparse.ArgumentParser:
                          "Hết giờ thì dừng và giữ best.pt tới lúc đó — dùng cho phiên Colab có cap")
     ap.add_argument("--class-weight", action="store_true",
                     help="cân bằng lớp cho bài phân lớp (lệch 27:1)")
-    ap.add_argument("--loss", default="ce", choices=["ce", "focal"],
+    ap.add_argument("--loss", default="ce", choices=["ce", "focal", "quantile", "ahuber"],
                     help="chỉ áp dụng cho phân lớp; focal cân theo độ khó từng mẫu "
                          "thay vì độ hiếm của lớp — dùng cùng --class-weight được")
     ap.add_argument("--focal-gamma", type=float, default=2.0,
                     help="gamma của focal loss; gamma=0 trùng CrossEntropyLoss")
+    ap.add_argument("--tau", type=float, default=0.5,
+                    help="salary: tau của --loss quantile / ahuber (T2.1)")
     # Mặc định cpu, không phải auto: head dense chỉ 768→256→128→16 nên mps không
     # nhanh hơn (12-16s cả hai), nhưng mps **không tái lập được** — đo 2026-09-20,
     # cùng seed, 8 lần chạy trải 0,6012-0,6041 macro-F1, trong khi cpu cho đúng
@@ -215,6 +247,8 @@ def run(args: argparse.Namespace) -> dict:
         raise SystemExit("--pre-hidden chỉ dùng với --head dense")
     if args.loss == "focal" and args.task == C.TASK_SALARY:
         raise SystemExit("--loss focal chỉ dùng cho phân lớp, salary đã dùng Huber")
+    if args.loss in ("quantile", "ahuber") and args.task != C.TASK_SALARY:
+        raise SystemExit(f"--loss {args.loss} chỉ dùng cho salary")
     if args.head == "rnn" and args.batch > 64 and args.device != "cuda":
         # 256 × 768 float32 = 786 KB mỗi tin; batch 256 là 200 MB chỉ riêng đầu vào,
         # chưa kể trạng thái RNN — nặng cho CPU/MPS. Trên GPU (16 GB+) 200 MB không
@@ -290,7 +324,12 @@ def run(args: argparse.Namespace) -> dict:
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
     if is_reg:
-        loss_fn = nn.SmoothL1Loss()  # đuôi lương rất dài (skew 11,8) — huber chịu đuôi tốt hơn MSE
+        if args.loss == "quantile":
+            loss_fn = QuantileLoss(args.tau)
+        elif args.loss == "ahuber":
+            loss_fn = AsymHuberLoss(args.tau)
+        else:
+            loss_fn = nn.SmoothL1Loss()  # đuôi lương rất dài (skew 11,8) — huber chịu đuôi tốt hơn MSE
     else:
         w = None
         if args.class_weight:
@@ -445,7 +484,9 @@ def run(args: argparse.Namespace) -> dict:
                 "|---|---|---|---|---|---|---|---|---|---|---|\n",
                 encoding="utf-8")
         with path.open("a", encoding="utf-8") as fh:
-            loss_tag = f",focal(g={args.focal_gamma:g})" if args.loss == "focal" else ""
+            loss_tag = (f",focal(g={args.focal_gamma:g})" if args.loss == "focal"
+                        else f",{args.loss}(tau={args.tau:g})" if args.loss in ("quantile", "ahuber")
+                        else "")
             enc_tag = args.encoder
             base = (f"{enc_tag}-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches}"
                     if is_rnn else f"{enc_tag}-frozen+dense(h={args.hidden}"

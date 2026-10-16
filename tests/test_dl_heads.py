@@ -63,6 +63,23 @@ def test_uniform_alpha_scales_loss_by_that_constant():
 # ---------------------------------------------------------------------------
 
 
+def test_quantile_half_is_half_l1_and_tau_penalises_under_prediction():
+    from vietjobs.dl.train_dl import QuantileLoss
+    pred, y = torch.tensor([[1.0], [3.0]]), torch.tensor([[2.0], [2.0]])
+    assert torch.isclose(QuantileLoss(0.5)(pred, y), 0.5 * nn.L1Loss()(pred, y))
+    low, high = torch.tensor([[1.0]]), torch.tensor([[3.0]])
+    two = torch.tensor([[2.0]])
+    assert QuantileLoss(0.9)(low, two) > QuantileLoss(0.9)(high, two)
+
+
+def test_asym_huber_half_equals_smooth_l1_and_tau_tilts():
+    from vietjobs.dl.train_dl import AsymHuberLoss
+    pred, y = torch.tensor([[1.0], [3.5]]), torch.tensor([[2.0], [2.0]])
+    assert torch.isclose(AsymHuberLoss(0.5)(pred, y), nn.SmoothL1Loss()(pred, y))
+    two = torch.tensor([[2.0]])
+    assert AsymHuberLoss(0.7)(torch.tensor([[1.0]]), two) > AsymHuberLoss(0.7)(torch.tensor([[3.0]]), two)
+
+
 def _tokens(b=3, T=40, d=768, lengths=(40, 25, 7)):
     torch.manual_seed(1)
     x = torch.randn(b, T, d)
