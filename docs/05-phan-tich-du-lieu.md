@@ -246,4 +246,58 @@ thước lớp (r = 0,610).
 
 ---
 
+## 9. Tiêu đề tin chia được thành bao nhiêu nhóm vai trò?
+
+*Phạm vi: tệp gốc sau khi loại trùng chính xác (47.707 dòng), chỉ mô tả — không đổi nhãn nào, không đọc `test` như một tập chia (Rule 8).* Nguồn số liệu: `artifacts/eda/title_clusters.json`, do `scripts/cluster_titles.py` (T13.1) sinh ra.
+
+Cách đo: mỗi `job_title` được mã hoá bằng CafeBERT đóng băng (`uitnlp/CafeBERT`, mean pooling, tối đa 32 token), chuẩn hoá L2, rồi chạy KMeans với k từ 6 đến 20 (`n_init=5`, seed 20260826). Silhouette (khoảng cách cosine) tính trên cùng một mẫu ngẫu nhiên 10.000 dòng cho mọi k.
+
+| k | silhouette |
+|---|---|
+| 6 | 0,1143 |
+| 7 | **0,1399** |
+| 8 | 0,1309 |
+| 9 | 0,1058 |
+| 10 | 0,1267 |
+| 11 | 0,1241 |
+| 12 | 0,1241 |
+| 13 | 0,1223 |
+| 14 | 0,1259 |
+| 15 | 0,1230 |
+| 16 | 0,1247 |
+| 17 | 0,1242 |
+| 18 | 0,1181 |
+| 19 | 0,1301 |
+| 20 | 0,1251 |
+
+Silhouette cao nhất ở k = 7 (0,1399), nhưng cả bảng nằm trong khoảng 0,106–0,140: không có k nào tách cụm rõ. Đường cong gần phẳng, nên con số 7 không phải là bằng chứng cho "có đúng 7 vai trò".
+
+Mười tiêu đề mẫu của mỗi cụm (k = 7) và ngành chiếm nhiều nhất trong cụm cho thấy các cụm được chia theo **hình thức tiêu đề** (tiền tố "Nhân Viên", chức danh quản lý, tiêu đề tiếng Anh/ghép dài) nhiều hơn theo nghề:
+
+| Cụm | n | Dạng tiêu đề trong mẫu | Ba ngành nhiều nhất |
+|---|---|---|---|
+| 0 | 4.659 | kế toán, giám đốc, trưởng nhóm | tài chính–kế toán 2.592; kinh doanh 510; sản xuất 418 |
+| 1 | 9.655 | tiêu đề dài kèm ghi chú ("- Làm Tại Văn Phòng", "(Tiếng Trung)") | kinh doanh 2.000; sản xuất 1.370; xây dựng 966 |
+| 2 | 11.014 | "Nhân Viên …" + nghề | kinh doanh 2.449; sản xuất 1.784; tài chính 1.510 |
+| 3 | 2.793 | viết thường kiểu dịch máy ("Thành công của khách hàng", "Giám đốc phát triển kinh doanh") | marketing 897; CNTT 505; kinh doanh 397 |
+| 4 | 3.122 | tiếng Anh/vay mượn (Marketing Lead, Video Editor, Telesale) | marketing 946; CNTT 397; thiết kế 330 |
+| 5 | 8.379 | "Nhân Viên/Chuyên Viên" + kinh doanh, tư vấn, kỹ thuật | kinh doanh 1.700; sản xuất 1.307; du lịch 1.296 |
+| 6 | 8.085 | chuyên viên, thực tập sinh, điều dưỡng, quay phim | marketing 1.269; sản xuất 1.091; kinh doanh 839 |
+
+Bảng chéo cụm × 16 `category` (số dòng; cột theo thứ tự chữ cái của tên ngành):
+
+| Cụm | CNTT | du lịch | giáo dục | kinh doanh | điện–viễn thông | logistics | marketing | ngôn ngữ | nhân sự | khác | nông nghiệp | sản xuất | thiết kế | tài chính | xây dựng | y tế |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 22 | 186 | 50 | 510 | 34 | 119 | 126 | 0 | 269 | 11 | 11 | 418 | 113 | 2.592 | 176 | 22 |
+| 1 | 272 | 815 | 250 | 2.000 | 266 | 361 | 746 | 59 | 512 | 101 | 84 | 1.370 | 905 | 699 | 966 | 249 |
+| 2 | 282 | 873 | 243 | 2.449 | 405 | 462 | 710 | 48 | 643 | 79 | 86 | 1.784 | 595 | 1.510 | 658 | 187 |
+| 3 | 505 | 81 | 57 | 397 | 29 | 84 | 897 | 11 | 140 | 20 | 3 | 123 | 180 | 189 | 68 | 9 |
+| 4 | 397 | 285 | 49 | 318 | 32 | 57 | 946 | 24 | 237 | 26 | 9 | 248 | 330 | 67 | 63 | 34 |
+| 5 | 193 | 1.296 | 165 | 1.700 | 191 | 542 | 1.253 | 43 | 611 | 53 | 37 | 1.307 | 473 | 203 | 160 | 152 |
+| 6 | 232 | 662 | 351 | 839 | 279 | 186 | 1.269 | 199 | 798 | 55 | 92 | 1.091 | 810 | 194 | 718 | 310 |
+
+Kết luận đo được: chỉ cụm 0 (kế toán) và phần nào cụm 3–4 (marketing/CNTT) trùng với một ngành; bốn cụm còn lại trải đều trên nhiều ngành. Với CafeBERT đóng băng và KMeans, tiêu đề đơn lẻ không cho ra số nhóm vai trò có ý nghĩa; số nhóm không được ước lượng được từ phép đo này.
+
+---
+
 [← Tổng quan](00-tong-quan.md) · [Baseline học sâu →](06-baseline-dl.md)
