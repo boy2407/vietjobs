@@ -1,4 +1,4 @@
-# Đợt 5: T12.1b/c/d — nhúng cache, train lại 6 run CafeBERT RNN, chấm 65 run trên test và ext37k-sal — CHƯA THUÊ
+# Đợt 5: T12.1b/c/d — nhúng cache, train lại 2 run CafeBERT RNN (seed 42), chấm 61 run trên test và ext37k-sal — CHƯA THUÊ
 
 Task: **T12.1b** (nhúng cache + train lại + chấm RNN), **T12.1c** (chấm Dense trên `test`), **T12.1d** (chấm Dense và phân lớp trên `ext37k-sal`), tất cả trên máy thuê (tác giả đổi 2026-10-16); phụ thuộc T12.1a ([tasks/T12-dashboard-map.md](../tasks/T12-dashboard-map.md)). Quyền: AGENTS.md Rule 5 item 6 (tác giả, 2026-10-15): chấm `best.pt` đã lưu trên `test`. CSV và các hàng `04-results.md` vẫn ghi trên Mac sau khi kéo về.
 
@@ -6,12 +6,12 @@ Script: `scripts/vast_run_t12_score.sh` (đối số `all | encode | train | rnn
 
 Phạm vi trên máy thuê (cả 34 hàng dashboard):
 1. **Nhúng pooled** `test` (raw, masked) và `ext37k-sal` (masked, raw) cho 6 cặp encoder/len (bảng cache). Chỉ **đọc** test để nhúng, không ghi `test.csv`.
-2. **Train lại 6 run CafeBERT 512 + BiGRU-LSTM-CNN** không có checkpoint dùng được (`dl-cat-cafe-rnn-ce` s42 hỏng / s43 / s44, `dl-sal-cafe-rnn` s42–s44), đúng config gốc (`scripts/vast_run_cafe_rnn.sh`), run_id mới đuôi `-t12`; không ghi đè thư mục cũ. Cần token cache CafeBERT 512 (`category` raw và `salary` masked, train + dev).
-3. **Chấm 25 run RNN** (19 có sẵn + 6 `-t12`) trên `test` và `ext37k-sal`: nhúng token từng batch, chạy head (đường `predict_rnn` của `scripts/eval_external_mtl.py`, không ghi token cache); mỗi (encoder, họ cột) nhúng một lượt cho mọi run cùng nhóm.
+2. **Train lại 2 run CafeBERT 512 + BiGRU-LSTM-CNN, chỉ seed 42** (tác giả, 2026-10-16), cho hai cấu hình không có checkpoint dùng được (`dl-cat-cafe-rnn-ce`: s42 hỏng, s43/s44 thiếu; `dl-sal-cafe-rnn`: s42–s44 thiếu): `dl-cat-cafe-rnn-ce-s42-t12`, `dl-sal-cafe-rnn-s42-t12`, đúng config gốc (`scripts/vast_run_cafe_rnn.sh`); không ghi đè thư mục cũ. Hai hàng dashboard đó chấm với n = 1 ("1 of 3 seeds, retrained -t12", không có sd). Cần token cache CafeBERT 512 (`category` raw và `salary` masked, train + dev).
+3. **Chấm 21 run RNN** (19 có sẵn + 2 `-t12`) trên `test` và `ext37k-sal`: nhúng token từng batch, chạy head (đường `predict_rnn` của `scripts/eval_external_mtl.py`, không ghi token cache); mỗi (encoder, họ cột) nhúng một lượt cho mọi run cùng nhóm.
 4. **Chấm 40 run Dense** (đơn nhiệm + MTL dense) trên cache pooled, **`--device cpu`** (Rule 13 item 5; chưa có bằng chứng suy luận trên cuda tất định).
 5. Trên `ext37k-sal`: lương (silver, tạm thời, T10.1 bị tác giả bỏ qua) cho run `salary`/`mtl`; phân lớp (crosswalk, như `eval_external.py`) cho mọi run có đầu phân lớp, đọc raw cho run `category`, masked cho MTL.
 
-Bốn hàng từng chờ tác giả đã được duyệt cách ánh xạ (xem sheet T12). Số run: 65 = 40 Dense + 25 RNN.
+Bốn hàng từng chờ tác giả đã được duyệt cách ánh xạ (xem sheet T12). Số run: 61 = 40 Dense + 21 RNN. Mỗi run chỉ chấm **một lần** trên mỗi tập: `score_t12.py` bỏ qua run đã có `artifacts/<run_id>/t12_score/<dataset>.json` (kiểm bằng test `test_already_scored_blocks_a_second_scoring` và chạy thử trên Mac), nên chạy lại script không chấm `test` lần hai; muốn chấm lại phải xoá file đó có chủ ý.
 
 ## Cache cần tạo (pooled, float32; ước tính từ kích thước mảng, chưa đo)
 
@@ -36,27 +36,27 @@ Token cache CafeBERT 512 cho bước train: ≈ 34 GB mỗi task (train + dev), 
 
 ## Ước tính thời gian và chi phí
 
-Mốc **đo được** (Đợt 3, 5060 Ti): CafeBERT 512 encode ≈ 30,8 tin/s; 6 run gốc `dl-*-cafe-rnn` mất 27,3 / 40,7 / 40,2 phút (category s42–s44) và 19,6 / 15,0 / 18,5 phút (salary s42–s44), tổng 161 phút (`artifacts/<run_id>/metrics.json`, `seconds`). Các tốc độ khác dưới đây là **ước tính**.
+Mốc **đo được** (Đợt 3, 5060 Ti): CafeBERT 512 encode ≈ 30,8 tin/s; hai run gốc seed 42 `dl-cat-cafe-rnn-ce-s42` và `dl-sal-cafe-rnn-s42` mất 27,3 và 19,6 phút, tổng 46,9 phút (`artifacts/<run_id>/metrics.json`, `seconds`). Các tốc độ khác dưới đây là **ước tính**.
 
 | Phần | Cách tính | Ước tính |
 |---|---|---|
 | Nhúng pooled (6 cặp × ≈ 31.400 lượt) | CafeBERT 512 ≈ 17 phút (đo), CafeBERT 256 ≈ 7, PhoBERT ≈ 10, ViSoBERT ≈ 6, XLM-R ≈ 6, BamiBERT 1024 ≈ 15 | ≈ 1 giờ |
 | Token cache CafeBERT 512 (2 họ × 38.166 tin) | 76.332 / 30,8 tin/s | ≈ 41 phút |
-| Train lại 6 run `-t12` | cùng config nên lấy thời gian gốc | ≈ 161 phút |
-| Chấm 25 run RNN (5 encoder × 2 họ × ≈ 15.700 lượt) | nhúng token lại một lượt mỗi nhóm | ≈ 1 giờ |
+| Train lại 2 run `-t12` (seed 42) | cùng config nên lấy thời gian gốc | ≈ 47 phút |
+| Chấm 21 run RNN (5 encoder × 2 họ × ≈ 15.700 lượt) | nhúng token lại một lượt mỗi nhóm | ≈ 1 giờ |
 | Chấm 40 run Dense (cpu) + bootstrap ext37k-sal | mỗi run vài giây | ≈ 10 phút |
-| **Tổng tính toán** | | **≈ 5,5 giờ** |
+| **Tổng tính toán** | | **≈ 3,6 giờ** |
 
-Cộng ≈ 1 giờ đẩy code, cài đặt, kéo về ⇒ thuê **8 giờ** (để dư), **≈ $2–3,5**. Run `train` có thể lệch vài chục phút so với số gốc (máy khác, kết quả dev có thể khác dashboard).
+Cộng ≈ 1 giờ đẩy code, cài đặt, kéo về ⇒ thuê **6 giờ** (để dư), **≈ $1,5–2,5**. Run `train` có thể lệch vài chục phút so với số gốc (máy khác, kết quả dev có thể khác dashboard).
 
 ## Bảng run (số điền từ `artifacts/<run_id>/metrics.json` và `t12_score/*.json` sau khi chạy)
 
-RNN, 25 run:
+RNN, 21 run:
 
 | Cấu hình dashboard | Run | Task | Encoder · len | Trạng thái |
 |---|---|---|---|---|
-| `dl-cat-cafe-rnn-ce` | `dl-cat-cafe-rnn-ce-s42-t12`, `-s43-t12`, `-s44-t12` | category | cafebert · 512 | train lại, todo |
-| `dl-sal-cafe-rnn` | `dl-sal-cafe-rnn-s42-t12`, `-s43-t12`, `-s44-t12` | salary | cafebert · 512 | train lại, todo |
+| `dl-cat-cafe-rnn-ce` | `dl-cat-cafe-rnn-ce-s42-t12` (1 of 3 seeds) | category | cafebert · 512 | train lại, todo |
+| `dl-sal-cafe-rnn` | `dl-sal-cafe-rnn-s42-t12` (1 of 3 seeds) | salary | cafebert · 512 | train lại, todo |
 | `dl-cat-rnn-ce` | `dl-cat-rnn-ce`, `-s42`, `-s43`, `-s44` | category | phobert · 256 | todo |
 | `dl-cat-rnn-focal` | `dl-cat-rnn-focal` | category | phobert · 256 | todo |
 | `dl-cat-bamibert-rnn-1024` / `-visobert-rnn-512` / `-xlmr-rnn-512` | cùng tên | category | bamibert 1024 / visobert 512 / xlmr 512 | todo |
@@ -88,12 +88,13 @@ Dense, 40 run (cpu):
 |---|---|---|---|
 | 0 | Viết `vast_run_t12_score.sh`, `--device` cho `encode_t12_cpu.py`, `score_t12.py` (Dense + RNN + ext37k-sal raw), stage `train`, `tests/test_score_t12.py` | done | smoke dev: RNN trùng `predictions_dev` 100 %, Dense khớp `metrics.json`; ext37k-sal category chạy trên 147 dòng (xem Nhật ký) |
 | 1 | Thuê máy theo "Chọn máy" | todo | tác giả |
-| 2 | Đẩy code + splits + `manifest.json` + `ext37k-sal.csv` + 59 thư mục run lên | todo | lệnh dưới; 6 run `-t12` chưa có nên không đẩy |
+| 2 | Đẩy code + splits + `manifest.json` + `ext37k-sal.csv` + 59 thư mục run lên | todo | lệnh dưới; 2 run `-t12` chưa có nên không đẩy |
 | 3 | Cài thư viện, pytest `tests/test_score_t12.py`, `sha256sum data/processed/splits/test.csv` | todo | phải bằng `70ba98d58397c8454f04153ace602bc8ed760acdcf2b5ad65d197af572fba047` |
 | 4 | `bash scripts/vast_run_t12_score.sh all` trong tmux (encode → train → chấm RNN cuda → chấm Dense cpu; sha256 `test.csv` kiểm trước và sau) | todo | hoặc từng phần: `encode` / `train` / `rnn` / `dense` |
-| 5 | Kéo cache, 6 thư mục `-t12` (kèm `best.pt`), kết quả chấm, log về Mac; so `md5sum` | todo | |
+| 5 | Kéo cache, 2 thư mục `-t12` (kèm `best.pt`), kết quả chấm, log về Mac; so `md5sum` | todo | lệnh `scp -r` dưới đây không loại `best.pt` |
+| 5b | Trên Mac, **trước khi destroy**: `torch.load` từng `best.pt` của 2 run `-t12` (và kiểm tệp mở được) | todo | checklist `vast/README.md` mục 2; Đợt 5 từng gặp một `best.pt` bị cắt |
 | 6 | `sha256sum test.csv` trên máy thuê và trên Mac bằng giá trị gốc | todo | |
-| 7 | Mac: thêm 6 dòng train `-t12` vào `docs/04-results.md` (append-only), chạy `scripts/export_runs.py` | todo | Rule 1, Rule 13 |
+| 7 | Mac: thêm 2 dòng train `-t12` vào `docs/04-results.md` (append-only), chạy `scripts/export_runs.py` | todo | Rule 1, Rule 13 |
 | 8 | Checklist `README.md`, rồi destroy | todo | tác giả bấm trên web; token cache ≈ 68 GB mất khi destroy |
 
 ## Lệnh đẩy lên (terminal Mac)
@@ -123,7 +124,7 @@ rsync -avzR -e "ssh -p PORT" src scripts tests pyproject.toml \
   root@IP:/workspace/vietjobs/
 ```
 
-Bắt buộc kèm `manifest.json` (`kinh-nghiem.md` §5) và `splits/train.csv`, `dev.csv` (huấn luyện đọc train + dev; `OurIndex` đọc cả ba split). Không đẩy token cache; `docs/` không đẩy (train sẽ tạo `docs/04-results.md` riêng trên máy thuê, chỉ chứa 6 dòng `-t12`).
+Bắt buộc kèm `manifest.json` (`kinh-nghiem.md` §5) và `splits/train.csv`, `dev.csv` (huấn luyện đọc train + dev; `OurIndex` đọc cả ba split). Không đẩy token cache; `docs/` không đẩy (train sẽ tạo `docs/04-results.md` riêng trên máy thuê, chỉ chứa 2 dòng `-t12`).
 
 ## Lệnh chạy (máy thuê)
 
@@ -140,12 +141,19 @@ sha256sum data/processed/splits/test.csv
 
 ## Kéo về
 
-`tar czf - … | tar xzf -` qua proxy từng treo (`kinh-nghiem.md` §5): dùng `scp` từng file, so `md5sum` hai đầu; **kéo `best.pt` của 6 run `-t12`** (Đợt 2 từng mất 5 file vì bỏ bước này).
+`tar czf - … | tar xzf -` qua proxy từng treo (`kinh-nghiem.md` §5): dùng `scp` từng file, so `md5sum` hai đầu; **kéo `best.pt` của 2 run `-t12`** (Đợt 2 từng mất 5 file vì bỏ bước này).
 
 ```bash
-ssh -p PORT root@IP "cd /workspace/vietjobs && ls -d artifacts/dl-*-t12; ls artifacts/*/t12_score/*.json; ls artifacts/embeddings/*test* artifacts/embeddings/*ext37k-sal*; ls logs/t12* logs/dl-*-t12*; ls docs/04-results.md"
-scp -P PORT root@IP:/workspace/vietjobs/docs/04-results.md logs/t12-server-04-results.md   # 6 dòng train -t12
+ssh -p PORT root@IP "cd /workspace/vietjobs && ls -l artifacts/dl-*-t12/best.pt artifacts/*/t12_score/*.json artifacts/embeddings/*test* artifacts/embeddings/*ext37k-sal* logs/t12* docs/04-results.md"
+for r in dl-cat-cafe-rnn-ce-s42-t12 dl-sal-cafe-rnn-s42-t12; do
+  mkdir -p artifacts/$r && scp -P PORT -r root@IP:/workspace/vietjobs/artifacts/$r/. artifacts/$r/   # lấy cả best.pt
+  ssh -p PORT root@IP "md5sum /workspace/vietjobs/artifacts/$r/best.pt"; md5 artifacts/$r/best.pt
+  PYTHONPATH=src .venv-dl/bin/python -c "import torch,sys; torch.load('artifacts/$r/best.pt', map_location='cpu'); print('$r best.pt ok')"
+done
+scp -P PORT root@IP:/workspace/vietjobs/docs/04-results.md logs/t12-server-04-results.md   # 2 dòng train -t12
 ```
+
+Lệnh kéo **không** loại `best.pt` (`scp -r` cả thư mục run). Checklist `vast/README.md` mục 2 yêu cầu thêm: `torch.load` mở được từng `best.pt` `-t12` trên Mac (vòng lặp trên) trước khi destroy.
 
 Kết quả chấm: `artifacts/<run_id>/t12_score/test.json` và `ext37k-sal.json`. CSV và `docs/04-results.md` ghi trên Mac sau đó; không sửa dòng nào đã có.
 
@@ -154,4 +162,4 @@ Kết quả chấm: `artifacts/<run_id>/t12_score/test.json` và `ext37k-sal.jso
 | Thời điểm | Hiện tượng | Xử lý |
 |---|---|---|
 | 2026-10-16 | Dev xlmr/bamibert trên Mac không khớp checkpoint (F1 0.5317 so với 0.5953): `predictions_dev.parquet` của run vast có thứ tự dòng khác `dev.csv` trên Mac, nên cache dev xlmr/bamibert đã kéo về xếp theo thứ tự vast | không dùng dev xlmr/bamibert để kiểm; test thì cache nhúng ngay trên máy thuê từ `test.csv` đã đẩy lên (cùng sha256), nên thứ tự khớp |
-| 2026-10-16 | `dl-cat-cafe-rnn-ce-s42/best.pt` (6.641.333 B) không phải zip hợp lệ (bị cắt khi kéo về); quét 65 run chỉ có file này hỏng | train lại cả s42 cùng s43/s44 thành `-t12`; thư mục gốc giữ nguyên |
+| 2026-10-16 | `dl-cat-cafe-rnn-ce-s42/best.pt` (6.641.333 B) không phải zip hợp lệ (bị cắt khi kéo về); quét 59 run có checkpoint chỉ có file này hỏng | train lại seed 42 thành `-t12` (tác giả chỉ chọn một seed mỗi cấu hình); thư mục gốc giữ nguyên |
