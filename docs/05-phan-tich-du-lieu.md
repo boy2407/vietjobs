@@ -281,8 +281,8 @@ Mười tiêu đề mẫu của mỗi cụm (k = 7) và ngành chiếm nhiều n
 | 2 | 11.014 | "Nhân Viên …" + nghề | kinh doanh 2.449; sản xuất 1.784; tài chính 1.510 |
 | 3 | 2.793 | viết thường kiểu dịch máy ("Thành công của khách hàng", "Giám đốc phát triển kinh doanh") | marketing 897; CNTT 505; kinh doanh 397 |
 | 4 | 3.122 | tiếng Anh/vay mượn (Marketing Lead, Video Editor, Telesale) | marketing 946; CNTT 397; thiết kế 330 |
-| 5 | 8.379 | "Nhân Viên/Chuyên Viên" + kinh doanh, tư vấn, kỹ thuật | kinh doanh 1.700; marketing 1.253; du lịch 1.296 |
-| 6 | 8.085 | chuyên viên, thực tập sinh, điều dưỡng, quay phim | marketing 1.269; sản xuất 1.091; thiết kế 810 |
+| 5 | 8.379 | "Nhân Viên/Chuyên Viên" + kinh doanh, tư vấn, kỹ thuật | kinh doanh 1.700; sản xuất 1.307; du lịch 1.296 |
+| 6 | 8.085 | chuyên viên, thực tập sinh, điều dưỡng, quay phim | marketing 1.269; sản xuất 1.091; kinh doanh 839 |
 
 Bảng chéo cụm × 16 `category` (số dòng; cột theo thứ tự chữ cái của tên ngành):
 
