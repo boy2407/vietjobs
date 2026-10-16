@@ -14,14 +14,6 @@ import encode_t12_cpu as ENC_T12  # noqa: E402
 import score_t12 as S  # noqa: E402
 
 
-def test_blocked_rows_are_the_four_pending_the_author():
-    for r in ("dl-mtl-h256-a1.0-1001-0735", "dl-mtl-h256-a1.0-1001-0746", "dl-cat-focal-0920",
-              "dl-cat-focal-s2", "dl-sal-0920", "dl-sal-s2", "dl-cat-cafe-dense-512-p20-s43"):
-        assert S.is_blocked(r), r
-    for r in ("dl-cat-cafe-dense-512", "dl-cat-cafe-focal-512-s42", "dl-sal-cpu-0920", "dl-cat-ce-0920"):
-        assert not S.is_blocked(r), r
-
-
 def test_family_follows_rule_3():
     assert S.family_of("category") == "raw"
     assert S.family_of("salary") == "masked"

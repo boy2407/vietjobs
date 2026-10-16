@@ -8,8 +8,8 @@
 #
 # AGENTS.md Rule 5 item 6 (tác giả, 2026-10-15): chỉ ĐỌC test để chấm checkpoint có sẵn;
 # không train lại, không ghi test.csv, không ghi gì dưới data/. Dense chấm --device cpu
-# (Rule 13 item 5). Bốn hàng dashboard chờ tác giả không có trong danh sách (và score_t12.py
-# tự bỏ qua nếu lọt vào). Danh sách run = vast/dot-5-t12-score-test.md.
+# (Rule 13 item 5). Danh sách run = vast/dot-5-t12-score-test.md: 60 run = 34 hàng dashboard
+# trừ dl-sal-cafe-rnn (không có checkpoint) và 2 seed của dl-cat-cafe-rnn-ce (thiếu best.pt).
 set -euo pipefail
 PYTHON=${PYTHON:-/venv/main/bin/python}
 export PYTHONPATH=src
@@ -20,7 +20,9 @@ RNN_RUNS=dl-cat-cafe-rnn-ce-s42,dl-cat-rnn-ce,dl-cat-rnn-ce-s42,dl-cat-rnn-ce-s4
 dl-cat-bamibert-rnn-1024,dl-cat-visobert-rnn-512,dl-cat-xlmr-rnn-512,\
 dl-mtl-cafe-rnn-a5-s42,dl-mtl-bamibert-rnn1024-a5-s42,dl-mtl-visobert-rnn512-a5-s42,dl-mtl-xlmr-rnn512-a5-s42,\
 dl-sal-rnn,dl-sal-rnn-s42,dl-sal-rnn-s43,dl-sal-rnn-s44,dl-sal-bamibert-rnn-1024,dl-sal-visobert-rnn-512,dl-sal-xlmr-rnn-512
-DENSE_RUNS=dl-cat-cafe-dense-512,dl-cat-cafe-dense-512-s43,dl-cat-cafe-dense-512-s44,dl-cat-cafe-dense-512-s45,dl-cat-cafe-dense-512-s46,\
+DENSE_RUNS=dl-cat-cafe-dense-512-p20-s42,dl-cat-cafe-dense-512-p20-s43,dl-cat-cafe-dense-512-p20-s44,\
+dl-cat-focal-0920,dl-cat-focal-s2,dl-sal-0920,dl-sal-s2,dl-mtl-h256-a1.0-1001-0735,dl-mtl-h256-a1.0-1001-0746,\
+dl-cat-cafe-dense-512,dl-cat-cafe-dense-512-s43,dl-cat-cafe-dense-512-s44,dl-cat-cafe-dense-512-s45,dl-cat-cafe-dense-512-s46,\
 dl-cat-cafe-dense,dl-cat-cafe-focal-512-s42,dl-cat-cafe-focal-512-s43,dl-cat-cafe-focal-512-s44,dl-cat-cafe-focal-512-s45,dl-cat-cafe-focal-512-s46,\
 dl-cat-ce-0920,dl-cat-bamibert-dense-1024,dl-cat-visobert-dense-512,dl-cat-xlmr-dense-512,\
 dl-mtl-bamibert1024-a5-e80-s42,dl-mtl-visobert512-a5-e80-s42,dl-mtl-xlmr512-a5-e80-s42,\

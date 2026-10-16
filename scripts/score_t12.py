@@ -5,8 +5,7 @@
 
 ``--dataset dev`` dùng để smoke-test đường chấm (so với ``metrics.json`` của run).
 ``test`` cần ``--confirm-test``: chỉ *đọc* test, không ghi ``test.csv``, không ghi gì dưới
-``data/``. Kết quả ghi ở ``artifacts/<run_id>/t12_score/<dataset>.json``. Bốn hàng dashboard
-đang chờ tác giả (xem ``is_blocked``) bị bỏ qua.
+``data/``. Kết quả ghi ở ``artifacts/<run_id>/t12_score/<dataset>.json``.
 """
 from __future__ import annotations
 
@@ -27,15 +26,6 @@ from vietjobs import evaluate as E  # noqa: E402
 from vietjobs.dl import encode as ENC  # noqa: E402
 from vietjobs.dl import text as T  # noqa: E402
 from encode_t12_cpu import cache_path_t12, ext_sal_frame  # noqa: E402
-
-# Hàng dashboard chờ tác giả (tasks/T12-dashboard-map.md): không chấm.
-BLOCKED_EXACT = {"dl-cat-focal-0920", "dl-cat-focal-s2", "dl-sal-0920", "dl-sal-s2"}
-BLOCKED_PREFIX = ("dl-mtl-h256-a1.0-", "dl-cat-cafe-dense-512-p20-")
-
-
-def is_blocked(run_id: str) -> bool:
-    return run_id in BLOCKED_EXACT or run_id.startswith(BLOCKED_PREFIX)
-
 
 def run_kind(run_dir: Path) -> dict:
     """Run cũ không có ``encoder`` (mặc định phobert); run MTL không có ``task``."""
@@ -97,7 +87,9 @@ def load_predictor(run_dir: Path, k: dict, n_classes: int, device):
 
     sc = np.load(run_dir / "scaler.npz")
     if k["task"] == "mtl":
-        m_cat, m_sal = load("best.pt"), load("best_sal.pt")
+        # run MTL cũ (dl-mtl-h256-*) chỉ có best.pt: cả hai đầu đọc từ đó
+        m_cat = load("best.pt")
+        m_sal = load("best_sal.pt" if (run_dir / "best_sal.pt").exists() else "best.pt")
         fn = lambda x, mk: (m_cat(x, mk)[0], m_sal(x, mk)[1].squeeze(-1))  # noqa: E731
     else:
         m = load("best.pt")
@@ -228,9 +220,7 @@ def main() -> None:
 
     device = ENC.pick_device(args.device)
     runs = [r.strip() for r in args.runs.split(",") if r.strip()]
-    for r in [r for r in runs if is_blocked(r)]:
-        print(f"skip {r}: hàng chờ tác giả", flush=True)
-    kinds = {r: run_kind(C.ARTIFACT_DIR / r) for r in runs if not is_blocked(r)}
+    kinds = {r: run_kind(C.ARTIFACT_DIR / r) for r in runs}
     labels = sorted(set(D.load_split("train")["category"].dropna()))
     if args.dataset == "ext37k-sal":
         return score_ext(runs, kinds, labels, device, args)
