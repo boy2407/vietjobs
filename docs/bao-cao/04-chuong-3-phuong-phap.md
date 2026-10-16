@@ -543,6 +543,12 @@ Chỉ có một lựa chọn thật sự còn lại là giữa 128 và 256, và 
 hạ xuống 128 để chạy nhanh hơn sẽ cắt tới 77,6 % số tin và vứt đi gần 38 % lượng
 token.
 
+### 3.6.9. Tiêu đề tin có chia được thành nhóm vai trò không?
+
+Nguyên lý: gom cụm không giám sát trên vector tiêu đề cho biết dữ liệu có cấu trúc nhóm tự nhiên hay không. Ở đây: `job_title` (tệp gốc sau loại trùng, 47.707 dòng) được mã hoá bằng CafeBERT đóng băng (mean pooling), KMeans với k từ 6 đến 20. Silhouette cao nhất là 0,1399 ở k = 7, toàn bảng nằm trong 0,1058–0,1399, tức không có k nào tách cụm rõ; các cụm chia theo hình thức tiêu đề nhiều hơn theo nghề, chỉ cụm kế toán trùng rõ với một ngành. Phép đo chỉ mô tả, không đổi nhãn nào.
+
+> **Nguồn số liệu:** `artifacts/eda/title_clusters.json` (`scripts/cluster_titles.py`, T12.1); bảng đầy đủ ở [`docs/05-phan-tich-du-lieu.md`](../05-phan-tich-du-lieu.md) §9.
+
 ---
 
 ## 3.7. Kiến trúc mô hình
