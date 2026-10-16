@@ -32,7 +32,7 @@ Ba việc kết quả này sinh ra, sắp theo giá trị trên mỗi giờ côn
 
 | Việc | Vì sao | Chi phí |
 |---|---|---|
-| Đầu ra lương **không dám đi ra dải đuôi phải** — dự đoán tối đa 80,7 trong khi dữ liệu thực lên tới 275 | MAE ở dải trên 30 triệu là **25,58** so với 3,70 ở phần còn lại | thử hàm mất mát bất đối xứng, hoặc chuyển sang dự đoán phân vị |
+| Đầu ra lương **không dám đi ra dải đuôi phải** — dự đoán tối đa 80,7 trong khi dữ liệu thực lên tới 275 | MAE ở dải trên 30 triệu là **25,58** so với 3,70 ở phần còn lại | **đã thử (T2.1, 2026-10-17):** quantile τ 0,5–0,9 và Huber bất đối xứng trên Dense CafeBERT 512 — kéo đuôi xuống (MAE ≥ 30 tr 22,25 → 16,38) chỉ bằng cách làm hỏng phần giữa (MAE toàn bộ 4,12 → 4,35–8,53); không cấu hình nào đạt luật chọn, Huber được giữ. Xem [07](07-bai-toan-luong.md) |
 | Lớp `nhóm_nghề_khác` có F1 = **0,000** | 48 mẫu, nội dung lẫn lộn — nhiều khả năng nên gộp hoặc bỏ, không nên cố học | một quyết định về gán nhãn, không phải về mô hình |
 | Ba cặp nhầm lẫn lớn nhất là ranh giới nhãn mờ (`kinh_doanh` ↔ `du_lịch_nhà_hàng`, 382 tin nhầm cả hai chiều) | trần nhiễu nhãn chưa từng được đo | lấy mẫu 100 tin, gán nhãn tay, đo độ đồng thuận |
 

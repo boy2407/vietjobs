@@ -252,6 +252,8 @@ nhưng không ở dạng tuyến tính; ở v2 kết luận này đảo ngược
 
 Ghép theo seed, ΔMAE: CafeBERT − PhoBERT −0,013 (tốt hơn 3/5 seed); + lớp 512 − PhoBERT −0,026 (2/5); + lớp 512 − CafeBERT −0,014 (3/5). Mọi khác biệt nằm trong dải seed (~0,05 triệu) — **không phân biệt được**. Ridge probe trên vector CafeBERT: MAE 4,36 (PhoBERT 4,42). Vì T8.8 không thắng, head rnn trên CafeBERT (T8.9) không chạy.
 
+**Hàm mất mát bất đối xứng (T2.1, 2026-10-17).** Cùng Dense CafeBERT 512, chỉ đổi Huber sang quantile (τ = 0,5 / 0,7 / 0,9) hoặc Huber bất đối xứng (τ = 0,7 / 0,9), 3 seed mỗi cấu hình. Không cấu hình nào vừa giảm MAE ≥ 30 tr vừa giữ MAE toàn bộ trong 0,05 tr: τ = 0,5 cho 4,082 nhưng đuôi không giảm; τ > 0,5 kéo đuôi xuống tới 16,38 nhưng MAE toàn bộ lên 4,35–8,53. Huber được giữ. Bảng tách ngưỡng: [07 — Đuôi phải](07-bai-toan-luong.md#đuôi-phải-thử-hàm-mất-mát-bất-đối-xứng-t21-2026-10-17).
+
 > **Nguồn số liệu:** `artifacts/dl-sal-cafe-dense-512*/metrics.json`, `artifacts/dl-sal-cpu-{0920,s43..s46}/metrics.json`, `artifacts/embeddings/cafebert-*-masked-len512.json`.
 
 ### 5.3 Nó sai ở đâu
