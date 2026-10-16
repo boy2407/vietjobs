@@ -161,48 +161,50 @@ def save(run_id: str, dataset: str, device: str, df: pd.DataFrame, res: dict) ->
 
 
 def score_ext(runs: list, kinds: dict, labels: list, device, args) -> None:
-    """``ext37k-sal.csv`` (T9/T10, lương silver — tạm thời): chỉ run có đầu lương (salary, mtl).
+    """``ext37k-sal.csv`` (T9/T10, lương silver — tạm thời). Phân lớp đọc raw, lương/MTL đọc masked.
 
-    Run chỉ phân lớp cần cache raw của ext37k-sal, tác giả chưa quyết → bỏ qua và nói rõ.
-    Cách bỏ trùng + crosswalk + chỉ số giống ``eval_external_mtl.py``.
+    Bỏ trùng + crosswalk + chỉ số giống ``eval_external_mtl.py`` / ``eval_external.py``; mặt nạ
+    bỏ trùng tính một lần trên cột gốc nên giống nhau cho cả hai họ.
     """
     from vietjobs import external as X
     from eval_external import score as score_category
     from eval_external_mtl import salary_metrics
 
-    for r in [r for r in kinds if kinds[r]["task"] == C.TASK_CATEGORY]:
-        print(f"skip {r}: chỉ phân lớp, cần ext37k-sal raw (chưa quyết)", flush=True)
-    cw, index = X.load_crosswalk(), X.OurIndex()
+    cw = X.load_crosswalk()
+    base = ext_sal_frame(False)
+    overlap, dedup = X.overlap_mask(base, X.OurIndex())
+    keep = ~np.asarray(overlap)
     groups = defaultdict(list)
     for r, k in kinds.items():
-        if k["task"] != C.TASK_CATEGORY:
-            groups[(k["encoder"], k["max_len"], k["head"])].append(r)
-    for (enc, L, head), rs in groups.items():
-        full = ext_sal_frame(ENC.ENCODERS[enc]["segmented"])
-        overlap, dedup = X.overlap_mask(full, index)
-        keep = ~np.asarray(overlap)
-        df, cw_report = X.apply_crosswalk(full[keep].reset_index(drop=True), cw)
+        groups[(k["encoder"], k["max_len"], k["head"], family_of(k["task"]))].append(r)
+    for (enc, L, head, fam), rs in groups.items():
+        seg = ENC.ENCODERS[enc]["segmented"]
+        df, cw_report = X.apply_crosswalk(ext_sal_frame(seg, fam)[keep].reset_index(drop=True), cw)
         preds = {r: load_predictor(C.ARTIFACT_DIR / r, kinds[r], len(labels), device) for r in rs}
         if head == "rnn":
-            texts = T.build_text(df, task=C.TASK_SALARY, segmented=ENC.ENCODERS[enc]["segmented"])
-            out = predict_rnn_group(preds, texts, enc, L, device)
+            task = C.TASK_SALARY if fam == "masked" else C.TASK_CATEGORY
+            out = predict_rnn_group(preds, T.build_text(df, task=task, segmented=seg), enc, L, device)
         else:
-            emb = np.load(cache_path_t12("ext37k-sal", "masked", enc, L))[keep]
+            emb = np.load(cache_path_t12("ext37k-sal", fam, enc, L))[keep]
             out = {r: predict_dense(fn, emb, mu, sg, device) for r, (fn, mu, sg) in preds.items()}
         cat_rows = (df["n_targets"] > 0).to_numpy()
         for r in rs:
             proba, sal = out[r]
-            res = {"salary": salary_metrics(df["salary_mid"].to_numpy(dtype=float), sal), "n_file": len(full),
-                   "dedup": dedup, "crosswalk": cw_report}
+            res = {"n_file": len(base), "dedup": dedup, "crosswalk": cw_report}
+            if sal is not None:
+                res["salary"] = salary_metrics(df["salary_mid"].to_numpy(dtype=float), sal)
             if proba is not None:
                 res["category"] = score_category(df[cat_rows].reset_index(drop=True), proba[cat_rows], labels, 1000)
             out_dir = C.ARTIFACT_DIR / r / "t12_score"
             out_dir.mkdir(parents=True, exist_ok=True)
-            tag = "ext37k-sal: provisional, T10.1 overridden"
             (out_dir / "ext37k-sal.json").write_text(json.dumps(
-                {"run_id": r, "dataset": "ext37k-sal", "tag": tag, "n": len(df), "device": args.device, **res},
-                indent=2, ensure_ascii=False, default=str), encoding="utf-8")
-            print(r, {"sal_mae": round(res["salary"]["mae_trieu"], 3), "spearman": round(res["salary"]["spearman"], 3)}, flush=True)
+                {"run_id": r, "dataset": "ext37k-sal", "tag": "ext37k-sal: provisional, T10.1 overridden",
+                 "n": len(df), "device": args.device, **res}, indent=2, ensure_ascii=False, default=str),
+                encoding="utf-8")
+            hl = {"sal_mae": round(res["salary"]["mae_trieu"], 3)} if "salary" in res else {}
+            hl.update({"strict_f1": round(res["category"].get("strict", {}).get("f1_macro", float("nan")), 4)}
+                      if "category" in res else {})
+            print(r, hl, flush=True)
 
 
 def main() -> None:

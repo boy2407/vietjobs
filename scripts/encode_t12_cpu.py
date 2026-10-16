@@ -52,11 +52,18 @@ def cache_path_t12(split: str, family: str, encoder: str, max_len: int) -> Path:
     return ENC.CACHE_DIR / f"{stem}.npy"
 
 
-def ext_sal_frame(segmented: bool) -> pd.DataFrame:
-    """``ext37k-sal.csv`` đủ cột masked; thêm ``*_masked_seg`` từ SEG_FILE khi encoder cần."""
+def ext_sal_frame(segmented: bool, family: str = "masked") -> pd.DataFrame:
+    """``ext37k-sal.csv``. masked: thêm ``*_masked_seg`` từ SEG_FILE khi encoder cần.
+
+    raw (cho phân lớp): cùng ``eval_external.prepare_frame`` đã dùng cho gold/test của 37K
+    (preprocess như ``dataset.clean`` rồi tách từ) — cần underthesea, có trên máy thuê.
+    """
     df = pd.read_csv(SAL_FILE, keep_default_na=False, na_values=[""])
     for col in ("labels", "label_ids"):
         df[col] = df[col].map(ast.literal_eval)
+    if family == "raw":
+        from eval_external import prepare_frame
+        return prepare_frame(df)
     if segmented:
         seg = pd.read_parquet(SEG_FILE)
         assert (seg["id"].to_numpy() == df["id"].to_numpy()).all(), "SEG_FILE lệch thứ tự id"
@@ -66,7 +73,7 @@ def ext_sal_frame(segmented: bool) -> pd.DataFrame:
 
 
 def job(split: str, family: str, encoder: str, max_len: int, device: str = "cpu") -> None:
-    """family: raw (phân lớp) hoặc masked (lương). ext37k-sal chỉ có masked."""
+    """family: raw (phân lớp) hoặc masked (lương)."""
     path = cache_path_t12(split, family, encoder, max_len)
     if path.exists():
         print(f"skip {path.name} (có sẵn)", flush=True)
@@ -74,7 +81,7 @@ def job(split: str, family: str, encoder: str, max_len: int, device: str = "cpu"
     if split == "test":
         df = D.load_split("test")
     else:
-        df = ext_sal_frame(ENC.ENCODERS[encoder]["segmented"])
+        df = ext_sal_frame(ENC.ENCODERS[encoder]["segmented"], family)
     task = C.TASK_SALARY if family == "masked" else C.TASK_CATEGORY
     texts = T.build_text(df, task=task, segmented=ENC.ENCODERS[encoder]["segmented"])
     t0 = time.time()
@@ -97,6 +104,7 @@ def main() -> None:
         encoder, max_len = spec.split(":")
         max_len = int(max_len)
         job("ext37k-sal", "masked", encoder, max_len, args.device)
+        job("ext37k-sal", "raw", encoder, max_len, args.device)
         job("test", "masked", encoder, max_len, args.device)
         job("test", "raw", encoder, max_len, args.device)
 
