@@ -61,13 +61,22 @@ def _run_lists() -> dict:
 def test_vast_run_lists_cover_dashboard_without_duplicates():
     lists = _run_lists()
     rnn, dense = lists["rnn"], lists["dense"]
-    assert len(rnn) == len(set(rnn)) == 25 and len(dense) == len(set(dense)) == 40
+    assert len(rnn) == len(set(rnn)) == 21 and len(dense) == len(set(dense)) == 40
     assert not set(rnn) & set(dense)
     # train lại -t12 thay checkpoint thiếu/hỏng; run gốc hỏng không còn trong danh sách chấm
     assert "dl-cat-cafe-rnn-ce-s42" not in rnn and "dl-cat-cafe-rnn-ce-s42-t12" in rnn
-    assert sum(r.endswith("-t12") for r in rnn) == 6
+    assert sorted(r for r in rnn if r.endswith("-t12")) == [
+        "dl-cat-cafe-rnn-ce-s42-t12", "dl-sal-cafe-rnn-s42-t12"]
     for r in ("dl-mtl-h256-a1.0-1001-0735", "dl-cat-focal-s2", "dl-sal-s2", "dl-cat-cafe-dense-512-p20-s43"):
         assert r in dense
+
+
+def test_already_scored_blocks_a_second_scoring(tmp_path, monkeypatch):
+    monkeypatch.setattr(S.C, "ARTIFACT_DIR", tmp_path)
+    assert not S.already_scored("run-x", "test")
+    S.save("run-x", "test", "cpu", pd.DataFrame({"a": [1]}), {})
+    assert S.already_scored("run-x", "test")
+    assert not S.already_scored("run-x", "ext37k-sal")
 
 
 def test_save_writes_under_artifacts_only(tmp_path, monkeypatch):

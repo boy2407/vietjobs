@@ -3,24 +3,25 @@
 #
 #   bash scripts/vast_run_t12_score.sh all      # encode + rnn + dense
 #   bash scripts/vast_run_t12_score.sh encode   # chỉ nhúng
-#   bash scripts/vast_run_t12_score.sh train    # chỉ train lại 6 run CafeBERT RNN (-t12)
+#   bash scripts/vast_run_t12_score.sh train    # chỉ train lại 2 run CafeBERT RNN seed 42 (-t12)
 #   bash scripts/vast_run_t12_score.sh rnn      # chỉ chấm RNN
 #   bash scripts/vast_run_t12_score.sh dense    # chỉ chấm Dense
 #
 # AGENTS.md Rule 5 item 6 (tác giả, 2026-10-15): chỉ ĐỌC test để chấm checkpoint có sẵn;
 # không train lại, không ghi test.csv, không ghi gì dưới data/. Dense chấm --device cpu
 # (Rule 13 item 5). Danh sách run = vast/dot-5-t12-score-test.md: 60 run = 34 hàng dashboard
-# (6 run train lại -t12 thay cho checkpoint thiếu/hỏng của dl-sal-cafe-rnn và dl-cat-cafe-rnn-ce).
+# (2 run train lại -t12 thay cho checkpoint thiếu/hỏng của dl-sal-cafe-rnn và dl-cat-cafe-rnn-ce).
 set -euo pipefail
 PYTHON=${PYTHON:-/venv/main/bin/python}
 export PYTHONPATH=src
 mkdir -p logs
 TEST_SHA=70ba98d58397c8454f04153ace602bc8ed760acdcf2b5ad65d197af572fba047
 
-# Train lại (tác giả, 2026-10-16): run CafeBERT RNN không có checkpoint dùng được — s43/s44 thiếu,
-# s42 hỏng (best.pt không mở được) — đúng config gốc (vast_run_cafe_rnn.sh), run_id mới đuôi -t12.
-T12_CAT=dl-cat-cafe-rnn-ce-s42-t12,dl-cat-cafe-rnn-ce-s43-t12,dl-cat-cafe-rnn-ce-s44-t12
-T12_SAL=dl-sal-cafe-rnn-s42-t12,dl-sal-cafe-rnn-s43-t12,dl-sal-cafe-rnn-s44-t12
+# Train lại (tác giả, 2026-10-16): CafeBERT RNN không có checkpoint dùng được (s42 hỏng, s43/s44
+# thiếu; dl-sal-cafe-rnn không có). Chỉ MỘT seed (42) mỗi cấu hình, đúng config gốc
+# (vast_run_cafe_rnn.sh), run_id mới đuôi -t12; hai hàng dashboard đó chấm với n=1.
+T12_CAT=dl-cat-cafe-rnn-ce-s42-t12
+T12_SAL=dl-sal-cafe-rnn-s42-t12
 RNN_RUNS=dl-cat-rnn-ce,dl-cat-rnn-ce-s42,dl-cat-rnn-ce-s43,dl-cat-rnn-ce-s44,dl-cat-rnn-focal,\
 dl-cat-bamibert-rnn-1024,dl-cat-visobert-rnn-512,dl-cat-xlmr-rnn-512,\
 dl-mtl-cafe-rnn-a5-s42,dl-mtl-bamibert-rnn1024-a5-s42,dl-mtl-visobert-rnn512-a5-s42,dl-mtl-xlmr-rnn512-a5-s42,\
@@ -46,12 +47,12 @@ encode() {
   $PYTHON scripts/encode_t12_cpu.py --device cuda \
     --jobs phobert:256 cafebert:256 cafebert:512 visobert:512 xlmr:512 bamibert:1024 2>&1 | tee -a logs/t12-encode.txt
 }
-train() {  # 6 run CafeBERT 512 + RNN, đúng config gốc (T8.16/T8.17); không ghi đè thư mục cũ
+train() {  # 2 run CafeBERT 512 + RNN (seed 42), đúng config gốc (T8.16); không ghi đè thư mục cũ
   for t in category salary; do
     $PYTHON -m vietjobs.dl.encode --task "$t" --splits train dev --encoder cafebert \
       --max-len 512 --pooling none --device cuda 2>&1 | tee -a logs/t12-train-encode.txt
   done
-  for s in 42 43 44; do
+  for s in 42; do
     for spec in "category dl-cat-cafe-rnn-ce-s$s-t12 --loss ce" "salary dl-sal-cafe-rnn-s$s-t12"; do
       set -- $spec; local task=$1 rid=$2; shift 2
       [ -f "artifacts/$rid/metrics.json" ] && { echo "skip $rid"; continue; }

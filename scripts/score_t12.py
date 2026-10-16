@@ -35,6 +35,11 @@ def run_kind(run_dir: Path) -> dict:
             "encoder": cfg.get("encoder", ENC.DEFAULT_ENCODER), "max_len": cfg["max_len"]}
 
 
+def already_scored(run_id: str, dataset: str) -> bool:
+    """Một run chỉ chấm một lần trên test / ext37k-sal: chạy lại script không chấm lần hai."""
+    return (C.ARTIFACT_DIR / run_id / "t12_score" / f"{dataset}.json").exists()
+
+
 def family_of(task: str) -> str:
     """Giống ``encode.family``: phân lớp đọc raw, lương và MTL đọc masked (Rule 3)."""
     return "raw" if task == C.TASK_CATEGORY else "masked"
@@ -222,6 +227,12 @@ def main() -> None:
 
     device = ENC.pick_device(args.device)
     runs = [r.strip() for r in args.runs.split(",") if r.strip()]
+    if args.dataset != "dev":
+        for r in [r for r in runs if already_scored(r, args.dataset)]:
+            print(f"skip {r}: đã có t12_score/{args.dataset}.json", flush=True)
+        runs = [r for r in runs if not already_scored(r, args.dataset)]
+        if not runs:
+            return
     kinds = {r: run_kind(C.ARTIFACT_DIR / r) for r in runs}
     labels = sorted(set(D.load_split("train")["category"].dropna()))
     if args.dataset == "ext37k-sal":
