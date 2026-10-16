@@ -171,11 +171,11 @@ Created 2026-10-12 at the author's request. Same protocol as T8.6/T8.8 so rows c
 | T11.19 | XLM-R base · MTL RNN | doing (bootstrap + docs pending) | Claude (vast cuda) | T11.11, T11.12 | `dl-mtl-xlmr-rnn512-a5-s42` macroF1 **0.6065** (ep 23), MAE **3.98** tr, R²log 0.608 (ep 28); 36 epochs; dev, seed 42, one seed, no bootstrap yet |
 | T11.13 | One encoder-comparison table (PhoBERT, CafeBERT, + the three; single task and MTL) in docs/06 and ch.4 | todo | — | T11.1–T11.12, T11.14–T11.19 | table + bootstrap column |
 
-### T12 — job-title clusters (descriptive)
+### T13 — job-title clusters (descriptive)
 
 | ID | Task | Status | Owner | Depends on | Done when (evidence) |
 |---|---|---|---|---|---|
-| T12.1 | Cluster `job_title` to estimate the number of "role" groups (descriptive only: no label changes, `test` not read as a split; original file after exact de-dup, 47,707 rows, Rule 8). Encode titles with frozen CafeBERT (`uitnlp/CafeBERT`, mean pooling), KMeans k ∈ {6…20} | doing | wt:T12.1 | — | `scripts/cluster_titles.py` exists; silhouette table per k; for the best k, 10 sample titles per cluster and a cluster × 16-`category` crosstab; results in `artifacts/eda/title_clusters.json` and a section in `docs/05-phan-tich-du-lieu.md`; `pytest -q` green |
+| T13.1 | Cluster `job_title` to estimate the number of "role" groups (descriptive only: no label changes, `test` not read as a split; original file after exact de-dup, 47,707 rows, Rule 8). Encode titles with frozen CafeBERT (`uitnlp/CafeBERT`, mean pooling), KMeans k ∈ {6…20} | doing | wt:T13.1 | — | `scripts/cluster_titles.py` exists; silhouette table per k; for the best k, 10 sample titles per cluster and a cluster × 16-`category` crosstab; results in `artifacts/eda/title_clusters.json` and a section in `docs/05-phan-tich-du-lieu.md`; `pytest -q` green |
 
 ### Backlog (not scheduled)
 

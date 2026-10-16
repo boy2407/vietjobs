@@ -248,7 +248,7 @@ thước lớp (r = 0,610).
 
 ## 9. Tiêu đề tin chia được thành bao nhiêu nhóm vai trò?
 
-*Phạm vi: tệp gốc sau khi loại trùng chính xác (47.707 dòng), chỉ mô tả — không đổi nhãn nào, không đọc `test` như một tập chia (Rule 8).* Nguồn số liệu: `artifacts/eda/title_clusters.json`, do `scripts/cluster_titles.py` (T12.1) sinh ra.
+*Phạm vi: tệp gốc sau khi loại trùng chính xác (47.707 dòng), chỉ mô tả — không đổi nhãn nào, không đọc `test` như một tập chia (Rule 8).* Nguồn số liệu: `artifacts/eda/title_clusters.json`, do `scripts/cluster_titles.py` (T13.1) sinh ra.
 
 Cách đo: mỗi `job_title` được mã hoá bằng CafeBERT đóng băng (`uitnlp/CafeBERT`, mean pooling, tối đa 32 token), chuẩn hoá L2, rồi chạy KMeans với k từ 6 đến 20 (`n_init=5`, seed 20260826). Silhouette (khoảng cách cosine) tính trên cùng một mẫu ngẫu nhiên 10.000 dòng cho mọi k.
 
