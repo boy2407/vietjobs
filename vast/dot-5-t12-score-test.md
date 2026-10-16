@@ -2,7 +2,7 @@
 
 Task: **T12.1b** (nhúng + chấm RNN), **T12.1c** (chấm Dense trên `test`), **T12.1d** (chấm Dense trên `ext37k-sal`), tất cả trên máy thuê (tác giả đổi 2026-10-16); phụ thuộc T12.1a. CSV và hàng `04-results.md` vẫn ghi trên Mac sau khi kéo về. Quyền: AGENTS.md Rule 5 item 6 (tác giả, 2026-10-15): chấm `best.pt` đã lưu trên `test`, không train lại.
 
-Script: `scripts/vast_run_t12_score.sh` — **CHƯA VIẾT** (bước 0 dưới đây; viết và có test trước khi thuê) | Instance: chưa có (GPU, disk, RAM, IP/port điền khi thuê).
+Script: `scripts/vast_run_t12_score.sh` (gọi `scripts/encode_t12_cpu.py --device cuda` và `scripts/score_t12.py`; đã viết, smoke test trên dev ở Mac) | Instance: chưa có (GPU, disk, RAM, IP/port điền khi thuê).
 
 Phạm vi trên máy thuê:
 1. Nhúng pooled cho `test` và `ext37k-sal` (danh sách cache bên dưới), bằng `scripts/encode_t12_cpu.py` thêm `--device cuda` (hiện mã cứng `cpu`). Chỉ **đọc** test để nhúng, không ghi `test.csv`.
@@ -77,11 +77,11 @@ Dense `category` trên `ext37k-sal` cần cache `ext37k-sal` **raw**; quyết đ
 
 | # | Bước | Trạng thái | Ghi chú |
 |---|---|---|---|
-| 0 | Viết `scripts/vast_run_t12_score.sh` + `--device` cho `encode_t12_cpu.py` + script chấm RNN trên test, có test | todo | chặn bước 3 |
+| 0 | Viết `scripts/vast_run_t12_score.sh`, `--device` cho `encode_t12_cpu.py`, `scripts/score_t12.py` (Dense + RNN), `tests/test_score_t12.py` | done | smoke dev: RNN trùng `predictions_dev` 100 %, Dense khớp `metrics.json` (xem Nhật ký) |
 | 1 | Thuê máy theo "Chọn máy" | todo | tác giả |
 | 2 | Đẩy code + splits + `manifest.json` + `ext37k-sal.csv` + 20 thư mục run RNN + 31 thư mục run Dense lên | todo | lệnh dưới |
 | 3 | Cài thư viện, `sha256sum data/processed/splits/test.csv` trên máy thuê | todo | phải bằng `70ba98d58397c8454f04153ace602bc8ed760acdcf2b5ad65d197af572fba047` |
-| 4 | `bash scripts/vast_run_t12_score.sh all` trong tmux (nhúng, chấm RNN cuda, chấm Dense cpu) | todo | |
+| 4 | `bash scripts/vast_run_t12_score.sh all` trong tmux (nhúng, chấm RNN cuda, chấm Dense cpu; mỗi lượt kiểm sha256 `test.csv` trước và sau) | todo | chạy từng phần: `encode` / `rnn` / `dense` |
 | 5 | Kéo cache + kết quả chấm + log về Mac; so `md5sum` | todo | |
 | 6 | `sha256sum test.csv` trên máy thuê và trên Mac, cả hai bằng giá trị gốc | todo | |
 | 7 | Checklist `README.md`, rồi destroy | todo | tác giả bấm trên web |
@@ -120,6 +120,7 @@ Bắt buộc kèm `manifest.json` (`kinh-nghiem.md` §5) và `splits/train.csv`,
 cd /workspace/vietjobs
 source /venv/main/bin/activate
 pip install "transformers>=4.38,<4.47" sentencepiece protobuf pandas scikit-learn scipy pyarrow underthesea pyvi pytest
+PYTHONPATH=src python -m pytest -q tests/test_score_t12.py
 sha256sum data/processed/splits/test.csv
 tmux new -s t12
 bash scripts/vast_run_t12_score.sh all
@@ -135,12 +136,12 @@ ssh -p PORT root@IP "cd /workspace/vietjobs && ls artifacts/embeddings/*test* ar
 scp -P PORT root@IP:/workspace/vietjobs/artifacts/embeddings/<tên>.npy artifacts/embeddings/
 ```
 
-Kéo thêm kết quả chấm Dense (`artifacts/<run_id>/test_score/`, `external_37k/`) và pooled cache mới (nhỏ, giữ làm bằng chứng). CSV và `04-results.md` ghi trên Mac sau đó.
+Kéo thêm kết quả chấm Dense và pooled cache mới (nhỏ, giữ làm bằng chứng). CSV và `04-results.md` ghi trên Mac sau đó.
 
-Đường dẫn kết quả chấm test (`artifacts/<run_id>/test_score/`) do script bước 0 quy định; điền lại đây khi script có.
+Kết quả chấm: `artifacts/<run_id>/t12_score/test.json` và `ext37k-sal.json` (kéo cả `artifacts/*/t12_score`); log: `logs/t12-*.txt`.
 
 ## Nhật ký sự cố
 
 | Thời điểm | Hiện tượng | Xử lý |
 |---|---|---|
-| — | — | — |
+| 2026-10-16 | Dev xlmr/bamibert trên Mac không khớp checkpoint (F1 0.5317 so với 0.5953): `predictions_dev.parquet` của run vast có thứ tự dòng khác `dev.csv` trên Mac, nên cache dev xlmr/bamibert đã kéo về xếp theo thứ tự vast | không dùng dev xlmr/bamibert để kiểm; test thì cache nhúng ngay trên máy thuê từ `test.csv` đã đẩy lên (cùng sha256), nên thứ tự khớp |
