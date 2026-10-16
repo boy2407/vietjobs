@@ -455,7 +455,24 @@ head hay hàm mất mát.
 
 ### 4.5.2. Lỗi của bài toán hồi quy
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T2.1)
+**Nguyên lý.** Huber phạt đoán thấp và đoán cao như nhau. Với nhãn lệch phải mạnh (skew 11,9 trên tệp gốc 47.707 tin, 0,10 sau `log1p`; `artifacts/eda/summary.json`), mô hình học được hướng về phần giữa, và các tin lương cao bị đoán thấp có hệ thống. Hàm mất mát bất đối xứng — quantile (pinball) với trọng số τ cho đoán thấp và 1 − τ cho đoán cao, hoặc Huber nhân 2τ / 2(1 − τ) — là cách trực tiếp để đẩy dự đoán lên.
+
+**Áp dụng ở đây (T2.1, 2026-10-17).** Lệnh: `PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_dl --task salary --encoder cafebert --max-len 512 --device cpu --loss {quantile,ahuber} --tau τ --seed s`, môi trường `.venv-dl`, `cpu`. Đọc `train`, chấm `dev` (2.698 tin có công khai lương; 127 tin ≥ 30 triệu), họ vectơ `masked` (Quy tắc 3). Head Dense h = 256, lr 3e-4, patience 8, như `dl-sal-cafe-dense-512`; chỉ hàm mất mát khác. Ba seed 42–44 cho mỗi cấu hình; mốc là chính Dense Huber trên cùng ba seed. Luật chọn đặt trước khi đọc kết quả: giữ cấu hình làm MAE ≥ 30 tr giảm và MAE toàn bộ tăng không quá 0,05 triệu so với 4,130 — đúng dải nhiễu seed đo ở T8.8.
+
+**Bảng 4.6b: Sai số tách theo ngưỡng 30 triệu (dev, trung bình 3 seed, triệu đồng)**
+
+| Hàm mất mát | MAE toàn bộ (± sd) | MAE < 30 tr | RMSE < 30 tr | MAE ≥ 30 tr | RMSE ≥ 30 tr | Dự đoán TB nhóm ≥ 30 tr | Dự đoán lớn nhất |
+|---|---|---|---|---|---|---|---|
+| Huber (gốc) | **4,118** ± 0,021 | 3,22 | 4,45 | 22,25 | 32,16 | 24,7 | 44,9 |
+| quantile τ = 0,5 | **4,082** ± 0,007 | 3,16 | 4,42 | 22,66 | 32,53 | 24,4 | 43,5 |
+| quantile τ = 0,7 | 4,627 ± 0,151 | 3,92 | 5,33 | 18,97 | 29,30 | 28,9 | 59,8 |
+| quantile τ = 0,9 | 8,534 ± 0,560 | 8,15 | 10,70 | **16,38** | **25,17** | 41,7 | 136,1 |
+| Huber bất đối xứng τ = 0,7 | 4,353 ± 0,073 | 3,56 | 4,93 | 20,44 | 30,27 | 27,2 | 62,1 |
+| Huber bất đối xứng τ = 0,9 | 5,920 ± 0,297 | 5,38 | 7,56 | 16,86 | 26,08 | 35,0 | 106,2 |
+
+**Vì sao không đổi mặc định.** Không cấu hình nào đạt luật chọn. τ = 0,5 giữ MAE toàn bộ (4,082) nhưng đuôi không giảm (22,66 so 22,25). Mọi τ > 0,5 kéo đuôi xuống — tốt nhất 16,38 ở quantile τ = 0,9 — nhưng MAE của 2.571 tin < 30 triệu tăng từ 3,22 lên 3,56–8,15, nên MAE toàn bộ lên 4,35–8,53. Đó là một đánh đổi giữa phần giữa và đuôi, không phải một cải thiện; Huber được giữ làm mặc định. Một giới hạn: epoch tốt nhất được chọn theo MAE toàn bộ trên `dev`, đúng tiêu chí mà các τ cao bị phạt.
+
+> **Nguồn số liệu:** `artifacts/dl-sal-cafe-dense-512{,-s43,-s44}/` và `artifacts/dl-sal-cafe-dense-512-{q50,q70,q90,ah70,ah90}-s{42,43,44}/` — `predictions_dev.parquet` (bảng tách ngưỡng) và `metrics.json`; 15 dòng tương ứng trong `04-results.md`.
 
 ---
 
