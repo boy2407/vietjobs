@@ -46,6 +46,30 @@ def test_cache_names_match_encode_py_convention():
     assert ENC_T12.cache_path_t12("ext37k-sal", "masked", "cafebert", 512).name == "cafebert-ext37k-sal-masked-len512.npy"
 
 
+def _run_lists() -> dict:
+    """Đọc RNN_RUNS / DENSE_RUNS qua chính bash, để test thấy đúng danh sách script sẽ chạy."""
+    import subprocess
+
+    sh = Path(__file__).resolve().parents[1] / "scripts" / "vast_run_t12_score.sh"
+    src = sh.read_text(encoding="utf-8").split("check_sha()")[0]
+    out = subprocess.run(["bash", "-c", src.replace("set -euo pipefail", "") +
+                          '\necho "$RNN_RUNS"; echo "$DENSE_RUNS"'],
+                         capture_output=True, text=True, check=True).stdout.split("\n")
+    return {"rnn": out[0].split(","), "dense": out[1].split(",")}
+
+
+def test_vast_run_lists_cover_dashboard_without_duplicates():
+    lists = _run_lists()
+    rnn, dense = lists["rnn"], lists["dense"]
+    assert len(rnn) == len(set(rnn)) == 25 and len(dense) == len(set(dense)) == 40
+    assert not set(rnn) & set(dense)
+    # train lại -t12 thay checkpoint thiếu/hỏng; run gốc hỏng không còn trong danh sách chấm
+    assert "dl-cat-cafe-rnn-ce-s42" not in rnn and "dl-cat-cafe-rnn-ce-s42-t12" in rnn
+    assert sum(r.endswith("-t12") for r in rnn) == 6
+    for r in ("dl-mtl-h256-a1.0-1001-0735", "dl-cat-focal-s2", "dl-sal-s2", "dl-cat-cafe-dense-512-p20-s43"):
+        assert r in dense
+
+
 def test_save_writes_under_artifacts_only(tmp_path, monkeypatch):
     monkeypatch.setattr(S.C, "ARTIFACT_DIR", tmp_path)
     S.save("run-x", "test", "cpu", pd.DataFrame({"a": [1, 2]}), {"category": {"f1_macro": 0.5}})
