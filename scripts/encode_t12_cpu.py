@@ -2,7 +2,7 @@
 
 ``encode.py`` từ chối ``test`` (docs/03-protocol.md điều 2). Việc này chỉ *đọc* test để
 chấm các checkpoint đã có, theo quyền tác giả 2026-10-15 (AGENTS.md Rule 5 item 6); không
-biến đổi test. Chạy trên CPU (quyết định tác giả, Rule 13). Ghi cùng tên file mà
+biến đổi test. Mặc định CPU (Rule 13), `--device cuda` trên máy thuê. Ghi cùng tên file mà
 ``encode.cache_path`` và ``eval_external_mtl.embed`` dùng, nên cache này khớp đường train.
 
     PYTHONPATH=src .venv-dl/bin/python scripts/encode_t12_cpu.py --jobs phobert:256 cafebert:512
@@ -46,28 +46,39 @@ def segment_sal() -> None:
     print(f"segment: wrote {SEG_FILE} failures={V.segment_failures}", flush=True)
 
 
-def job(split: str, family: str, encoder: str, max_len: int) -> None:
-    """family: raw (phân lớp) hoặc masked (lương). ext37k-sal chỉ có masked."""
+def cache_path_t12(split: str, family: str, encoder: str, max_len: int) -> Path:
+    """Cùng quy ước tên với ``encode.cache_path``; ``split`` có thể là ``ext37k-sal``."""
     stem = f"{'' if encoder == ENC.DEFAULT_ENCODER else encoder + '-'}{split}-{family}-len{max_len}"
-    path = ENC.CACHE_DIR / f"{stem}.npy"
+    return ENC.CACHE_DIR / f"{stem}.npy"
+
+
+def ext_sal_frame(segmented: bool) -> pd.DataFrame:
+    """``ext37k-sal.csv`` đủ cột masked; thêm ``*_masked_seg`` từ SEG_FILE khi encoder cần."""
+    df = pd.read_csv(SAL_FILE, keep_default_na=False, na_values=[""])
+    for col in ("labels", "label_ids"):
+        df[col] = df[col].map(ast.literal_eval)
+    if segmented:
+        seg = pd.read_parquet(SEG_FILE)
+        assert (seg["id"].to_numpy() == df["id"].to_numpy()).all(), "SEG_FILE lệch thứ tự id"
+        for c in SEG_SRC:
+            df[c + "_seg"] = seg[c + "_seg"].to_numpy()
+    return df
+
+
+def job(split: str, family: str, encoder: str, max_len: int, device: str = "cpu") -> None:
+    """family: raw (phân lớp) hoặc masked (lương). ext37k-sal chỉ có masked."""
+    path = cache_path_t12(split, family, encoder, max_len)
     if path.exists():
         print(f"skip {path.name} (có sẵn)", flush=True)
         return
     if split == "test":
         df = D.load_split("test")
     else:
-        df = pd.read_csv(SAL_FILE, keep_default_na=False, na_values=[""])
-        for col in ("labels", "label_ids"):
-            df[col] = df[col].map(ast.literal_eval)
-        if ENC.ENCODERS[encoder]["segmented"]:
-            seg = pd.read_parquet(SEG_FILE)
-            assert (seg["id"].to_numpy() == df["id"].to_numpy()).all(), "SEG_FILE lệch thứ tự id"
-            for c in SEG_SRC:
-                df[c + "_seg"] = seg[c + "_seg"].to_numpy()
+        df = ext_sal_frame(ENC.ENCODERS[encoder]["segmented"])
     task = C.TASK_SALARY if family == "masked" else C.TASK_CATEGORY
     texts = T.build_text(df, task=task, segmented=ENC.ENCODERS[encoder]["segmented"])
     t0 = time.time()
-    emb = ENC.encode_texts(texts, max_len=max_len, batch=16, device="cpu", encoder=encoder)
+    emb = ENC.encode_texts(texts, max_len=max_len, batch=16, device=device, encoder=encoder)
     np.save(path, emb)
     dt = time.time() - t0
     print(f"wrote {path.name} n={len(emb)} in {dt / 60:.1f} min ({len(emb) / dt:.2f} texts/s)", flush=True)
@@ -76,6 +87,7 @@ def job(split: str, family: str, encoder: str, max_len: int) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--jobs", nargs="+", help="encoder:max_len, theo thứ tự ưu tiên")
+    ap.add_argument("--device", default="cpu", help="cpu (mặc định, Mac) | cuda (máy thuê)")
     ap.add_argument("--segment-only", action="store_true", help="chạy trong .venv: tách từ ext37k-sal")
     args = ap.parse_args()
     if args.segment_only:
@@ -84,9 +96,9 @@ def main() -> None:
     for spec in args.jobs:
         encoder, max_len = spec.split(":")
         max_len = int(max_len)
-        job("ext37k-sal", "masked", encoder, max_len)
-        job("test", "masked", encoder, max_len)
-        job("test", "raw", encoder, max_len)
+        job("ext37k-sal", "masked", encoder, max_len, args.device)
+        job("test", "masked", encoder, max_len, args.device)
+        job("test", "raw", encoder, max_len, args.device)
 
 
 if __name__ == "__main__":
