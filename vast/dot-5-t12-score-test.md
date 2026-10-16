@@ -1,13 +1,14 @@
-# Đợt 5: T12.1b — nhúng cache cho test / ext37k-sal và chấm các run RNN — CHƯA THUÊ
+# Đợt 5: T12.1b/c/d — nhúng cache cho test / ext37k-sal và chấm các run RNN + Dense — CHƯA THUÊ
 
-Task: **T12.1b** (phụ thuộc T12.1a; T12.1c/d chấm Dense trên Mac sau khi cache về). Quyền: AGENTS.md Rule 5 item 6 (tác giả, 2026-10-15): chấm `best.pt` đã lưu trên `test`, không train lại.
+Task: **T12.1b** (nhúng + chấm RNN), **T12.1c** (chấm Dense trên `test`), **T12.1d** (chấm Dense trên `ext37k-sal`), tất cả trên máy thuê (tác giả đổi 2026-10-16); phụ thuộc T12.1a. CSV và hàng `04-results.md` vẫn ghi trên Mac sau khi kéo về. Quyền: AGENTS.md Rule 5 item 6 (tác giả, 2026-10-15): chấm `best.pt` đã lưu trên `test`, không train lại.
 
 Script: `scripts/vast_run_t12_score.sh` — **CHƯA VIẾT** (bước 0 dưới đây; viết và có test trước khi thuê) | Instance: chưa có (GPU, disk, RAM, IP/port điền khi thuê).
 
 Phạm vi trên máy thuê:
 1. Nhúng pooled cho `test` và `ext37k-sal` (danh sách cache bên dưới), bằng `scripts/encode_t12_cpu.py` thêm `--device cuda` (hiện mã cứng `cpu`). Chỉ **đọc** test để nhúng, không ghi `test.csv`.
 2. Chấm **14 cấu hình RNN còn checkpoint / 20 run** trên `test` và `ext37k-sal`, nhúng token từng batch rồi chạy head (đường `predict_rnn` của `scripts/eval_external_mtl.py`, không ghi token cache). Mỗi (encoder, họ cột) nhúng một lượt, mọi run cùng encoder đọc chung lượt đó.
-3. Loại: `dl-sal-cafe-rnn` (s42–s44 không có `best.pt`). `dl-cat-cafe-rnn-ce` chỉ s42 (s43, s44 không có `best.pt`). Hàng chờ tác giả (T12.1a) không chấm.
+3. Chấm các run **Dense** (đơn nhiệm và MTL dense, 31 thư mục run, bảng dưới) trên cache pooled vừa nhúng, **`--device cpu`** (Rule 13 item 5). Chưa có bằng chứng suy luận trên cuda tất định, nên giữ cpu; head Dense nhỏ, chấm ~25.000 dòng trên cpu tốn vài giây.
+4. Loại: `dl-sal-cafe-rnn` (s42–s44 không có `best.pt`). `dl-cat-cafe-rnn-ce` chỉ s42 (s43, s44 không có `best.pt`). Bốn hàng chờ tác giả (`dl-mtl-h256-a1.0`, `dl-cat-focal`, `dl-sal`, `dl-cat-cafe-dense-512-p20`) không chấm và không đẩy lên.
 
 Số 14 cấu hình = 15 cấu hình RNN trên dashboard trừ `dl-sal-cafe-rnn`.
 
@@ -56,15 +57,31 @@ Không có token cache (nhúng từng batch) nên không còn nút thắt I/O c�
 | `dl-sal-visobert-rnn-512` | `dl-sal-visobert-rnn-512` | salary | visobert · 512 | có | todo |
 | `dl-sal-xlmr-rnn-512` | `dl-sal-xlmr-rnn-512` | salary | xlmr · 512 | có | todo |
 
+### Run Dense chấm trên máy thuê (31 thư mục, cpu)
+
+| Cấu hình dashboard | Run | Task | Encoder · len |
+|---|---|---|---|
+| `dl-cat-cafe-dense-512` | `dl-cat-cafe-dense-512`, `-s43`, `-s44`, `-s45`, `-s46` | category | cafebert · 512 |
+| `dl-cat-cafe-dense` | `dl-cat-cafe-dense` | category | cafebert · 256 |
+| `dl-cat-cafe-focal-512` | `dl-cat-cafe-focal-512-s42` … `-s46` | category | cafebert · 512 |
+| `dl-cat-ce` | `dl-cat-ce-0920` (khớp accuracy dev, T12.1a) | category | phobert · 256 |
+| `dl-cat-bamibert-dense-1024` / `-visobert-dense-512` / `-xlmr-dense-512` | cùng tên | category | bamibert 1024 / visobert 512 / xlmr 512 |
+| `dl-mtl-bamibert1024-a5-e80` / `dl-mtl-visobert512-a5-e80` / `dl-mtl-xlmr512-a5-e80` | `…-s42` | mtl | bamibert 1024 / visobert 512 / xlmr 512 |
+| `dl-sal-cafe-dense-512` | `dl-sal-cafe-dense-512`, `-s43` … `-s46` | salary | cafebert · 512 |
+| `dl-sal-cpu` | `dl-sal-cpu-0920`, `dl-sal-cpu-s43` … `-s46` | salary | phobert · 256 |
+| `dl-sal-bamibert-dense-1024` / `-visobert-dense-512` / `-xlmr-dense-512` | cùng tên | salary | bamibert 1024 / visobert 512 / xlmr 512 |
+
+Dense `category` trên `ext37k-sal` cần cache `ext37k-sal` **raw**; quyết định ở T12.1a, chưa nằm trong bảng cache.
+
 ## Tiến độ
 
 | # | Bước | Trạng thái | Ghi chú |
 |---|---|---|---|
 | 0 | Viết `scripts/vast_run_t12_score.sh` + `--device` cho `encode_t12_cpu.py` + script chấm RNN trên test, có test | todo | chặn bước 3 |
 | 1 | Thuê máy theo "Chọn máy" | todo | tác giả |
-| 2 | Đẩy code + splits + `manifest.json` + `ext37k-sal.csv` + 20 thư mục run lên | todo | lệnh dưới |
+| 2 | Đẩy code + splits + `manifest.json` + `ext37k-sal.csv` + 20 thư mục run RNN + 31 thư mục run Dense lên | todo | lệnh dưới |
 | 3 | Cài thư viện, `sha256sum data/processed/splits/test.csv` trên máy thuê | todo | phải bằng `70ba98d58397c8454f04153ace602bc8ed760acdcf2b5ad65d197af572fba047` |
-| 4 | `bash scripts/vast_run_t12_score.sh all` trong tmux | todo | |
+| 4 | `bash scripts/vast_run_t12_score.sh all` trong tmux (nhúng, chấm RNN cuda, chấm Dense cpu) | todo | |
 | 5 | Kéo cache + kết quả chấm + log về Mac; so `md5sum` | todo | |
 | 6 | `sha256sum test.csv` trên máy thuê và trên Mac, cả hai bằng giá trị gốc | todo | |
 | 7 | Checklist `README.md`, rồi destroy | todo | tác giả bấm trên web |
@@ -78,6 +95,13 @@ RUNS="dl-cat-cafe-rnn-ce-s42 dl-cat-rnn-ce dl-cat-rnn-ce-s42 dl-cat-rnn-ce-s43 d
  dl-cat-bamibert-rnn-1024 dl-cat-visobert-rnn-512 dl-cat-xlmr-rnn-512 \
  dl-mtl-cafe-rnn-a5-s42 dl-mtl-bamibert-rnn1024-a5-s42 dl-mtl-visobert-rnn512-a5-s42 dl-mtl-xlmr-rnn512-a5-s42 \
  dl-sal-rnn dl-sal-rnn-s42 dl-sal-rnn-s43 dl-sal-rnn-s44 dl-sal-bamibert-rnn-1024 dl-sal-visobert-rnn-512 dl-sal-xlmr-rnn-512"
+RUNS="$RUNS dl-cat-cafe-dense-512 dl-cat-cafe-dense-512-s43 dl-cat-cafe-dense-512-s44 dl-cat-cafe-dense-512-s45 dl-cat-cafe-dense-512-s46 \
+ dl-cat-cafe-dense dl-cat-cafe-focal-512-s42 dl-cat-cafe-focal-512-s43 dl-cat-cafe-focal-512-s44 dl-cat-cafe-focal-512-s45 dl-cat-cafe-focal-512-s46 \
+ dl-cat-ce-0920 dl-cat-bamibert-dense-1024 dl-cat-visobert-dense-512 dl-cat-xlmr-dense-512 \
+ dl-mtl-bamibert1024-a5-e80-s42 dl-mtl-visobert512-a5-e80-s42 dl-mtl-xlmr512-a5-e80-s42 \
+ dl-sal-cafe-dense-512 dl-sal-cafe-dense-512-s43 dl-sal-cafe-dense-512-s44 dl-sal-cafe-dense-512-s45 dl-sal-cafe-dense-512-s46 \
+ dl-sal-cpu-0920 dl-sal-cpu-s43 dl-sal-cpu-s44 dl-sal-cpu-s45 dl-sal-cpu-s46 \
+ dl-sal-bamibert-dense-1024 dl-sal-visobert-dense-512 dl-sal-xlmr-dense-512"
 FILES=""
 for r in $RUNS; do for f in best.pt best_sal.pt config.json scaler.npz; do
   [ -f artifacts/$r/$f ] && FILES="$FILES artifacts/$r/$f"; done; done
@@ -110,6 +134,8 @@ sha256sum data/processed/splits/test.csv
 ssh -p PORT root@IP "cd /workspace/vietjobs && ls artifacts/embeddings/*test* artifacts/embeddings/*ext37k-sal* artifacts/*/external_37k artifacts/*/test_score logs/t12*"
 scp -P PORT root@IP:/workspace/vietjobs/artifacts/embeddings/<tên>.npy artifacts/embeddings/
 ```
+
+Kéo thêm kết quả chấm Dense (`artifacts/<run_id>/test_score/`, `external_37k/`) và pooled cache mới (nhỏ, giữ làm bằng chứng). CSV và `04-results.md` ghi trên Mac sau đó.
 
 Đường dẫn kết quả chấm test (`artifacts/<run_id>/test_score/`) do script bước 0 quy định; điền lại đây khi script có.
 
