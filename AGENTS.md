@@ -606,7 +606,7 @@ before implementation rather than after mistakes.
 
 ### 6.5 Model choice and where work happens
 
-Work is done directly in the main session by default. A worktree and the
-`executor` subagent (Sonnet, author's decision 2026-10-15) are used **only
-when the author explicitly asks for a worktree**. Read-only search helpers may
+**No git worktrees** (author's decision 2026-10-17). All work is done in the
+main checkout, by the main session itself — there is no `executor`
+subagent. Read-only search helpers may
 use any model.
