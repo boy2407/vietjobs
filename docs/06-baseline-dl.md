@@ -115,6 +115,14 @@ hiện tại.
 | `probe-cafebert-cat-512` | LogReg trên vector CafeBERT, 512 token | 0,6006 | 0,6326 | 0,6422 | — |
 | `dl-cat-cafe-dense-512` | Dense, encoder CafeBERT, 512 token | 0,6077 | 0,6426 | 0,6495 | 24/32 |
 | `dl-cat-cafe-dense-512-x512` | như trên + một lớp ẩn 512 (`--pre-hidden 512`, 1024→512→256→128→16, T8.10) | 0,5930 | 0,6389 | 0,6445 | 5/13 |
+| `dl-cat-soft-cpu-s43..45` | Dense như `dl-cat-ce-cpu-s43..45`, nhãn mềm theo nhóm (`--soft-target`, T2.8); trung bình 3 seed | 0,5998 | 0,6391 | 0,6470 | 7,7 (TB) |
+
+**Nhãn mềm theo nhóm (T2.8).** Mỗi tin học theo phân phối nhãn của cả nhóm tin giống hệt nhau
+(`group_id`), không xóa hay gán lại dòng nào (`--soft-target`, `group_soft_targets` trong `train_dl.py`);
+nhóm một dòng cho đúng one-hot. PhoBERT, `cpu`, seed 43–45, so với `dl-cat-ce-cpu-s43..45`: macro-F1
+0,5998 so với 0,6033 (Δ −0,0035), `f1_macro_no_junk` 0,6416 so với 0,6455, accuracy 0,6470 so với 0,6483.
+Cả ba cặp seed đều thấp hơn (−0,0038 / −0,0046 / −0,0023) nhưng khoảng dao động giữa các seed của CE là 0,0082,
+nên **không cải thiện, và chưa đủ để nói là làm hại**. Lưu ý `dev` gần như đơn nhãn (xem `01-data-audit.md` §7).
 
 **Đổi encoder (T8.6).** `uitnlp/CafeBERT` (XLM-R-large) đóng băng thay PhoBERT; split, head,
 siêu tham số và `cpu` giữ nguyên. CafeBERT đọc văn bản **chưa tách từ** (tokenizer

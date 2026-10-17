@@ -238,6 +238,13 @@ chung một hoán vị. Hạt giống `SPLIT_SEED = 20260826` không đổi.
 | dev | 3.812 | 7,99 % | 2.705 | 16 |
 | test | 9.541 | 20,00 % | 6.719 | 16 |
 
+**Hệ quả của thứ tự "nhóm lớn trước".** Giỏ `train` thiếu nhiều nhất nên nhận hết nhóm lớn: nhóm
+lớn nhất ở `train` có 33 dòng, ở `dev` chỉ 2; `train` có 2.264 nhóm từ 3 dòng trở lên, `dev` không có nhóm nào.
+Tỉ lệ dòng nằm trong nhóm đa nhãn là 56,04 % ở `train` so với 4,20 % ở `dev`, và không nhóm `dev` nào nằm trong `train`.
+Vì vậy điểm trên `dev` đo chủ yếu trên tin đơn nhãn. Với `test`, điều này mới suy ra từ thuật toán, chưa đo.
+
+> **Nguồn số liệu:** `scripts/measure_group_structure.py` đọc `data/processed/splits/train.csv` và `dev.csv` (đo ngày 2026-10-17); phạm vi: `train` (34.354) và `dev` (3.812).
+
 `groups_straddling_splits` = **0**, và hàm `build()` có một câu lệnh `assert` kiểm
 tra điều đó. Câu lệnh này không bao giờ được phép tắt đi. Tỷ lệ thực tế lệch không
 quá 0,01 điểm phần trăm so với mục tiêu, dù đơn vị chia là nhóm chứ không phải dòng.

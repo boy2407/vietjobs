@@ -174,6 +174,18 @@ hình về phía các lớp nhỏ, đúng như thiết kế; mặc định để
 đo trên `device=mps` ngày 15/09 nên từng con số riêng lẻ không tái lập được,
 nhưng khoảng cách 0,0315 vượt xa biên nhiễu nên kết luận vẫn đứng.
 
+**Nhãn mềm theo nhóm không giúp (T2.8).** Cùng một văn bản có thể mang nhiều nhãn ở `train` (56,04 % số dòng,
+§3.5.2), nên mỗi tin được học theo phân phối nhãn của cả nhóm thay vì một nhãn cứng. Lệnh:
+`PYTHONPATH=src .venv-dl/bin/python -m vietjobs.dl.train_dl --task category --soft-target --device cpu --seed {43,44,45}`
+(`.venv-dl`, `cpu`, PhoBERT đóng băng + Dense h=256, loss cross-entropy trên nhãn mềm, không `--class-weight`;
+`eval=dev`, n = 3.812). Trung bình ba seed: macro-F1 0,5998 so với 0,6033 của `dl-cat-ce-cpu` (Δ −0,0035),
+`f1_macro_no_junk` 0,6416 so với 0,6455. Ba cặp seed đều thấp hơn nhưng nằm trong khoảng dao động seed của CE (0,0082):
+kết luận là không cải thiện. Độ đúng "top-1 nằm trong tập nhãn của nhóm" (tập nhãn lấy từ nhóm trong `dev`) là 0,6640
+so với 0,6654, và với hai run `dl-cat-s2`, `dl-cat-cafe-rnn-ce-s43` cao hơn accuracy 0,0165 và 0,0173; trên 160 dòng
+thuộc nhóm đa nhãn của `dev` độ đúng tăng từ 0,41 và 0,39 lên 0,80 và 0,81.
+
+> **Nguồn số liệu:** `artifacts/dl-cat-soft-cpu-s43..45/metrics.json`, `artifacts/dl-cat-ce-cpu-s43..45/metrics.json`, `predictions_dev.parquet` của các run đó, và các dòng `dl-cat-soft-cpu-s*` trong `docs/04-results.md`.
+
 Lần chạy phân kỳ `dl-cat-h256` (macro-F1 0,0420) được giữ lại ở §4.6: thiếu chuẩn
 hoá và cắt gradient, và chính bài học đó đã dẫn tới cấu hình ở trên.
 

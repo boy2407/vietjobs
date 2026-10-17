@@ -288,6 +288,24 @@ F1 theo từng lớp trên dev đối với lớp này được đo trên 25 m�
 hãy đọc `f1_macro_no_junk` cùng với nó, và xác nhận lại trên `test` ở bước
 cuối.
 
+### Nhóm lớn đổ về `train` (T2.6)
+
+Đo ngày 2026-10-17 bằng `scripts/measure_group_structure.py`, chỉ trên `train` và `dev`.
+Vì thuật toán xếp nhóm lớn nhất trước vào giỏ đang thiếu nhiều nhất, ở giai đoạn 2 giỏ `train`
+(90 %) nhận hết các nhóm lớn, còn `dev` chỉ nhận phần nhóm nhỏ còn lại:
+
+| | `train` | `dev` |
+|---|---|---|
+| Dòng / nhóm | 34.354 / 22.026 | 3.812 / 3.728 |
+| Nhóm lớn nhất | 33 dòng | 2 dòng |
+| Nhóm từ 3 dòng trở lên | 2.264 | 0 |
+| Dòng nằm trong nhóm đa nhãn | 56,04 % | 4,20 % |
+
+Cùng một văn bản mang nhiều nhãn là chuyện thường ở `train` nhưng gần như không có ở `dev`; không nhóm
+nào của `dev` nằm trong `train` (0,0 %). Hệ quả: macro-F1 trên `dev` đo khả năng trên các tin
+phần lớn đơn nhãn, trong khi mô hình học trên dữ liệu có 56 % dòng mang nhãn mâu thuẫn. Phần này
+suy ra từ code cho `test` (cùng giai đoạn 1) nhưng **chưa đo**, vì `test` không được đọc (Rule 5).
+
 `SPLIT_SEED = 20260826` không đổi, nhưng **các tỷ lệ đã thay đổi**, nên bản
 thân các tập chia tách là mới. Mọi thứ được đo dưới lược đồ 70/15/15 cũ — mọi
 chuẩn đối sánh lương 5,86 cũ và các embedding PhoBERT đã
