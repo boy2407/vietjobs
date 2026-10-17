@@ -104,7 +104,7 @@ def environment(device, encoder: str = ENC.DEFAULT_ENCODER) -> dict:
 
 
 def load_task(split: str, task: str, max_len: int, head: str = "dense",
-              encoder: str = ENC.DEFAULT_ENCODER):
+              encoder: str = ENC.DEFAULT_ENCODER, concat: tuple[str, int] | None = None):
     """Trả về ``(X, mask, y, frame)`` — frame giữ lại để cắt lát kết quả theo ngành.
 
     ``head="dense"``  → ``X`` là ma trận ``[n, 768]`` đã gộp, ``mask`` là ``None``.
@@ -118,6 +118,16 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
         X, mask = ENC.token_cache_for(split, task, max_len=max_len, encoder=encoder)
     else:
         X, mask = ENC.embeddings_for(split, task, max_len=max_len, encoder=encoder), None
+        if concat is not None:
+            c_enc, c_len = concat
+            ENC.check_same_rows(split, task, len(df), (encoder, max_len), (c_enc, c_len))
+            path = ENC.cache_path(split, task, c_len, encoder=c_enc)
+            if not path.exists():
+                raise SystemExit(f"thiếu {path.name}: concat không nhúng lại — encode trước")
+            X2 = np.load(path)
+            if len(X2) != len(df):
+                raise SystemExit(f"{path.name} có {len(X2)} dòng, split có {len(df)}")
+            X = np.concatenate([X, X2], axis=1)
     if len(X) != len(df):
         raise SystemExit(f"cache {split} có {len(X)} dòng nhưng split có {len(df)} "
                          "— chạy lại `python -m vietjobs.dl.encode --force`")
@@ -210,6 +220,11 @@ def build_parser() -> argparse.ArgumentParser:
                          "Bài Tran–Vo–Luu 2022 dùng 50 (cùng --hidden 100)")
     ap.add_argument("--encoder", default=ENC.DEFAULT_ENCODER, choices=list(ENC.ENCODERS),
                     help="cache của encoder nào — chạy encode.py --encoder cùng tên trước (T8.6)")
+    ap.add_argument("--concat-encoder", default=None, choices=list(ENC.ENCODERS),
+                    help="chỉ dùng với --head dense: nối thêm vector cache của encoder này "
+                         "(đã có sẵn, không nhúng lại) sau vector --encoder; T12.1")
+    ap.add_argument("--concat-max-len", type=int, default=512,
+                    help="max_len của cache --concat-encoder")
     ap.add_argument("--max-len", type=int, default=256)
     ap.add_argument("--patience", type=int, default=8)
     ap.add_argument("--max-minutes", type=float, default=0,
@@ -259,6 +274,11 @@ def run(args: argparse.Namespace) -> dict:
         raise SystemExit("chấm test cần --confirm-test (docs/03-protocol.md, điều 2)")
     if args.pre_hidden and args.head != "dense":
         raise SystemExit("--pre-hidden chỉ dùng với --head dense")
+    if args.concat_encoder and args.head != "dense":
+        raise SystemExit("--concat-encoder chỉ dùng với --head dense")
+    if args.concat_encoder == args.encoder:
+        raise SystemExit("--concat-encoder phải khác --encoder")
+    concat = (args.concat_encoder, args.concat_max_len) if args.concat_encoder else None
     if args.loss == "focal" and args.task == C.TASK_SALARY:
         raise SystemExit("--loss focal chỉ dùng cho phân lớp, salary đã dùng Huber")
     if args.loss in ("quantile", "ahuber") and args.task != C.TASK_SALARY:
@@ -275,8 +295,10 @@ def run(args: argparse.Namespace) -> dict:
     device = ENC.pick_device(args.device)
     is_reg = args.task == C.TASK_SALARY
 
-    Xtr, mtr, ytr, tr_df = load_task("train", args.task, args.max_len, args.head, args.encoder)
-    Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder)
+    Xtr, mtr, ytr, tr_df = load_task("train", args.task, args.max_len, args.head, args.encoder,
+                                     concat)
+    Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder,
+                                     concat)
     is_rnn = args.head == "rnn"
     n_train = len(ytr)
 
@@ -461,6 +483,8 @@ def run(args: argparse.Namespace) -> dict:
     env = environment(device, args.encoder)
     arch = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches})"
             if is_rnn else "phobert-frozen+dense")
+    if concat:
+        arch = f"{args.encoder}+{args.concat_encoder}-frozen+dense"
     # F1 "chuẩn" 2·P·R/(P+R) chỉ định nghĩa cho MỘT lớp; với 16 lớp là 16 con số,
     # và macro/micro/weighted ở `metrics` chỉ là ba cách gộp chúng lại. Lưu cả 16
     # (kèm precision/recall/support) để báo cáo đọc được từng lớp mà không phải
@@ -512,11 +536,13 @@ def run(args: argparse.Namespace) -> dict:
                         else f",{args.loss}(tau={args.tau:g})" if args.loss in ("quantile", "ahuber")
                         else ",soft-ce(group)" if args.soft_target
                         else "")
-            enc_tag = args.encoder
+            enc_tag = args.encoder + (f"+{args.concat_encoder}" if concat else "")
             base = (f"{enc_tag}-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches}"
                     if is_rnn else f"{enc_tag}-frozen+dense(h={args.hidden}"
                     + (f",pre={args.pre_hidden}" if args.pre_hidden else ""))
             prep = "segment" if ENC.ENCODERS[args.encoder]["segmented"] else "nosegment"
+            if concat:
+                prep += f"+concat({args.concat_encoder}@{args.concat_max_len})"
             if is_rnn:
                 prep += "+token-level"
             if stopped_by == "time":

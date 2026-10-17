@@ -621,6 +621,12 @@ là một kết quả thực nghiệm, không phải một lựa chọn thiết 
 
 > **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a1-s42/history.jsonl` (epoch 9), `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/metrics.json`.
 
+### 3.7.5. Nối hai encoder đông lạnh (T12.1)
+
+**Nguyên tắc.** Hai encoder đông lạnh cho hai góc nhìn khác nhau về cùng một tin: PhoBERT (768 chiều, văn bản đã tách từ, 256 token) và CafeBERT (1024 chiều, văn bản chưa tách từ, 512 token). Thay vì chọn một, head dense nhận vectơ nối `[PhoBERT ‖ CafeBERT]` có 1792 chiều. **Áp dụng.** Tùy chọn `--concat-encoder cafebert --concat-max-len 512` của `train_dl.py`, chỉ dùng với `--head dense`, mặc định tắt. Không nhúng lại: hai cache `.npy` đã có được đọc trực tiếp. Chuẩn hoá theo từng chiều vẫn tính trên `train` như §3.7.3, nay trên 1792 chiều. **Ràng buộc thứ tự hàng.** Hai cache chỉ được ghép khi sidecar của cả hai cùng split, cùng họ cột và cùng số dòng với `split` (`encode.check_same_rows`); thứ tự hàng do `D.load_split` quyết định nên ba khoá này là bằng chứng. **Quy tắc 3.** Bài toán lương đọc họ `masked` cho cả hai encoder (`cafebert-{train,dev}-masked-len512.npy` và `train/dev-masked-len256.npy`); phân loại đọc họ `raw`. Hàm kiểm tra từ chối ghép khác họ. **Lý do chọn.** Đo bằng 5 seed, §4.4.4: nối giảm MAE lương so với mỗi encoder đơn ở cả 5 seed, phân loại tăng nhẹ macro-F1 (KTC sát 0).
+
+> **Nguồn số liệu:** `src/vietjobs/dl/train_dl.py`, `src/vietjobs/dl/encode.py` (`check_same_rows`); `artifacts/t121/summary.json`; [06 §5.8](../06-baseline-dl.md).
+
 ## 3.8. Các độ đo đánh giá
 
 ### 3.8.1. Bài toán phân loại ngành nghề

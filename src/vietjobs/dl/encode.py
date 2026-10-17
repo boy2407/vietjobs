@@ -83,6 +83,29 @@ def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
     raise ValueError(f"kind lạ: {kind}")
 
 
+def sidecar_of(split: str, task: str, max_len: int, encoder: str = DEFAULT_ENCODER) -> dict:
+    """Sidecar của cache pooled; cache PhoBERT pooled cũ không có, khi đó dùng cache token cùng split/họ."""
+    for kind in ("pooled", "tok"):
+        side = cache_path(split, task, max_len, kind, encoder).with_suffix(".json")
+        if side.exists():
+            return json.loads(side.read_text(encoding="utf-8"))
+    raise SystemExit(f"không có sidecar cho {encoder} {split} len{max_len}: không kiểm tra được thứ tự dòng")
+
+
+def check_same_rows(split: str, task: str, n_rows: int, *parts: tuple[str, int]) -> None:
+    """Các cache được ghép phải cùng split, cùng họ cột và cùng số dòng với ``split``.
+
+    Thứ tự dòng do ``D.load_split`` quyết định và không phụ thuộc encoder, nên ba khoá
+    này trùng nhau là bằng chứng hai cache cùng thứ tự hàng (T12.1).
+    """
+    for encoder, max_len in parts:
+        info = sidecar_of(split, task, max_len, encoder)
+        got = (info.get("split"), info.get("family"), info.get("n"))
+        if got != (split, family(task), n_rows):
+            raise SystemExit(f"{encoder} len{max_len}: sidecar {got} không khớp "
+                             f"({split}, {family(task)}, {n_rows}) — không ghép được")
+
+
 def _load_model(device: str, encoder: str = DEFAULT_ENCODER):
     """Tokenizer + encoder đóng băng, dùng chung cho cả hai mức cache."""
     import torch

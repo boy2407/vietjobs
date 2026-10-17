@@ -55,6 +55,8 @@ Phần mã nguồn trong `src/vietjobs/` mà đề tài dùng gồm **10 mô-đu
 | `dl/train_mtl.py` | 323 | Đa nhiệm (T4.1): một trunk đọc họ `masked`, hai đầu phân lớp và lương, loss `CE + α · SmoothL1` |
 | `external.py` | 278 | Đọc VietJobs-37K, ánh xạ 60 → 16 nhãn, lọc tin trùng với ba tập chia (§4.8) |
 
+**Thay đổi T12.1.** `src/vietjobs/dl/train_dl.py` có thêm `--concat-encoder` và `--concat-max-len` (chỉ head dense; mặc định tắt, đường mặc định không đổi). `load_task` nối vectơ của cache thứ hai sau vectơ chính. `src/vietjobs/dl/encode.py` có thêm `sidecar_of` và `check_same_rows`, kiểm tra cùng split, họ cột và số dòng trước khi ghép. Kiểm thử mới: `tests/test_dl_concat.py` (5 kiểm thử), đã chạy trong `.venv-dl`.
+
 ### 5.2.1. Ba bất biến giữ cả hệ thống đứng vững
 
 **1. Một cánh cửa vào dữ liệu.** Đường học sâu không tự nối vào cột thô: nó gọi
