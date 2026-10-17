@@ -170,6 +170,16 @@ def batches(n: int, size: int, shuffle: bool, gen: torch.Generator):
         yield idx[i:i + size]
 
 
+def group_soft_targets(group_ids: np.ndarray, y_ids: np.ndarray, n_classes: int) -> np.ndarray:
+    """``[n, C]``: hàng i là tỉ lệ từng nhãn trong nhóm của dòng i (T2.8).
+
+    Nhóm một dòng cho đúng one-hot, nên chỉ các tin đăng lại nhiều nhãn bị đổi.
+    """
+    share = pd.crosstab(group_ids, y_ids).reindex(columns=range(n_classes), fill_value=0)
+    share = share.div(share.sum(axis=1), axis=0)
+    return share.loc[group_ids].to_numpy(np.float32)
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Tách khỏi ``main`` để test gọi được ``run(build_parser().parse_args([...]))``."""
     ap = argparse.ArgumentParser(description=__doc__)
@@ -212,6 +222,10 @@ def build_parser() -> argparse.ArgumentParser:
                          "thay vì độ hiếm của lớp — dùng cùng --class-weight được")
     ap.add_argument("--focal-gamma", type=float, default=2.0,
                     help="gamma của focal loss; gamma=0 trùng CrossEntropyLoss")
+    ap.add_argument("--soft-target", action="store_true",
+                    help="category: mỗi tin học theo phân phối nhãn của cả nhóm tin giống "
+                         "hệt nhau (group_id) thay vì một nhãn cứng (T2.8); tính lúc nạp, "
+                         "không ghi gì ra đĩa; không dùng chung với --class-weight / --loss focal")
     ap.add_argument("--tau", type=float, default=0.5,
                     help="salary: tau của --loss quantile / ahuber (T2.1)")
     # Mặc định cpu, không phải auto: head dense chỉ 768→256→128→16 nên mps không
@@ -261,7 +275,7 @@ def run(args: argparse.Namespace) -> dict:
     device = ENC.pick_device(args.device)
     is_reg = args.task == C.TASK_SALARY
 
-    Xtr, mtr, ytr, _ = load_task("train", args.task, args.max_len, args.head, args.encoder)
+    Xtr, mtr, ytr, tr_df = load_task("train", args.task, args.max_len, args.head, args.encoder)
     Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder)
     is_rnn = args.head == "rnn"
     n_train = len(ytr)
@@ -273,6 +287,12 @@ def run(args: argparse.Namespace) -> dict:
         ytr_t = torch.tensor([to_id[v] for v in ytr], dtype=torch.long)
         yev_ids = np.array([to_id.get(v, -1) for v in yev])
         out_dim = len(labels)
+        if args.soft_target:
+            if args.class_weight or args.loss != "ce":
+                raise SystemExit("--soft-target chỉ chạy với --loss ce, không --class-weight")
+            # [n, C]: hàng i = tỉ lệ từng nhãn trong nhóm của tin i (T2.8)
+            soft_t = torch.tensor(group_soft_targets(
+                tr_df["group_id"].to_numpy(), ytr_t.numpy(), out_dim))
     else:
         ytr_t = torch.tensor(ytr, dtype=torch.float32).unsqueeze(1)
         out_dim = 1
@@ -364,7 +384,11 @@ def run(args: argparse.Namespace) -> dict:
             xb, mb = take(Xtr, mtr, idx)
             yb = ytr_t[idx].to(device)
             opt.zero_grad()
-            loss = loss_fn(model(xb, mb), yb)
+            if args.soft_target:
+                logp = torch.log_softmax(model(xb, mb), dim=1)
+                loss = -(soft_t[idx].to(device) * logp).sum(dim=1).mean()
+            else:
+                loss = loss_fn(model(xb, mb), yb)
             loss.backward()
             if args.clip:
                 nn.utils.clip_grad_norm_(model.parameters(), args.clip)
@@ -486,6 +510,7 @@ def run(args: argparse.Namespace) -> dict:
         with path.open("a", encoding="utf-8") as fh:
             loss_tag = (f",focal(g={args.focal_gamma:g})" if args.loss == "focal"
                         else f",{args.loss}(tau={args.tau:g})" if args.loss in ("quantile", "ahuber")
+                        else ",soft-ce(group)" if args.soft_target
                         else "")
             enc_tag = args.encoder
             base = (f"{enc_tag}-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches}"

@@ -213,3 +213,14 @@ def test_multitask_rnn_two_outputs_and_trunk_shared():
     assert cat.shape == (3, 5) and sal.shape == (3, 1)
     assert torch.allclose(cat, m.head_cat(m.features(x, mask)))
     assert not hasattr(m, "out")
+
+
+def test_group_soft_targets_split_a_shared_text_and_keep_singletons_one_hot():
+    import numpy as np
+    from vietjobs.dl.train_dl import group_soft_targets
+    g = np.array(["a", "a", "a", "b", "c"])
+    y = np.array([0, 0, 2, 1, 2])
+    out = group_soft_targets(g, y, 3)
+    assert np.allclose(out[0], [2 / 3, 0, 1 / 3]) and np.allclose(out[2], out[0])
+    assert np.allclose(out[3], [0, 1, 0]) and np.allclose(out[4], [0, 0, 1])
+    assert np.allclose(out.sum(1), 1)
