@@ -215,6 +215,8 @@ hình phải vượt qua, nên nó phải được đo ở nơi các mô hình �
 | Nghề nghiệp — luôn dự đoán lớp lớn nhất | accuracy 0,2062 · macro-F1 **0,0214** | — |
 | Công bố lương — luôn dự đoán "có" | accuracy **0,7078** | — |
 
+Trần nhiễu nhãn (phân loại, `dev` 3.812 dòng): nhãn đa số trong nhóm văn bản giống hệt khớp nhãn gốc ở 97,90 % dòng (macro-F1 oracle 0,9896), tức 2,10 % nhãn sai; trần = 0,6172 / (1 − 0,0210) = **0,6305**. Nguồn: `artifacts/eda/label-ceiling.json` (khối A3 trên `dev.csv`; f1_macro từ `artifacts/dl-cat-cafe-rnn-ce-s42/metrics.json`). Trần giả định mọi lỗi đều là nhiễu nhãn nên chỉ là cận trên.
+
 ## 8. Phát hiện quan trọng nhất: ngành nghề hầu như không nói lên điều gì về mức lương
 
 Phân rã phương sai của `log1p(salary_mid)` theo 16 ngành, trên 34.093 nhãn đã
