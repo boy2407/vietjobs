@@ -215,6 +215,8 @@ a model has to beat, so it has to be measured where models are measured: fitted 
 | Occupation — always predict the largest class | accuracy 0.2062 · macro-F1 **0.0214** | — |
 | Disclosed — always predict "yes" | accuracy **0.7078** | — |
 
+Trần nhiễu nhãn (phân loại, `dev` 3.812 dòng): nhãn đa số trong nhóm văn bản giống hệt khớp nhãn gốc ở 97,90 % dòng (macro-F1 oracle 0,9896), tức 2,10 % nhãn sai; trần = 0,6172 / (1 − 0,0210) = **0,6305**. Nguồn: `artifacts/eda/label-ceiling.json` (khối A3 trên `dev.csv`; f1_macro từ `artifacts/dl-cat-cafe-rnn-ce-s42/metrics.json`). Trần giả định mọi lỗi đều là nhiễu nhãn nên chỉ là cận trên.
+
 ## 8. The most important finding: the sector says almost nothing about the salary
 
 Variance decomposition of `log1p(salary_mid)` across the 16 sectors, on the 34,093
