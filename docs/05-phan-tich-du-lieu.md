@@ -215,8 +215,6 @@ hình phải vượt qua, nên nó phải được đo ở nơi các mô hình �
 | Nghề nghiệp — luôn dự đoán lớp lớn nhất | accuracy 0,2062 · macro-F1 **0,0214** | — |
 | Công bố lương — luôn dự đoán "có" | accuracy **0,7078** | — |
 
-Trần nhiễu nhãn (phân loại, `dev` 3.812 dòng): nhãn đa số trong nhóm văn bản giống hệt khớp nhãn gốc ở 97,90 % dòng (macro-F1 oracle 0,9896), tức 2,10 % nhãn sai; trần = 0,6172 / (1 − 0,0210) = **0,6305**. Nguồn: `artifacts/eda/label-ceiling.json` (khối A3 trên `dev.csv`; f1_macro từ `artifacts/dl-cat-cafe-rnn-ce-s42/metrics.json`). Trần giả định mọi lỗi đều là nhiễu nhãn nên chỉ là cận trên.
-
 ## 8. Phát hiện quan trọng nhất: ngành nghề hầu như không nói lên điều gì về mức lương
 
 Phân rã phương sai của `log1p(salary_mid)` theo 16 ngành, trên 34.093 nhãn đã
@@ -299,6 +297,22 @@ Bảng chéo cụm × 16 `category` (số dòng; cột theo thứ tự chữ cá
 | 6 | 232 | 662 | 351 | 839 | 279 | 186 | 1.269 | 199 | 798 | 55 | 92 | 1.091 | 810 | 194 | 718 | 310 |
 
 Kết luận đo được: chỉ cụm 0 (kế toán) và phần nào cụm 3–4 (marketing/CNTT) trùng với một ngành; bốn cụm còn lại trải đều trên nhiều ngành. Với CafeBERT đóng băng và KMeans, tiêu đề đơn lẻ không cho ra số nhóm vai trò có ý nghĩa; số nhóm không được ước lượng được từ phép đo này.
+
+---
+
+## 10. Độ tách của các cặp lớp hay nhầm
+
+**Cosine giữa tâm lớp — tâm khớp trên `train` (34.354 dòng, vector CafeBERT `raw-len512`), số lần nhầm đếm trên `dev` từ `predictions_dev.parquet` của `dl-cat-cafe-rnn-ce-s42`.** Cosine thô ≥ 0,9922 ở **mọi** cặp lớp (cặp đối chứng công nghệ thông tin – nông nghiệp: 0,9922; trung bình mọi cặp 0,9960), vì vector mean-pool dùng chung một hướng trung bình. Quy tắc A6 (cosine > 0,80) vì thế không phân biệt được cặp nào; ba cặp được gắn `not_informative_raw_cosine`. Sau khi trừ trung bình `train`:
+
+| Cặp (a → b) | Cosine thô | Cosine sau khi trừ trung bình | Nhầm a→b | Nhầm b→a |
+|---|---|---|---|---|
+| du_lịch → kinh_doanh | 0,9991 | 0,4690 | 125 | 58 |
+| thiết_kế → xây_dựng | 0,9966 | 0,2422 | 68 | 4 |
+| du_lịch → sản_xuất | 0,9981 | −0,0549 | 54 | 27 |
+| đối chứng: CNTT – nông_nghiệp | 0,9922 | −0,2762 | 0 | 0 |
+
+Cả ba cặp có cosine sau khi trừ trung bình dưới 0,50, nên theo ngưỡng A6 chúng thuộc loại lỗi mô hình, không phải lỗi phân loại ngành. Ngưỡng 0,50 / 0,65 / 0,80 được đặt cho cosine thô; áp lên cosine đã trừ trung bình là một suy ra, chưa được hiệu chuẩn.
+(Nguồn: `artifacts/eda/class-centroid-cosine.json`, `scripts/measure_class_centroid_cosine.py`.)
 
 ---
 

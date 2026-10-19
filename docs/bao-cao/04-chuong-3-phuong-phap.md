@@ -238,13 +238,6 @@ chung một hoán vị. Hạt giống `SPLIT_SEED = 20260826` không đổi.
 | dev | 3.812 | 7,99 % | 2.705 | 16 |
 | test | 9.541 | 20,00 % | 6.719 | 16 |
 
-**Hệ quả của thứ tự "nhóm lớn trước".** Giỏ `train` thiếu nhiều nhất nên nhận hết nhóm lớn: nhóm
-lớn nhất ở `train` có 33 dòng, ở `dev` chỉ 2; `train` có 2.264 nhóm từ 3 dòng trở lên, `dev` không có nhóm nào.
-Tỉ lệ dòng nằm trong nhóm đa nhãn là 56,04 % ở `train` so với 4,20 % ở `dev`, và không nhóm `dev` nào nằm trong `train`.
-Vì vậy điểm trên `dev` đo chủ yếu trên tin đơn nhãn. Với `test`, điều này mới suy ra từ thuật toán, chưa đo.
-
-> **Nguồn số liệu:** `scripts/measure_group_structure.py` đọc `data/processed/splits/train.csv` và `dev.csv` (đo ngày 2026-10-17); phạm vi: `train` (34.354) và `dev` (3.812).
-
 `groups_straddling_splits` = **0**, và hàm `build()` có một câu lệnh `assert` kiểm
 tra điều đó. Câu lệnh này không bao giờ được phép tắt đi. Tỷ lệ thực tế lệch không
 quá 0,01 điểm phần trăm so với mục tiêu, dù đơn vị chia là nhóm chứ không phải dòng.
@@ -557,6 +550,12 @@ Nguyên lý: gom cụm không giám sát trên vector tiêu đề cho biết d�
 > **Nguồn số liệu:** `artifacts/eda/title_clusters.json` (`scripts/cluster_titles.py`, T13.1); bảng đầy đủ ở [`docs/05-phan-tich-du-lieu.md`](../05-phan-tich-du-lieu.md) §9.
 
 ---
+
+### 3.6.10. Độ tách của các cặp lớp hay nhầm
+
+Nguyên lý: cosine giữa tâm hai lớp cho biết hai lớp có tách được trong không gian vector hay không. Ở đây: tâm lớp khớp trên `train` (34.354 dòng, vector CafeBERT `raw-len512`), số lần nhầm đếm trên `dev` từ run `dl-cat-cafe-rnn-ce-s42`. Cosine thô giữa các tâm lớp ≥ 0,9922 ở mọi cặp kể cả cặp đối chứng, nên không dùng được; sau khi trừ trung bình `train` còn 0,4690 (du_lịch – kinh_doanh), 0,2422 (thiết_kế – xây_dựng), −0,0549 (du_lịch – sản_xuất) và −0,2762 ở cặp đối chứng. Ngưỡng 0,50 / 0,65 / 0,80 được đặt cho cosine thô, chưa được hiệu chuẩn cho cosine đã trừ trung bình, nên chưa kết luận được cặp nào là lỗi mô hình.
+
+> **Nguồn số liệu:** `artifacts/eda/class-centroid-cosine.json` (`scripts/measure_class_centroid_cosine.py`, T14.3); bảng đầy đủ ở [`docs/05-phan-tich-du-lieu.md`](../05-phan-tich-du-lieu.md) §10.
 
 ## 3.7. Kiến trúc mô hình
 

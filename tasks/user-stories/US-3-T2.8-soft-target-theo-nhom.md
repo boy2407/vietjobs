@@ -1,5 +1,7 @@
 # US-3 · T2.8 — Huấn luyện bằng soft target theo nhóm
 
+> Ghi chú 2026-10-17: theo yêu cầu của tác giả, `--soft-target`, `group_soft_targets` và test của chúng đã bị xoá khỏi mã nguồn; các dòng `dl-cat-soft-cpu-s43..45` trong `docs/04-results.md` giữ nguyên.
+
 **Là** tác giả luận văn, **tôi muốn** huấn luyện bằng phân phối nhãn mềm của từng nhóm văn bản trùng nhau,
 **để** cùng một văn bản không còn đi vào loss với 2–3 đáp án mâu thuẫn, mà không xóa hay gán lại dòng nào.
 

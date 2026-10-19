@@ -1,5 +1,7 @@
 # Epic: group-label-structure
 
+> Note 2026-10-17: `group_id` was removed from analysis and training at the author's request; `group-soft-targets` code (`--soft-target`) and `scripts/measure_group_structure.py` no longer exist.
+
 Same posting text carries several labels in `train` but almost never in `dev`. Explain it, measure it, and test whether training on it helps. Source: dataset diagnosis of `category`, 2026-10-17; board rows T2.6–T2.8 in `TASKS.md`.
 
 - `split-group-structure` · feature · depends_on: [] · Explain why `train` and `dev` differ in group structure, so the author knows whether `dev` macro-F1 is comparable with what the model learns from.

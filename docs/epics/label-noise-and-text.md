@@ -4,16 +4,16 @@ Label noise, Vietnamese text handling and salary follow-ups for the CafeBERT pat
 
 ## A — labels (category)
 
-- `label-noise-ceiling` · feature · depends_on: [] · Estimate the label-noise ceiling on `dev`, so the author knows how much of the macro-F1 gap a better model could still buy back. (US1 · T14.1)
-- `hand-label-dev-errors` · feature · depends_on: [`label-noise-ceiling`] · Let the author hand-label 150 `dev` errors as model error / wrong original label / ambiguous, so the ceiling rests on a human verdict. Human only. (US2 · T14.2)
+- ~~`label-noise-ceiling`~~ (dropped 2026-10-17) · feature · depends_on: [] · Estimate the label-noise ceiling on `dev`, so the author knows how much of the macro-F1 gap a better model could still buy back. (US1 · T14.1)
+- `hand-label-dev-errors` · feature · depends_on: [] · Let the author hand-label 150 `dev` errors as model error / wrong original label / ambiguous, so the ceiling rests on a human verdict. Human only. (US2 · T14.2)
 - `class-centroid-cosine` · feature · depends_on: [] · Measure cosine between the centroids of three confused class pairs, so each pair gets a verdict: taxonomy error or model error. (US3 · T14.3)
 - `junk-class-decision` · feature · depends_on: [`hand-label-dev-errors`, `class-centroid-cosine`] · Record the author's decision on `nhom_nghe_khac` (F1 0.000, n = 25 on `dev`), so the class is no longer an unexplained zero. Human decision. (US4 · T14.4)
 
-## B — Vietnamese text, CafeBERT path (gated on `label-noise-ceiling` and `class-centroid-cosine`)
+## B — Vietnamese text, CafeBERT path (gated on `class-centroid-cosine`)
 
-- `strip-company-intro` · feature · depends_on: [`label-noise-ceiling`, `class-centroid-cosine`] · Test whether removing company-intro boilerplate from the CafeBERT input raises macro-F1. (US5 · T14.5)
-- `field-order-512` · feature · depends_on: [`label-noise-ceiling`, `class-centroid-cosine`] · Find which field order loses the least under the 512-token limit, and how much of each field is truncated. (US6 · T14.6)
-- `cafebert-preprocess-ablation` · feature · depends_on: [`label-noise-ceiling`, `class-centroid-cosine`] · Give NFC, tone marks and abbreviations one on/off ablation row each on the CafeBERT path. (US7 · T14.7)
+- `strip-company-intro` · feature · depends_on: [`class-centroid-cosine`] · Test whether removing company-intro boilerplate from the CafeBERT input raises macro-F1. (US5 · T14.5)
+- `field-order-512` · feature · depends_on: [`class-centroid-cosine`] · Find which field order loses the least under the 512-token limit, and how much of each field is truncated. (US6 · T14.6)
+- `cafebert-preprocess-ablation` · feature · depends_on: [`class-centroid-cosine`] · Give NFC, tone marks and abbreviations one on/off ablation row each on the CafeBERT path. (US7 · T14.7)
 
 ## C — salary
 

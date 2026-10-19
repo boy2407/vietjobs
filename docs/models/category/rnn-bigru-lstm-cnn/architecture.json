@@ -1,0 +1,9 @@
+{"kind":"cnn","title":"BiGruLstmCnn (head RNN)","input":"T×768","output":"16 / 1",
+"blocks":[
+{"type":"other","label":"RNN x2","out":"T×200","dropout":0.2},
+{"type":"conv","label":"Conv k3","out":"50×T"},
+{"type":"pool","label":"Pool","out":"200"},
+{"type":"norm","label":"LN","out":"200"},
+{"type":"fc","label":"FC","out":"100","dropout":0.3},
+{"type":"fc","label":"FC","out":"16 / 1"}],
+"training":{"loss":"CrossEntropy (category) · Huber (salary)","optimizer":"AdamW lr 3e-4","l2":"weight_decay 1e-2 (mặc định)","dropout":"spatial 0.2 trước RNN; 0.3 trước Linear cuối"}}
