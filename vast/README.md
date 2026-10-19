@@ -10,6 +10,7 @@ Script chạy nằm ở `scripts/vast_run_*.sh`; kết quả gốc nằm ở `ar
 | 3 | [dot-3-cafebert-mtl-rnn.md](dot-3-cafebert-mtl-rnn.md) | T4.1 | `scripts/vast_run_cafe_mtl.sh` | xong, chờ destroy |
 | 4 | [dot-4-t11-encode-dense.md](dot-4-t11-encode-dense.md) | T11 encode + Dense, RNN, MTL (ViSoBERT/XLM-R 512, BamiBERT 1024) | `scripts/vast_run_t11_encode.sh` | xong, chờ destroy |
 | 5 | [dot-5-t12-score-test.md](dot-5-t12-score-test.md) | T12.1b/c/d | `scripts/vast_run_t12_score.sh` (chưa viết) | CHƯA THUÊ |
+| 7 | [dot-7-cafebert-last4-encode.md](dot-7-cafebert-last4-encode.md) | chưa có ID — CafeBERT 512 trung bình 4 lớp cuối | `scripts/vast_run_cafe_last4.sh` | KHÔNG THUÊ — chuyển sang Colab |
 
 Kinh nghiệm chung cho mọi đợt: [kinh-nghiem.md](kinh-nghiem.md).
 
