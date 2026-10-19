@@ -1,8 +1,8 @@
-# Đợt 5: T12.1b/c/d — nhúng cache, train lại 2 run CafeBERT RNN (seed 42), chấm 61 run trên test và ext37k-sal — CHƯA THUÊ
+# Đợt 5: T12.1b/c/d — nhúng cache, train lại 2 run CafeBERT RNN (seed 42), chấm 61 run trên test và ext37k-sal — XONG TÍNH TOÁN (2026-10-17), CHỜ DESTROY
 
 Task: **T12.1b** (nhúng cache + train lại + chấm RNN), **T12.1c** (chấm Dense trên `test`), **T12.1d** (chấm Dense và phân lớp trên `ext37k-sal`), tất cả trên máy thuê (tác giả đổi 2026-10-16); phụ thuộc T12.1a ([tasks/T12-dashboard-map.md](../tasks/T12-dashboard-map.md)). Quyền: AGENTS.md Rule 5 item 6 (tác giả, 2026-10-15): chấm `best.pt` đã lưu trên `test`. CSV và các hàng `04-results.md` vẫn ghi trên Mac sau khi kéo về.
 
-Script: `scripts/vast_run_t12_score.sh` (đối số `all | encode | train | rnn | dense`; gọi `scripts/encode_t12_cpu.py --device cuda`, `python -m vietjobs.dl.encode`, `python -m vietjobs.dl.train_dl`, `scripts/score_t12.py`) | Instance: chưa có (GPU, disk, RAM, IP/port điền khi thuê).
+Script: `scripts/vast_run_t12_score.sh` (đối số `all | encode | train | rnn | dense`; gọi `scripts/encode_t12_cpu.py --device cuda`, `python -m vietjobs.dl.encode`, `python -m vietjobs.dl.train_dl`, `scripts/score_t12.py`) | Instance: RTX 5060 Ti 16 GB, disk 150 GB, RAM 503 GB, 64 nhân, `ssh -p 46368 root@85.10.218.46`, thư mục `/workspace/vietjobs`, tmux `t12`, log `logs/t12-all.txt`.
 
 Phạm vi trên máy thuê (cả 34 hàng dashboard):
 1. **Nhúng pooled** `test` (raw, masked) và `ext37k-sal` (masked, raw) cho 6 cặp encoder/len (bảng cache). Chỉ **đọc** test để nhúng, không ghi `test.csv`.
@@ -88,13 +88,13 @@ Dense, 40 run (cpu):
 |---|---|---|---|
 | 0 | Viết `vast_run_t12_score.sh`, `--device` cho `encode_t12_cpu.py`, `score_t12.py` (Dense + RNN + ext37k-sal raw), stage `train`, `tests/test_score_t12.py` | done | smoke dev: RNN trùng `predictions_dev` 100 %, Dense khớp `metrics.json`; ext37k-sal category chạy trên 147 dòng (xem Nhật ký) |
 | 1 | Thuê máy theo "Chọn máy" | todo | tác giả |
-| 2 | Đẩy code + splits + `manifest.json` + `ext37k-sal.csv` + 59 thư mục run lên | todo | lệnh dưới; 2 run `-t12` chưa có nên không đẩy |
-| 3 | Cài thư viện, pytest `tests/test_score_t12.py`, `sha256sum data/processed/splits/test.csv` | todo | phải bằng `70ba98d58397c8454f04153ace602bc8ed760acdcf2b5ad65d197af572fba047` |
-| 4 | `bash scripts/vast_run_t12_score.sh all` trong tmux (encode → train → chấm RNN cuda → chấm Dense cpu; sha256 `test.csv` kiểm trước và sau) | todo | hoặc từng phần: `encode` / `train` / `rnn` / `dense` |
-| 5 | Kéo cache, 2 thư mục `-t12` (kèm `best.pt`), kết quả chấm, log về Mac; so `md5sum` | todo | lệnh `scp -r` dưới đây không loại `best.pt` |
-| 5b | Trên Mac, **trước khi destroy**: `torch.load` từng `best.pt` của 2 run `-t12` (và kiểm tệp mở được) | todo | checklist `vast/README.md` mục 2; Đợt 5 từng gặp một `best.pt` bị cắt |
-| 6 | `sha256sum test.csv` trên máy thuê và trên Mac bằng giá trị gốc | todo | |
-| 7 | Mac: thêm 2 dòng train `-t12` vào `docs/04-results.md` (append-only), chạy `scripts/export_runs.py` | todo | Rule 1, Rule 13 |
+| 2 | Đẩy code + splits + `manifest.json` + `ext37k-sal.csv` + 59 thư mục run lên | done | lệnh dưới; 2 run `-t12` chưa có nên không đẩy |
+| 3 | Cài thư viện, pytest `tests/test_score_t12.py`, `sha256sum data/processed/splits/test.csv` | done | phải bằng `70ba98d58397c8454f04153ace602bc8ed760acdcf2b5ad65d197af572fba047` |
+| 4 | `bash scripts/vast_run_t12_score.sh all` trong tmux (encode → train → chấm RNN cuda → chấm Dense cpu; sha256 `test.csv` kiểm trước và sau) | done | hoặc từng phần: `encode` / `train` / `rnn` / `dense` |
+| 5 | Kéo cache, 2 thư mục `-t12` (kèm `best.pt`), kết quả chấm, log về Mac; so `md5sum` | done (trừ 17 file cache, xem nhật ký sự cố) | lệnh `scp -r` dưới đây không loại `best.pt` |
+| 5b | Trên Mac, **trước khi destroy**: `torch.load` từng `best.pt` của 2 run `-t12` (và kiểm tệp mở được) | done | checklist `vast/README.md` mục 2; Đợt 5 từng gặp một `best.pt` bị cắt |
+| 6 | `sha256sum test.csv` trên máy thuê và trên Mac bằng giá trị gốc | done | |
+| 7 | Mac: thêm 2 dòng train `-t12` vào `docs/04-results.md` (append-only), chạy `scripts/export_runs.py` | done | Rule 1, Rule 13 |
 | 8 | Checklist `README.md`, rồi destroy | todo | tác giả bấm trên web; token cache ≈ 68 GB mất khi destroy |
 
 ## Lệnh đẩy lên (terminal Mac)
@@ -163,3 +163,5 @@ Kết quả chấm: `artifacts/<run_id>/t12_score/test.json` và `ext37k-sal.jso
 |---|---|---|
 | 2026-10-16 | Dev xlmr/bamibert trên Mac không khớp checkpoint (F1 0.5317 so với 0.5953): `predictions_dev.parquet` của run vast có thứ tự dòng khác `dev.csv` trên Mac, nên cache dev xlmr/bamibert đã kéo về xếp theo thứ tự vast | không dùng dev xlmr/bamibert để kiểm; test thì cache nhúng ngay trên máy thuê từ `test.csv` đã đẩy lên (cùng sha256), nên thứ tự khớp |
 | 2026-10-16 | `dl-cat-cafe-rnn-ce-s42/best.pt` (6.641.333 B) không phải zip hợp lệ (bị cắt khi kéo về); quét 59 run có checkpoint chỉ có file này hỏng | train lại seed 42 thành `-t12` (tác giả chỉ chọn một seed mỗi cấu hình); thư mục gốc giữ nguyên |
+| 2026-10-17 | `encode_t12_cpu.py` chết ngay lần chạy đầu: `FileNotFoundError` vì `artifacts/embeddings/` chưa có trên máy thuê (không đẩy cache lên); chưa ghi gì | `mkdir -p`, thêm `path.parent.mkdir` vào script, chạy lại `all` (log lần hỏng: `logs/t12-all-fail1.txt`) |
+| 2026-10-17 | Kéo cache nhúng `test` và `ext37k-sal` (17 file còn thiếu, 643 MB cả 24 file) về Mac: SSH, `scp`, `dd` và Jupyter qua proxy đều chỉ đạt 3–20 KB/s (máy thuê tải xuống 67 MB/s, Mac tải xuống 18 MB/s, nên nghẽn nằm ở chiều tải lên của máy thuê); rsync treo ở 7 MB | không kéo 17 file (cache sinh lại được, điểm số đã nằm trong `t12_score/*.json`); đã kéo 122 file `t12_score/*.json`, hai thư mục `-t12`, log và `04-results.md`, md5 khớp |
