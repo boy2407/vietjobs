@@ -70,10 +70,18 @@ def hidden_of(encoder: str) -> int:
 
 
 def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
-               encoder: str = DEFAULT_ENCODER) -> Path:
-    """``kind``: ``pooled`` (tên cũ, giữ nguyên để cache đã có vẫn hợp lệ), ``tok``, ``mask``."""
+               encoder: str = DEFAULT_ENCODER, layers: int = 1) -> Path:
+    """``kind``: ``pooled`` (tên cũ, giữ nguyên để cache đã có vẫn hợp lệ), ``tok``, ``mask``.
+
+    ``layers > 1``: trung bình ``layers`` lớp ẩn cuối thay vì chỉ lớp cuối; mang hậu tố
+    ``-last{layers}`` để đối chứng A/B với cache cũ mà không ghi đè nó. Chỉ có ở ``pooled``.
+    """
     prefix = "" if encoder == DEFAULT_ENCODER else f"{encoder}-"
     stem = f"{prefix}{split}-{family(task)}-len{max_len}"
+    if layers > 1:
+        if kind != "pooled":
+            raise ValueError("--layers > 1 chỉ có ở cache pooled")
+        stem += f"-last{layers}"
     if kind == "pooled":
         return CACHE_DIR / f"{stem}.npy"
     if kind == "tok":
@@ -143,8 +151,9 @@ def pick_device(name: str = "auto"):
 
 def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
                  device: str = "auto", quiet: bool = False,
-                 encoder: str = DEFAULT_ENCODER) -> np.ndarray:
-    """Trả về ``[n, 768]`` — trung bình có mặt nạ của lớp ẩn cuối.
+                 encoder: str = DEFAULT_ENCODER, layers: int = 1) -> np.ndarray:
+    """Trả về ``[n, hidden]`` — trung bình có mặt nạ của lớp ẩn cuối
+    (hoặc trung bình ``layers`` lớp ẩn cuối rồi mới gộp token, khi ``layers > 1``).
 
     Dùng mean pooling thay cho vector ``<s>``: với PhoBERT chưa tinh chỉnh, vector
     câu ``<s>`` không được huấn luyện cho tác vụ nào, còn trung bình token giữ
@@ -160,7 +169,11 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
             chunk = texts[i:i + batch]
             enc = tok(chunk, padding=True, truncation=True,
                       max_length=max_len, return_tensors="pt").to(dev)
-            hidden = model(**enc).last_hidden_state           # [b, t, 768]
+            if layers > 1:
+                states = model(**enc, output_hidden_states=True).hidden_states
+                hidden = torch.stack(states[-layers:]).mean(0)    # [b, t, 768]
+            else:
+                hidden = model(**enc).last_hidden_state           # [b, t, 768]
             mask = enc["attention_mask"].unsqueeze(-1).float()  # [b, t, 1]
             pooled = (hidden * mask).sum(1) / mask.sum(1).clamp(min=1e-9)
             out[i:i + len(chunk)] = pooled.cpu().numpy()
@@ -202,20 +215,21 @@ def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: i
 
 def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
                    device: str = "auto", force: bool = False,
-                   encoder: str = DEFAULT_ENCODER) -> np.ndarray:
+                   encoder: str = DEFAULT_ENCODER, layers: int = 1) -> np.ndarray:
     """Đọc cache nếu có, nếu chưa thì tính rồi ghi cache."""
-    path = cache_path(split, task, max_len, encoder=encoder)
+    path = cache_path(split, task, max_len, encoder=encoder, layers=layers)
     if path.exists() and not force:
         return np.load(path)
     df = D.load_split(split)
     seg = ENCODERS[encoder]["segmented"]
     texts = T.build_text(df, task=task, segmented=seg)
     print(f"[{split}] {encoder} · {len(texts):,} tin · cột {T.columns_for(task, segmented=seg)} · max_len={max_len}")
-    emb = encode_texts(texts, max_len=max_len, batch=batch, device=device, encoder=encoder)
+    emb = encode_texts(texts, max_len=max_len, batch=batch, device=device, encoder=encoder,
+                       layers=layers)
     path.parent.mkdir(parents=True, exist_ok=True)
     np.save(path, emb)
     _write_sidecar(path, split=split, task=task, max_len=max_len, n=len(texts),
-                   encoder=encoder, texts=texts)
+                   encoder=encoder, texts=texts, layers=layers)
     print(f"  -> {path}  {emb.shape}")
     return emb
 
@@ -257,7 +271,7 @@ def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 3
 def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int,
                    pooling: str = "masked_mean", dtype: str = "float32",
                    shape: list | None = None, encoder: str = DEFAULT_ENCODER,
-                   texts: list | None = None) -> None:
+                   texts: list | None = None, layers: int = 1) -> None:
     """Ghi ``<cache>.json`` cạnh file ``.npy``: đúng những gì đã tạo ra các vector.
 
     Một cache ``.npy`` không tự nói nó được nhúng bằng tokenizer nào, cắt ở đâu,
@@ -283,6 +297,7 @@ def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int,
         "add_special_tokens": True,
         "max_len": max_len,
         "pooling": pooling,
+        "layers": layers,
         "dtype": dtype,
         "shape": shape or [n, spec["hidden"]],
         "split": split,
@@ -307,8 +322,13 @@ def main() -> None:
     ap.add_argument("--pooling", default="mean", choices=["mean", "none"],
                     help="mean: một vector 768/tin (mặc định, cache cũ); "
                          "none: giữ từng token [n, max_len, 768] float16 cho head đọc chuỗi (T8)")
+    ap.add_argument("--layers", type=int, default=1,
+                    help="số lớp ẩn cuối được lấy trung bình trước khi gộp token (1 = chỉ lớp cuối, "
+                         "cache cũ); chỉ với --pooling mean")
     args = ap.parse_args()
 
+    if args.layers > 1 and args.pooling != "mean":
+        raise SystemExit("--layers > 1 chỉ dùng với --pooling mean")
     if "test" in args.splits:
         raise SystemExit("test không được nhúng ở đây — xem docs/03-protocol.md, điều 2")
     for split in args.splits:
@@ -317,7 +337,8 @@ def main() -> None:
                             device=args.device, force=args.force, encoder=args.encoder)
         else:
             embeddings_for(split, args.task, max_len=args.max_len, batch=args.batch,
-                           device=args.device, force=args.force, encoder=args.encoder)
+                           device=args.device, force=args.force, encoder=args.encoder,
+                           layers=args.layers)
 
 
 if __name__ == "__main__":

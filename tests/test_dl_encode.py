@@ -98,3 +98,11 @@ def test_token_sidecar_says_no_pooling(split, task):
     expected = (["job_title_seg", "description_seg", "requirements_seg"] if task == C.TASK_CATEGORY
                 else ["job_title_masked_seg", "description_masked_seg", "requirements_masked_seg"])
     assert info["columns"] == expected
+
+
+def test_layers_cache_name_is_separate_and_pooled_only():
+    old = ENC.cache_path("train", C.TASK_CATEGORY, 512, "pooled", "cafebert")
+    new = ENC.cache_path("train", C.TASK_CATEGORY, 512, "pooled", "cafebert", layers=4)
+    assert new != old and new.name == "cafebert-train-raw-len512-last4.npy"
+    with pytest.raises(ValueError):
+        ENC.cache_path("train", C.TASK_CATEGORY, 512, "tok", "cafebert", layers=4)
