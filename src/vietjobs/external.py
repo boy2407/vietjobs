@@ -173,20 +173,22 @@ def _words(s: object) -> set:
 class OurIndex:
     """What we need of our own corpus to spot an external repost.
 
-    ``group_ids`` per split (exact near-duplicate hash) and, per folded title,
-    the word sets of every description carrying that title (fuzzy path).
+    ``text_keys`` per split (exact folded-text hash of title + description +
+    requirements) and, per folded title, the word sets of every description
+    carrying that title (fuzzy path).
     """
 
     def __init__(self, split_names: Iterable[str] = ("train", "dev", "test"),
                  out_dir: Path = C.SPLIT_DIR):
-        self.group_ids: Dict[str, set] = {}
+        self.text_keys: Dict[str, set] = {}
         self.by_title: Dict[str, List[Tuple[str, set]]] = {}
         for name in split_names:
             self.add(name, pd.read_csv(Path(out_dir) / f"{name}.csv",
-                                       usecols=["group_id", "job_title", "description"]))
+                                       usecols=["job_title", "description", "requirements_text"]))
 
     def add(self, name: str, df: pd.DataFrame) -> "OurIndex":
-        self.group_ids[name] = set(df["group_id"].astype(str))
+        self.text_keys[name] = set(V.group_key(t, d, r) for t, d, r in zip(
+            df["job_title"], df["description"], df["requirements_text"]))
         for t, d in zip(df["job_title"].fillna(""), df["description"].fillna("")):
             self.by_title.setdefault(fold(t), []).append((name, _words(d)))
         return self
@@ -198,8 +200,8 @@ def overlap_mask(df: pd.DataFrame, index: OurIndex,
 
     Two paths, either one is enough:
 
-    * **exact** — the record's ``group_key`` (the project's own near-duplicate
-      hash, ``dataset.py``) exists in one of our splits;
+    * **exact** — the folded-text hash of the record's title, description and
+      requirements (``vitext.group_key``) exists in one of our splits;
     * **fuzzy** — same folded title *and* word-set Jaccard of the descriptions
       ≥ ``threshold``, after stripping the de-identification tokens
       (``[COMPANY]``…) that the release inserted. Needed because those tokens
@@ -214,8 +216,8 @@ def overlap_mask(df: pd.DataFrame, index: OurIndex,
                       zip(df["job_title"], df["description"], df["requirements_text"])],
                      index=df.index)
     exact = pd.Series(False, index=df.index)
-    per_split = {name: pd.Series(False, index=df.index) for name in index.group_ids}
-    for name, ids in index.group_ids.items():
+    per_split = {name: pd.Series(False, index=df.index) for name in index.text_keys}
+    for name, ids in index.text_keys.items():
         hit = keys.isin(ids)
         per_split[name] |= hit
         exact |= hit

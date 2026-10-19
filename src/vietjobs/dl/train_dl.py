@@ -116,7 +116,8 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
     """
     df = D.load_split(split)
     if head == "rnn":
-        X, mask = ENC.token_cache_for(split, task, max_len=max_len, encoder=encoder)
+        X, mask = ENC.token_cache_for(split, task, max_len=max_len, encoder=encoder,
+                                      layers=layers)
     else:
         X, mask = ENC.embeddings_for(split, task, max_len=max_len, encoder=encoder,
                                      layers=layers), None
@@ -182,16 +183,6 @@ def batches(n: int, size: int, shuffle: bool, gen: torch.Generator):
         yield idx[i:i + size]
 
 
-def group_soft_targets(group_ids: np.ndarray, y_ids: np.ndarray, n_classes: int) -> np.ndarray:
-    """``[n, C]``: hàng i là tỉ lệ từng nhãn trong nhóm của dòng i (T2.8).
-
-    Nhóm một dòng cho đúng one-hot, nên chỉ các tin đăng lại nhiều nhãn bị đổi.
-    """
-    share = pd.crosstab(group_ids, y_ids).reindex(columns=range(n_classes), fill_value=0)
-    share = share.div(share.sum(axis=1), axis=0)
-    return share.loc[group_ids].to_numpy(np.float32)
-
-
 def build_parser() -> argparse.ArgumentParser:
     """Tách khỏi ``main`` để test gọi được ``run(build_parser().parse_args([...]))``."""
     ap = argparse.ArgumentParser(description=__doc__)
@@ -211,7 +202,7 @@ def build_parser() -> argparse.ArgumentParser:
                          "(vd 512 → 1024→512→256→128→out, T8.10); 0 = head hai lớp cũ")
     ap.add_argument("--layers", type=int, default=1,
                     help="đọc cache trung bình N lớp ẩn cuối (encode.py --layers N, hậu tố -lastN); "
-                         "1 = cache lớp cuối cũ. Chỉ với --head dense, không kèm --concat-encoder")
+                         "1 = cache lớp cuối cũ. Dense và rnn, không kèm --concat-encoder")
     ap.add_argument("--residual", action="store_true",
                     help="chỉ dùng với --head dense: thay head hai lớp bằng head có đường tắt "
                          "tuyến tính (in→2h→h) + (in→h) → LayerNorm → out")
@@ -252,10 +243,6 @@ def build_parser() -> argparse.ArgumentParser:
                          "thay vì độ hiếm của lớp — dùng cùng --class-weight được")
     ap.add_argument("--focal-gamma", type=float, default=2.0,
                     help="gamma của focal loss; gamma=0 trùng CrossEntropyLoss")
-    ap.add_argument("--soft-target", action="store_true",
-                    help="category: mỗi tin học theo phân phối nhãn của cả nhóm tin giống "
-                         "hệt nhau (group_id) thay vì một nhãn cứng (T2.8); tính lúc nạp, "
-                         "không ghi gì ra đĩa; không dùng chung với --class-weight / --loss focal")
     ap.add_argument("--tau", type=float, default=0.5,
                     help="salary: tau của --loss quantile / ahuber (T2.1)")
     # Mặc định cpu, không phải auto: head dense chỉ 768→256→128→16 nên mps không
@@ -289,8 +276,8 @@ def run(args: argparse.Namespace) -> dict:
         raise SystemExit("chấm test cần --confirm-test (docs/03-protocol.md, điều 2)")
     if args.pre_hidden and args.head != "dense":
         raise SystemExit("--pre-hidden chỉ dùng với --head dense")
-    if args.layers > 1 and (args.head != "dense" or args.concat_encoder):
-        raise SystemExit("--layers > 1 chỉ dùng với --head dense, không kèm --concat-encoder")
+    if args.layers > 1 and args.concat_encoder:
+        raise SystemExit("--layers > 1 không dùng kèm --concat-encoder")
     if args.residual and (args.head != "dense" or args.pre_hidden):
         raise SystemExit("--residual chỉ dùng với --head dense, không kèm --pre-hidden")
     if args.concat_encoder and args.head != "dense":
@@ -330,12 +317,6 @@ def run(args: argparse.Namespace) -> dict:
         ytr_t = torch.tensor([to_id[v] for v in ytr], dtype=torch.long)
         yev_ids = np.array([to_id.get(v, -1) for v in yev])
         out_dim = len(labels)
-        if args.soft_target:
-            if args.class_weight or args.loss != "ce":
-                raise SystemExit("--soft-target chỉ chạy với --loss ce, không --class-weight")
-            # [n, C]: hàng i = tỉ lệ từng nhãn trong nhóm của tin i (T2.8)
-            soft_t = torch.tensor(group_soft_targets(
-                tr_df["group_id"].to_numpy(), ytr_t.numpy(), out_dim))
     else:
         ytr_t = torch.tensor(ytr, dtype=torch.float32).unsqueeze(1)
         out_dim = 1
@@ -430,11 +411,7 @@ def run(args: argparse.Namespace) -> dict:
             xb, mb = take(Xtr, mtr, idx)
             yb = ytr_t[idx].to(device)
             opt.zero_grad()
-            if args.soft_target:
-                logp = torch.log_softmax(model(xb, mb), dim=1)
-                loss = -(soft_t[idx].to(device) * logp).sum(dim=1).mean()
-            else:
-                loss = loss_fn(model(xb, mb), yb)
+            loss = loss_fn(model(xb, mb), yb)
             loss.backward()
             if args.clip:
                 nn.utils.clip_grad_norm_(model.parameters(), args.clip)
@@ -558,7 +535,6 @@ def run(args: argparse.Namespace) -> dict:
         with path.open("a", encoding="utf-8") as fh:
             loss_tag = (f",focal(g={args.focal_gamma:g})" if args.loss == "focal"
                         else f",{args.loss}(tau={args.tau:g})" if args.loss in ("quantile", "ahuber")
-                        else ",soft-ce(group)" if args.soft_target
                         else "")
             cw_tag = ("" if not args.class_weight else ",cw" if args.cw_mode == "inverse"
                       else f",cw({args.cw_mode}" + (f",b={args.cw_beta:g}" if args.cw_mode == "effective" else "") + ")")

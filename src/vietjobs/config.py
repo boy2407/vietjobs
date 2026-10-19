@@ -1,13 +1,17 @@
 """Paths, column groups, split policy and task names shared by every module."""
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
 RAW_CSV = ROOT / "data" / "raw" / "VietJobs.csv"
 PROCESSED_DIR = ROOT / "data" / "processed"
-SPLIT_DIR = PROCESSED_DIR / "splits"
+# Một bộ chia khác (data/processed/<tên>) được chọn bằng biến môi trường VIETJOBS_SPLITS;
+# cache vector của nó nằm trong thư mục con cùng tên (xem dl/encode.py), nên không đè cache cũ.
+SPLIT_TAG = os.environ.get("VIETJOBS_SPLITS", "")
+SPLIT_DIR = PROCESSED_DIR / (SPLIT_TAG or "splits")
 MANIFEST = PROCESSED_DIR / "manifest.json"
 
 RESOURCE_DIR = ROOT / "resources"

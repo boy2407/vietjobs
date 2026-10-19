@@ -57,7 +57,7 @@ ENCODERS = {
 DEFAULT_ENCODER = "phobert"
 MODEL_NAME = ENCODERS[DEFAULT_ENCODER]["name"]   # alias cho script cũ
 HIDDEN = ENCODERS[DEFAULT_ENCODER]["hidden"]
-CACHE_DIR = C.ARTIFACT_DIR / "embeddings"
+CACHE_DIR = C.ARTIFACT_DIR / "embeddings" / C.SPLIT_TAG
 
 
 def family(task: str) -> str:
@@ -73,14 +73,13 @@ def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
                encoder: str = DEFAULT_ENCODER, layers: int = 1) -> Path:
     """``kind``: ``pooled`` (tên cũ, giữ nguyên để cache đã có vẫn hợp lệ), ``tok``, ``mask``.
 
-    ``layers > 1``: trung bình ``layers`` lớp ẩn cuối thay vì chỉ lớp cuối; mang hậu tố
-    ``-last{layers}`` để đối chứng A/B với cache cũ mà không ghi đè nó. Chỉ có ở ``pooled``.
+    ``layers > 1``: trung bình ``layers`` lớp ẩn cuối thay vì chỉ lớp cuối; ``pooled`` và
+    ``tok`` mang hậu tố ``-last{layers}`` để đối chứng A/B với cache cũ mà không ghi đè nó.
+    ``mask`` chỉ phụ thuộc tokenizer nên dùng chung tên với cache lớp cuối.
     """
     prefix = "" if encoder == DEFAULT_ENCODER else f"{encoder}-"
     stem = f"{prefix}{split}-{family(task)}-len{max_len}"
-    if layers > 1:
-        if kind != "pooled":
-            raise ValueError("--layers > 1 chỉ có ở cache pooled")
+    if layers > 1 and kind != "mask":
         stem += f"-last{layers}"
     if kind == "pooled":
         return CACHE_DIR / f"{stem}.npy"
@@ -149,6 +148,16 @@ def pick_device(name: str = "auto"):
     return torch.device("cpu")
 
 
+def _hidden(model, enc, layers: int):
+    """Lớp ẩn cuối, hoặc trung bình ``layers`` lớp ẩn cuối — chung cho cache pooled và token."""
+    if layers > 1:
+        import torch
+
+        states = model(**enc, output_hidden_states=True).hidden_states
+        return torch.stack(states[-layers:]).mean(0)
+    return model(**enc).last_hidden_state
+
+
 def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
                  device: str = "auto", quiet: bool = False,
                  encoder: str = DEFAULT_ENCODER, layers: int = 1) -> np.ndarray:
@@ -169,11 +178,7 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
             chunk = texts[i:i + batch]
             enc = tok(chunk, padding=True, truncation=True,
                       max_length=max_len, return_tensors="pt").to(dev)
-            if layers > 1:
-                states = model(**enc, output_hidden_states=True).hidden_states
-                hidden = torch.stack(states[-layers:]).mean(0)    # [b, t, 768]
-            else:
-                hidden = model(**enc).last_hidden_state           # [b, t, 768]
+            hidden = _hidden(model, enc, layers)                  # [b, t, 768]
             mask = enc["attention_mask"].unsqueeze(-1).float()  # [b, t, 1]
             pooled = (hidden * mask).sum(1) / mask.sum(1).clamp(min=1e-9)
             out[i:i + len(chunk)] = pooled.cpu().numpy()
@@ -183,7 +188,7 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
 
 def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: int = 256,
                   batch: int = 32, device: str = "auto", quiet: bool = False,
-                  encoder: str = DEFAULT_ENCODER) -> None:
+                  encoder: str = DEFAULT_ENCODER, layers: int = 1) -> None:
     """Ghi lớp ẩn cuối **từng token** vào ``tok_out [n, max_len, 768]`` float16 và
     mặt nạ vào ``mask_out [n, max_len]`` uint8 — không gộp gì cả.
 
@@ -200,7 +205,7 @@ def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: i
             chunk = texts[i:i + batch]
             enc = tok(chunk, padding=True, truncation=True,
                       max_length=max_len, return_tensors="pt").to(dev)
-            hidden = model(**enc).last_hidden_state              # [b, t, 768]
+            hidden = _hidden(model, enc, layers)                 # [b, t, 768]
             m = enc["attention_mask"]
             # Ghi 0 ở vị trí pad: PhoBERT vẫn trả một vector cho token <pad>, và
             # một head quên mặt nạ sẽ đọc phải nó. Mảng trên đĩa vì thế tự bảo vệ.
@@ -236,7 +241,7 @@ def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32
 
 def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
                     device: str = "auto", force: bool = False,
-                    encoder: str = DEFAULT_ENCODER):
+                    encoder: str = DEFAULT_ENCODER, layers: int = 1):
     """Trả về ``(tok, mask)`` — ``tok`` là memmap chỉ-đọc float16 ``[n, max_len, 768]``,
     ``mask`` là mảng uint8 ``[n, max_len]`` nạp hẳn vào RAM (vài MB).
 
@@ -244,7 +249,7 @@ def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 3
     ``open_memmap`` và điền từng batch, nên ``train`` 13,5 GB không bao giờ nằm
     trọn trong RAM — đọc lại cũng qua memmap, head lấy batch nào thì đĩa trả batch đó.
     """
-    tok_path = cache_path(split, task, max_len, "tok", encoder)
+    tok_path = cache_path(split, task, max_len, "tok", encoder, layers)
     mask_path = cache_path(split, task, max_len, "mask", encoder)
     hidden = hidden_of(encoder)
     if tok_path.exists() and mask_path.exists() and not force:
@@ -258,12 +263,12 @@ def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 3
                                        shape=(len(texts), max_len, hidden))
     mask = np.zeros((len(texts), max_len), dtype=np.uint8)
     encode_tokens(texts, tok_mm, mask, max_len=max_len, batch=batch, device=device,
-                  encoder=encoder)
+                  encoder=encoder, layers=layers)
     del tok_mm  # đóng handle ghi trước khi mở lại chỉ-đọc
     np.save(mask_path, mask)
     _write_sidecar(tok_path, split=split, task=task, max_len=max_len, n=len(texts),
                    pooling="none", dtype="float16", shape=[len(texts), max_len, hidden],
-                   encoder=encoder, texts=texts)
+                   encoder=encoder, texts=texts, layers=layers)
     print(f"  -> {tok_path}  ({len(texts):,}, {max_len}, {hidden}) float16 · mask {mask_path.name}")
     return np.load(tok_path, mmap_mode="r"), mask
 
@@ -324,17 +329,16 @@ def main() -> None:
                          "none: giữ từng token [n, max_len, 768] float16 cho head đọc chuỗi (T8)")
     ap.add_argument("--layers", type=int, default=1,
                     help="số lớp ẩn cuối được lấy trung bình trước khi gộp token (1 = chỉ lớp cuối, "
-                         "cache cũ); chỉ với --pooling mean")
+                         "cache cũ); cả --pooling mean lẫn none")
     args = ap.parse_args()
 
-    if args.layers > 1 and args.pooling != "mean":
-        raise SystemExit("--layers > 1 chỉ dùng với --pooling mean")
     if "test" in args.splits:
         raise SystemExit("test không được nhúng ở đây — xem docs/03-protocol.md, điều 2")
     for split in args.splits:
         if args.pooling == "none":
             token_cache_for(split, args.task, max_len=args.max_len, batch=args.batch,
-                            device=args.device, force=args.force, encoder=args.encoder)
+                            device=args.device, force=args.force, encoder=args.encoder,
+                            layers=args.layers)
         else:
             embeddings_for(split, args.task, max_len=args.max_len, batch=args.batch,
                            device=args.device, force=args.force, encoder=args.encoder,

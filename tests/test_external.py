@@ -112,9 +112,7 @@ def _index():
         "description": ["Lập chứng từ.", "Giám sát công trình dân dụng và hạ tầng kỹ thuật ở Hà Nội"],
         "requirements_text": ["2 năm", "5 năm"],
     })
-    train["group_id"] = [V.group_key(t, d, r) for t, d, r in
-                         zip(train["job_title"], train["description"], train["requirements_text"])]
-    dev = pd.DataFrame({"job_title": [], "description": [], "requirements_text": [], "group_id": []})
+    dev = pd.DataFrame({"job_title": [], "description": [], "requirements_text": []})
     return X.OurIndex(split_names=()).add("train", train).add("dev", dev)
 
 

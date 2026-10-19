@@ -100,9 +100,13 @@ def test_token_sidecar_says_no_pooling(split, task):
     assert info["columns"] == expected
 
 
-def test_layers_cache_name_is_separate_and_pooled_only():
+def test_layers_cache_name_is_separate_and_mask_is_shared():
     old = ENC.cache_path("train", C.TASK_CATEGORY, 512, "pooled", "cafebert")
     new = ENC.cache_path("train", C.TASK_CATEGORY, 512, "pooled", "cafebert", layers=4)
     assert new != old and new.name == "cafebert-train-raw-len512-last4.npy"
-    with pytest.raises(ValueError):
-        ENC.cache_path("train", C.TASK_CATEGORY, 512, "tok", "cafebert", layers=4)
+    tok4 = ENC.cache_path("train", C.TASK_CATEGORY, 512, "tok", "cafebert", layers=4)
+    assert tok4.name == "cafebert-train-raw-len512-last4-tok.f16.npy"
+    assert tok4 != ENC.cache_path("train", C.TASK_CATEGORY, 512, "tok", "cafebert")
+    # mặt nạ chỉ phụ thuộc tokenizer: last4 dùng chung file mask với cache lớp cuối
+    assert (ENC.cache_path("train", C.TASK_CATEGORY, 512, "mask", "cafebert", layers=4)
+            == ENC.cache_path("train", C.TASK_CATEGORY, 512, "mask", "cafebert"))

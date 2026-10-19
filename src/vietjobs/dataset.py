@@ -349,7 +349,7 @@ def load_split(name: str, out_dir=C.SPLIT_DIR) -> pd.DataFrame:
     types = _column_dtypes(out_dir)
     df = pd.read_csv(path, na_filter=False, dtype=str)
 
-    unknown = [c for c in df.columns if c not in types]
+    unknown = [c for c in df.columns if c not in types and not c.startswith("raw_")]
     if unknown:
         raise KeyError(f"{path} has columns absent from the manifest: {unknown}")
 
