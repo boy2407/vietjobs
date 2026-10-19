@@ -1,0 +1,13 @@
+Cấu hình	Tác vụ	Mô hình	Loss / Cấu hình	Số seed	Macro-F1	± sd	Accuracy	RMSE	MAE (tr)	R² log	Ghi chú
+dl-cat-cafebert-rnn-last4-cweff999-ls05-s42	category	CafeBERT + BiGRU-LSTM-CNN	last4 + cw(0.999) + ls(0.05)	1	0.6296		0.6695				Kỷ lục Dev toàn dự án (mốc cũ: 0.6152)
+dl-cat-bamibert-rnn-last4-cweff999-ls05-s42	category	BamiBERT + BiGRU-LSTM-CNN	last4 + cw(0.999) + ls(0.05)	1	0.6283		0.6676				Best epoch 8/16 Vast CUDA (mốc cũ: 0.6056)
+dl-cat-phobert-rnn-last4-cweff999-ls05-s42	category	PhoBERT-v2 + BiGRU-LSTM-CNN	last4 + cw(0.999) + ls(0.05)	1	0.6253		0.6584				Best epoch 12/20 Vast Máy C (mốc cũ: 0.6096)
+dl-cat-xlmr-rnn-last4-cweff999-ls05-s42	category	XLM-R + BiGRU-LSTM-CNN	last4 + cw(0.999) + ls(0.05)	1	0.6195		0.6608				Best epoch 10/16 Vast Máy A (mốc cũ: 0.6068)
+dl-cat-visobert-rnn-last4-cweff999-ls05-s42	category	ViSoBERT + BiGRU-LSTM-CNN	last4 + cw(0.999) + ls(0.05)	1	0.6194		0.6645				Best epoch 8/16 Vast Máy B (mốc cũ: 0.6022)
+dl-cat-cafe-last4-cweff999-ls05	category	CafeBERT + Dense	last4 + cw(0.999) + ls(0.05)	5	0.6176	0.0023	0.6622				5 seed Mac CPU (mốc cũ: 0.6037)
+dl-cat-pho-last4-cweff999-ls05	category	PhoBERT-v2 + Dense	last4 + cw(0.999) + ls(0.05)	5	0.6055	0.0052	0.6601				5 seed Mac CPU (mốc cũ: 0.6032)
+dl-cat-bamibert-dense-last4-cweff999-ls05	category	BamiBERT + Dense	last4 + cw(0.999) + ls(0.05)	5							Cache pooled đã có trên Mac, chờ train CPU
+dl-cat-xlmr-dense-last4-cweff999-ls05	category	XLM-R + Dense	last4 + cw(0.999) + ls(0.05)	5							Cache pooled đã có trên Mac, chờ train CPU
+dl-cat-visobert-dense-last4-cweff999-ls05	category	ViSoBERT + Dense	last4 + cw(0.999) + ls(0.05)	5							Chờ kéo cache pooled từ Máy B
+arxiv-2603.05262-qwen25-fewshot	category	Qwen2.5-7B-Instruct (Few-shot)	Few-shot prompt (3-shot)	1	0.42		0.47				Mốc phân loại bài báo gốc VietJobs (arXiv:2603.05262)
+arxiv-2603.05262-sealion-lora	salary	Llama-SEA-LION-v3-8B-IT (LoRA)	LoRA r=8, alpha=16	1				10.6		0.17	Mốc lương tốt nhất bài báo gốc VietJobs (RMSE triệu, R² raw)

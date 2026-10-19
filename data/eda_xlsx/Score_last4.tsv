@@ -1,0 +1,12 @@
+Cấu hình	Tác vụ	Mô hình	Số run	Test F1-macro	Test Accuracy	Test MAE (triệu)	Test RMSE (triệu)	Test R² (log)	Ext37K F1-macro (strict)	Ext37K Accuracy (strict)	Ext37K MAE (triệu)	Ext37K RMSE (triệu)	Ext37K R² (log)	Ghi chú / Trạng thái
+dl-cat-phobert-rnn-last4-cweff999-ls05-s42	category	PhoBERT-v2 + BiGRU-LSTM-CNN	1	0.6324	0.671				0.6239	0.654				Kỷ lục mới toàn dự án trên Test (F1 0.6324, Acc 67.1%)
+dl-cat-bamibert-rnn-last4-cweff999-ls05-s42	category	BamiBERT + BiGRU-LSTM-CNN	1	0.6243	0.6671				0.6516	0.6963				Vượt trội mốc cũ 0.6159; Ext37k F1 0.6516
+dl-cat-cafebert-rnn-last4-cweff999-ls05-s42	category	CafeBERT + BiGRU-LSTM-CNN	1	0.6219	0.6697				0.6408	0.6878				Kỷ lục Dev 0.6296; Test Acc 0.6697, Ext37k F1 0.6408
+dl-cat-xlmr-rnn-last4-cweff999-ls05-s42	category	XLM-R + BiGRU-LSTM-CNN	1	0.6214	0.666				0.6556	0.6959				Kỷ lục Ext37k Strict 0.6556 & Lenient 0.7131
+dl-cat-visobert-rnn-last4-cweff999-ls05-s42	category	ViSoBERT + BiGRU-LSTM-CNN	1	0.6083	0.657				0.6047	0.6533				Tăng từ 0.5964 -> 0.6083; Ext37k F1 0.6047
+dl-cat-cafe-last4-cweff999-ls05	category	CafeBERT + Dense	5											5 seed Mac CPU Dev 0.6176, chờ chấm test
+dl-cat-pho-last4-cweff999-ls05	category	PhoBERT-v2 + Dense	5											5 seed Mac CPU Dev 0.6055, chờ chấm test
+arxiv-2603.05262-qwen25-fewshot	category	Qwen2.5-7B-Instruct (Few-shot)	1	0.42	0.47									Mốc phân loại tốt nhất của bài báo gốc (arXiv:2603.05262)
+arxiv-2603.05262-qwen25-zeroshot	category	Qwen2.5-7B-Instruct (Zero-shot)	1	0.32	0.31									Zero-shot bài báo gốc VietJobs (arXiv:2603.05262)
+arxiv-2603.05262-qwen25-lora	category	Qwen2.5-7B-Instruct (LoRA)	1	0.33	0.34									LoRA fine-tuned bài báo gốc VietJobs (arXiv:2603.05262)
+arxiv-2603.05262-sealion-lora	salary	Llama-SEA-LION-v3-8B-IT (LoRA)	1				10.6	0.17						Mốc lương tốt nhất bài báo gốc VietJobs (RMSE triệu, R² raw)
