@@ -224,3 +224,40 @@ def test_group_soft_targets_split_a_shared_text_and_keep_singletons_one_hot():
     assert np.allclose(out[0], [2 / 3, 0, 1 / 3]) and np.allclose(out[2], out[0])
     assert np.allclose(out[3], [0, 1, 0]) and np.allclose(out[4], [0, 0, 1])
     assert np.allclose(out.sum(1), 1)
+
+
+def test_class_weights_modes():
+    import numpy as np
+    from vietjobs.dl.heads import class_weights
+    counts = np.array([10000, 400, 100])
+    inv = class_weights(counts, "inverse")
+    # inverse giữ đúng công thức cũ N / (K · N_c)
+    assert np.allclose(inv, counts.sum() / (3 * counts), rtol=1e-5)
+    for mode in ("inverse", "sqrt", "effective"):
+        w = class_weights(counts, mode)
+        assert abs(float((w * counts).sum() / counts.sum()) - 1.0) < 1e-5
+        assert w[0] < w[1] < w[2]
+    # sqrt và effective nhẹ tay hơn inverse: tỉ lệ lớp hiếm/lớp lớn nhỏ hơn
+    ratio = lambda w: w[2] / w[0]
+    assert ratio(class_weights(counts, "sqrt")) < ratio(inv)
+    assert ratio(class_weights(counts, "effective")) < ratio(inv)
+
+
+def test_label_smoothing_zero_is_plain_ce():
+    torch.manual_seed(0)
+    logits, target = torch.randn(8, 16), torch.randint(0, 16, (8,))
+    plain = nn.CrossEntropyLoss()(logits, target)
+    assert torch.allclose(nn.CrossEntropyLoss(label_smoothing=0.0)(logits, target), plain)
+    assert nn.CrossEntropyLoss(label_smoothing=0.1)(logits, target) != plain
+
+
+def test_residual_head_shape_and_skip_path():
+    from vietjobs.dl.heads import ResidualDenseHead
+    torch.manual_seed(0)
+    m = ResidualDenseHead(768, 256, 16).eval()
+    x = torch.randn(4, 768)
+    assert m(x).shape == (4, 16)
+    # cắt nhánh sâu thì đường tắt vẫn cho ra logits khác 0 và phụ thuộc x
+    for p in m.deep.parameters():
+        nn.init.zeros_(p)
+    assert not torch.allclose(m(x), m(torch.randn(4, 768)))

@@ -68,7 +68,7 @@ class AsymHuberLoss(nn.Module):
         base = nn.functional.smooth_l1_loss(pred, target, reduction="none")
         w = torch.where(r > 0, 2 * self.tau, 2 * (1 - self.tau))
         return (w * base).mean()
-from .heads import BiGruLstmCnn, DenseHead
+from .heads import BiGruLstmCnn, DenseHead, ResidualDenseHead, class_weights
 
 
 def _git(*args: str) -> str:
@@ -104,7 +104,8 @@ def environment(device, encoder: str = ENC.DEFAULT_ENCODER) -> dict:
 
 
 def load_task(split: str, task: str, max_len: int, head: str = "dense",
-              encoder: str = ENC.DEFAULT_ENCODER, concat: tuple[str, int] | None = None):
+              encoder: str = ENC.DEFAULT_ENCODER, concat: tuple[str, int] | None = None,
+              layers: int = 1):
     """Trả về ``(X, mask, y, frame)`` — frame giữ lại để cắt lát kết quả theo ngành.
 
     ``head="dense"``  → ``X`` là ma trận ``[n, 768]`` đã gộp, ``mask`` là ``None``.
@@ -117,7 +118,8 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
     if head == "rnn":
         X, mask = ENC.token_cache_for(split, task, max_len=max_len, encoder=encoder)
     else:
-        X, mask = ENC.embeddings_for(split, task, max_len=max_len, encoder=encoder), None
+        X, mask = ENC.embeddings_for(split, task, max_len=max_len, encoder=encoder,
+                                     layers=layers), None
         if concat is not None:
             c_enc, c_len = concat
             ENC.check_same_rows(split, task, len(df), (encoder, max_len), (c_enc, c_len))
@@ -207,6 +209,12 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--pre-hidden", type=int, default=0,
                     help="chỉ dùng với --head dense: thêm một lớp ẩn cỡ này trước --hidden "
                          "(vd 512 → 1024→512→256→128→out, T8.10); 0 = head hai lớp cũ")
+    ap.add_argument("--layers", type=int, default=1,
+                    help="đọc cache trung bình N lớp ẩn cuối (encode.py --layers N, hậu tố -lastN); "
+                         "1 = cache lớp cuối cũ. Chỉ với --head dense, không kèm --concat-encoder")
+    ap.add_argument("--residual", action="store_true",
+                    help="chỉ dùng với --head dense: thay head hai lớp bằng head có đường tắt "
+                         "tuyến tính (in→2h→h) + (in→h) → LayerNorm → out")
     ap.add_argument("--head", default="dense", choices=["dense", "rnn"],
                     help="dense: đọc vector đã gộp trung bình (mặc định); "
                          "rnn: đọc từng token từ cache --pooling none, Bi-GRU ‖ Bi-LSTM "
@@ -232,6 +240,13 @@ def build_parser() -> argparse.ArgumentParser:
                          "Hết giờ thì dừng và giữ best.pt tới lúc đó — dùng cho phiên Colab có cap")
     ap.add_argument("--class-weight", action="store_true",
                     help="cân bằng lớp cho bài phân lớp (lệch 27:1)")
+    ap.add_argument("--label-smoothing", type=float, default=0.0,
+                    help="label smoothing epsilon cho CE phân lớp (0 = tắt); không đi với focal")
+    ap.add_argument("--cw-mode", default="inverse", choices=["inverse", "sqrt", "effective"],
+                    help="công thức trọng số lớp khi có --class-weight: nghịch đảo tần suất, "
+                         "1/sqrt(N_c), hoặc effective number (1-b)/(1-b^N_c)")
+    ap.add_argument("--cw-beta", type=float, default=0.9999,
+                    help="beta của effective number; chỉ dùng với --cw-mode effective")
     ap.add_argument("--loss", default="ce", choices=["ce", "focal", "quantile", "ahuber"],
                     help="chỉ áp dụng cho phân lớp; focal cân theo độ khó từng mẫu "
                          "thay vì độ hiếm của lớp — dùng cùng --class-weight được")
@@ -274,11 +289,17 @@ def run(args: argparse.Namespace) -> dict:
         raise SystemExit("chấm test cần --confirm-test (docs/03-protocol.md, điều 2)")
     if args.pre_hidden and args.head != "dense":
         raise SystemExit("--pre-hidden chỉ dùng với --head dense")
+    if args.layers > 1 and (args.head != "dense" or args.concat_encoder):
+        raise SystemExit("--layers > 1 chỉ dùng với --head dense, không kèm --concat-encoder")
+    if args.residual and (args.head != "dense" or args.pre_hidden):
+        raise SystemExit("--residual chỉ dùng với --head dense, không kèm --pre-hidden")
     if args.concat_encoder and args.head != "dense":
         raise SystemExit("--concat-encoder chỉ dùng với --head dense")
     if args.concat_encoder == args.encoder:
         raise SystemExit("--concat-encoder phải khác --encoder")
     concat = (args.concat_encoder, args.concat_max_len) if args.concat_encoder else None
+    if args.label_smoothing and (args.loss != "ce" or args.task == C.TASK_SALARY):
+        raise SystemExit("--label-smoothing chỉ dùng với --loss ce của bài phân lớp")
     if args.loss == "focal" and args.task == C.TASK_SALARY:
         raise SystemExit("--loss focal chỉ dùng cho phân lớp, salary đã dùng Huber")
     if args.loss in ("quantile", "ahuber") and args.task != C.TASK_SALARY:
@@ -296,9 +317,9 @@ def run(args: argparse.Namespace) -> dict:
     is_reg = args.task == C.TASK_SALARY
 
     Xtr, mtr, ytr, tr_df = load_task("train", args.task, args.max_len, args.head, args.encoder,
-                                     concat)
+                                     concat, args.layers)
     Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder,
-                                     concat)
+                                     concat, args.layers)
     is_rnn = args.head == "rnn"
     n_train = len(ytr)
 
@@ -360,6 +381,8 @@ def run(args: argparse.Namespace) -> dict:
                              spatial_dropout=args.spatial_dropout,
                              conv_channels=args.conv_channels,
                              branches=args.branches).to(device)
+    elif args.residual:
+        model = ResidualDenseHead(in_dim, args.hidden, out_dim, args.dropout).to(device)
     else:
         model = DenseHead(in_dim, args.hidden, out_dim, args.dropout,
                           pre_hidden=args.pre_hidden).to(device)
@@ -376,16 +399,17 @@ def run(args: argparse.Namespace) -> dict:
         w = None
         if args.class_weight:
             counts = np.bincount(ytr_t.numpy(), minlength=out_dim).astype(np.float32)
-            w = torch.tensor(counts.sum() / (out_dim * np.clip(counts, 1, None))).to(device)
+            w = torch.tensor(class_weights(counts, args.cw_mode, args.cw_beta)).to(device)
         if args.loss == "focal":
             loss_fn = FocalLoss(gamma=args.focal_gamma, alpha=w, task_type="multi-class",
                                 num_classes=out_dim)
         else:
-            loss_fn = nn.CrossEntropyLoss(weight=w)
+            loss_fn = nn.CrossEntropyLoss(weight=w, label_smoothing=args.label_smoothing)
 
     run_id = args.run_id or (
         f"dl-{'reg' if is_reg else args.task[:3]}-h{args.hidden}"
-        f"{'-cw' if args.class_weight else ''}"
+        f"{f'-cw-{args.cw_mode}' if args.class_weight and args.cw_mode != 'inverse' else '-cw' if args.class_weight else ''}"
+        f"{f'-ls{args.label_smoothing:g}' if args.label_smoothing else ''}"
         f"{f'-focal-g{args.focal_gamma:g}' if args.loss == 'focal' else ''}"
         f"-{datetime.now().strftime('%m%d-%H%M')}"
     )
@@ -482,7 +506,7 @@ def run(args: argparse.Namespace) -> dict:
 
     env = environment(device, args.encoder)
     arch = (f"phobert-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches})"
-            if is_rnn else "phobert-frozen+dense")
+            if is_rnn else f"phobert-frozen+{'resdense' if args.residual else 'dense'}")
     if concat:
         arch = f"{args.encoder}+{args.concat_encoder}-frozen+dense"
     # F1 "chuẩn" 2·P·R/(P+R) chỉ định nghĩa cho MỘT lớp; với 16 lớp là 16 con số,
@@ -536,9 +560,13 @@ def run(args: argparse.Namespace) -> dict:
                         else f",{args.loss}(tau={args.tau:g})" if args.loss in ("quantile", "ahuber")
                         else ",soft-ce(group)" if args.soft_target
                         else "")
-            enc_tag = args.encoder + (f"+{args.concat_encoder}" if concat else "")
+            cw_tag = ("" if not args.class_weight else ",cw" if args.cw_mode == "inverse"
+                      else f",cw({args.cw_mode}" + (f",b={args.cw_beta:g}" if args.cw_mode == "effective" else "") + ")")
+            ls_tag = f",ls={args.label_smoothing:g}" if args.label_smoothing else ""
+            enc_tag = (args.encoder + (f"+{args.concat_encoder}" if concat else "")
+                       + (f"[last{args.layers}]" if args.layers > 1 else ""))
             base = (f"{enc_tag}-frozen+bigru-lstm-cnn(h={args.hidden},c={args.conv_channels},{args.branches}"
-                    if is_rnn else f"{enc_tag}-frozen+dense(h={args.hidden}"
+                    if is_rnn else f"{enc_tag}-frozen+{'resdense' if args.residual else 'dense'}(h={args.hidden}"
                     + (f",pre={args.pre_hidden}" if args.pre_hidden else ""))
             prep = "segment" if ENC.ENCODERS[args.encoder]["segmented"] else "nosegment"
             if concat:
@@ -549,7 +577,7 @@ def run(args: argparse.Namespace) -> dict:
                 prep += "+time-capped"     # người đọc log biết run này chưa hội tụ tự nhiên
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "
                      f"| {args.task} | {base}"
-                     f"{',cw' if args.class_weight else ''}{loss_tag}"
+                     f"{cw_tag}{ls_tag}{loss_tag}"
                      f") | title+desc+req | {prep} "
                      f"| {args.eval} | {best_metrics['n']} | {headline} | {seconds:.1f}s "
                      f"| {env['git_sha'][:8]}{'+dirty' if env['git_dirty'] else ''} |\n")

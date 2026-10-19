@@ -7,8 +7,26 @@ nguyên.
 """
 from __future__ import annotations
 
+import numpy as np
 import torch
 from torch import nn
+
+
+def class_weights(counts: np.ndarray, mode: str = "inverse", beta: float = 0.9999) -> np.ndarray:
+    """Trọng số lớp, chuẩn hoá để trung bình theo mẫu = 1 (thang loss ngang CE thường).
+
+    ``inverse`` = 1/N_c · ``sqrt`` = 1/√N_c · ``effective`` = (1-β)/(1-β^N_c).
+    """
+    n = np.clip(np.asarray(counts, dtype=np.float64), 1, None)
+    if mode == "inverse":
+        raw = 1.0 / n
+    elif mode == "sqrt":
+        raw = 1.0 / np.sqrt(n)
+    elif mode == "effective":
+        raw = (1.0 - beta) / (1.0 - beta ** n)
+    else:
+        raise ValueError(f"cw-mode lạ: {mode}")
+    return (raw * n.sum() / (raw * n).sum()).astype(np.float32)
 
 
 class MultiTaskHead(nn.Module):
@@ -71,6 +89,31 @@ class DenseHead(nn.Module):
     def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
         # ``mask`` chỉ để chung chữ ký với head đọc chuỗi; vector đã gộp không cần nó.
         return self.net(x)
+
+
+class ResidualDenseHead(nn.Module):
+    """in_dim → [Linear(in,2h) → GELU → Dropout → Linear(2h,h)] + Linear(in,h) → LayerNorm → out.
+
+    Đường tắt tuyến tính in→h giữ lại phần thông tin tuyến tính của vector encoder;
+    nhánh sâu chỉ học phần dư. Không có LayerNorm ở đầu vào như ``DenseHead``
+    (đặc trưng đã được chuẩn hoá trong ``train_dl``).
+    """
+
+    def __init__(self, in_dim: int = 768, hidden: int = 256, out_dim: int = 1,
+                 dropout: float = 0.3):
+        super().__init__()
+        self.deep = nn.Sequential(
+            nn.Linear(in_dim, 2 * hidden),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(2 * hidden, hidden),
+        )
+        self.skip = nn.Linear(in_dim, hidden)
+        self.norm = nn.LayerNorm(hidden)
+        self.out = nn.Linear(hidden, out_dim)
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+        return self.out(self.norm(self.deep(x) + self.skip(x)))
 
 
 class BiGruLstmCnn(nn.Module):
