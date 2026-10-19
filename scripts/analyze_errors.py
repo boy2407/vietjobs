@@ -161,7 +161,7 @@ def diagnose(args) -> None:
 
     to_id = {lab: i for i, lab in enumerate(labels)}
     err = pd.DataFrame({
-        "dev_row": np.arange(len(y)), "group_id": dev["group_id"].to_numpy(),
+        "dev_row": np.arange(len(y)),
         "job_title": dev["job_title"].to_numpy(),
         "trich_mo_ta": dev["description"].fillna("").str.slice(0, 300).to_numpy(),
         "nhan_goc": y, "du_doan": argmax,

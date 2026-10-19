@@ -86,6 +86,7 @@ def job(split: str, family: str, encoder: str, max_len: int, device: str = "cpu"
     texts = T.build_text(df, task=task, segmented=ENC.ENCODERS[encoder]["segmented"])
     t0 = time.time()
     emb = ENC.encode_texts(texts, max_len=max_len, batch=16, device=device, encoder=encoder)
+    path.parent.mkdir(parents=True, exist_ok=True)
     np.save(path, emb)
     dt = time.time() - t0
     print(f"wrote {path.name} n={len(emb)} in {dt / 60:.1f} min ({len(emb) / dt:.2f} texts/s)", flush=True)
@@ -96,6 +97,8 @@ def main() -> None:
     ap.add_argument("--jobs", nargs="+", help="encoder:max_len, theo thứ tự ưu tiên")
     ap.add_argument("--device", default="cpu", help="cpu (mặc định, Mac) | cuda (máy thuê)")
     ap.add_argument("--segment-only", action="store_true", help="chạy trong .venv: tách từ ext37k-sal")
+    ap.add_argument("--ext-masked-only", action="store_true",
+                    help="chỉ nhúng ext37k-sal họ masked (đủ cho bài lương); không nhúng test, không nhúng họ raw")
     args = ap.parse_args()
     if args.segment_only:
         segment_sal()
@@ -104,6 +107,8 @@ def main() -> None:
         encoder, max_len = spec.split(":")
         max_len = int(max_len)
         job("ext37k-sal", "masked", encoder, max_len, args.device)
+        if args.ext_masked_only:
+            continue
         job("ext37k-sal", "raw", encoder, max_len, args.device)
         job("test", "masked", encoder, max_len, args.device)
         job("test", "raw", encoder, max_len, args.device)

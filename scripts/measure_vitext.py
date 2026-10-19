@@ -111,15 +111,6 @@ def main() -> None:
     print(f"8 từ dừng      {raw_sw} mục trong stopwords_vi.txt -> {len(V.stopwords())} dạng "
           "(kèm dạng gạch dưới cho văn bản đã tách từ)")
 
-    # 9 — grouping key
-    groups = pd.concat(
-        [D.load_split(s)["group_id"] for s in ("train", "dev", "test")]
-    )
-    vc = groups.value_counts()
-    dup = len(groups) - vc.size
-    print(f"9 khoá nhóm    {len(groups)} dòng -> {vc.size} nhóm · {dup} dòng ({dup/len(groups):.1%}) "
-          f"là tin đăng lại · nhóm lớn nhất {vc.max()} dòng")
-
 
 if __name__ == "__main__":
     main()

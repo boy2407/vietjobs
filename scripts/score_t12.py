@@ -32,7 +32,8 @@ def run_kind(run_dir: Path) -> dict:
     cfg = json.loads((run_dir / "config.json").read_text(encoding="utf-8"))
     mtl = (run_dir / "best_sal.pt").exists() or "alpha_sal" in cfg
     return {"cfg": cfg, "task": "mtl" if mtl else cfg["task"], "head": cfg.get("head", "dense"),
-            "encoder": cfg.get("encoder", ENC.DEFAULT_ENCODER), "max_len": cfg["max_len"]}
+            "encoder": cfg.get("encoder", ENC.DEFAULT_ENCODER), "max_len": cfg["max_len"],
+            "layers": cfg.get("layers", 1)}
 
 
 def already_scored(run_id: str, dataset: str) -> bool:
@@ -120,7 +121,7 @@ def predict_dense(fn, X: np.ndarray, mu, sigma, device, chunk: int = 4096):
     return (np.concatenate(cats) if cats else None), (np.concatenate(sals) if sals else None)
 
 
-def predict_rnn_group(preds: dict, texts: list, encoder: str, max_len: int, device, batch: int = 16):
+def predict_rnn_group(preds: dict, texts: list, encoder: str, max_len: int, device, batch: int = 16, layers: int = 1):
     """Nhúng token từng batch một lần, chạy mọi run cùng encoder trên đó (không ghi token cache).
 
     Dựng đúng như cache lúc train: float16, pad tới ``max_len`` bằng 0, mask uint8
@@ -137,7 +138,8 @@ def predict_rnn_group(preds: dict, texts: list, encoder: str, max_len: int, devi
             e = tok(texts[i:i + batch], padding="max_length", truncation=True,
                     max_length=max_len, return_tensors="pt").to(dev)
             m = e["attention_mask"]
-            h = (enc(**e).last_hidden_state * m.unsqueeze(-1)).to(torch.float16).float()
+            h = ENC._hidden(enc, e, layers)
+            h = (h * m.unsqueeze(-1)).to(torch.float16).float()
             mk = m.to(torch.uint8)
             for r, (fn, _, _) in preds.items():
                 c, sl = fn((h - stats[r][0]) / stats[r][1], mk)
@@ -181,14 +183,14 @@ def score_ext(runs: list, kinds: dict, labels: list, device, args) -> None:
     keep = ~np.asarray(overlap)
     groups = defaultdict(list)
     for r, k in kinds.items():
-        groups[(k["encoder"], k["max_len"], k["head"], family_of(k["task"]))].append(r)
-    for (enc, L, head, fam), rs in groups.items():
+        groups[(k["encoder"], k["max_len"], k["head"], family_of(k["task"]), k.get("layers", 1))].append(r)
+    for (enc, L, head, fam, layers), rs in groups.items():
         seg = ENC.ENCODERS[enc]["segmented"]
         df, cw_report = X.apply_crosswalk(ext_sal_frame(seg, fam)[keep].reset_index(drop=True), cw)
         preds = {r: load_predictor(C.ARTIFACT_DIR / r, kinds[r], len(labels), device) for r in rs}
         if head == "rnn":
             task = C.TASK_SALARY if fam == "masked" else C.TASK_CATEGORY
-            out = predict_rnn_group(preds, T.build_text(df, task=task, segmented=seg), enc, L, device)
+            out = predict_rnn_group(preds, T.build_text(df, task=task, segmented=seg), enc, L, device, layers=layers)
         else:
             emb = np.load(cache_path_t12("ext37k-sal", fam, enc, L))[keep]
             out = {r: predict_dense(fn, emb, mu, sg, device) for r, (fn, mu, sg) in preds.items()}
@@ -241,13 +243,13 @@ def main() -> None:
 
     groups = defaultdict(list)
     for r, k in kinds.items():
-        groups[(k["encoder"], k["max_len"], family_of(k["task"]), k["head"])].append(r)
-    for (enc, L, fam, head), rs in groups.items():
+        groups[(k["encoder"], k["max_len"], family_of(k["task"]), k["head"], k.get("layers", 1))].append(r)
+    for (enc, L, fam, head, layers), rs in groups.items():
         preds = {r: load_predictor(C.ARTIFACT_DIR / r, kinds[r], len(labels), device) for r in rs}
         if head == "rnn":
             task = C.TASK_SALARY if fam == "masked" else C.TASK_CATEGORY
             texts = T.build_text(df, task=task, segmented=ENC.ENCODERS[enc]["segmented"])
-            out = predict_rnn_group(preds, texts, enc, L, device)
+            out = predict_rnn_group(preds, texts, enc, L, device, layers=layers)
         else:
             X = np.load(cache_path_t12(args.dataset, fam, enc, L))[:len(df)]
             if len(X) != len(df):
