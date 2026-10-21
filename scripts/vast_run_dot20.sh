@@ -15,7 +15,7 @@ export PYTHONPATH=src
 PY=/venv/main/bin/python
 SUF=-v2
 LOSS="--class-weight --cw-mode effective --cw-beta 0.999 --label-smoothing 0.05 --beta-sal 0.1 --alpha-sal 5.0"
-mkdir -p logs
+mkdir -p logs artifacts
 LOG=logs/dot20-all.txt
 say() { echo "[$(date -u +%H:%M)] $*" | tee -a $LOG; }
 

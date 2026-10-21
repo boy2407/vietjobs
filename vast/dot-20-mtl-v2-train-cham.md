@@ -1,4 +1,4 @@
-# Đợt 20: Train lại MTL với loss mới, train xong chấm ngay trên cùng máy — CHƯA THUÊ
+# Đợt 20: Train lại MTL với loss mới, train xong chấm ngay trên cùng máy — ĐANG CHẠY
 
 Task: T17 (phần còn lại). Script: `scripts/vast_run_dot20.sh` (+ `scripts/check_mtl_dev.py`).
 
@@ -34,10 +34,15 @@ Script có `pipefail` và tự dừng nếu ổ chứa `artifacts/` còn < 70 GB
 
 | # | Bước | Trạng thái |
 |---|---|---|
-| 1 | Commit + push code (`train_mtl.py`, `eval_*`, `check_mtl_dev.py`, script này) | todo |
-| 2 | Thuê máy; `df -h / /workspace`, `nvidia-smi`, torch thấy GPU | todo |
+| 1 | Commit + push code (`train_mtl.py`, `eval_*`, `check_mtl_dev.py`, script này) | done (060a0ed) |
+| 2 | Thuê máy; `df -h / /workspace`, `nvidia-smi`, torch thấy GPU | done: 3090 `38.145.234.214:60880` (Dense), 4090 `38.117.87.41:41804` (RNN CafeBERT, PhoBERT) |
 | 3 | `git clone -b t8-rnn-colab`, `pip install` (như Đợt 17), đẩy `data/processed/splits`, `manifest.json`, `data/external/vietjobs37k` bằng `cd /workspace/vietjobs && tar xzf -` | todo |
 | 4 | Chạy lệnh của máy trong tmux | todo |
 | 5 | Kéo về theo tên run (không glob), `torch.load` + checksum từng `best.pt` | todo |
 | 6 | Ghi sheet `Score_last4` / `Dashboard_last4` (xem trước với tác giả) | todo |
 | 7 | Destroy sau checklist `vast/README.md` | todo |
+
+## Kết quả (cập nhật 2026-10-21)
+
+- **Dense (máy 3090, 10:34–11:43 UTC): xong.** 5 MTL Dense + 25 Salary Dense `-v2` train và chấm cùng máy; cổng `check_mtl_dev.py` khớp 5/5; đã kéo về Mac và kiểm 30/30 (`torch.load`, checksum). Số liệu: [06-baseline-dl.md §5.9](../docs/06-baseline-dl.md); đã ghi `Dashboard_last4` (dòng 19–28) và `Score_last4` (dòng 16–25).
+- **RNN (máy 4090, từ 10:48 UTC): đang chạy.** CafeBERT `dl-mtl-caf-rnn-b01-cw-s42-v2` đang train; PhoBERT chạy tiếp ngay sau đó.

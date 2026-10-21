@@ -34,3 +34,14 @@
 - **Kéo về qua SSH proxy (`sshN.vast.ai`): `tar czf - … | tar xzf -` treo** (dừng ở 5,6/14 MB). `scp` từng file chạy được; so `md5sum` hai đầu cho `best*.pt`.
 - Image PyTorch của vast: không có `python` ngoài venv → `source /venv/main/bin/activate`; login đã ở trong tmux → dùng `tmux switch-client -t mtl` thay vì `attach`.
 - RTX 5060 Ti + EPYC 9534, CafeBERT 512 token-level: encode ~30,8 tin/s; trunk RNN đa nhiệm 142,7 s/epoch.
+
+
+### 6. Đợt 17–20 (đo 2026-10-21)
+- **Kiểm `df -h / /workspace` trước khi chạy bất cứ gì.** Trên một máy 3090 `/workspace` là ổ riêng 10 GB (đã đầy), ổ 100 GB nằm ở `/`; cache token 27 GB không ghi được và tiến trình chết với `Bus error`. `vast_run_dot20.sh` tự dừng nếu ổ chứa `artifacts/` còn dưới 70 GB.
+- **Train và chấm phải cùng máy, cùng môi trường (Rule 4).** `best.pt` train ở một môi trường rồi chấm trên máy khác cho `test` cao hơn `dev` ở mọi mô hình Dense (khoảng 0,03–0,09 macro-F1); cosine giữa vectơ cache cũ và vectơ encode lại chỉ 0,8875 (PhoBERT, `dev`). Cổng chặn: `scripts/check_mtl_dev.py` chấm lại `dev` và so với `metrics.json`; CafeBERT, ViSoBERT RNN và 5 MTL Dense `-v2` (train+chấm cùng máy) khớp tuyệt đối.
+- **Train bị chặn ở CPU một lõi, không phải GPU.** GPU nhảy 0 % ↔ 100 %; mỗi epoch ~2,5 phút trên 5090, 3090 và 4090 (165 s/epoch đo từ `history.jsonl`); mô hình 512 token cache 27–36 GB. Thuê card rẻ nhất đủ 24 GB, ưu tiên CPU mạnh từng lõi và RAM ≥ 64 GB.
+- **Máy chia sẻ CPU có thể chậm gấp ~5 lần ở bước thống kê chuẩn hoá** (load average ~10 trong khi tiến trình dùng một lõi): ~28 phút so với ~5,5 phút trên máy khác.
+- **Script train: `set -eo pipefail`.** `set -e` kèm `| tee` che mất lỗi của train; một lần chạy hỏng vẫn in "XONG".
+- **Đẩy dữ liệu: `ssh … 'cd /workspace/vietjobs && tar xzf -'`**, không dùng `cd … || (…)` trong subshell — `cd` không có tác dụng và dữ liệu rơi vào `/root`.
+- Mỗi encoder 512 token cần cache token: CafeBERT last4 ~40 GB (train) + 4 GB (dev), ViSoBERT/XLM-R ~27 + 3 GB; xoá sau mỗi mô hình (script làm sẵn).
+- **File `docs/04-results.md` trên máy thuê chứa các dòng nhật ký của run** — lấy chúng (`git diff docs/04-results.md`) trước khi destroy máy.
