@@ -458,10 +458,12 @@ Nhận xét: macro-F1 trên `dev` của cả năm encoder tăng khi dùng loss m
 |---|---|---|---|---|---|---|
 | Loss cũ | 0,6030 | 3,766 | 0,6037 | 0,6404 | 0,5569 | 4,547 |
 | Loss gộp mới `-v2` | 0,6322 | 3,700 | 0,6278 | 0,6682 | 0,6090 | 5,215 |
+| PhoBERT 256, loss cũ | 0,6107 | 3,666 | 0,5992 | 0,6316 | ⛔ | ⛔ |
+| PhoBERT 256, loss gộp mới `-v2` | 0,6261 | 3,653 | 0,6242 | 0,6659 | 0,5997 | 4,846 |
 
 Run `dl-mtl-caf-rnn-b01-cw-s42-v2`: huấn luyện và chấm trên cùng một máy RTX 4090; dừng sớm ở epoch 42; cổng `check_mtl_dev.py` khớp tuyệt đối. Một seed nên chưa tách được hiệu ứng khỏi nhiễu giữa seed.
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): `dl-mtl-pho-rnn-b01-cw-s42-v2`, BamiBERT và XLM-R trunk RNN với loss gộp mới — đang chạy hoặc hoãn.
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): XLM-R (`dl-mtl-xlm-rnn-b01-cw-s42-v2`, đang chạy) và BamiBERT trunk RNN với loss gộp mới — đang chạy hoặc hoãn.
 
 **Hồ sơ lần chạy (Quy tắc 10).**
 1. *Đã chạy:* T17, ngày 21/10/2026; `run_id` các run `-v2` ở Bảng 4.17–4.18; lệnh `bash scripts/vast_run_dot20.sh dense` (encode pooled `last4` rồi `train_mtl.py --head dense --last4 --class-weight --cw-mode effective --cw-beta 0.999 --label-smoothing 0.05 --beta-sal 0.1 --alpha-sal 5.0` và `train_dl.py --task salary --head dense --last4 --class-weight --beta-sal 0.1`); Vast.ai, 1× RTX 3090, môi trường `/venv/main` (torch 2.14.1+cu132, transformers 4.46.3); đọc `train`, chọn mô hình trên `dev` (3.812 tin phân lớp, 2.698 tin có lương), chấm `test` (9.541 tin) và `ext37k-sal`.
