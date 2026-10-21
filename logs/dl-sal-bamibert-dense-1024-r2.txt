@@ -1,0 +1,19 @@
+  epoch   1  loss 0.4707  val_mae_trieu 5.0728  val_r2_log 0.2691
+  epoch   2  loss 0.1149  val_mae_trieu 4.7128  val_r2_log 0.3628
+  epoch   3  loss 0.0933  val_mae_trieu 4.5194  val_r2_log 0.4211
+  epoch   4  loss 0.0842  val_mae_trieu 4.4345  val_r2_log 0.4364
+  epoch   5  loss 0.0752  val_mae_trieu 4.3817  val_r2_log 0.4581
+  epoch   6  loss 0.0711  val_mae_trieu 4.3548  val_r2_log 0.4607
+  epoch   7  loss 0.0671  val_mae_trieu 4.2873  val_r2_log 0.4697
+  epoch   8  loss 0.0637  val_mae_trieu 4.3104  val_r2_log 0.4714
+  epoch   9  loss 0.0613  val_mae_trieu 4.3004  val_r2_log 0.4753
+  epoch  10  loss 0.0590  val_mae_trieu 4.3198  val_r2_log 0.4758
+  epoch  11  loss 0.0571  val_mae_trieu 4.3529  val_r2_log 0.4616
+  epoch  12  loss 0.0555  val_mae_trieu 4.2960  val_r2_log 0.4792
+  epoch  13  loss 0.0548  val_mae_trieu 4.3066  val_r2_log 0.4774
+  epoch  14  loss 0.0526  val_mae_trieu 4.3265  val_r2_log 0.4752
+  epoch  15  loss 0.0514  val_mae_trieu 4.3322  val_r2_log 0.4735
+  dừng sớm ở epoch 15 (tốt nhất: 7)
+
+[dl-sal-bamibert-dense-1024-r2] salary · best epoch 7/15 · MAE=4.29tr · RMSE=8.51tr · R2log=0.470 · R2raw=0.306 · ±20%=51.1%
+  -> artifacts/dl-sal-bamibert-dense-1024-r2/

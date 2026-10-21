@@ -1,0 +1,40 @@
+dl-cat-cafe-dense-512-p20-s42 {'strict_f1': 0.5106}
+dl-cat-cafe-dense-512-p20-s43 {'strict_f1': 0.5344}
+dl-cat-cafe-dense-512-p20-s44 {'strict_f1': 0.5276}
+dl-cat-cafe-dense-512 {'strict_f1': 0.5106}
+dl-cat-cafe-dense-512-s43 {'strict_f1': 0.5344}
+dl-cat-cafe-dense-512-s44 {'strict_f1': 0.5276}
+dl-cat-cafe-dense-512-s45 {'strict_f1': 0.5224}
+dl-cat-cafe-dense-512-s46 {'strict_f1': 0.5523}
+dl-cat-cafe-focal-512-s42 {'strict_f1': 0.5034}
+dl-cat-cafe-focal-512-s43 {'strict_f1': 0.5223}
+dl-cat-cafe-focal-512-s44 {'strict_f1': 0.528}
+dl-cat-cafe-focal-512-s45 {'strict_f1': 0.5139}
+dl-cat-cafe-focal-512-s46 {'strict_f1': 0.4978}
+dl-cat-focal-0920 {'strict_f1': 0.5199}
+dl-cat-focal-s2 {'strict_f1': 0.5266}
+dl-cat-ce-0920 {'strict_f1': 0.5076}
+dl-sal-0920 {'sal_mae': 5.37}
+dl-sal-s2 {'sal_mae': 5.371}
+dl-mtl-h256-a1.0-1001-0735 {'sal_mae': 5.38, 'strict_f1': 0.4969}
+dl-mtl-h256-a1.0-1001-0746 {'sal_mae': 5.129, 'strict_f1': 0.5119}
+dl-sal-cpu-0920 {'sal_mae': 5.084}
+dl-sal-cpu-s43 {'sal_mae': 5.057}
+dl-sal-cpu-s44 {'sal_mae': 4.71}
+dl-sal-cpu-s45 {'sal_mae': 4.747}
+dl-sal-cpu-s46 {'sal_mae': 4.813}
+dl-cat-cafe-dense {'strict_f1': 0.5204}
+dl-cat-bamibert-dense-1024 {'strict_f1': 0.4905}
+dl-cat-visobert-dense-512 {'strict_f1': 0.4446}
+dl-cat-xlmr-dense-512 {'strict_f1': 0.5117}
+dl-mtl-bamibert1024-a5-e80-s42 {'sal_mae': 5.064, 'strict_f1': 0.4801}
+dl-sal-bamibert-dense-1024 {'sal_mae': 5.125}
+dl-mtl-visobert512-a5-e80-s42 {'sal_mae': 6.248, 'strict_f1': 0.4541}
+dl-sal-visobert-dense-512 {'sal_mae': 5.469}
+dl-mtl-xlmr512-a5-e80-s42 {'sal_mae': 6.363, 'strict_f1': 0.5023}
+dl-sal-xlmr-dense-512 {'sal_mae': 5.799}
+dl-sal-cafe-dense-512 {'sal_mae': 5.534}
+dl-sal-cafe-dense-512-s43 {'sal_mae': 5.459}
+dl-sal-cafe-dense-512-s44 {'sal_mae': 5.247}
+dl-sal-cafe-dense-512-s45 {'sal_mae': 5.458}
+dl-sal-cafe-dense-512-s46 {'sal_mae': 5.307}

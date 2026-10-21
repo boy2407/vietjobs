@@ -1,0 +1,26 @@
+  thống kê chuẩn hoá: 5,120/12,102 dòng (42.3%,     5s)
+  thống kê chuẩn hoá: 10,240/12,102 dòng (84.6%,    11s)
+  epoch   1  loss 0.4050  val_mae_trieu 4.1786  val_r2_log 0.3402
+  epoch   2  loss 0.0939  val_mae_trieu 3.7687  val_r2_log 0.5177
+  epoch   3  loss 0.0751  val_mae_trieu 3.5757  val_r2_log 0.5698
+  epoch   4  loss 0.0697  val_mae_trieu 3.5693  val_r2_log 0.5664
+  epoch   5  loss 0.0667  val_mae_trieu 3.4672  val_r2_log 0.5895
+  epoch   6  loss 0.0641  val_mae_trieu 3.4394  val_r2_log 0.5996
+  epoch   7  loss 0.0622  val_mae_trieu 3.5331  val_r2_log 0.5699
+  epoch   8  loss 0.0593  val_mae_trieu 3.6787  val_r2_log 0.5338
+  epoch   9  loss 0.0556  val_mae_trieu 3.4626  val_r2_log 0.6017
+  epoch  10  loss 0.0537  val_mae_trieu 3.5018  val_r2_log 0.5740
+  epoch  11  loss 0.0509  val_mae_trieu 3.4676  val_r2_log 0.5804
+  epoch  12  loss 0.0496  val_mae_trieu 3.4002  val_r2_log 0.5917
+  epoch  13  loss 0.0477  val_mae_trieu 3.5409  val_r2_log 0.5915
+  epoch  14  loss 0.0455  val_mae_trieu 3.4161  val_r2_log 0.5986
+  epoch  15  loss 0.0443  val_mae_trieu 3.4633  val_r2_log 0.6005
+  epoch  16  loss 0.0412  val_mae_trieu 3.4628  val_r2_log 0.5822
+  epoch  17  loss 0.0397  val_mae_trieu 3.7306  val_r2_log 0.5237
+  epoch  18  loss 0.0389  val_mae_trieu 3.4715  val_r2_log 0.5819
+  epoch  19  loss 0.0382  val_mae_trieu 3.4884  val_r2_log 0.5955
+  epoch  20  loss 0.0371  val_mae_trieu 3.4544  val_r2_log 0.5858
+  dừng sớm ở epoch 20 (tốt nhất: 12)
+
+[mh-sal-pho-rnn-256-s42] salary · best epoch 12/20 · MAE=3.40tr · RMSE=5.74tr · R2log=0.592 · R2raw=0.485 · ±20%=57.7%
+  -> artifacts/mh-sal-pho-rnn-256-s42/

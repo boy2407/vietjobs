@@ -1,0 +1,42 @@
+  epoch   1  loss 0.7908  val_mae_trieu 5.5180  val_r2_log -0.1155
+  epoch   2  loss 0.1441  val_mae_trieu 4.4780  val_r2_log 0.3339
+  epoch   3  loss 0.1140  val_mae_trieu 4.1738  val_r2_log 0.4293
+  epoch   4  loss 0.1003  val_mae_trieu 4.1073  val_r2_log 0.4453
+  epoch   5  loss 0.0889  val_mae_trieu 3.9965  val_r2_log 0.4656
+  epoch   6  loss 0.0827  val_mae_trieu 3.8987  val_r2_log 0.5022
+  epoch   7  loss 0.0774  val_mae_trieu 3.8887  val_r2_log 0.5056
+  epoch   8  loss 0.0749  val_mae_trieu 3.7939  val_r2_log 0.5119
+  epoch   9  loss 0.0709  val_mae_trieu 3.7609  val_r2_log 0.5307
+  epoch  10  loss 0.0673  val_mae_trieu 3.7635  val_r2_log 0.5251
+  epoch  11  loss 0.0659  val_mae_trieu 3.7704  val_r2_log 0.5285
+  epoch  12  loss 0.0618  val_mae_trieu 3.7962  val_r2_log 0.5290
+  epoch  13  loss 0.0617  val_mae_trieu 3.7714  val_r2_log 0.5308
+  epoch  14  loss 0.0591  val_mae_trieu 3.7304  val_r2_log 0.5365
+  epoch  15  loss 0.0577  val_mae_trieu 3.7623  val_r2_log 0.5315
+  epoch  16  loss 0.0569  val_mae_trieu 3.7611  val_r2_log 0.5372
+  epoch  17  loss 0.0558  val_mae_trieu 3.7823  val_r2_log 0.5297
+  epoch  18  loss 0.0543  val_mae_trieu 3.7455  val_r2_log 0.5344
+  epoch  19  loss 0.0530  val_mae_trieu 3.7300  val_r2_log 0.5433
+  epoch  20  loss 0.0522  val_mae_trieu 3.7025  val_r2_log 0.5480
+  epoch  21  loss 0.0507  val_mae_trieu 3.7610  val_r2_log 0.5375
+  epoch  22  loss 0.0511  val_mae_trieu 3.7404  val_r2_log 0.5459
+  epoch  23  loss 0.0498  val_mae_trieu 3.6937  val_r2_log 0.5525
+  epoch  24  loss 0.0488  val_mae_trieu 3.7170  val_r2_log 0.5471
+  epoch  25  loss 0.0494  val_mae_trieu 3.7613  val_r2_log 0.5352
+  epoch  26  loss 0.0480  val_mae_trieu 3.6933  val_r2_log 0.5506
+  epoch  27  loss 0.0482  val_mae_trieu 3.7475  val_r2_log 0.5441
+  epoch  28  loss 0.0453  val_mae_trieu 3.7589  val_r2_log 0.5434
+  epoch  29  loss 0.0454  val_mae_trieu 3.7575  val_r2_log 0.5442
+  epoch  30  loss 0.0464  val_mae_trieu 3.6577  val_r2_log 0.5617
+  epoch  31  loss 0.0450  val_mae_trieu 3.7038  val_r2_log 0.5536
+  epoch  32  loss 0.0442  val_mae_trieu 3.7130  val_r2_log 0.5564
+  epoch  33  loss 0.0432  val_mae_trieu 3.7691  val_r2_log 0.5435
+  epoch  34  loss 0.0430  val_mae_trieu 3.7691  val_r2_log 0.5381
+  epoch  35  loss 0.0417  val_mae_trieu 3.7424  val_r2_log 0.5534
+  epoch  36  loss 0.0417  val_mae_trieu 3.8055  val_r2_log 0.5410
+  epoch  37  loss 0.0416  val_mae_trieu 3.8167  val_r2_log 0.5407
+  epoch  38  loss 0.0411  val_mae_trieu 3.8858  val_r2_log 0.5191
+  dừng sớm ở epoch 38 (tốt nhất: 30)
+
+[mh-sal-pho-dense-256-s42] salary · best epoch 30/38 · MAE=3.66tr · RMSE=6.04tr · R2log=0.562 · R2raw=0.429 · ±20%=53.2%
+  -> artifacts/mh-sal-pho-dense-256-s42/

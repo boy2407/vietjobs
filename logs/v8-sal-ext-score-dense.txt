@@ -1,0 +1,10 @@
+mh-sal-pho-dense-256-s42 {'sal_mae': 4.938}
+mh-sal-pho-dense-256-s43 {'sal_mae': 4.898}
+mh-sal-pho-dense-256-s44 {'sal_mae': 5.171}
+mh-sal-pho-dense-256-s45 {'sal_mae': 5.199}
+mh-sal-pho-dense-256-s46 {'sal_mae': 5.211}
+mh-sal-cafe-dense-512-s42 {'sal_mae': 5.835}
+mh-sal-cafe-dense-512-s43 {'sal_mae': 6.054}
+mh-sal-cafe-dense-512-s44 {'sal_mae': 6.109}
+mh-sal-cafe-dense-512-s45 {'sal_mae': 6.391}
+mh-sal-cafe-dense-512-s46 {'sal_mae': 6.288}

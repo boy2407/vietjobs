@@ -1,0 +1,117 @@
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/6,111
+  rnn phobert 816/6,111
+  rnn phobert 1,616/6,111
+  rnn phobert 2,416/6,111
+  rnn phobert 3,216/6,111
+  rnn phobert 4,016/6,111
+  rnn phobert 4,816/6,111
+  rnn phobert 5,616/6,111
+dl-cat-rnn-ce {'strict_f1': 0.5853}
+dl-cat-rnn-ce-s42 {'strict_f1': 0.5944}
+dl-cat-rnn-ce-s43 {'strict_f1': 0.5677}
+dl-cat-rnn-ce-s44 {'strict_f1': 0.6313}
+dl-cat-rnn-focal {'strict_f1': 0.5883}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/6,111
+  rnn bamibert 816/6,111
+  rnn bamibert 1,616/6,111
+  rnn bamibert 2,416/6,111
+  rnn bamibert 3,216/6,111
+  rnn bamibert 4,016/6,111
+  rnn bamibert 4,816/6,111
+  rnn bamibert 5,616/6,111
+dl-cat-bamibert-rnn-1024 {'strict_f1': 0.5953}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/6,111
+  rnn visobert 816/6,111
+  rnn visobert 1,616/6,111
+  rnn visobert 2,416/6,111
+  rnn visobert 3,216/6,111
+  rnn visobert 4,016/6,111
+  rnn visobert 4,816/6,111
+  rnn visobert 5,616/6,111
+dl-cat-visobert-rnn-512 {'strict_f1': 0.5583}
+  rnn xlmr 16/6,111
+  rnn xlmr 816/6,111
+  rnn xlmr 1,616/6,111
+  rnn xlmr 2,416/6,111
+  rnn xlmr 3,216/6,111
+  rnn xlmr 4,016/6,111
+  rnn xlmr 4,816/6,111
+  rnn xlmr 5,616/6,111
+dl-cat-xlmr-rnn-512 {'strict_f1': 0.6209}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/6,111
+  rnn cafebert 816/6,111
+  rnn cafebert 1,616/6,111
+  rnn cafebert 2,416/6,111
+  rnn cafebert 3,216/6,111
+  rnn cafebert 4,016/6,111
+  rnn cafebert 4,816/6,111
+  rnn cafebert 5,616/6,111
+dl-mtl-cafe-rnn-a5-s42 {'sal_mae': 4.546, 'strict_f1': 0.5959}
+dl-sal-cafe-rnn-s42-t12 {'sal_mae': 5.178}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/6,111
+  rnn bamibert 816/6,111
+  rnn bamibert 1,616/6,111
+  rnn bamibert 2,416/6,111
+  rnn bamibert 3,216/6,111
+  rnn bamibert 4,016/6,111
+  rnn bamibert 4,816/6,111
+  rnn bamibert 5,616/6,111
+dl-mtl-bamibert-rnn1024-a5-s42 {'sal_mae': 4.992, 'strict_f1': 0.5513}
+dl-sal-bamibert-rnn-1024 {'sal_mae': 5.274}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/6,111
+  rnn visobert 816/6,111
+  rnn visobert 1,616/6,111
+  rnn visobert 2,416/6,111
+  rnn visobert 3,216/6,111
+  rnn visobert 4,016/6,111
+  rnn visobert 4,816/6,111
+  rnn visobert 5,616/6,111
+dl-mtl-visobert-rnn512-a5-s42 {'sal_mae': 5.67, 'strict_f1': 0.5605}
+dl-sal-visobert-rnn-512 {'sal_mae': 4.852}
+  rnn xlmr 16/6,111
+  rnn xlmr 816/6,111
+  rnn xlmr 1,616/6,111
+  rnn xlmr 2,416/6,111
+  rnn xlmr 3,216/6,111
+  rnn xlmr 4,016/6,111
+  rnn xlmr 4,816/6,111
+  rnn xlmr 5,616/6,111
+dl-mtl-xlmr-rnn512-a5-s42 {'sal_mae': 4.907, 'strict_f1': 0.5275}
+dl-sal-xlmr-rnn-512 {'sal_mae': 4.855}
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/6,111
+  rnn phobert 816/6,111
+  rnn phobert 1,616/6,111
+  rnn phobert 2,416/6,111
+  rnn phobert 3,216/6,111
+  rnn phobert 4,016/6,111
+  rnn phobert 4,816/6,111
+  rnn phobert 5,616/6,111
+dl-sal-rnn {'sal_mae': 5.028}
+dl-sal-rnn-s42 {'sal_mae': 4.411}
+dl-sal-rnn-s43 {'sal_mae': 4.568}
+dl-sal-rnn-s44 {'sal_mae': 4.288}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/6,111
+  rnn cafebert 816/6,111
+  rnn cafebert 1,616/6,111
+  rnn cafebert 2,416/6,111
+  rnn cafebert 3,216/6,111
+  rnn cafebert 4,016/6,111
+  rnn cafebert 4,816/6,111
+  rnn cafebert 5,616/6,111
+dl-cat-cafe-rnn-ce-s42-t12 {'strict_f1': 0.5948}

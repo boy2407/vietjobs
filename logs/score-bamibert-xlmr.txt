@@ -1,0 +1,66 @@
+
+==========================================
+SCORING BamiBERT Dense last4 (5 seeds) on TEST & EXT37K
+==========================================
+--- Scoring TEST (BamiBERT Dense last4) ---
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Encoding 9541 texts with bamibert (layers=4, batch=64) on cuda...
+  1,664/9,541 (50.6 texts/s)
+  3,264/9,541 (50.0 texts/s)
+  4,864/9,541 (49.3 texts/s)
+  6,464/9,541 (48.8 texts/s)
+  8,064/9,541 (48.6 texts/s)
+Done in 196.9s (48.5 texts/s)
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s42: Test F1 = 0.6097, Acc = 0.6524
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s43: Test F1 = 0.6109, Acc = 0.6559
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s44: Test F1 = 0.6006, Acc = 0.6457
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s45: Test F1 = 0.6121, Acc = 0.6548
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s46: Test F1 = 0.6066, Acc = 0.6518
+BamiBERT Dense last4 TEST RESULT: F1 = 0.6080 ± 0.0046, Acc = 0.6521 ± 0.0039
+--- Scoring EXT37K (BamiBERT Dense last4) ---
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Encoding 6111 texts with bamibert (layers=4, batch=64) on cuda...
+  1,664/6,111 (47.9 texts/s)
+  3,264/6,111 (47.9 texts/s)
+  4,864/6,111 (48.0 texts/s)
+Done in 127.4s (48.0 texts/s)
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s42: Ext37k Strict F1 = 0.5380, Acc = 0.5736
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s43: Ext37k Strict F1 = 0.5545, Acc = 0.5797
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s44: Ext37k Strict F1 = 0.5437, Acc = 0.5704
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s45: Ext37k Strict F1 = 0.5215, Acc = 0.5615
+  dl-cat-bamibert-dense-last4-cweff999-ls05-s46: Ext37k Strict F1 = 0.5523, Acc = 0.5733
+BamiBERT Dense last4 EXT37K RESULT: F1 = 0.5420 ± 0.0132, Acc = 0.5717 ± 0.0066
+
+==========================================
+SCORING XLM-R Dense last4 (5 seeds) on TEST & EXT37K
+==========================================
+--- Scoring TEST (XLM-R Dense last4) ---
+Encoding 9541 texts with xlmr (layers=4, batch=64) on cuda...
+  1,664/9,541 (112.1 texts/s)
+  3,264/9,541 (111.5 texts/s)
+  4,864/9,541 (110.7 texts/s)
+  6,464/9,541 (110.3 texts/s)
+  8,064/9,541 (110.3 texts/s)
+Done in 86.6s (110.2 texts/s)
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s42: Test F1 = 0.5982, Acc = 0.6478
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s43: Test F1 = 0.6009, Acc = 0.6479
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s44: Test F1 = 0.6085, Acc = 0.6464
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s45: Test F1 = 0.5956, Acc = 0.6453
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s46: Test F1 = 0.6103, Acc = 0.6504
+XLM-R Dense last4 TEST RESULT: F1 = 0.6027 ± 0.0064, Acc = 0.6476 ± 0.0019
+--- Scoring EXT37K (XLM-R Dense last4) ---
+Encoding 6111 texts with xlmr (layers=4, batch=64) on cuda...
+  1,664/6,111 (110.9 texts/s)
+  3,264/6,111 (111.0 texts/s)
+  4,864/6,111 (111.0 texts/s)
+Done in 55.0s (111.0 texts/s)
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s42: Ext37k Strict F1 = 0.5497, Acc = 0.5914
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s43: Ext37k Strict F1 = 0.5270, Acc = 0.5640
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s44: Ext37k Strict F1 = 0.5324, Acc = 0.5782
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s45: Ext37k Strict F1 = 0.5360, Acc = 0.5786
+  dl-cat-xlmr-dense-last4-cweff999-ls05-s46: Ext37k Strict F1 = 0.5349, Acc = 0.5679
+XLM-R Dense last4 EXT37K RESULT: F1 = 0.5360 ± 0.0084, Acc = 0.5760 ± 0.0107
+
+ALL SCORING COMPLETED SUCCESSFULLY!

@@ -1,0 +1,1213 @@
+test.csv sha256 ok (before)
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    36.2 tin/s  còn ~  2.8 phút
+     336/6,161   167.3 tin/s  còn ~  0.6 phút
+     656/6,161   187.2 tin/s  còn ~  0.5 phút
+     976/6,161   193.9 tin/s  còn ~  0.4 phút
+   1,296/6,161   198.1 tin/s  còn ~  0.4 phút
+   1,616/6,161   201.4 tin/s  còn ~  0.4 phút
+   1,936/6,161   203.1 tin/s  còn ~  0.3 phút
+   2,256/6,161   204.3 tin/s  còn ~  0.3 phút
+   2,576/6,161   205.3 tin/s  còn ~  0.3 phút
+   2,896/6,161   206.3 tin/s  còn ~  0.3 phút
+   3,216/6,161   207.0 tin/s  còn ~  0.2 phút
+   3,536/6,161   207.5 tin/s  còn ~  0.2 phút
+   3,856/6,161   208.0 tin/s  còn ~  0.2 phút
+   4,176/6,161   208.5 tin/s  còn ~  0.2 phút
+   4,496/6,161   208.9 tin/s  còn ~  0.1 phút
+   4,816/6,161   209.2 tin/s  còn ~  0.1 phút
+   5,136/6,161   209.3 tin/s  còn ~  0.1 phút
+   5,456/6,161   209.4 tin/s  còn ~  0.1 phút
+   5,776/6,161   209.5 tin/s  còn ~  0.0 phút
+   6,096/6,161   209.7 tin/s  còn ~  0.0 phút
+wrote ext37k-sal-masked-len256.npy n=6161 in 0.6 min (180.60 texts/s)
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161   174.9 tin/s  còn ~  0.6 phút
+     336/6,161   207.4 tin/s  còn ~  0.5 phút
+     656/6,161   214.7 tin/s  còn ~  0.4 phút
+     976/6,161   216.9 tin/s  còn ~  0.4 phút
+   1,296/6,161   219.0 tin/s  còn ~  0.4 phút
+   1,616/6,161   220.9 tin/s  còn ~  0.3 phút
+   1,936/6,161   221.5 tin/s  còn ~  0.3 phút
+   2,256/6,161   221.6 tin/s  còn ~  0.3 phút
+   2,576/6,161   221.7 tin/s  còn ~  0.3 phút
+   2,896/6,161   222.1 tin/s  còn ~  0.2 phút
+   3,216/6,161   222.3 tin/s  còn ~  0.2 phút
+   3,536/6,161   222.0 tin/s  còn ~  0.2 phút
+   3,856/6,161   222.2 tin/s  còn ~  0.2 phút
+   4,176/6,161   222.6 tin/s  còn ~  0.1 phút
+   4,496/6,161   222.9 tin/s  còn ~  0.1 phút
+   4,816/6,161   223.1 tin/s  còn ~  0.1 phút
+   5,136/6,161   223.0 tin/s  còn ~  0.1 phút
+   5,456/6,161   223.1 tin/s  còn ~  0.1 phút
+   5,776/6,161   222.9 tin/s  còn ~  0.0 phút
+   6,096/6,161   223.1 tin/s  còn ~  0.0 phút
+wrote ext37k-sal-raw-len256.npy n=6161 in 0.5 min (214.55 texts/s)
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541   156.8 tin/s  còn ~  1.0 phút
+     336/9,541   181.5 tin/s  còn ~  0.8 phút
+     656/9,541   181.9 tin/s  còn ~  0.8 phút
+     976/9,541   182.3 tin/s  còn ~  0.8 phút
+   1,296/9,541   182.9 tin/s  còn ~  0.8 phút
+   1,616/9,541   183.0 tin/s  còn ~  0.7 phút
+   1,936/9,541   183.6 tin/s  còn ~  0.7 phút
+   2,256/9,541   184.4 tin/s  còn ~  0.7 phút
+   2,576/9,541   185.2 tin/s  còn ~  0.6 phút
+   2,896/9,541   185.8 tin/s  còn ~  0.6 phút
+   3,216/9,541   186.0 tin/s  còn ~  0.6 phút
+   3,536/9,541   186.1 tin/s  còn ~  0.5 phút
+   3,856/9,541   185.0 tin/s  còn ~  0.5 phút
+   4,176/9,541   184.7 tin/s  còn ~  0.5 phút
+   4,496/9,541   184.9 tin/s  còn ~  0.5 phút
+   4,816/9,541   185.2 tin/s  còn ~  0.4 phút
+   5,136/9,541   185.5 tin/s  còn ~  0.4 phút
+   5,456/9,541   185.5 tin/s  còn ~  0.4 phút
+   5,776/9,541   185.4 tin/s  còn ~  0.3 phút
+   6,096/9,541   185.8 tin/s  còn ~  0.3 phút
+   6,416/9,541   186.0 tin/s  còn ~  0.3 phút
+   6,736/9,541   186.4 tin/s  còn ~  0.3 phút
+   7,056/9,541   186.6 tin/s  còn ~  0.2 phút
+   7,376/9,541   186.9 tin/s  còn ~  0.2 phút
+   7,696/9,541   187.0 tin/s  còn ~  0.2 phút
+   8,016/9,541   187.2 tin/s  còn ~  0.1 phút
+   8,336/9,541   187.4 tin/s  còn ~  0.1 phút
+   8,656/9,541   187.6 tin/s  còn ~  0.1 phút
+   8,976/9,541   187.8 tin/s  còn ~  0.1 phút
+   9,296/9,541   187.9 tin/s  còn ~  0.0 phút
+wrote test-masked-len256.npy n=9541 in 0.9 min (183.82 texts/s)
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541   156.3 tin/s  còn ~  1.0 phút
+     336/9,541   181.5 tin/s  còn ~  0.8 phút
+     656/9,541   181.9 tin/s  còn ~  0.8 phút
+     976/9,541   182.1 tin/s  còn ~  0.8 phút
+   1,296/9,541   182.6 tin/s  còn ~  0.8 phút
+   1,616/9,541   182.6 tin/s  còn ~  0.7 phút
+   1,936/9,541   183.2 tin/s  còn ~  0.7 phút
+   2,256/9,541   184.0 tin/s  còn ~  0.7 phút
+   2,576/9,541   184.6 tin/s  còn ~  0.6 phút
+   2,896/9,541   185.2 tin/s  còn ~  0.6 phút
+   3,216/9,541   185.4 tin/s  còn ~  0.6 phút
+   3,536/9,541   185.5 tin/s  còn ~  0.5 phút
+   3,856/9,541   184.6 tin/s  còn ~  0.5 phút
+   4,176/9,541   184.2 tin/s  còn ~  0.5 phút
+   4,496/9,541   184.4 tin/s  còn ~  0.5 phút
+   4,816/9,541   184.7 tin/s  còn ~  0.4 phút
+   5,136/9,541   185.0 tin/s  còn ~  0.4 phút
+   5,456/9,541   185.0 tin/s  còn ~  0.4 phút
+   5,776/9,541   185.0 tin/s  còn ~  0.3 phút
+   6,096/9,541   185.3 tin/s  còn ~  0.3 phút
+   6,416/9,541   185.5 tin/s  còn ~  0.3 phút
+   6,736/9,541   185.8 tin/s  còn ~  0.3 phút
+   7,056/9,541   186.0 tin/s  còn ~  0.2 phút
+   7,376/9,541   186.3 tin/s  còn ~  0.2 phút
+   7,696/9,541   186.4 tin/s  còn ~  0.2 phút
+   8,016/9,541   186.6 tin/s  còn ~  0.1 phút
+   8,336/9,541   186.8 tin/s  còn ~  0.1 phút
+   8,656/9,541   187.0 tin/s  còn ~  0.1 phút
+   8,976/9,541   187.2 tin/s  còn ~  0.1 phút
+   9,296/9,541   187.4 tin/s  còn ~  0.0 phút
+wrote test-raw-len256.npy n=9541 in 0.9 min (183.19 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    63.0 tin/s  còn ~  1.6 phút
+     336/6,161    63.0 tin/s  còn ~  1.5 phút
+     656/6,161    62.8 tin/s  còn ~  1.5 phút
+     976/6,161    62.7 tin/s  còn ~  1.4 phút
+   1,296/6,161    62.7 tin/s  còn ~  1.3 phút
+   1,616/6,161    62.6 tin/s  còn ~  1.2 phút
+   1,936/6,161    62.5 tin/s  còn ~  1.1 phút
+   2,256/6,161    62.5 tin/s  còn ~  1.0 phút
+   2,576/6,161    62.4 tin/s  còn ~  1.0 phút
+   2,896/6,161    62.3 tin/s  còn ~  0.9 phút
+   3,216/6,161    62.3 tin/s  còn ~  0.8 phút
+   3,536/6,161    62.2 tin/s  còn ~  0.7 phút
+   3,856/6,161    62.2 tin/s  còn ~  0.6 phút
+   4,176/6,161    62.1 tin/s  còn ~  0.5 phút
+   4,496/6,161    62.1 tin/s  còn ~  0.4 phút
+   4,816/6,161    62.1 tin/s  còn ~  0.4 phút
+   5,136/6,161    62.0 tin/s  còn ~  0.3 phút
+   5,456/6,161    62.0 tin/s  còn ~  0.2 phút
+   5,776/6,161    62.0 tin/s  còn ~  0.1 phút
+   6,096/6,161    62.0 tin/s  còn ~  0.0 phút
+wrote cafebert-ext37k-sal-masked-len256.npy n=6161 in 2.2 min (47.57 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    63.6 tin/s  còn ~  1.6 phút
+     336/6,161    62.6 tin/s  còn ~  1.6 phút
+     656/6,161    62.5 tin/s  còn ~  1.5 phút
+     976/6,161    62.4 tin/s  còn ~  1.4 phút
+   1,296/6,161    62.2 tin/s  còn ~  1.3 phút
+   1,616/6,161    62.2 tin/s  còn ~  1.2 phút
+   1,936/6,161    62.1 tin/s  còn ~  1.1 phút
+   2,256/6,161    62.0 tin/s  còn ~  1.0 phút
+   2,576/6,161    61.9 tin/s  còn ~  1.0 phút
+   2,896/6,161    61.9 tin/s  còn ~  0.9 phút
+   3,216/6,161    61.8 tin/s  còn ~  0.8 phút
+   3,536/6,161    61.8 tin/s  còn ~  0.7 phút
+   3,856/6,161    61.8 tin/s  còn ~  0.6 phút
+   4,176/6,161    61.7 tin/s  còn ~  0.5 phút
+   4,496/6,161    61.7 tin/s  còn ~  0.4 phút
+   4,816/6,161    61.7 tin/s  còn ~  0.4 phút
+   5,136/6,161    61.7 tin/s  còn ~  0.3 phút
+   5,456/6,161    61.6 tin/s  còn ~  0.2 phút
+   5,776/6,161    61.6 tin/s  còn ~  0.1 phút
+   6,096/6,161    61.6 tin/s  còn ~  0.0 phút
+wrote cafebert-ext37k-sal-raw-len256.npy n=6161 in 1.7 min (60.10 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    62.7 tin/s  còn ~  2.5 phút
+     336/9,541    61.9 tin/s  còn ~  2.5 phút
+     656/9,541    61.8 tin/s  còn ~  2.4 phút
+     976/9,541    61.7 tin/s  còn ~  2.3 phút
+   1,296/9,541    61.6 tin/s  còn ~  2.2 phút
+   1,616/9,541    61.5 tin/s  còn ~  2.1 phút
+   1,936/9,541    61.5 tin/s  còn ~  2.1 phút
+   2,256/9,541    61.4 tin/s  còn ~  2.0 phút
+   2,576/9,541    61.4 tin/s  còn ~  1.9 phút
+   2,896/9,541    61.4 tin/s  còn ~  1.8 phút
+   3,216/9,541    61.4 tin/s  còn ~  1.7 phút
+   3,536/9,541    61.4 tin/s  còn ~  1.6 phút
+   3,856/9,541    61.3 tin/s  còn ~  1.5 phút
+   4,176/9,541    61.3 tin/s  còn ~  1.5 phút
+   4,496/9,541    61.3 tin/s  còn ~  1.4 phút
+   4,816/9,541    61.3 tin/s  còn ~  1.3 phút
+   5,136/9,541    61.3 tin/s  còn ~  1.2 phút
+   5,456/9,541    61.3 tin/s  còn ~  1.1 phút
+   5,776/9,541    61.3 tin/s  còn ~  1.0 phút
+   6,096/9,541    61.3 tin/s  còn ~  0.9 phút
+   6,416/9,541    61.3 tin/s  còn ~  0.8 phút
+   6,736/9,541    61.3 tin/s  còn ~  0.8 phút
+   7,056/9,541    61.3 tin/s  còn ~  0.7 phút
+   7,376/9,541    61.3 tin/s  còn ~  0.6 phút
+   7,696/9,541    61.3 tin/s  còn ~  0.5 phút
+   8,016/9,541    61.3 tin/s  còn ~  0.4 phút
+   8,336/9,541    61.3 tin/s  còn ~  0.3 phút
+   8,656/9,541    61.3 tin/s  còn ~  0.2 phút
+   8,976/9,541    61.4 tin/s  còn ~  0.2 phút
+   9,296/9,541    61.4 tin/s  còn ~  0.1 phút
+wrote cafebert-test-masked-len256.npy n=9541 in 2.6 min (60.39 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    62.8 tin/s  còn ~  2.5 phút
+     336/9,541    62.1 tin/s  còn ~  2.5 phút
+     656/9,541    62.0 tin/s  còn ~  2.4 phút
+     976/9,541    61.9 tin/s  còn ~  2.3 phút
+   1,296/9,541    61.8 tin/s  còn ~  2.2 phút
+   1,616/9,541    61.7 tin/s  còn ~  2.1 phút
+   1,936/9,541    61.7 tin/s  còn ~  2.1 phút
+   2,256/9,541    61.7 tin/s  còn ~  2.0 phút
+   2,576/9,541    61.7 tin/s  còn ~  1.9 phút
+   2,896/9,541    61.7 tin/s  còn ~  1.8 phút
+   3,216/9,541    61.7 tin/s  còn ~  1.7 phút
+   3,536/9,541    61.7 tin/s  còn ~  1.6 phút
+   3,856/9,541    61.6 tin/s  còn ~  1.5 phút
+   4,176/9,541    61.6 tin/s  còn ~  1.5 phút
+   4,496/9,541    61.6 tin/s  còn ~  1.4 phút
+   4,816/9,541    61.6 tin/s  còn ~  1.3 phút
+   5,136/9,541    61.6 tin/s  còn ~  1.2 phút
+   5,456/9,541    61.6 tin/s  còn ~  1.1 phút
+   5,776/9,541    61.6 tin/s  còn ~  1.0 phút
+   6,096/9,541    61.6 tin/s  còn ~  0.9 phút
+   6,416/9,541    61.6 tin/s  còn ~  0.8 phút
+   6,736/9,541    61.6 tin/s  còn ~  0.8 phút
+   7,056/9,541    61.6 tin/s  còn ~  0.7 phút
+   7,376/9,541    61.6 tin/s  còn ~  0.6 phút
+   7,696/9,541    61.6 tin/s  còn ~  0.5 phút
+   8,016/9,541    61.6 tin/s  còn ~  0.4 phút
+   8,336/9,541    61.6 tin/s  còn ~  0.3 phút
+   8,656/9,541    61.7 tin/s  còn ~  0.2 phút
+   8,976/9,541    61.7 tin/s  còn ~  0.2 phút
+   9,296/9,541    61.7 tin/s  còn ~  0.1 phút
+wrote cafebert-test-raw-len256.npy n=9541 in 2.6 min (60.66 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    55.8 tin/s  còn ~  1.8 phút
+     336/6,161    54.5 tin/s  còn ~  1.8 phút
+     656/6,161    54.7 tin/s  còn ~  1.7 phút
+     976/6,161    54.4 tin/s  còn ~  1.6 phút
+   1,296/6,161    54.3 tin/s  còn ~  1.5 phút
+   1,616/6,161    54.4 tin/s  còn ~  1.4 phút
+   1,936/6,161    54.3 tin/s  còn ~  1.3 phút
+   2,256/6,161    54.2 tin/s  còn ~  1.2 phút
+   2,576/6,161    54.2 tin/s  còn ~  1.1 phút
+   2,896/6,161    54.2 tin/s  còn ~  1.0 phút
+   3,216/6,161    54.2 tin/s  còn ~  0.9 phút
+   3,536/6,161    54.2 tin/s  còn ~  0.8 phút
+   3,856/6,161    54.2 tin/s  còn ~  0.7 phút
+   4,176/6,161    54.2 tin/s  còn ~  0.6 phút
+   4,496/6,161    54.2 tin/s  còn ~  0.5 phút
+   4,816/6,161    54.2 tin/s  còn ~  0.4 phút
+   5,136/6,161    54.2 tin/s  còn ~  0.3 phút
+   5,456/6,161    54.1 tin/s  còn ~  0.2 phút
+   5,776/6,161    54.1 tin/s  còn ~  0.1 phút
+   6,096/6,161    54.1 tin/s  còn ~  0.0 phút
+wrote cafebert-ext37k-sal-masked-len512.npy n=6161 in 1.9 min (52.95 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    56.9 tin/s  còn ~  1.8 phút
+     336/6,161    56.6 tin/s  còn ~  1.7 phút
+     656/6,161    56.6 tin/s  còn ~  1.6 phút
+     976/6,161    56.3 tin/s  còn ~  1.5 phút
+   1,296/6,161    56.3 tin/s  còn ~  1.4 phút
+   1,616/6,161    56.3 tin/s  còn ~  1.3 phút
+   1,936/6,161    56.2 tin/s  còn ~  1.3 phút
+   2,256/6,161    56.1 tin/s  còn ~  1.2 phút
+   2,576/6,161    56.1 tin/s  còn ~  1.1 phút
+   2,896/6,161    56.0 tin/s  còn ~  1.0 phút
+   3,216/6,161    56.0 tin/s  còn ~  0.9 phút
+   3,536/6,161    55.9 tin/s  còn ~  0.8 phút
+   3,856/6,161    55.9 tin/s  còn ~  0.7 phút
+   4,176/6,161    55.9 tin/s  còn ~  0.6 phút
+   4,496/6,161    55.9 tin/s  còn ~  0.5 phút
+   4,816/6,161    55.8 tin/s  còn ~  0.4 phút
+   5,136/6,161    55.8 tin/s  còn ~  0.3 phút
+   5,456/6,161    55.8 tin/s  còn ~  0.2 phút
+   5,776/6,161    55.7 tin/s  còn ~  0.1 phút
+   6,096/6,161    55.7 tin/s  còn ~  0.0 phút
+wrote cafebert-ext37k-sal-raw-len512.npy n=6161 in 1.9 min (54.46 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    30.5 tin/s  còn ~  5.2 phút
+     336/9,541    31.4 tin/s  còn ~  4.9 phút
+     656/9,541    32.0 tin/s  còn ~  4.6 phút
+     976/9,541    31.7 tin/s  còn ~  4.5 phút
+   1,296/9,541    31.5 tin/s  còn ~  4.4 phút
+   1,616/9,541    31.3 tin/s  còn ~  4.2 phút
+   1,936/9,541    31.2 tin/s  còn ~  4.1 phút
+   2,256/9,541    31.3 tin/s  còn ~  3.9 phút
+   2,576/9,541    31.4 tin/s  còn ~  3.7 phút
+   2,896/9,541    31.5 tin/s  còn ~  3.5 phút
+   3,216/9,541    31.5 tin/s  còn ~  3.3 phút
+   3,536/9,541    31.5 tin/s  còn ~  3.2 phút
+   3,856/9,541    31.4 tin/s  còn ~  3.0 phút
+   4,176/9,541    31.3 tin/s  còn ~  2.9 phút
+   4,496/9,541    31.3 tin/s  còn ~  2.7 phút
+   4,816/9,541    31.3 tin/s  còn ~  2.5 phút
+   5,136/9,541    31.3 tin/s  còn ~  2.3 phút
+   5,456/9,541    31.3 tin/s  còn ~  2.2 phút
+   5,776/9,541    31.3 tin/s  còn ~  2.0 phút
+   6,096/9,541    31.3 tin/s  còn ~  1.8 phút
+   6,416/9,541    31.4 tin/s  còn ~  1.7 phút
+   6,736/9,541    31.5 tin/s  còn ~  1.5 phút
+   7,056/9,541    31.5 tin/s  còn ~  1.3 phút
+   7,376/9,541    31.7 tin/s  còn ~  1.1 phút
+   7,696/9,541    31.7 tin/s  còn ~  1.0 phút
+   8,016/9,541    31.7 tin/s  còn ~  0.8 phút
+   8,336/9,541    31.8 tin/s  còn ~  0.6 phút
+   8,656/9,541    31.8 tin/s  còn ~  0.5 phút
+   8,976/9,541    31.9 tin/s  còn ~  0.3 phút
+   9,296/9,541    31.9 tin/s  còn ~  0.1 phút
+wrote cafebert-test-masked-len512.npy n=9541 in 5.0 min (31.62 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    30.4 tin/s  còn ~  5.2 phút
+     336/9,541    31.3 tin/s  còn ~  4.9 phút
+     656/9,541    31.9 tin/s  còn ~  4.6 phút
+     976/9,541    31.6 tin/s  còn ~  4.5 phút
+   1,296/9,541    31.4 tin/s  còn ~  4.4 phút
+   1,616/9,541    31.2 tin/s  còn ~  4.2 phút
+   1,936/9,541    31.1 tin/s  còn ~  4.1 phút
+   2,256/9,541    31.2 tin/s  còn ~  3.9 phút
+   2,576/9,541    31.3 tin/s  còn ~  3.7 phút
+   2,896/9,541    31.4 tin/s  còn ~  3.5 phút
+   3,216/9,541    31.4 tin/s  còn ~  3.4 phút
+   3,536/9,541    31.4 tin/s  còn ~  3.2 phút
+   3,856/9,541    31.3 tin/s  còn ~  3.0 phút
+   4,176/9,541    31.2 tin/s  còn ~  2.9 phút
+   4,496/9,541    31.2 tin/s  còn ~  2.7 phút
+   4,816/9,541    31.2 tin/s  còn ~  2.5 phút
+   5,136/9,541    31.2 tin/s  còn ~  2.4 phút
+   5,456/9,541    31.2 tin/s  còn ~  2.2 phút
+   5,776/9,541    31.2 tin/s  còn ~  2.0 phút
+   6,096/9,541    31.2 tin/s  còn ~  1.8 phút
+   6,416/9,541    31.2 tin/s  còn ~  1.7 phút
+   6,736/9,541    31.4 tin/s  còn ~  1.5 phút
+   7,056/9,541    31.4 tin/s  còn ~  1.3 phút
+   7,376/9,541    31.5 tin/s  còn ~  1.1 phút
+   7,696/9,541    31.5 tin/s  còn ~  1.0 phút
+   8,016/9,541    31.6 tin/s  còn ~  0.8 phút
+   8,336/9,541    31.6 tin/s  còn ~  0.6 phút
+   8,656/9,541    31.7 tin/s  còn ~  0.5 phút
+   8,976/9,541    31.7 tin/s  còn ~  0.3 phút
+   9,296/9,541    31.8 tin/s  còn ~  0.1 phút
+wrote cafebert-test-raw-len512.npy n=9541 in 5.1 min (31.48 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161   178.2 tin/s  còn ~  0.6 phút
+     336/6,161   177.4 tin/s  còn ~  0.5 phút
+     656/6,161   178.1 tin/s  còn ~  0.5 phút
+     976/6,161   177.3 tin/s  còn ~  0.5 phút
+   1,296/6,161   177.3 tin/s  còn ~  0.5 phút
+   1,616/6,161   177.7 tin/s  còn ~  0.4 phút
+   1,936/6,161   177.3 tin/s  còn ~  0.4 phút
+   2,256/6,161   177.1 tin/s  còn ~  0.4 phút
+   2,576/6,161   176.8 tin/s  còn ~  0.3 phút
+   2,896/6,161   176.9 tin/s  còn ~  0.3 phút
+   3,216/6,161   176.7 tin/s  còn ~  0.3 phút
+   3,536/6,161   176.4 tin/s  còn ~  0.2 phút
+   3,856/6,161   176.2 tin/s  còn ~  0.2 phút
+   4,176/6,161   176.2 tin/s  còn ~  0.2 phút
+   4,496/6,161   176.1 tin/s  còn ~  0.2 phút
+   4,816/6,161   176.1 tin/s  còn ~  0.1 phút
+   5,136/6,161   175.8 tin/s  còn ~  0.1 phút
+   5,456/6,161   175.5 tin/s  còn ~  0.1 phút
+   5,776/6,161   175.5 tin/s  còn ~  0.0 phút
+   6,096/6,161   175.4 tin/s  còn ~  0.0 phút
+wrote visobert-ext37k-sal-masked-len512.npy n=6161 in 0.7 min (144.80 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161   178.4 tin/s  còn ~  0.6 phút
+     336/6,161   185.2 tin/s  còn ~  0.5 phút
+     656/6,161   187.4 tin/s  còn ~  0.5 phút
+     976/6,161   187.1 tin/s  còn ~  0.5 phút
+   1,296/6,161   187.0 tin/s  còn ~  0.4 phút
+   1,616/6,161   187.5 tin/s  còn ~  0.4 phút
+   1,936/6,161   187.3 tin/s  còn ~  0.4 phút
+   2,256/6,161   187.1 tin/s  còn ~  0.3 phút
+   2,576/6,161   187.1 tin/s  còn ~  0.3 phút
+   2,896/6,161   187.1 tin/s  còn ~  0.3 phút
+   3,216/6,161   186.9 tin/s  còn ~  0.3 phút
+   3,536/6,161   186.5 tin/s  còn ~  0.2 phút
+   3,856/6,161   186.3 tin/s  còn ~  0.2 phút
+   4,176/6,161   186.3 tin/s  còn ~  0.2 phút
+   4,496/6,161   186.3 tin/s  còn ~  0.1 phút
+   4,816/6,161   186.3 tin/s  còn ~  0.1 phút
+   5,136/6,161   186.0 tin/s  còn ~  0.1 phút
+   5,456/6,161   185.9 tin/s  còn ~  0.1 phút
+   5,776/6,161   185.9 tin/s  còn ~  0.0 phút
+   6,096/6,161   185.9 tin/s  còn ~  0.0 phút
+wrote visobert-ext37k-sal-raw-len512.npy n=6161 in 0.6 min (180.35 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    99.5 tin/s  còn ~  1.6 phút
+     336/9,541   102.8 tin/s  còn ~  1.5 phút
+     656/9,541   103.5 tin/s  còn ~  1.4 phút
+     976/9,541   102.2 tin/s  còn ~  1.4 phút
+   1,296/9,541   101.5 tin/s  còn ~  1.4 phút
+   1,616/9,541   101.1 tin/s  còn ~  1.3 phút
+   1,936/9,541   100.7 tin/s  còn ~  1.3 phút
+   2,256/9,541   101.2 tin/s  còn ~  1.2 phút
+   2,576/9,541   101.7 tin/s  còn ~  1.1 phút
+   2,896/9,541   102.1 tin/s  còn ~  1.1 phút
+   3,216/9,541   102.3 tin/s  còn ~  1.0 phút
+   3,536/9,541   102.4 tin/s  còn ~  1.0 phút
+   3,856/9,541   101.8 tin/s  còn ~  0.9 phút
+   4,176/9,541   101.5 tin/s  còn ~  0.9 phút
+   4,496/9,541   101.5 tin/s  còn ~  0.8 phút
+   4,816/9,541   101.5 tin/s  còn ~  0.8 phút
+   5,136/9,541   101.5 tin/s  còn ~  0.7 phút
+   5,456/9,541   101.6 tin/s  còn ~  0.7 phút
+   5,776/9,541   101.4 tin/s  còn ~  0.6 phút
+   6,096/9,541   101.7 tin/s  còn ~  0.6 phút
+   6,416/9,541   101.8 tin/s  còn ~  0.5 phút
+   6,736/9,541   102.4 tin/s  còn ~  0.5 phút
+   7,056/9,541   102.5 tin/s  còn ~  0.4 phút
+   7,376/9,541   102.9 tin/s  còn ~  0.4 phút
+   7,696/9,541   102.9 tin/s  còn ~  0.3 phút
+   8,016/9,541   103.2 tin/s  còn ~  0.2 phút
+   8,336/9,541   103.3 tin/s  còn ~  0.2 phút
+   8,656/9,541   103.6 tin/s  còn ~  0.1 phút
+   8,976/9,541   103.7 tin/s  còn ~  0.1 phút
+   9,296/9,541   103.8 tin/s  còn ~  0.0 phút
+wrote visobert-test-masked-len512.npy n=9541 in 1.6 min (102.52 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    99.5 tin/s  còn ~  1.6 phút
+     336/9,541   102.8 tin/s  còn ~  1.5 phút
+     656/9,541   103.4 tin/s  còn ~  1.4 phút
+     976/9,541   102.2 tin/s  còn ~  1.4 phút
+   1,296/9,541   101.5 tin/s  còn ~  1.4 phút
+   1,616/9,541   101.1 tin/s  còn ~  1.3 phút
+   1,936/9,541   100.6 tin/s  còn ~  1.3 phút
+   2,256/9,541   101.1 tin/s  còn ~  1.2 phút
+   2,576/9,541   101.7 tin/s  còn ~  1.1 phút
+   2,896/9,541   102.0 tin/s  còn ~  1.1 phút
+   3,216/9,541   102.3 tin/s  còn ~  1.0 phút
+   3,536/9,541   102.3 tin/s  còn ~  1.0 phút
+   3,856/9,541   101.7 tin/s  còn ~  0.9 phút
+   4,176/9,541   101.4 tin/s  còn ~  0.9 phút
+   4,496/9,541   101.4 tin/s  còn ~  0.8 phút
+   4,816/9,541   101.4 tin/s  còn ~  0.8 phút
+   5,136/9,541   101.4 tin/s  còn ~  0.7 phút
+   5,456/9,541   101.5 tin/s  còn ~  0.7 phút
+   5,776/9,541   101.3 tin/s  còn ~  0.6 phút
+   6,096/9,541   101.6 tin/s  còn ~  0.6 phút
+   6,416/9,541   101.7 tin/s  còn ~  0.5 phút
+   6,736/9,541   102.2 tin/s  còn ~  0.5 phút
+   7,056/9,541   102.3 tin/s  còn ~  0.4 phút
+   7,376/9,541   102.8 tin/s  còn ~  0.4 phút
+   7,696/9,541   102.8 tin/s  còn ~  0.3 phút
+   8,016/9,541   103.0 tin/s  còn ~  0.2 phút
+   8,336/9,541   103.2 tin/s  còn ~  0.2 phút
+   8,656/9,541   103.4 tin/s  còn ~  0.1 phút
+   8,976/9,541   103.5 tin/s  còn ~  0.1 phút
+   9,296/9,541   103.6 tin/s  còn ~  0.0 phút
+wrote visobert-test-raw-len512.npy n=9541 in 1.6 min (102.36 texts/s)
+      16/6,161   180.7 tin/s  còn ~  0.6 phút
+     336/6,161   180.1 tin/s  còn ~  0.5 phút
+     656/6,161   180.7 tin/s  còn ~  0.5 phút
+     976/6,161   180.2 tin/s  còn ~  0.5 phút
+   1,296/6,161   179.7 tin/s  còn ~  0.5 phút
+   1,616/6,161   179.8 tin/s  còn ~  0.4 phút
+   1,936/6,161   179.9 tin/s  còn ~  0.4 phút
+   2,256/6,161   179.8 tin/s  còn ~  0.4 phút
+   2,576/6,161   179.7 tin/s  còn ~  0.3 phút
+   2,896/6,161   179.5 tin/s  còn ~  0.3 phút
+   3,216/6,161   179.4 tin/s  còn ~  0.3 phút
+   3,536/6,161   179.2 tin/s  còn ~  0.2 phút
+   3,856/6,161   179.2 tin/s  còn ~  0.2 phút
+   4,176/6,161   179.2 tin/s  còn ~  0.2 phút
+   4,496/6,161   179.2 tin/s  còn ~  0.2 phút
+   4,816/6,161   179.2 tin/s  còn ~  0.1 phút
+   5,136/6,161   179.0 tin/s  còn ~  0.1 phút
+   5,456/6,161   178.9 tin/s  còn ~  0.1 phút
+   5,776/6,161   178.7 tin/s  còn ~  0.0 phút
+   6,096/6,161   178.6 tin/s  còn ~  0.0 phút
+wrote xlmr-ext37k-sal-masked-len512.npy n=6161 in 0.7 min (157.84 texts/s)
+      16/6,161   182.6 tin/s  còn ~  0.6 phút
+     336/6,161   185.1 tin/s  còn ~  0.5 phút
+     656/6,161   186.0 tin/s  còn ~  0.5 phút
+     976/6,161   185.6 tin/s  còn ~  0.5 phút
+   1,296/6,161   185.6 tin/s  còn ~  0.4 phút
+   1,616/6,161   185.5 tin/s  còn ~  0.4 phút
+   1,936/6,161   185.2 tin/s  còn ~  0.4 phút
+   2,256/6,161   184.9 tin/s  còn ~  0.4 phút
+   2,576/6,161   184.9 tin/s  còn ~  0.3 phút
+   2,896/6,161   184.7 tin/s  còn ~  0.3 phút
+   3,216/6,161   184.5 tin/s  còn ~  0.3 phút
+   3,536/6,161   184.2 tin/s  còn ~  0.2 phút
+   3,856/6,161   184.2 tin/s  còn ~  0.2 phút
+   4,176/6,161   184.2 tin/s  còn ~  0.2 phút
+   4,496/6,161   184.1 tin/s  còn ~  0.2 phút
+   4,816/6,161   184.0 tin/s  còn ~  0.1 phút
+   5,136/6,161   183.9 tin/s  còn ~  0.1 phút
+   5,456/6,161   183.8 tin/s  còn ~  0.1 phút
+   5,776/6,161   183.6 tin/s  còn ~  0.0 phút
+   6,096/6,161   183.5 tin/s  còn ~  0.0 phút
+wrote xlmr-ext37k-sal-raw-len512.npy n=6161 in 0.6 min (176.14 texts/s)
+      16/9,541    96.8 tin/s  còn ~  1.6 phút
+     336/9,541   101.4 tin/s  còn ~  1.5 phút
+     656/9,541   103.7 tin/s  còn ~  1.4 phút
+     976/9,541   102.6 tin/s  còn ~  1.4 phút
+   1,296/9,541   102.1 tin/s  còn ~  1.3 phút
+   1,616/9,541   101.6 tin/s  còn ~  1.3 phút
+   1,936/9,541   101.1 tin/s  còn ~  1.3 phút
+   2,256/9,541   101.6 tin/s  còn ~  1.2 phút
+   2,576/9,541   101.9 tin/s  còn ~  1.1 phút
+   2,896/9,541   102.1 tin/s  còn ~  1.1 phút
+   3,216/9,541   102.3 tin/s  còn ~  1.0 phút
+   3,536/9,541   102.2 tin/s  còn ~  1.0 phút
+   3,856/9,541   101.8 tin/s  còn ~  0.9 phút
+   4,176/9,541   101.5 tin/s  còn ~  0.9 phút
+   4,496/9,541   101.4 tin/s  còn ~  0.8 phút
+   4,816/9,541   101.5 tin/s  còn ~  0.8 phút
+   5,136/9,541   101.4 tin/s  còn ~  0.7 phút
+   5,456/9,541   101.5 tin/s  còn ~  0.7 phút
+   5,776/9,541   101.3 tin/s  còn ~  0.6 phút
+   6,096/9,541   101.5 tin/s  còn ~  0.6 phút
+   6,416/9,541   101.6 tin/s  còn ~  0.5 phút
+   6,736/9,541   102.1 tin/s  còn ~  0.5 phút
+   7,056/9,541   102.1 tin/s  còn ~  0.4 phút
+   7,376/9,541   102.6 tin/s  còn ~  0.4 phút
+   7,696/9,541   102.6 tin/s  còn ~  0.3 phút
+   8,016/9,541   102.8 tin/s  còn ~  0.2 phút
+   8,336/9,541   102.9 tin/s  còn ~  0.2 phút
+   8,656/9,541   103.1 tin/s  còn ~  0.1 phút
+   8,976/9,541   103.2 tin/s  còn ~  0.1 phút
+   9,296/9,541   103.4 tin/s  còn ~  0.0 phút
+wrote xlmr-test-masked-len512.npy n=9541 in 1.6 min (101.53 texts/s)
+      16/9,541    97.5 tin/s  còn ~  1.6 phút
+     336/9,541   101.3 tin/s  còn ~  1.5 phút
+     656/9,541   103.5 tin/s  còn ~  1.4 phút
+     976/9,541   102.5 tin/s  còn ~  1.4 phút
+   1,296/9,541   101.8 tin/s  còn ~  1.3 phút
+   1,616/9,541   101.4 tin/s  còn ~  1.3 phút
+   1,936/9,541   100.8 tin/s  còn ~  1.3 phút
+   2,256/9,541   101.3 tin/s  còn ~  1.2 phút
+   2,576/9,541   101.6 tin/s  còn ~  1.1 phút
+   2,896/9,541   101.8 tin/s  còn ~  1.1 phút
+   3,216/9,541   102.0 tin/s  còn ~  1.0 phút
+   3,536/9,541   101.9 tin/s  còn ~  1.0 phút
+   3,856/9,541   101.4 tin/s  còn ~  0.9 phút
+   4,176/9,541   101.1 tin/s  còn ~  0.9 phút
+   4,496/9,541   101.1 tin/s  còn ~  0.8 phút
+   4,816/9,541   101.1 tin/s  còn ~  0.8 phút
+   5,136/9,541   101.0 tin/s  còn ~  0.7 phút
+   5,456/9,541   101.2 tin/s  còn ~  0.7 phút
+   5,776/9,541   101.0 tin/s  còn ~  0.6 phút
+   6,096/9,541   101.1 tin/s  còn ~  0.6 phút
+   6,416/9,541   101.2 tin/s  còn ~  0.5 phút
+   6,736/9,541   101.7 tin/s  còn ~  0.5 phút
+   7,056/9,541   101.8 tin/s  còn ~  0.4 phút
+   7,376/9,541   102.2 tin/s  còn ~  0.4 phút
+   7,696/9,541   102.3 tin/s  còn ~  0.3 phút
+   8,016/9,541   102.5 tin/s  còn ~  0.2 phút
+   8,336/9,541   102.6 tin/s  còn ~  0.2 phút
+   8,656/9,541   102.8 tin/s  còn ~  0.1 phút
+   8,976/9,541   102.9 tin/s  còn ~  0.1 phút
+   9,296/9,541   103.1 tin/s  còn ~  0.0 phút
+wrote xlmr-test-raw-len512.npy n=9541 in 1.6 min (101.43 texts/s)
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161   177.6 tin/s  còn ~  0.6 phút
+     336/6,161   178.3 tin/s  còn ~  0.5 phút
+     656/6,161   179.6 tin/s  còn ~  0.5 phút
+     976/6,161   179.0 tin/s  còn ~  0.5 phút
+   1,296/6,161   178.9 tin/s  còn ~  0.5 phút
+   1,616/6,161   179.3 tin/s  còn ~  0.4 phút
+   1,936/6,161   178.7 tin/s  còn ~  0.4 phút
+   2,256/6,161   178.8 tin/s  còn ~  0.4 phút
+   2,576/6,161   178.5 tin/s  còn ~  0.3 phút
+   2,896/6,161   178.3 tin/s  còn ~  0.3 phút
+   3,216/6,161   178.2 tin/s  còn ~  0.3 phút
+   3,536/6,161   177.9 tin/s  còn ~  0.2 phút
+   3,856/6,161   177.8 tin/s  còn ~  0.2 phút
+   4,176/6,161   177.9 tin/s  còn ~  0.2 phút
+   4,496/6,161   177.7 tin/s  còn ~  0.2 phút
+   4,816/6,161   177.7 tin/s  còn ~  0.1 phút
+   5,136/6,161   177.5 tin/s  còn ~  0.1 phút
+   5,456/6,161   177.2 tin/s  còn ~  0.1 phút
+   5,776/6,161   177.3 tin/s  còn ~  0.0 phút
+   6,096/6,161   177.2 tin/s  còn ~  0.0 phút
+wrote bamibert-ext37k-sal-masked-len1024.npy n=6161 in 0.7 min (136.91 texts/s)
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161   184.4 tin/s  còn ~  0.6 phút
+     336/6,161   184.3 tin/s  còn ~  0.5 phút
+     656/6,161   185.8 tin/s  còn ~  0.5 phút
+     976/6,161   184.8 tin/s  còn ~  0.5 phút
+   1,296/6,161   184.7 tin/s  còn ~  0.4 phút
+   1,616/6,161   185.2 tin/s  còn ~  0.4 phút
+   1,936/6,161   184.6 tin/s  còn ~  0.4 phút
+   2,256/6,161   184.1 tin/s  còn ~  0.4 phút
+   2,576/6,161   184.1 tin/s  còn ~  0.3 phút
+   2,896/6,161   184.1 tin/s  còn ~  0.3 phút
+   3,216/6,161   183.8 tin/s  còn ~  0.3 phút
+   3,536/6,161   183.6 tin/s  còn ~  0.2 phút
+   3,856/6,161   183.5 tin/s  còn ~  0.2 phút
+   4,176/6,161   183.6 tin/s  còn ~  0.2 phút
+   4,496/6,161   183.5 tin/s  còn ~  0.2 phút
+   4,816/6,161   183.5 tin/s  còn ~  0.1 phút
+   5,136/6,161   183.3 tin/s  còn ~  0.1 phút
+   5,456/6,161   183.1 tin/s  còn ~  0.1 phút
+   5,776/6,161   183.1 tin/s  còn ~  0.0 phút
+   6,096/6,161   183.1 tin/s  còn ~  0.0 phút
+wrote bamibert-ext37k-sal-raw-len1024.npy n=6161 in 0.6 min (180.64 texts/s)
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    88.7 tin/s  còn ~  1.8 phút
+     336/9,541    74.1 tin/s  còn ~  2.1 phút
+     656/9,541    81.5 tin/s  còn ~  1.8 phút
+     976/9,541    80.1 tin/s  còn ~  1.8 phút
+   1,296/9,541    79.9 tin/s  còn ~  1.7 phút
+   1,616/9,541    79.0 tin/s  còn ~  1.7 phút
+   1,936/9,541    78.2 tin/s  còn ~  1.6 phút
+   2,256/9,541    79.8 tin/s  còn ~  1.5 phút
+   2,576/9,541    81.2 tin/s  còn ~  1.4 phút
+   2,896/9,541    82.2 tin/s  còn ~  1.3 phút
+   3,216/9,541    82.3 tin/s  còn ~  1.3 phút
+   3,536/9,541    82.2 tin/s  còn ~  1.2 phút
+   3,856/9,541    80.7 tin/s  còn ~  1.2 phút
+   4,176/9,541    80.3 tin/s  còn ~  1.1 phút
+   4,496/9,541    80.1 tin/s  còn ~  1.0 phút
+   4,816/9,541    80.2 tin/s  còn ~  1.0 phút
+   5,136/9,541    80.4 tin/s  còn ~  0.9 phút
+   5,456/9,541    80.7 tin/s  còn ~  0.8 phút
+   5,776/9,541    80.3 tin/s  còn ~  0.8 phút
+   6,096/9,541    80.9 tin/s  còn ~  0.7 phút
+   6,416/9,541    81.5 tin/s  còn ~  0.6 phút
+   6,736/9,541    82.5 tin/s  còn ~  0.6 phút
+   7,056/9,541    82.7 tin/s  còn ~  0.5 phút
+   7,376/9,541    83.1 tin/s  còn ~  0.4 phút
+   7,696/9,541    83.3 tin/s  còn ~  0.4 phút
+   8,016/9,541    84.0 tin/s  còn ~  0.3 phút
+   8,336/9,541    84.5 tin/s  còn ~  0.2 phút
+   8,656/9,541    85.1 tin/s  còn ~  0.2 phút
+   8,976/9,541    85.1 tin/s  còn ~  0.1 phút
+   9,296/9,541    85.3 tin/s  còn ~  0.0 phút
+wrote bamibert-test-masked-len1024.npy n=9541 in 1.9 min (84.27 texts/s)
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/9,541    88.7 tin/s  còn ~  1.8 phút
+     336/9,541    74.2 tin/s  còn ~  2.1 phút
+     656/9,541    81.4 tin/s  còn ~  1.8 phút
+     976/9,541    80.0 tin/s  còn ~  1.8 phút
+   1,296/9,541    79.8 tin/s  còn ~  1.7 phút
+   1,616/9,541    78.9 tin/s  còn ~  1.7 phút
+   1,936/9,541    78.1 tin/s  còn ~  1.6 phút
+   2,256/9,541    79.6 tin/s  còn ~  1.5 phút
+   2,576/9,541    81.1 tin/s  còn ~  1.4 phút
+   2,896/9,541    82.1 tin/s  còn ~  1.3 phút
+   3,216/9,541    82.1 tin/s  còn ~  1.3 phút
+   3,536/9,541    82.0 tin/s  còn ~  1.2 phút
+   3,856/9,541    80.6 tin/s  còn ~  1.2 phút
+   4,176/9,541    80.2 tin/s  còn ~  1.1 phút
+   4,496/9,541    79.9 tin/s  còn ~  1.1 phút
+   4,816/9,541    80.0 tin/s  còn ~  1.0 phút
+   5,136/9,541    80.2 tin/s  còn ~  0.9 phút
+   5,456/9,541    80.5 tin/s  còn ~  0.8 phút
+   5,776/9,541    80.1 tin/s  còn ~  0.8 phút
+   6,096/9,541    80.7 tin/s  còn ~  0.7 phút
+   6,416/9,541    81.3 tin/s  còn ~  0.6 phút
+   6,736/9,541    82.2 tin/s  còn ~  0.6 phút
+   7,056/9,541    82.4 tin/s  còn ~  0.5 phút
+   7,376/9,541    82.9 tin/s  còn ~  0.4 phút
+   7,696/9,541    83.1 tin/s  còn ~  0.4 phút
+   8,016/9,541    83.8 tin/s  còn ~  0.3 phút
+   8,336/9,541    84.3 tin/s  còn ~  0.2 phút
+   8,656/9,541    84.9 tin/s  còn ~  0.2 phút
+   8,976/9,541    84.9 tin/s  còn ~  0.1 phút
+   9,296/9,541    85.1 tin/s  còn ~  0.0 phút
+wrote bamibert-test-raw-len1024.npy n=9541 in 1.9 min (84.03 texts/s)
+[train] cafebert · 34,354 tin · cột ['job_title', 'description', 'requirements_text'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/34,354    23.9 tin/s  còn ~ 23.9 phút
+     672/34,354    29.0 tin/s  còn ~ 19.4 phút
+   1,312/34,354    29.3 tin/s  còn ~ 18.8 phút
+   1,952/34,354    29.6 tin/s  còn ~ 18.3 phút
+   2,592/34,354    29.9 tin/s  còn ~ 17.7 phút
+   3,232/34,354    30.0 tin/s  còn ~ 17.3 phút
+   3,872/34,354    29.8 tin/s  còn ~ 17.0 phút
+   4,512/34,354    29.8 tin/s  còn ~ 16.7 phút
+   5,152/34,354    29.7 tin/s  còn ~ 16.4 phút
+   5,792/34,354    29.6 tin/s  còn ~ 16.1 phút
+   6,432/34,354    29.5 tin/s  còn ~ 15.8 phút
+   7,072/34,354    29.5 tin/s  còn ~ 15.4 phút
+   7,712/34,354    29.4 tin/s  còn ~ 15.1 phút
+   8,352/34,354    29.5 tin/s  còn ~ 14.7 phút
+   8,992/34,354    29.5 tin/s  còn ~ 14.3 phút
+   9,632/34,354    29.4 tin/s  còn ~ 14.0 phút
+  10,272/34,354    29.5 tin/s  còn ~ 13.6 phút
+  10,912/34,354    29.6 tin/s  còn ~ 13.2 phút
+  11,552/34,354    29.7 tin/s  còn ~ 12.8 phút
+  12,192/34,354    29.6 tin/s  còn ~ 12.5 phút
+  12,832/34,354    29.6 tin/s  còn ~ 12.1 phút
+  13,472/34,354    29.6 tin/s  còn ~ 11.8 phút
+  14,112/34,354    29.6 tin/s  còn ~ 11.4 phút
+  14,752/34,354    29.6 tin/s  còn ~ 11.0 phút
+  15,392/34,354    29.5 tin/s  còn ~ 10.7 phút
+  16,032/34,354    29.5 tin/s  còn ~ 10.3 phút
+  16,672/34,354    29.5 tin/s  còn ~ 10.0 phút
+  17,312/34,354    29.5 tin/s  còn ~  9.6 phút
+  17,952/34,354    29.6 tin/s  còn ~  9.2 phút
+  18,592/34,354    29.6 tin/s  còn ~  8.9 phút
+  19,232/34,354    29.6 tin/s  còn ~  8.5 phút
+  19,872/34,354    29.6 tin/s  còn ~  8.2 phút
+  20,512/34,354    29.6 tin/s  còn ~  7.8 phút
+  21,152/34,354    29.6 tin/s  còn ~  7.4 phút
+  21,792/34,354    29.6 tin/s  còn ~  7.1 phút
+  22,432/34,354    29.7 tin/s  còn ~  6.7 phút
+  23,072/34,354    29.8 tin/s  còn ~  6.3 phút
+  23,712/34,354    29.8 tin/s  còn ~  5.9 phút
+  24,352/34,354    29.9 tin/s  còn ~  5.6 phút
+  24,992/34,354    29.9 tin/s  còn ~  5.2 phút
+  25,632/34,354    29.9 tin/s  còn ~  4.9 phút
+  26,272/34,354    29.9 tin/s  còn ~  4.5 phút
+  26,912/34,354    29.9 tin/s  còn ~  4.1 phút
+  27,552/34,354    29.9 tin/s  còn ~  3.8 phút
+  28,192/34,354    29.9 tin/s  còn ~  3.4 phút
+  28,832/34,354    29.9 tin/s  còn ~  3.1 phút
+  29,472/34,354    30.0 tin/s  còn ~  2.7 phút
+  30,112/34,354    30.0 tin/s  còn ~  2.4 phút
+  30,752/34,354    30.0 tin/s  còn ~  2.0 phút
+  31,392/34,354    30.0 tin/s  còn ~  1.6 phút
+  32,032/34,354    30.1 tin/s  còn ~  1.3 phút
+  32,672/34,354    30.1 tin/s  còn ~  0.9 phút
+  33,312/34,354    30.1 tin/s  còn ~  0.6 phút
+  33,952/34,354    30.0 tin/s  còn ~  0.2 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (564 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/cafebert-train-raw-len512-tok.f16.npy  (34,354, 512, 1024) float16 · mask cafebert-train-raw-len512-mask.npy
+[dev] cafebert · 3,812 tin · cột ['job_title', 'description', 'requirements_text'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/3,812    30.0 tin/s  còn ~  2.1 phút
+     672/3,812    29.9 tin/s  còn ~  1.7 phút
+   1,312/3,812    29.9 tin/s  còn ~  1.4 phút
+   1,952/3,812    29.8 tin/s  còn ~  1.0 phút
+   2,592/3,812    29.7 tin/s  còn ~  0.7 phút
+   3,232/3,812    29.8 tin/s  còn ~  0.3 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (570 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/cafebert-dev-raw-len512-tok.f16.npy  (3,812, 512, 1024) float16 · mask cafebert-dev-raw-len512-mask.npy
+[train] cafebert · 34,354 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/34,354    23.9 tin/s  còn ~ 24.0 phút
+     672/34,354    29.0 tin/s  còn ~ 19.4 phút
+   1,312/34,354    29.3 tin/s  còn ~ 18.8 phút
+   1,952/34,354    29.6 tin/s  còn ~ 18.2 phút
+   2,592/34,354    30.0 tin/s  còn ~ 17.7 phút
+   3,232/34,354    30.1 tin/s  còn ~ 17.2 phút
+   3,872/34,354    29.9 tin/s  còn ~ 17.0 phút
+   4,512/34,354    29.9 tin/s  còn ~ 16.6 phút
+   5,152/34,354    29.8 tin/s  còn ~ 16.3 phút
+   5,792/34,354    29.7 tin/s  còn ~ 16.0 phút
+   6,432/34,354    29.6 tin/s  còn ~ 15.7 phút
+   7,072/34,354    29.5 tin/s  còn ~ 15.4 phút
+   7,712/34,354    29.5 tin/s  còn ~ 15.1 phút
+   8,352/34,354    29.6 tin/s  còn ~ 14.7 phút
+   8,992/34,354    29.6 tin/s  còn ~ 14.3 phút
+   9,632/34,354    29.6 tin/s  còn ~ 13.9 phút
+  10,272/34,354    29.6 tin/s  còn ~ 13.6 phút
+  10,912/34,354    29.7 tin/s  còn ~ 13.1 phút
+  11,552/34,354    29.7 tin/s  còn ~ 12.8 phút
+  12,192/34,354    29.7 tin/s  còn ~ 12.4 phút
+  12,832/34,354    29.7 tin/s  còn ~ 12.1 phút
+  13,472/34,354    29.7 tin/s  còn ~ 11.7 phút
+  14,112/34,354    29.7 tin/s  còn ~ 11.4 phút
+  14,752/34,354    29.6 tin/s  còn ~ 11.0 phút
+  15,392/34,354    29.6 tin/s  còn ~ 10.7 phút
+  16,032/34,354    29.6 tin/s  còn ~ 10.3 phút
+  16,672/34,354    29.6 tin/s  còn ~ 10.0 phút
+  17,312/34,354    29.6 tin/s  còn ~  9.6 phút
+  17,952/34,354    29.7 tin/s  còn ~  9.2 phút
+  18,592/34,354    29.7 tin/s  còn ~  8.9 phút
+  19,232/34,354    29.7 tin/s  còn ~  8.5 phút
+  19,872/34,354    29.7 tin/s  còn ~  8.1 phút
+  20,512/34,354    29.7 tin/s  còn ~  7.8 phút
+  21,152/34,354    29.7 tin/s  còn ~  7.4 phút
+  21,792/34,354    29.7 tin/s  còn ~  7.1 phút
+  22,432/34,354    29.8 tin/s  còn ~  6.7 phút
+  23,072/34,354    29.8 tin/s  còn ~  6.3 phút
+  23,712/34,354    29.9 tin/s  còn ~  5.9 phút
+  24,352/34,354    29.9 tin/s  còn ~  5.6 phút
+  24,992/34,354    29.9 tin/s  còn ~  5.2 phút
+  25,632/34,354    29.9 tin/s  còn ~  4.9 phút
+  26,272/34,354    30.0 tin/s  còn ~  4.5 phút
+  26,912/34,354    30.0 tin/s  còn ~  4.1 phút
+  27,552/34,354    30.0 tin/s  còn ~  3.8 phút
+  28,192/34,354    30.0 tin/s  còn ~  3.4 phút
+  28,832/34,354    30.0 tin/s  còn ~  3.1 phút
+  29,472/34,354    30.0 tin/s  còn ~  2.7 phút
+  30,112/34,354    30.1 tin/s  còn ~  2.4 phút
+  30,752/34,354    30.1 tin/s  còn ~  2.0 phút
+  31,392/34,354    30.1 tin/s  còn ~  1.6 phút
+  32,032/34,354    30.1 tin/s  còn ~  1.3 phút
+  32,672/34,354    30.1 tin/s  còn ~  0.9 phút
+  33,312/34,354    30.1 tin/s  còn ~  0.6 phút
+  33,952/34,354    30.1 tin/s  còn ~  0.2 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (564 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/cafebert-train-masked-len512-tok.f16.npy  (34,354, 512, 1024) float16 · mask cafebert-train-masked-len512-mask.npy
+[dev] cafebert · 3,812 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/3,812    30.0 tin/s  còn ~  2.1 phút
+     672/3,812    30.0 tin/s  còn ~  1.7 phút
+   1,312/3,812    30.0 tin/s  còn ~  1.4 phút
+   1,952/3,812    29.9 tin/s  còn ~  1.0 phút
+   2,592/3,812    29.8 tin/s  còn ~  0.7 phút
+   3,232/3,812    29.9 tin/s  còn ~  0.3 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (570 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/cafebert-dev-masked-len512-tok.f16.npy  (3,812, 512, 1024) float16 · mask cafebert-dev-masked-len512-mask.npy
+  thống kê chuẩn hoá: 5,120/34,354 dòng (14.9%,    14s)
+  thống kê chuẩn hoá: 10,240/34,354 dòng (29.8%,    29s)
+  thống kê chuẩn hoá: 15,360/34,354 dòng (44.7%,    43s)
+  thống kê chuẩn hoá: 20,480/34,354 dòng (59.6%,    58s)
+  thống kê chuẩn hoá: 25,600/34,354 dòng (74.5%,    73s)
+  thống kê chuẩn hoá: 30,720/34,354 dòng (89.4%,    87s)
+  epoch   1  loss 1.9249  val_macro_f1 0.3538  val_f1_micro 0.5693  val_f1_weighted 0.5129  val_accuracy 0.5693
+  epoch   2  loss 1.3772  val_macro_f1 0.5416  val_f1_micro 0.6472  val_f1_weighted 0.6359  val_accuracy 0.6472
+  epoch   3  loss 1.2495  val_macro_f1 0.5690  val_f1_micro 0.6590  val_f1_weighted 0.6510  val_accuracy 0.6590
+  epoch   4  loss 1.1939  val_macro_f1 0.5700  val_f1_micro 0.6577  val_f1_weighted 0.6445  val_accuracy 0.6577
+  epoch   5  loss 1.1576  val_macro_f1 0.5919  val_f1_micro 0.6658  val_f1_weighted 0.6600  val_accuracy 0.6658
+  epoch   6  loss 1.1191  val_macro_f1 0.5957  val_f1_micro 0.6668  val_f1_weighted 0.6572  val_accuracy 0.6668
+  epoch   7  loss 1.0978  val_macro_f1 0.6029  val_f1_micro 0.6608  val_f1_weighted 0.6505  val_accuracy 0.6608
+  epoch   8  loss 1.0758  val_macro_f1 0.6026  val_f1_micro 0.6679  val_f1_weighted 0.6571  val_accuracy 0.6679
+  epoch   9  loss 1.0548  val_macro_f1 0.6057  val_f1_micro 0.6574  val_f1_weighted 0.6491  val_accuracy 0.6574
+  epoch  10  loss 1.0343  val_macro_f1 0.6017  val_f1_micro 0.6511  val_f1_weighted 0.6436  val_accuracy 0.6511
+  epoch  11  loss 1.0116  val_macro_f1 0.6077  val_f1_micro 0.6603  val_f1_weighted 0.6522  val_accuracy 0.6603
+  epoch  12  loss 0.9919  val_macro_f1 0.6020  val_f1_micro 0.6553  val_f1_weighted 0.6462  val_accuracy 0.6553
+  epoch  13  loss 0.9757  val_macro_f1 0.6036  val_f1_micro 0.6532  val_f1_weighted 0.6439  val_accuracy 0.6532
+  epoch  14  loss 0.9601  val_macro_f1 0.5888  val_f1_micro 0.6401  val_f1_weighted 0.6261  val_accuracy 0.6401
+  epoch  15  loss 0.9459  val_macro_f1 0.5959  val_f1_micro 0.6438  val_f1_weighted 0.6367  val_accuracy 0.6438
+  epoch  16  loss 0.9274  val_macro_f1 0.5942  val_f1_micro 0.6501  val_f1_weighted 0.6391  val_accuracy 0.6501
+  epoch  17  loss 0.9123  val_macro_f1 0.6016  val_f1_micro 0.6451  val_f1_weighted 0.6347  val_accuracy 0.6451
+  epoch  18  loss 0.8981  val_macro_f1 0.5955  val_f1_micro 0.6435  val_f1_weighted 0.6334  val_accuracy 0.6435
+  epoch  19  loss 0.8850  val_macro_f1 0.5887  val_f1_micro 0.6377  val_f1_weighted 0.6292  val_accuracy 0.6377
+  dừng sớm ở epoch 19 (tốt nhất: 11)
+
+[dl-cat-cafe-rnn-ce-s42-t12] category · best epoch 11/19 · macroF1=0.6077 · F1=0.6522 · microF1=0.6603 · acc=0.6603
+  -> artifacts/dl-cat-cafe-rnn-ce-s42-t12/
+  thống kê chuẩn hoá: 5,120/24,622 dòng (20.8%,    15s)
+  thống kê chuẩn hoá: 10,240/24,622 dòng (41.6%,    29s)
+  thống kê chuẩn hoá: 15,360/24,622 dòng (62.4%,    44s)
+  thống kê chuẩn hoá: 20,480/24,622 dòng (83.2%,    58s)
+  epoch   1  loss 0.2777  val_mae_trieu 4.4454  val_r2_log 0.4412
+  epoch   2  loss 0.0769  val_mae_trieu 4.2782  val_r2_log 0.4893
+  epoch   3  loss 0.0698  val_mae_trieu 3.9772  val_r2_log 0.5767
+  epoch   4  loss 0.0642  val_mae_trieu 3.8994  val_r2_log 0.5892
+  epoch   5  loss 0.0595  val_mae_trieu 4.1141  val_r2_log 0.5260
+  epoch   6  loss 0.0557  val_mae_trieu 3.9445  val_r2_log 0.5748
+  epoch   7  loss 0.0521  val_mae_trieu 3.8396  val_r2_log 0.6065
+  epoch   8  loss 0.0495  val_mae_trieu 4.0424  val_r2_log 0.5521
+  epoch   9  loss 0.0465  val_mae_trieu 4.0912  val_r2_log 0.5320
+  epoch  10  loss 0.0433  val_mae_trieu 3.9244  val_r2_log 0.5973
+  epoch  11  loss 0.0410  val_mae_trieu 3.9089  val_r2_log 0.5870
+  epoch  12  loss 0.0388  val_mae_trieu 3.8722  val_r2_log 0.5823
+  epoch  13  loss 0.0377  val_mae_trieu 3.9444  val_r2_log 0.5625
+  epoch  14  loss 0.0353  val_mae_trieu 3.8762  val_r2_log 0.5920
+  epoch  15  loss 0.0352  val_mae_trieu 4.1229  val_r2_log 0.5259
+  dừng sớm ở epoch 15 (tốt nhất: 7)
+
+[dl-sal-cafe-rnn-s42-t12] salary · best epoch 7/15 · MAE=3.84tr · RMSE=7.76tr · R2log=0.606 · R2raw=0.424 · ±20%=55.3%
+  -> artifacts/dl-sal-cafe-rnn-s42-t12/
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/9,541
+  rnn phobert 816/9,541
+  rnn phobert 1,616/9,541
+  rnn phobert 2,416/9,541
+  rnn phobert 3,216/9,541
+  rnn phobert 4,016/9,541
+  rnn phobert 4,816/9,541
+  rnn phobert 5,616/9,541
+  rnn phobert 6,416/9,541
+  rnn phobert 7,216/9,541
+  rnn phobert 8,016/9,541
+  rnn phobert 8,816/9,541
+dl-cat-rnn-ce {'category': {'f1_macro': 0.6234, 'accuracy': 0.6772}}
+dl-cat-rnn-ce-s42 {'category': {'f1_macro': 0.6124, 'accuracy': 0.6685}}
+dl-cat-rnn-ce-s43 {'category': {'f1_macro': 0.617, 'accuracy': 0.6778}}
+dl-cat-rnn-ce-s44 {'category': {'f1_macro': 0.6112, 'accuracy': 0.6737}}
+dl-cat-rnn-focal {'category': {'f1_macro': 0.6181, 'accuracy': 0.6712}}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/9,541
+  rnn bamibert 816/9,541
+  rnn bamibert 1,616/9,541
+  rnn bamibert 2,416/9,541
+  rnn bamibert 3,216/9,541
+  rnn bamibert 4,016/9,541
+  rnn bamibert 4,816/9,541
+  rnn bamibert 5,616/9,541
+  rnn bamibert 6,416/9,541
+  rnn bamibert 7,216/9,541
+  rnn bamibert 8,016/9,541
+  rnn bamibert 8,816/9,541
+dl-cat-bamibert-rnn-1024 {'category': {'f1_macro': 0.7184, 'accuracy': 0.7352}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/9,541
+  rnn visobert 816/9,541
+  rnn visobert 1,616/9,541
+  rnn visobert 2,416/9,541
+  rnn visobert 3,216/9,541
+  rnn visobert 4,016/9,541
+  rnn visobert 4,816/9,541
+  rnn visobert 5,616/9,541
+  rnn visobert 6,416/9,541
+  rnn visobert 7,216/9,541
+  rnn visobert 8,016/9,541
+  rnn visobert 8,816/9,541
+dl-cat-visobert-rnn-512 {'category': {'f1_macro': 0.7391, 'accuracy': 0.7425}}
+  rnn xlmr 16/9,541
+  rnn xlmr 816/9,541
+  rnn xlmr 1,616/9,541
+  rnn xlmr 2,416/9,541
+  rnn xlmr 3,216/9,541
+  rnn xlmr 4,016/9,541
+  rnn xlmr 4,816/9,541
+  rnn xlmr 5,616/9,541
+  rnn xlmr 6,416/9,541
+  rnn xlmr 7,216/9,541
+  rnn xlmr 8,016/9,541
+  rnn xlmr 8,816/9,541
+dl-cat-xlmr-rnn-512 {'category': {'f1_macro': 0.6436, 'accuracy': 0.697}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/9,541
+  rnn cafebert 816/9,541
+  rnn cafebert 1,616/9,541
+  rnn cafebert 2,416/9,541
+  rnn cafebert 3,216/9,541
+  rnn cafebert 4,016/9,541
+  rnn cafebert 4,816/9,541
+  rnn cafebert 5,616/9,541
+  rnn cafebert 6,416/9,541
+  rnn cafebert 7,216/9,541
+  rnn cafebert 8,016/9,541
+  rnn cafebert 8,816/9,541
+dl-mtl-cafe-rnn-a5-s42 {'category': {'f1_macro': 0.6093, 'accuracy': 0.6691}, 'salary': {'mae_trieu': 4.2226, 'r2_log': 0.5618}}
+dl-sal-cafe-rnn-s42-t12 {'salary': {'mae_trieu': 4.0552, 'r2_log': 0.5999}}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/9,541
+  rnn bamibert 816/9,541
+  rnn bamibert 1,616/9,541
+  rnn bamibert 2,416/9,541
+  rnn bamibert 3,216/9,541
+  rnn bamibert 4,016/9,541
+  rnn bamibert 4,816/9,541
+  rnn bamibert 5,616/9,541
+  rnn bamibert 6,416/9,541
+  rnn bamibert 7,216/9,541
+  rnn bamibert 8,016/9,541
+  rnn bamibert 8,816/9,541
+dl-mtl-bamibert-rnn1024-a5-s42 {'category': {'f1_macro': 0.6696, 'accuracy': 0.7245}, 'salary': {'mae_trieu': 3.1726, 'r2_log': 0.7151}}
+dl-sal-bamibert-rnn-1024 {'salary': {'mae_trieu': 2.8861, 'r2_log': 0.752}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/9,541
+  rnn visobert 816/9,541
+  rnn visobert 1,616/9,541
+  rnn visobert 2,416/9,541
+  rnn visobert 3,216/9,541
+  rnn visobert 4,016/9,541
+  rnn visobert 4,816/9,541
+  rnn visobert 5,616/9,541
+  rnn visobert 6,416/9,541
+  rnn visobert 7,216/9,541
+  rnn visobert 8,016/9,541
+  rnn visobert 8,816/9,541
+dl-mtl-visobert-rnn512-a5-s42 {'category': {'f1_macro': 0.6838, 'accuracy': 0.7253}, 'salary': {'mae_trieu': 3.7895, 'r2_log': 0.6409}}
+dl-sal-visobert-rnn-512 {'salary': {'mae_trieu': 2.92, 'r2_log': 0.744}}
+  rnn xlmr 16/9,541
+  rnn xlmr 816/9,541
+  rnn xlmr 1,616/9,541
+  rnn xlmr 2,416/9,541
+  rnn xlmr 3,216/9,541
+  rnn xlmr 4,016/9,541
+  rnn xlmr 4,816/9,541
+  rnn xlmr 5,616/9,541
+  rnn xlmr 6,416/9,541
+  rnn xlmr 7,216/9,541
+  rnn xlmr 8,016/9,541
+  rnn xlmr 8,816/9,541
+dl-mtl-xlmr-rnn512-a5-s42 {'category': {'f1_macro': 0.6723, 'accuracy': 0.7204}, 'salary': {'mae_trieu': 3.1967, 'r2_log': 0.7202}}
+dl-sal-xlmr-rnn-512 {'salary': {'mae_trieu': 3.7928, 'r2_log': 0.6414}}
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/9,541
+  rnn phobert 816/9,541
+  rnn phobert 1,616/9,541
+  rnn phobert 2,416/9,541
+  rnn phobert 3,216/9,541
+  rnn phobert 4,016/9,541
+  rnn phobert 4,816/9,541
+  rnn phobert 5,616/9,541
+  rnn phobert 6,416/9,541
+  rnn phobert 7,216/9,541
+  rnn phobert 8,016/9,541
+  rnn phobert 8,816/9,541
+dl-sal-rnn {'salary': {'mae_trieu': 4.081, 'r2_log': 0.5741}}
+dl-sal-rnn-s42 {'salary': {'mae_trieu': 4.0958, 'r2_log': 0.5768}}
+dl-sal-rnn-s43 {'salary': {'mae_trieu': 4.0915, 'r2_log': 0.5787}}
+dl-sal-rnn-s44 {'salary': {'mae_trieu': 4.1069, 'r2_log': 0.5765}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/9,541
+  rnn cafebert 816/9,541
+  rnn cafebert 1,616/9,541
+  rnn cafebert 2,416/9,541
+  rnn cafebert 3,216/9,541
+  rnn cafebert 4,016/9,541
+  rnn cafebert 4,816/9,541
+  rnn cafebert 5,616/9,541
+  rnn cafebert 6,416/9,541
+  rnn cafebert 7,216/9,541
+  rnn cafebert 8,016/9,541
+  rnn cafebert 8,816/9,541
+dl-cat-cafe-rnn-ce-s42-t12 {'category': {'f1_macro': 0.6061, 'accuracy': 0.6674}}
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/6,111
+  rnn phobert 816/6,111
+  rnn phobert 1,616/6,111
+  rnn phobert 2,416/6,111
+  rnn phobert 3,216/6,111
+  rnn phobert 4,016/6,111
+  rnn phobert 4,816/6,111
+  rnn phobert 5,616/6,111
+dl-cat-rnn-ce {'strict_f1': 0.5853}
+dl-cat-rnn-ce-s42 {'strict_f1': 0.5944}
+dl-cat-rnn-ce-s43 {'strict_f1': 0.5677}
+dl-cat-rnn-ce-s44 {'strict_f1': 0.6313}
+dl-cat-rnn-focal {'strict_f1': 0.5883}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/6,111
+  rnn bamibert 816/6,111
+  rnn bamibert 1,616/6,111
+  rnn bamibert 2,416/6,111
+  rnn bamibert 3,216/6,111
+  rnn bamibert 4,016/6,111
+  rnn bamibert 4,816/6,111
+  rnn bamibert 5,616/6,111
+dl-cat-bamibert-rnn-1024 {'strict_f1': 0.5953}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/6,111
+  rnn visobert 816/6,111
+  rnn visobert 1,616/6,111
+  rnn visobert 2,416/6,111
+  rnn visobert 3,216/6,111
+  rnn visobert 4,016/6,111
+  rnn visobert 4,816/6,111
+  rnn visobert 5,616/6,111
+dl-cat-visobert-rnn-512 {'strict_f1': 0.5583}
+  rnn xlmr 16/6,111
+  rnn xlmr 816/6,111
+  rnn xlmr 1,616/6,111
+  rnn xlmr 2,416/6,111
+  rnn xlmr 3,216/6,111
+  rnn xlmr 4,016/6,111
+  rnn xlmr 4,816/6,111
+  rnn xlmr 5,616/6,111
+dl-cat-xlmr-rnn-512 {'strict_f1': 0.6209}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/6,111
+  rnn cafebert 816/6,111
+  rnn cafebert 1,616/6,111
+  rnn cafebert 2,416/6,111
+  rnn cafebert 3,216/6,111
+  rnn cafebert 4,016/6,111
+  rnn cafebert 4,816/6,111
+  rnn cafebert 5,616/6,111
+dl-mtl-cafe-rnn-a5-s42 {'sal_mae': 4.546, 'strict_f1': 0.5959}
+dl-sal-cafe-rnn-s42-t12 {'sal_mae': 5.178}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/6,111
+  rnn bamibert 816/6,111
+  rnn bamibert 1,616/6,111
+  rnn bamibert 2,416/6,111
+  rnn bamibert 3,216/6,111
+  rnn bamibert 4,016/6,111
+  rnn bamibert 4,816/6,111
+  rnn bamibert 5,616/6,111
+dl-mtl-bamibert-rnn1024-a5-s42 {'sal_mae': 4.992, 'strict_f1': 0.5513}
+dl-sal-bamibert-rnn-1024 {'sal_mae': 5.274}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/6,111
+  rnn visobert 816/6,111
+  rnn visobert 1,616/6,111
+  rnn visobert 2,416/6,111
+  rnn visobert 3,216/6,111
+  rnn visobert 4,016/6,111
+  rnn visobert 4,816/6,111
+  rnn visobert 5,616/6,111
+dl-mtl-visobert-rnn512-a5-s42 {'sal_mae': 5.67, 'strict_f1': 0.5605}
+dl-sal-visobert-rnn-512 {'sal_mae': 4.852}
+  rnn xlmr 16/6,111
+  rnn xlmr 816/6,111
+  rnn xlmr 1,616/6,111
+  rnn xlmr 2,416/6,111
+  rnn xlmr 3,216/6,111
+  rnn xlmr 4,016/6,111
+  rnn xlmr 4,816/6,111
+  rnn xlmr 5,616/6,111
+dl-mtl-xlmr-rnn512-a5-s42 {'sal_mae': 4.907, 'strict_f1': 0.5275}
+dl-sal-xlmr-rnn-512 {'sal_mae': 4.855}
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/6,111
+  rnn phobert 816/6,111
+  rnn phobert 1,616/6,111
+  rnn phobert 2,416/6,111
+  rnn phobert 3,216/6,111
+  rnn phobert 4,016/6,111
+  rnn phobert 4,816/6,111
+  rnn phobert 5,616/6,111
+dl-sal-rnn {'sal_mae': 5.028}
+dl-sal-rnn-s42 {'sal_mae': 4.411}
+dl-sal-rnn-s43 {'sal_mae': 4.568}
+dl-sal-rnn-s44 {'sal_mae': 4.288}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/6,111
+  rnn cafebert 816/6,111
+  rnn cafebert 1,616/6,111
+  rnn cafebert 2,416/6,111
+  rnn cafebert 3,216/6,111
+  rnn cafebert 4,016/6,111
+  rnn cafebert 4,816/6,111
+  rnn cafebert 5,616/6,111
+dl-cat-cafe-rnn-ce-s42-t12 {'strict_f1': 0.5948}
+dl-cat-cafe-dense-512-p20-s42 {'category': {'f1_macro': 0.6005, 'accuracy': 0.6526}}
+dl-cat-cafe-dense-512-p20-s43 {'category': {'f1_macro': 0.6068, 'accuracy': 0.6578}}
+dl-cat-cafe-dense-512-p20-s44 {'category': {'f1_macro': 0.601, 'accuracy': 0.6583}}
+dl-cat-cafe-dense-512 {'category': {'f1_macro': 0.6005, 'accuracy': 0.6526}}
+dl-cat-cafe-dense-512-s43 {'category': {'f1_macro': 0.6068, 'accuracy': 0.6578}}
+dl-cat-cafe-dense-512-s44 {'category': {'f1_macro': 0.601, 'accuracy': 0.6583}}
+dl-cat-cafe-dense-512-s45 {'category': {'f1_macro': 0.5967, 'accuracy': 0.6615}}
+dl-cat-cafe-dense-512-s46 {'category': {'f1_macro': 0.6052, 'accuracy': 0.6635}}
+dl-cat-cafe-focal-512-s42 {'category': {'f1_macro': 0.5974, 'accuracy': 0.6482}}
+dl-cat-cafe-focal-512-s43 {'category': {'f1_macro': 0.6049, 'accuracy': 0.6542}}
+dl-cat-cafe-focal-512-s44 {'category': {'f1_macro': 0.5975, 'accuracy': 0.6517}}
+dl-cat-cafe-focal-512-s45 {'category': {'f1_macro': 0.6027, 'accuracy': 0.6565}}
+dl-cat-cafe-focal-512-s46 {'category': {'f1_macro': 0.604, 'accuracy': 0.6526}}
+dl-cat-focal-0920 {'category': {'f1_macro': 0.5982, 'accuracy': 0.6586}}
+dl-cat-focal-s2 {'category': {'f1_macro': 0.5985, 'accuracy': 0.6578}}
+dl-cat-ce-0920 {'category': {'f1_macro': 0.6, 'accuracy': 0.6604}}
+dl-sal-0920 {'salary': {'mae_trieu': 4.3286, 'r2_log': 0.5253}}
+dl-sal-s2 {'salary': {'mae_trieu': 4.3286, 'r2_log': 0.5253}}
+dl-mtl-h256-a1.0-1001-0735 {'category': {'f1_macro': 0.5564, 'accuracy': 0.6493}, 'salary': {'mae_trieu': 4.7647, 'r2_log': 0.3712}}
+dl-mtl-h256-a1.0-1001-0746 {'category': {'f1_macro': 0.6045, 'accuracy': 0.6588}, 'salary': {'mae_trieu': 4.3767, 'r2_log': 0.5109}}
+dl-sal-cpu-0920 {'salary': {'mae_trieu': 4.2922, 'r2_log': 0.5313}}
+dl-sal-cpu-s43 {'salary': {'mae_trieu': 4.3407, 'r2_log': 0.5225}}
+dl-sal-cpu-s44 {'salary': {'mae_trieu': 4.3365, 'r2_log': 0.524}}
+dl-sal-cpu-s45 {'salary': {'mae_trieu': 4.3214, 'r2_log': 0.5233}}
+dl-sal-cpu-s46 {'salary': {'mae_trieu': 4.3453, 'r2_log': 0.5115}}
+dl-cat-cafe-dense {'category': {'f1_macro': 0.6064, 'accuracy': 0.662}}
+dl-cat-bamibert-dense-1024 {'category': {'f1_macro': 0.6504, 'accuracy': 0.6945}}
+dl-cat-visobert-dense-512 {'category': {'f1_macro': 0.5678, 'accuracy': 0.63}}
+dl-cat-xlmr-dense-512 {'category': {'f1_macro': 0.6307, 'accuracy': 0.6806}}
+dl-mtl-bamibert1024-a5-e80-s42 {'category': {'f1_macro': 0.6268, 'accuracy': 0.6811}, 'salary': {'mae_trieu': 4.1154, 'r2_log': 0.5648}}
+dl-sal-bamibert-dense-1024 {'salary': {'mae_trieu': 3.9796, 'r2_log': 0.5954}}
+dl-mtl-visobert512-a5-e80-s42 {'category': {'f1_macro': 0.5681, 'accuracy': 0.634}, 'salary': {'mae_trieu': 4.6296, 'r2_log': 0.4335}}
+dl-sal-visobert-dense-512 {'salary': {'mae_trieu': 4.6324, 'r2_log': 0.4291}}
+dl-mtl-xlmr512-a5-e80-s42 {'category': {'f1_macro': 0.6355, 'accuracy': 0.6879}, 'salary': {'mae_trieu': 3.892, 'r2_log': 0.6071}}
+dl-sal-xlmr-dense-512 {'salary': {'mae_trieu': 4.1984, 'r2_log': 0.5406}}
+dl-sal-cafe-dense-512 {'salary': {'mae_trieu': 4.3007, 'r2_log': 0.5233}}
+dl-sal-cafe-dense-512-s43 {'salary': {'mae_trieu': 4.3026, 'r2_log': 0.5311}}
+dl-sal-cafe-dense-512-s44 {'salary': {'mae_trieu': 4.2825, 'r2_log': 0.5279}}
+dl-sal-cafe-dense-512-s45 {'salary': {'mae_trieu': 4.3382, 'r2_log': 0.5161}}
+dl-sal-cafe-dense-512-s46 {'salary': {'mae_trieu': 4.3379, 'r2_log': 0.514}}
+dl-cat-cafe-dense-512-p20-s42 {'strict_f1': 0.5106}
+dl-cat-cafe-dense-512-p20-s43 {'strict_f1': 0.5344}
+dl-cat-cafe-dense-512-p20-s44 {'strict_f1': 0.5276}
+dl-cat-cafe-dense-512 {'strict_f1': 0.5106}
+dl-cat-cafe-dense-512-s43 {'strict_f1': 0.5344}
+dl-cat-cafe-dense-512-s44 {'strict_f1': 0.5276}
+dl-cat-cafe-dense-512-s45 {'strict_f1': 0.5224}
+dl-cat-cafe-dense-512-s46 {'strict_f1': 0.5523}
+dl-cat-cafe-focal-512-s42 {'strict_f1': 0.5034}
+dl-cat-cafe-focal-512-s43 {'strict_f1': 0.5223}
+dl-cat-cafe-focal-512-s44 {'strict_f1': 0.528}
+dl-cat-cafe-focal-512-s45 {'strict_f1': 0.5139}
+dl-cat-cafe-focal-512-s46 {'strict_f1': 0.4978}
+dl-cat-focal-0920 {'strict_f1': 0.5199}
+dl-cat-focal-s2 {'strict_f1': 0.5266}
+dl-cat-ce-0920 {'strict_f1': 0.5076}
+dl-sal-0920 {'sal_mae': 5.37}
+dl-sal-s2 {'sal_mae': 5.371}
+dl-mtl-h256-a1.0-1001-0735 {'sal_mae': 5.38, 'strict_f1': 0.4969}
+dl-mtl-h256-a1.0-1001-0746 {'sal_mae': 5.129, 'strict_f1': 0.5119}
+dl-sal-cpu-0920 {'sal_mae': 5.084}
+dl-sal-cpu-s43 {'sal_mae': 5.057}
+dl-sal-cpu-s44 {'sal_mae': 4.71}
+dl-sal-cpu-s45 {'sal_mae': 4.747}
+dl-sal-cpu-s46 {'sal_mae': 4.813}
+dl-cat-cafe-dense {'strict_f1': 0.5204}
+dl-cat-bamibert-dense-1024 {'strict_f1': 0.4905}
+dl-cat-visobert-dense-512 {'strict_f1': 0.4446}
+dl-cat-xlmr-dense-512 {'strict_f1': 0.5117}
+dl-mtl-bamibert1024-a5-e80-s42 {'sal_mae': 5.064, 'strict_f1': 0.4801}
+dl-sal-bamibert-dense-1024 {'sal_mae': 5.125}
+dl-mtl-visobert512-a5-e80-s42 {'sal_mae': 6.248, 'strict_f1': 0.4541}
+dl-sal-visobert-dense-512 {'sal_mae': 5.469}
+dl-mtl-xlmr512-a5-e80-s42 {'sal_mae': 6.363, 'strict_f1': 0.5023}
+dl-sal-xlmr-dense-512 {'sal_mae': 5.799}
+dl-sal-cafe-dense-512 {'sal_mae': 5.534}
+dl-sal-cafe-dense-512-s43 {'sal_mae': 5.459}
+dl-sal-cafe-dense-512-s44 {'sal_mae': 5.247}
+dl-sal-cafe-dense-512-s45 {'sal_mae': 5.458}
+dl-sal-cafe-dense-512-s46 {'sal_mae': 5.307}
+test.csv sha256 ok (after)
+ALL_DONE

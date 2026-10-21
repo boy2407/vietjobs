@@ -1,0 +1,3 @@
+dl-cat-xlmr-dense-512-r2 {'category': {'f1_macro': 0.5984, 'accuracy': 0.65}}
+dl-sal-xlmr-dense-512-r2 {'salary': {'mae_trieu': 4.3963, 'r2_log': 0.5012}}
+dl-mtl-xlmr512-a5-e80-s42-r2 {'category': {'f1_macro': 0.6029, 'accuracy': 0.6618}, 'salary': {'mae_trieu': 4.3783, 'r2_log': 0.5063}}

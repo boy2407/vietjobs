@@ -1,0 +1,40 @@
+dl-cat-cafe-dense-512-p20-s42 {'category': {'f1_macro': 0.6005, 'accuracy': 0.6526}}
+dl-cat-cafe-dense-512-p20-s43 {'category': {'f1_macro': 0.6068, 'accuracy': 0.6578}}
+dl-cat-cafe-dense-512-p20-s44 {'category': {'f1_macro': 0.601, 'accuracy': 0.6583}}
+dl-cat-cafe-dense-512 {'category': {'f1_macro': 0.6005, 'accuracy': 0.6526}}
+dl-cat-cafe-dense-512-s43 {'category': {'f1_macro': 0.6068, 'accuracy': 0.6578}}
+dl-cat-cafe-dense-512-s44 {'category': {'f1_macro': 0.601, 'accuracy': 0.6583}}
+dl-cat-cafe-dense-512-s45 {'category': {'f1_macro': 0.5967, 'accuracy': 0.6615}}
+dl-cat-cafe-dense-512-s46 {'category': {'f1_macro': 0.6052, 'accuracy': 0.6635}}
+dl-cat-cafe-focal-512-s42 {'category': {'f1_macro': 0.5974, 'accuracy': 0.6482}}
+dl-cat-cafe-focal-512-s43 {'category': {'f1_macro': 0.6049, 'accuracy': 0.6542}}
+dl-cat-cafe-focal-512-s44 {'category': {'f1_macro': 0.5975, 'accuracy': 0.6517}}
+dl-cat-cafe-focal-512-s45 {'category': {'f1_macro': 0.6027, 'accuracy': 0.6565}}
+dl-cat-cafe-focal-512-s46 {'category': {'f1_macro': 0.604, 'accuracy': 0.6526}}
+dl-cat-focal-0920 {'category': {'f1_macro': 0.5982, 'accuracy': 0.6586}}
+dl-cat-focal-s2 {'category': {'f1_macro': 0.5985, 'accuracy': 0.6578}}
+dl-cat-ce-0920 {'category': {'f1_macro': 0.6, 'accuracy': 0.6604}}
+dl-sal-0920 {'salary': {'mae_trieu': 4.3286, 'r2_log': 0.5253}}
+dl-sal-s2 {'salary': {'mae_trieu': 4.3286, 'r2_log': 0.5253}}
+dl-mtl-h256-a1.0-1001-0735 {'category': {'f1_macro': 0.5564, 'accuracy': 0.6493}, 'salary': {'mae_trieu': 4.7647, 'r2_log': 0.3712}}
+dl-mtl-h256-a1.0-1001-0746 {'category': {'f1_macro': 0.6045, 'accuracy': 0.6588}, 'salary': {'mae_trieu': 4.3767, 'r2_log': 0.5109}}
+dl-sal-cpu-0920 {'salary': {'mae_trieu': 4.2922, 'r2_log': 0.5313}}
+dl-sal-cpu-s43 {'salary': {'mae_trieu': 4.3407, 'r2_log': 0.5225}}
+dl-sal-cpu-s44 {'salary': {'mae_trieu': 4.3365, 'r2_log': 0.524}}
+dl-sal-cpu-s45 {'salary': {'mae_trieu': 4.3214, 'r2_log': 0.5233}}
+dl-sal-cpu-s46 {'salary': {'mae_trieu': 4.3453, 'r2_log': 0.5115}}
+dl-cat-cafe-dense {'category': {'f1_macro': 0.6064, 'accuracy': 0.662}}
+dl-cat-bamibert-dense-1024 {'category': {'f1_macro': 0.6504, 'accuracy': 0.6945}}
+dl-cat-visobert-dense-512 {'category': {'f1_macro': 0.5678, 'accuracy': 0.63}}
+dl-cat-xlmr-dense-512 {'category': {'f1_macro': 0.6307, 'accuracy': 0.6806}}
+dl-mtl-bamibert1024-a5-e80-s42 {'category': {'f1_macro': 0.6268, 'accuracy': 0.6811}, 'salary': {'mae_trieu': 4.1154, 'r2_log': 0.5648}}
+dl-sal-bamibert-dense-1024 {'salary': {'mae_trieu': 3.9796, 'r2_log': 0.5954}}
+dl-mtl-visobert512-a5-e80-s42 {'category': {'f1_macro': 0.5681, 'accuracy': 0.634}, 'salary': {'mae_trieu': 4.6296, 'r2_log': 0.4335}}
+dl-sal-visobert-dense-512 {'salary': {'mae_trieu': 4.6324, 'r2_log': 0.4291}}
+dl-mtl-xlmr512-a5-e80-s42 {'category': {'f1_macro': 0.6355, 'accuracy': 0.6879}, 'salary': {'mae_trieu': 3.892, 'r2_log': 0.6071}}
+dl-sal-xlmr-dense-512 {'salary': {'mae_trieu': 4.1984, 'r2_log': 0.5406}}
+dl-sal-cafe-dense-512 {'salary': {'mae_trieu': 4.3007, 'r2_log': 0.5233}}
+dl-sal-cafe-dense-512-s43 {'salary': {'mae_trieu': 4.3026, 'r2_log': 0.5311}}
+dl-sal-cafe-dense-512-s44 {'salary': {'mae_trieu': 4.2825, 'r2_log': 0.5279}}
+dl-sal-cafe-dense-512-s45 {'salary': {'mae_trieu': 4.3382, 'r2_log': 0.5161}}
+dl-sal-cafe-dense-512-s46 {'salary': {'mae_trieu': 4.3379, 'r2_log': 0.514}}

@@ -1,0 +1,157 @@
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/9,541
+  rnn phobert 816/9,541
+  rnn phobert 1,616/9,541
+  rnn phobert 2,416/9,541
+  rnn phobert 3,216/9,541
+  rnn phobert 4,016/9,541
+  rnn phobert 4,816/9,541
+  rnn phobert 5,616/9,541
+  rnn phobert 6,416/9,541
+  rnn phobert 7,216/9,541
+  rnn phobert 8,016/9,541
+  rnn phobert 8,816/9,541
+dl-cat-rnn-ce {'category': {'f1_macro': 0.6234, 'accuracy': 0.6772}}
+dl-cat-rnn-ce-s42 {'category': {'f1_macro': 0.6124, 'accuracy': 0.6685}}
+dl-cat-rnn-ce-s43 {'category': {'f1_macro': 0.617, 'accuracy': 0.6778}}
+dl-cat-rnn-ce-s44 {'category': {'f1_macro': 0.6112, 'accuracy': 0.6737}}
+dl-cat-rnn-focal {'category': {'f1_macro': 0.6181, 'accuracy': 0.6712}}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/9,541
+  rnn bamibert 816/9,541
+  rnn bamibert 1,616/9,541
+  rnn bamibert 2,416/9,541
+  rnn bamibert 3,216/9,541
+  rnn bamibert 4,016/9,541
+  rnn bamibert 4,816/9,541
+  rnn bamibert 5,616/9,541
+  rnn bamibert 6,416/9,541
+  rnn bamibert 7,216/9,541
+  rnn bamibert 8,016/9,541
+  rnn bamibert 8,816/9,541
+dl-cat-bamibert-rnn-1024 {'category': {'f1_macro': 0.7184, 'accuracy': 0.7352}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/9,541
+  rnn visobert 816/9,541
+  rnn visobert 1,616/9,541
+  rnn visobert 2,416/9,541
+  rnn visobert 3,216/9,541
+  rnn visobert 4,016/9,541
+  rnn visobert 4,816/9,541
+  rnn visobert 5,616/9,541
+  rnn visobert 6,416/9,541
+  rnn visobert 7,216/9,541
+  rnn visobert 8,016/9,541
+  rnn visobert 8,816/9,541
+dl-cat-visobert-rnn-512 {'category': {'f1_macro': 0.7391, 'accuracy': 0.7425}}
+  rnn xlmr 16/9,541
+  rnn xlmr 816/9,541
+  rnn xlmr 1,616/9,541
+  rnn xlmr 2,416/9,541
+  rnn xlmr 3,216/9,541
+  rnn xlmr 4,016/9,541
+  rnn xlmr 4,816/9,541
+  rnn xlmr 5,616/9,541
+  rnn xlmr 6,416/9,541
+  rnn xlmr 7,216/9,541
+  rnn xlmr 8,016/9,541
+  rnn xlmr 8,816/9,541
+dl-cat-xlmr-rnn-512 {'category': {'f1_macro': 0.6436, 'accuracy': 0.697}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/9,541
+  rnn cafebert 816/9,541
+  rnn cafebert 1,616/9,541
+  rnn cafebert 2,416/9,541
+  rnn cafebert 3,216/9,541
+  rnn cafebert 4,016/9,541
+  rnn cafebert 4,816/9,541
+  rnn cafebert 5,616/9,541
+  rnn cafebert 6,416/9,541
+  rnn cafebert 7,216/9,541
+  rnn cafebert 8,016/9,541
+  rnn cafebert 8,816/9,541
+dl-mtl-cafe-rnn-a5-s42 {'category': {'f1_macro': 0.6093, 'accuracy': 0.6691}, 'salary': {'mae_trieu': 4.2226, 'r2_log': 0.5618}}
+dl-sal-cafe-rnn-s42-t12 {'salary': {'mae_trieu': 4.0552, 'r2_log': 0.5999}}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/9,541
+  rnn bamibert 816/9,541
+  rnn bamibert 1,616/9,541
+  rnn bamibert 2,416/9,541
+  rnn bamibert 3,216/9,541
+  rnn bamibert 4,016/9,541
+  rnn bamibert 4,816/9,541
+  rnn bamibert 5,616/9,541
+  rnn bamibert 6,416/9,541
+  rnn bamibert 7,216/9,541
+  rnn bamibert 8,016/9,541
+  rnn bamibert 8,816/9,541
+dl-mtl-bamibert-rnn1024-a5-s42 {'category': {'f1_macro': 0.6696, 'accuracy': 0.7245}, 'salary': {'mae_trieu': 3.1726, 'r2_log': 0.7151}}
+dl-sal-bamibert-rnn-1024 {'salary': {'mae_trieu': 2.8861, 'r2_log': 0.752}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/9,541
+  rnn visobert 816/9,541
+  rnn visobert 1,616/9,541
+  rnn visobert 2,416/9,541
+  rnn visobert 3,216/9,541
+  rnn visobert 4,016/9,541
+  rnn visobert 4,816/9,541
+  rnn visobert 5,616/9,541
+  rnn visobert 6,416/9,541
+  rnn visobert 7,216/9,541
+  rnn visobert 8,016/9,541
+  rnn visobert 8,816/9,541
+dl-mtl-visobert-rnn512-a5-s42 {'category': {'f1_macro': 0.6838, 'accuracy': 0.7253}, 'salary': {'mae_trieu': 3.7895, 'r2_log': 0.6409}}
+dl-sal-visobert-rnn-512 {'salary': {'mae_trieu': 2.92, 'r2_log': 0.744}}
+  rnn xlmr 16/9,541
+  rnn xlmr 816/9,541
+  rnn xlmr 1,616/9,541
+  rnn xlmr 2,416/9,541
+  rnn xlmr 3,216/9,541
+  rnn xlmr 4,016/9,541
+  rnn xlmr 4,816/9,541
+  rnn xlmr 5,616/9,541
+  rnn xlmr 6,416/9,541
+  rnn xlmr 7,216/9,541
+  rnn xlmr 8,016/9,541
+  rnn xlmr 8,816/9,541
+dl-mtl-xlmr-rnn512-a5-s42 {'category': {'f1_macro': 0.6723, 'accuracy': 0.7204}, 'salary': {'mae_trieu': 3.1967, 'r2_log': 0.7202}}
+dl-sal-xlmr-rnn-512 {'salary': {'mae_trieu': 3.7928, 'r2_log': 0.6414}}
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/9,541
+  rnn phobert 816/9,541
+  rnn phobert 1,616/9,541
+  rnn phobert 2,416/9,541
+  rnn phobert 3,216/9,541
+  rnn phobert 4,016/9,541
+  rnn phobert 4,816/9,541
+  rnn phobert 5,616/9,541
+  rnn phobert 6,416/9,541
+  rnn phobert 7,216/9,541
+  rnn phobert 8,016/9,541
+  rnn phobert 8,816/9,541
+dl-sal-rnn {'salary': {'mae_trieu': 4.081, 'r2_log': 0.5741}}
+dl-sal-rnn-s42 {'salary': {'mae_trieu': 4.0958, 'r2_log': 0.5768}}
+dl-sal-rnn-s43 {'salary': {'mae_trieu': 4.0915, 'r2_log': 0.5787}}
+dl-sal-rnn-s44 {'salary': {'mae_trieu': 4.1069, 'r2_log': 0.5765}}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/9,541
+  rnn cafebert 816/9,541
+  rnn cafebert 1,616/9,541
+  rnn cafebert 2,416/9,541
+  rnn cafebert 3,216/9,541
+  rnn cafebert 4,016/9,541
+  rnn cafebert 4,816/9,541
+  rnn cafebert 5,616/9,541
+  rnn cafebert 6,416/9,541
+  rnn cafebert 7,216/9,541
+  rnn cafebert 8,016/9,541
+  rnn cafebert 8,816/9,541
+dl-cat-cafe-rnn-ce-s42-t12 {'category': {'f1_macro': 0.6061, 'accuracy': 0.6674}}

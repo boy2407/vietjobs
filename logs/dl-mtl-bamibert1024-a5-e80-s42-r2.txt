@@ -1,0 +1,33 @@
+  epoch   1  loss 3.8965  val_macro_f1 0.4320  val_mae_trieu 5.0332  val_r2_log 0.2679
+  epoch   2  loss 1.9531  val_macro_f1 0.5121  val_mae_trieu 4.5174  val_r2_log 0.4114
+  epoch   3  loss 1.7832  val_macro_f1 0.5261  val_mae_trieu 4.4258  val_r2_log 0.4372
+  epoch   4  loss 1.6917  val_macro_f1 0.5356  val_mae_trieu 4.3354  val_r2_log 0.4607
+  epoch   5  loss 1.6299  val_macro_f1 0.5486  val_mae_trieu 4.3179  val_r2_log 0.4689
+  epoch   6  loss 1.5883  val_macro_f1 0.5504  val_mae_trieu 4.3348  val_r2_log 0.4689
+  epoch   7  loss 1.5542  val_macro_f1 0.5727  val_mae_trieu 4.2857  val_r2_log 0.4768
+  epoch   8  loss 1.5177  val_macro_f1 0.5623  val_mae_trieu 4.3240  val_r2_log 0.4757
+  epoch   9  loss 1.4974  val_macro_f1 0.5690  val_mae_trieu 4.3252  val_r2_log 0.4797
+  epoch  10  loss 1.4695  val_macro_f1 0.5658  val_mae_trieu 4.4186  val_r2_log 0.4625
+  epoch  11  loss 1.4462  val_macro_f1 0.5846  val_mae_trieu 4.3059  val_r2_log 0.4791
+  epoch  12  loss 1.4294  val_macro_f1 0.5717  val_mae_trieu 4.3918  val_r2_log 0.4655
+  epoch  13  loss 1.4062  val_macro_f1 0.5825  val_mae_trieu 4.3403  val_r2_log 0.4740
+  epoch  14  loss 1.3914  val_macro_f1 0.5741  val_mae_trieu 4.3809  val_r2_log 0.4751
+  epoch  15  loss 1.3710  val_macro_f1 0.5866  val_mae_trieu 4.3392  val_r2_log 0.4739
+  epoch  16  loss 1.3586  val_macro_f1 0.5799  val_mae_trieu 4.2894  val_r2_log 0.4822
+  epoch  17  loss 1.3394  val_macro_f1 0.5793  val_mae_trieu 4.3490  val_r2_log 0.4816
+  epoch  18  loss 1.3280  val_macro_f1 0.5879  val_mae_trieu 4.2848  val_r2_log 0.4884
+  epoch  19  loss 1.3172  val_macro_f1 0.5839  val_mae_trieu 4.3201  val_r2_log 0.4781
+  epoch  20  loss 1.2981  val_macro_f1 0.5860  val_mae_trieu 4.3304  val_r2_log 0.4789
+  epoch  21  loss 1.2851  val_macro_f1 0.5904  val_mae_trieu 4.2952  val_r2_log 0.4850
+  epoch  22  loss 1.2691  val_macro_f1 0.5921  val_mae_trieu 4.4310  val_r2_log 0.4638
+  epoch  23  loss 1.2615  val_macro_f1 0.5821  val_mae_trieu 4.5604  val_r2_log 0.4476
+  epoch  24  loss 1.2479  val_macro_f1 0.5783  val_mae_trieu 4.3486  val_r2_log 0.4760
+  epoch  25  loss 1.2376  val_macro_f1 0.5816  val_mae_trieu 4.5256  val_r2_log 0.4535
+  epoch  26  loss 1.2206  val_macro_f1 0.5875  val_mae_trieu 4.4655  val_r2_log 0.4601
+  epoch  27  loss 1.2127  val_macro_f1 0.5824  val_mae_trieu 4.3743  val_r2_log 0.4683
+  epoch  28  loss 1.2065  val_macro_f1 0.5876  val_mae_trieu 4.3568  val_r2_log 0.4757
+  epoch  29  loss 1.1914  val_macro_f1 0.5808  val_mae_trieu 4.3356  val_r2_log 0.4801
+  epoch  30  loss 1.1835  val_macro_f1 0.5788  val_mae_trieu 4.4472  val_r2_log 0.4607
+  dừng sớm ở epoch 30 (tốt nhất: cat 22, sal 18)
+
+[dl-mtl-bamibert1024-a5-e80-s42-r2] MTL · best epoch cat 22 · sal 18 / 30 · macroF1=0.5921 · MAE=4.28tr · R2log=0.488

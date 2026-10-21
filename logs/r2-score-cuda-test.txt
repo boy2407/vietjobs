@@ -1,0 +1,31 @@
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/visobert and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn visobert 16/9,541
+  rnn visobert 816/9,541
+  rnn visobert 1,616/9,541
+  rnn visobert 2,416/9,541
+  rnn visobert 3,216/9,541
+  rnn visobert 4,016/9,541
+  rnn visobert 4,816/9,541
+  rnn visobert 5,616/9,541
+  rnn visobert 6,416/9,541
+  rnn visobert 7,216/9,541
+  rnn visobert 8,016/9,541
+  rnn visobert 8,816/9,541
+dl-sal-visobert-rnn-512-r2 {'salary': {'mae_trieu': 4.1408, 'r2_log': 0.5554}}
+dl-mtl-visobert-rnn512-a5-s42-r2 {'category': {'f1_macro': 0.5819, 'accuracy': 0.6435}, 'salary': {'mae_trieu': 4.3177, 'r2_log': 0.5334}}
+Some weights of RobertaModel were not initialized from the model checkpoint at Qualcomm-AI-Research/BamiBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn bamibert 16/9,541
+  rnn bamibert 816/9,541
+  rnn bamibert 1,616/9,541
+  rnn bamibert 2,416/9,541
+  rnn bamibert 3,216/9,541
+  rnn bamibert 4,016/9,541
+  rnn bamibert 4,816/9,541
+  rnn bamibert 5,616/9,541
+  rnn bamibert 6,416/9,541
+  rnn bamibert 7,216/9,541
+  rnn bamibert 8,016/9,541
+  rnn bamibert 8,816/9,541
+dl-mtl-bamibert-rnn1024-a5-s42-r2 {'category': {'f1_macro': 0.5953, 'accuracy': 0.6662}, 'salary': {'mae_trieu': 4.1946, 'r2_log': 0.5601}}

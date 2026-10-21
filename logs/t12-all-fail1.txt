@@ -1,0 +1,34 @@
+test.csv sha256 ok (before)
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    34.9 tin/s  còn ~  2.9 phút
+     336/6,161   166.6 tin/s  còn ~  0.6 phút
+     656/6,161   186.9 tin/s  còn ~  0.5 phút
+     976/6,161   193.8 tin/s  còn ~  0.4 phút
+   1,296/6,161   198.1 tin/s  còn ~  0.4 phút
+   1,616/6,161   201.6 tin/s  còn ~  0.4 phút
+   1,936/6,161   203.3 tin/s  còn ~  0.3 phút
+   2,256/6,161   204.6 tin/s  còn ~  0.3 phút
+   2,576/6,161   205.6 tin/s  còn ~  0.3 phút
+   2,896/6,161   206.6 tin/s  còn ~  0.3 phút
+   3,216/6,161   207.3 tin/s  còn ~  0.2 phút
+   3,536/6,161   207.7 tin/s  còn ~  0.2 phút
+   3,856/6,161   208.3 tin/s  còn ~  0.2 phút
+   4,176/6,161   208.8 tin/s  còn ~  0.2 phút
+   4,496/6,161   209.1 tin/s  còn ~  0.1 phút
+   4,816/6,161   209.5 tin/s  còn ~  0.1 phút
+   5,136/6,161   209.6 tin/s  còn ~  0.1 phút
+   5,456/6,161   209.7 tin/s  còn ~  0.1 phút
+   5,776/6,161   209.8 tin/s  còn ~  0.0 phút
+   6,096/6,161   210.0 tin/s  còn ~  0.0 phút
+Traceback (most recent call last):
+  File "/workspace/vietjobs/scripts/encode_t12_cpu.py", line 113, in <module>
+    main()
+  File "/workspace/vietjobs/scripts/encode_t12_cpu.py", line 106, in main
+    job("ext37k-sal", "masked", encoder, max_len, args.device)
+  File "/workspace/vietjobs/scripts/encode_t12_cpu.py", line 89, in job
+    np.save(path, emb)
+  File "/venv/main/lib/python3.12/site-packages/numpy/lib/_npyio_impl.py", line 568, in save
+    file_ctx = open(file, "wb")
+               ^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/vietjobs/artifacts/embeddings/ext37k-sal-masked-len256.npy'

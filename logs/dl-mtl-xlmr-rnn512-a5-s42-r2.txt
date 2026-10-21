@@ -1,0 +1,38 @@
+  thống kê chuẩn hoá: 5,120/34,354 dòng (14.9%,    24s)
+  thống kê chuẩn hoá: 10,240/34,354 dòng (29.8%,    36s)
+  thống kê chuẩn hoá: 15,360/34,354 dòng (44.7%,    46s)
+  thống kê chuẩn hoá: 20,480/34,354 dòng (59.6%,    57s)
+  thống kê chuẩn hoá: 25,600/34,354 dòng (74.5%,    66s)
+  thống kê chuẩn hoá: 30,720/34,354 dòng (89.4%,    76s)
+  epoch   1  loss 3.0634  val_macro_f1 0.2465  val_mae_trieu 4.4596  val_r2_log 0.4511
+  epoch   2  loss 1.9449  val_macro_f1 0.4540  val_mae_trieu 4.4459  val_r2_log 0.4444
+  epoch   3  loss 1.7364  val_macro_f1 0.5144  val_mae_trieu 4.1321  val_r2_log 0.5305
+  epoch   4  loss 1.6211  val_macro_f1 0.5376  val_mae_trieu 4.0232  val_r2_log 0.5595
+  epoch   5  loss 1.5468  val_macro_f1 0.5624  val_mae_trieu 4.1447  val_r2_log 0.5125
+  epoch   6  loss 1.4953  val_macro_f1 0.5633  val_mae_trieu 4.3222  val_r2_log 0.4739
+  epoch   7  loss 1.4501  val_macro_f1 0.5847  val_mae_trieu 4.1134  val_r2_log 0.5283
+  epoch   8  loss 1.4155  val_macro_f1 0.5972  val_mae_trieu 4.1021  val_r2_log 0.5464
+  epoch   9  loss 1.3798  val_macro_f1 0.6060  val_mae_trieu 4.1991  val_r2_log 0.5119
+  epoch  10  loss 1.3504  val_macro_f1 0.5859  val_mae_trieu 4.1683  val_r2_log 0.5438
+  epoch  11  loss 1.3259  val_macro_f1 0.6011  val_mae_trieu 4.3133  val_r2_log 0.5391
+  epoch  12  loss 1.2988  val_macro_f1 0.5982  val_mae_trieu 4.0501  val_r2_log 0.5535
+  epoch  13  loss 1.2766  val_macro_f1 0.6094  val_mae_trieu 4.1618  val_r2_log 0.5265
+  epoch  14  loss 1.2530  val_macro_f1 0.5998  val_mae_trieu 4.1988  val_r2_log 0.4928
+  epoch  15  loss 1.2334  val_macro_f1 0.6034  val_mae_trieu 4.1080  val_r2_log 0.5511
+  epoch  16  loss 1.2138  val_macro_f1 0.5989  val_mae_trieu 4.1351  val_r2_log 0.5306
+  epoch  17  loss 1.1955  val_macro_f1 0.6085  val_mae_trieu 4.1646  val_r2_log 0.5359
+  epoch  18  loss 1.1808  val_macro_f1 0.5905  val_mae_trieu 4.2771  val_r2_log 0.4729
+  epoch  19  loss 1.1648  val_macro_f1 0.5987  val_mae_trieu 4.1500  val_r2_log 0.5139
+  epoch  20  loss 1.1478  val_macro_f1 0.6021  val_mae_trieu 4.1206  val_r2_log 0.5323
+  epoch  21  loss 1.1301  val_macro_f1 0.6098  val_mae_trieu 4.1799  val_r2_log 0.5393
+  epoch  22  loss 1.1128  val_macro_f1 0.6009  val_mae_trieu 4.1034  val_r2_log 0.5318
+  epoch  23  loss 1.0981  val_macro_f1 0.5950  val_mae_trieu 4.1594  val_r2_log 0.5411
+  epoch  24  loss 1.0820  val_macro_f1 0.5922  val_mae_trieu 4.1386  val_r2_log 0.5272
+  epoch  25  loss 1.0681  val_macro_f1 0.6009  val_mae_trieu 4.1029  val_r2_log 0.5432
+  epoch  26  loss 1.0528  val_macro_f1 0.6052  val_mae_trieu 4.2353  val_r2_log 0.4742
+  epoch  27  loss 1.0423  val_macro_f1 0.5789  val_mae_trieu 4.0888  val_r2_log 0.5398
+  epoch  28  loss 1.0260  val_macro_f1 0.5944  val_mae_trieu 4.1051  val_r2_log 0.5134
+  epoch  29  loss 1.0165  val_macro_f1 0.5854  val_mae_trieu 4.0612  val_r2_log 0.5453
+  dừng sớm ở epoch 29 (tốt nhất: cat 21, sal 4)
+
+[dl-mtl-xlmr-rnn512-a5-s42-r2] MTL · best epoch cat 21 · sal 4 / 29 · macroF1=0.6098 · MAE=4.02tr · R2log=0.559

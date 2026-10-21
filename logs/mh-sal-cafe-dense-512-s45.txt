@@ -1,0 +1,33 @@
+  epoch   1  loss 0.7801  val_mae_trieu 5.3944  val_r2_log -0.0795
+  epoch   2  loss 0.1569  val_mae_trieu 4.5572  val_r2_log 0.2655
+  epoch   3  loss 0.1224  val_mae_trieu 4.2305  val_r2_log 0.3931
+  epoch   4  loss 0.1048  val_mae_trieu 4.1506  val_r2_log 0.4144
+  epoch   5  loss 0.0934  val_mae_trieu 4.2250  val_r2_log 0.3864
+  epoch   6  loss 0.0872  val_mae_trieu 4.0718  val_r2_log 0.4468
+  epoch   7  loss 0.0823  val_mae_trieu 3.8800  val_r2_log 0.4929
+  epoch   8  loss 0.0766  val_mae_trieu 3.8541  val_r2_log 0.4902
+  epoch   9  loss 0.0728  val_mae_trieu 3.8787  val_r2_log 0.4909
+  epoch  10  loss 0.0699  val_mae_trieu 3.8050  val_r2_log 0.5124
+  epoch  11  loss 0.0682  val_mae_trieu 3.8203  val_r2_log 0.5163
+  epoch  12  loss 0.0660  val_mae_trieu 3.7857  val_r2_log 0.5247
+  epoch  13  loss 0.0620  val_mae_trieu 3.8899  val_r2_log 0.5065
+  epoch  14  loss 0.0613  val_mae_trieu 3.7319  val_r2_log 0.5327
+  epoch  15  loss 0.0586  val_mae_trieu 3.7999  val_r2_log 0.5249
+  epoch  16  loss 0.0572  val_mae_trieu 3.7826  val_r2_log 0.5211
+  epoch  17  loss 0.0553  val_mae_trieu 3.6830  val_r2_log 0.5274
+  epoch  18  loss 0.0547  val_mae_trieu 3.7441  val_r2_log 0.5344
+  epoch  19  loss 0.0550  val_mae_trieu 3.7414  val_r2_log 0.5328
+  epoch  20  loss 0.0528  val_mae_trieu 3.7108  val_r2_log 0.5324
+  epoch  21  loss 0.0534  val_mae_trieu 3.6623  val_r2_log 0.5376
+  epoch  22  loss 0.0509  val_mae_trieu 3.7094  val_r2_log 0.5270
+  epoch  23  loss 0.0510  val_mae_trieu 3.7489  val_r2_log 0.5372
+  epoch  24  loss 0.0493  val_mae_trieu 3.7538  val_r2_log 0.5401
+  epoch  25  loss 0.0491  val_mae_trieu 3.7898  val_r2_log 0.5276
+  epoch  26  loss 0.0476  val_mae_trieu 3.7719  val_r2_log 0.5337
+  epoch  27  loss 0.0471  val_mae_trieu 3.7731  val_r2_log 0.5326
+  epoch  28  loss 0.0472  val_mae_trieu 3.8156  val_r2_log 0.5292
+  epoch  29  loss 0.0468  val_mae_trieu 3.7176  val_r2_log 0.5529
+  dừng sớm ở epoch 29 (tốt nhất: 21)
+
+[mh-sal-cafe-dense-512-s45] salary · best epoch 21/29 · MAE=3.66tr · RMSE=6.14tr · R2log=0.538 · R2raw=0.410 · ±20%=53.0%
+  -> artifacts/mh-sal-cafe-dense-512-s45/

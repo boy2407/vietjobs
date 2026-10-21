@@ -1,0 +1,33 @@
+  thống kê chuẩn hoá: 5,120/24,622 dòng (20.8%,    17s)
+  thống kê chuẩn hoá: 10,240/24,622 dòng (41.6%,    34s)
+  thống kê chuẩn hoá: 15,360/24,622 dòng (62.4%,    51s)
+  thống kê chuẩn hoá: 20,480/24,622 dòng (83.2%,    68s)
+  epoch   1  loss 0.2593  val_mae_trieu 4.4266  val_r2_log 0.4539
+  epoch   2  loss 0.0788  val_mae_trieu 4.1412  val_r2_log 0.5172
+  epoch   3  loss 0.0697  val_mae_trieu 4.0307  val_r2_log 0.5451
+  epoch   4  loss 0.0651  val_mae_trieu 3.9360  val_r2_log 0.5758
+  epoch   5  loss 0.0597  val_mae_trieu 3.9373  val_r2_log 0.5633
+  epoch   6  loss 0.0559  val_mae_trieu 3.9637  val_r2_log 0.5622
+  epoch   7  loss 0.0509  val_mae_trieu 3.8890  val_r2_log 0.5945
+  epoch   8  loss 0.0474  val_mae_trieu 3.8751  val_r2_log 0.5776
+  epoch   9  loss 0.0439  val_mae_trieu 3.8959  val_r2_log 0.5761
+  epoch  10  loss 0.0416  val_mae_trieu 4.1075  val_r2_log 0.5637
+  epoch  11  loss 0.0397  val_mae_trieu 3.9379  val_r2_log 0.5680
+  epoch  12  loss 0.0380  val_mae_trieu 4.0758  val_r2_log 0.5205
+  epoch  13  loss 0.0361  val_mae_trieu 3.9232  val_r2_log 0.5569
+  epoch  14  loss 0.0351  val_mae_trieu 3.9074  val_r2_log 0.5795
+  epoch  15  loss 0.0333  val_mae_trieu 3.9032  val_r2_log 0.5635
+  epoch  16  loss 0.0325  val_mae_trieu 3.8738  val_r2_log 0.5602
+  epoch  17  loss 0.0313  val_mae_trieu 3.8371  val_r2_log 0.5819
+  epoch  18  loss 0.0299  val_mae_trieu 3.8941  val_r2_log 0.5630
+  epoch  19  loss 0.0290  val_mae_trieu 3.9555  val_r2_log 0.5509
+  epoch  20  loss 0.0291  val_mae_trieu 3.8998  val_r2_log 0.5688
+  epoch  21  loss 0.0280  val_mae_trieu 3.9497  val_r2_log 0.5463
+  epoch  22  loss 0.0273  val_mae_trieu 3.9398  val_r2_log 0.5558
+  epoch  23  loss 0.0273  val_mae_trieu 3.9159  val_r2_log 0.5503
+  epoch  24  loss 0.0268  val_mae_trieu 3.9044  val_r2_log 0.5744
+  epoch  25  loss 0.0260  val_mae_trieu 3.8950  val_r2_log 0.5745
+  dừng sớm ở epoch 25 (tốt nhất: 17)
+
+[dl-sal-bamibert-rnn-1024-r2] salary · best epoch 17/25 · MAE=3.84tr · RMSE=7.77tr · R2log=0.582 · R2raw=0.422 · ±20%=55.3%
+  -> artifacts/dl-sal-bamibert-rnn-1024-r2/

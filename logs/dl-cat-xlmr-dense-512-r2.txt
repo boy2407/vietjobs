@@ -1,0 +1,43 @@
+  epoch   1  loss 1.6985  val_macro_f1 0.4906  val_f1_micro 0.6154  val_f1_weighted 0.5991  val_accuracy 0.6154
+  epoch   2  loss 1.3383  val_macro_f1 0.5440  val_f1_micro 0.6280  val_f1_weighted 0.6181  val_accuracy 0.6280
+  epoch   3  loss 1.2732  val_macro_f1 0.5687  val_f1_micro 0.6367  val_f1_weighted 0.6273  val_accuracy 0.6367
+  epoch   4  loss 1.2365  val_macro_f1 0.5730  val_f1_micro 0.6390  val_f1_weighted 0.6297  val_accuracy 0.6390
+  epoch   5  loss 1.2107  val_macro_f1 0.5787  val_f1_micro 0.6419  val_f1_weighted 0.6363  val_accuracy 0.6419
+  epoch   6  loss 1.1901  val_macro_f1 0.5808  val_f1_micro 0.6430  val_f1_weighted 0.6358  val_accuracy 0.6430
+  epoch   7  loss 1.1686  val_macro_f1 0.5855  val_f1_micro 0.6482  val_f1_weighted 0.6391  val_accuracy 0.6482
+  epoch   8  loss 1.1553  val_macro_f1 0.5829  val_f1_micro 0.6390  val_f1_weighted 0.6305  val_accuracy 0.6390
+  epoch   9  loss 1.1428  val_macro_f1 0.5795  val_f1_micro 0.6430  val_f1_weighted 0.6331  val_accuracy 0.6430
+  epoch  10  loss 1.1275  val_macro_f1 0.5873  val_f1_micro 0.6396  val_f1_weighted 0.6309  val_accuracy 0.6396
+  epoch  11  loss 1.1142  val_macro_f1 0.5964  val_f1_micro 0.6477  val_f1_weighted 0.6404  val_accuracy 0.6477
+  epoch  12  loss 1.1041  val_macro_f1 0.5859  val_f1_micro 0.6466  val_f1_weighted 0.6374  val_accuracy 0.6466
+  epoch  13  loss 1.0923  val_macro_f1 0.5973  val_f1_micro 0.6482  val_f1_weighted 0.6395  val_accuracy 0.6482
+  epoch  14  loss 1.0814  val_macro_f1 0.5850  val_f1_micro 0.6424  val_f1_weighted 0.6333  val_accuracy 0.6424
+  epoch  15  loss 1.0701  val_macro_f1 0.5826  val_f1_micro 0.6445  val_f1_weighted 0.6369  val_accuracy 0.6445
+  epoch  16  loss 1.0653  val_macro_f1 0.5863  val_f1_micro 0.6501  val_f1_weighted 0.6416  val_accuracy 0.6501
+  epoch  17  loss 1.0505  val_macro_f1 0.5968  val_f1_micro 0.6456  val_f1_weighted 0.6384  val_accuracy 0.6456
+  epoch  18  loss 1.0428  val_macro_f1 0.5952  val_f1_micro 0.6466  val_f1_weighted 0.6395  val_accuracy 0.6466
+  epoch  19  loss 1.0317  val_macro_f1 0.5843  val_f1_micro 0.6372  val_f1_weighted 0.6299  val_accuracy 0.6372
+  epoch  20  loss 1.0266  val_macro_f1 0.5782  val_f1_micro 0.6406  val_f1_weighted 0.6316  val_accuracy 0.6406
+  epoch  21  loss 1.0189  val_macro_f1 0.5980  val_f1_micro 0.6514  val_f1_weighted 0.6452  val_accuracy 0.6514
+  epoch  22  loss 1.0067  val_macro_f1 0.5950  val_f1_micro 0.6477  val_f1_weighted 0.6405  val_accuracy 0.6477
+  epoch  23  loss 0.9991  val_macro_f1 0.5874  val_f1_micro 0.6445  val_f1_weighted 0.6368  val_accuracy 0.6445
+  epoch  24  loss 0.9898  val_macro_f1 0.5890  val_f1_micro 0.6398  val_f1_weighted 0.6330  val_accuracy 0.6398
+  epoch  25  loss 0.9822  val_macro_f1 0.5866  val_f1_micro 0.6414  val_f1_weighted 0.6302  val_accuracy 0.6414
+  epoch  26  loss 0.9745  val_macro_f1 0.5938  val_f1_micro 0.6427  val_f1_weighted 0.6346  val_accuracy 0.6427
+  epoch  27  loss 0.9679  val_macro_f1 0.5863  val_f1_micro 0.6401  val_f1_weighted 0.6324  val_accuracy 0.6401
+  epoch  28  loss 0.9617  val_macro_f1 0.5975  val_f1_micro 0.6417  val_f1_weighted 0.6352  val_accuracy 0.6417
+  epoch  29  loss 0.9519  val_macro_f1 0.5991  val_f1_micro 0.6438  val_f1_weighted 0.6377  val_accuracy 0.6438
+  epoch  30  loss 0.9451  val_macro_f1 0.5921  val_f1_micro 0.6401  val_f1_weighted 0.6330  val_accuracy 0.6401
+  epoch  31  loss 0.9391  val_macro_f1 0.5936  val_f1_micro 0.6440  val_f1_weighted 0.6377  val_accuracy 0.6440
+  epoch  32  loss 0.9310  val_macro_f1 0.5942  val_f1_micro 0.6364  val_f1_weighted 0.6297  val_accuracy 0.6364
+  epoch  33  loss 0.9209  val_macro_f1 0.6018  val_f1_micro 0.6451  val_f1_weighted 0.6395  val_accuracy 0.6451
+  epoch  34  loss 0.9185  val_macro_f1 0.5887  val_f1_micro 0.6317  val_f1_weighted 0.6242  val_accuracy 0.6317
+  epoch  35  loss 0.9137  val_macro_f1 0.5964  val_f1_micro 0.6401  val_f1_weighted 0.6357  val_accuracy 0.6401
+  epoch  36  loss 0.9022  val_macro_f1 0.5959  val_f1_micro 0.6406  val_f1_weighted 0.6349  val_accuracy 0.6406
+  epoch  37  loss 0.8943  val_macro_f1 0.5992  val_f1_micro 0.6409  val_f1_weighted 0.6351  val_accuracy 0.6409
+  epoch  38  loss 0.8929  val_macro_f1 0.6007  val_f1_micro 0.6414  val_f1_weighted 0.6376  val_accuracy 0.6414
+  epoch  39  loss 0.8871  val_macro_f1 0.5895  val_f1_micro 0.6335  val_f1_weighted 0.6279  val_accuracy 0.6335
+  epoch  40  loss 0.8806  val_macro_f1 0.6015  val_f1_micro 0.6453  val_f1_weighted 0.6399  val_accuracy 0.6453
+
+[dl-cat-xlmr-dense-512-r2] category · best epoch 33/40 · macroF1=0.6018 · F1=0.6395 · microF1=0.6451 · acc=0.6451
+  -> artifacts/dl-cat-xlmr-dense-512-r2/

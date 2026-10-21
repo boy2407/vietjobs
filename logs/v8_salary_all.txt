@@ -1,0 +1,683 @@
+Sat Oct 17 09:46:27 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 595.84                 Driver Version: 595.84         CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce RTX 5060 Ti     On  |   00000000:81:00.0 Off |                  N/A |
+|  0%   26C    P8              7W /  180W |       2MiB /  16311MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+..ssssssssssss..................ss.                                      [100%]
+21 passed, 14 skipped in 3.76s
+=== Encode phobert len 256 (salary, train + dev): pooled rồi token cache ===
+[train] phobert · 17,350 tin · cột ['job_title_masked_seg', 'description_masked_seg', 'requirements_masked_seg'] · max_len=256
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/17,350    59.1 tin/s  còn ~  4.9 phút
+     672/17,350   174.5 tin/s  còn ~  1.6 phút
+   1,312/17,350   183.4 tin/s  còn ~  1.5 phút
+   1,952/17,350   187.0 tin/s  còn ~  1.4 phút
+   2,592/17,350   189.3 tin/s  còn ~  1.3 phút
+   3,232/17,350   190.3 tin/s  còn ~  1.2 phút
+   3,872/17,350   191.1 tin/s  còn ~  1.2 phút
+   4,512/17,350   192.1 tin/s  còn ~  1.1 phút
+   5,152/17,350   192.9 tin/s  còn ~  1.1 phút
+   5,792/17,350   193.6 tin/s  còn ~  1.0 phút
+   6,432/17,350   194.3 tin/s  còn ~  0.9 phút
+   7,072/17,350   194.8 tin/s  còn ~  0.9 phút
+   7,712/17,350   194.9 tin/s  còn ~  0.8 phút
+   8,352/17,350   194.3 tin/s  còn ~  0.8 phút
+   8,992/17,350   194.2 tin/s  còn ~  0.7 phút
+   9,632/17,350   194.3 tin/s  còn ~  0.7 phút
+  10,272/17,350   194.4 tin/s  còn ~  0.6 phút
+  10,912/17,350   194.6 tin/s  còn ~  0.6 phút
+  11,552/17,350   194.5 tin/s  còn ~  0.5 phút
+  12,192/17,350   194.8 tin/s  còn ~  0.4 phút
+  12,832/17,350   195.0 tin/s  còn ~  0.4 phút
+  13,472/17,350   195.3 tin/s  còn ~  0.3 phút
+  14,112/17,350   195.5 tin/s  còn ~  0.3 phút
+  14,752/17,350   195.6 tin/s  còn ~  0.2 phút
+  15,392/17,350   195.7 tin/s  còn ~  0.2 phút
+  16,032/17,350   195.9 tin/s  còn ~  0.1 phút
+  16,672/17,350   196.1 tin/s  còn ~  0.1 phút
+  17,312/17,350   195.9 tin/s  còn ~  0.0 phút
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/train-masked-len256.npy  (17350, 768)
+[dev] phobert · 1,927 tin · cột ['job_title_masked_seg', 'description_masked_seg', 'requirements_masked_seg'] · max_len=256
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/1,927   162.4 tin/s  còn ~  0.2 phút
+     672/1,927   187.5 tin/s  còn ~  0.1 phút
+   1,312/1,927   189.1 tin/s  còn ~  0.1 phút
+   1,927/1,927   191.4 tin/s  còn ~  0.0 phút
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/dev-masked-len256.npy  (1927, 768)
+[train] phobert · 17,350 tin · cột ['job_title_masked_seg', 'description_masked_seg', 'requirements_masked_seg'] · max_len=256 · token-level
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/17,350    62.7 tin/s  còn ~  4.6 phút
+     672/17,350   161.2 tin/s  còn ~  1.7 phút
+   1,312/17,350   167.9 tin/s  còn ~  1.6 phút
+   1,952/17,350   170.4 tin/s  còn ~  1.5 phút
+   2,592/17,350   172.1 tin/s  còn ~  1.4 phút
+   3,232/17,350   172.7 tin/s  còn ~  1.4 phút
+   3,872/17,350   172.3 tin/s  còn ~  1.3 phút
+   4,512/17,350   173.3 tin/s  còn ~  1.2 phút
+   5,152/17,350   174.1 tin/s  còn ~  1.2 phút
+   5,792/17,350   174.7 tin/s  còn ~  1.1 phút
+   6,432/17,350   175.4 tin/s  còn ~  1.0 phút
+   7,072/17,350   175.8 tin/s  còn ~  1.0 phút
+   7,712/17,350   176.0 tin/s  còn ~  0.9 phút
+   8,352/17,350   175.6 tin/s  còn ~  0.9 phút
+   8,992/17,350   175.5 tin/s  còn ~  0.8 phút
+   9,632/17,350   174.9 tin/s  còn ~  0.7 phút
+  10,272/17,350   174.9 tin/s  còn ~  0.7 phút
+  10,912/17,350   175.2 tin/s  còn ~  0.6 phút
+  11,552/17,350   175.2 tin/s  còn ~  0.6 phút
+  12,192/17,350   175.4 tin/s  còn ~  0.5 phút
+  12,832/17,350   175.7 tin/s  còn ~  0.4 phút
+  13,472/17,350   176.0 tin/s  còn ~  0.4 phút
+  14,112/17,350   176.2 tin/s  còn ~  0.3 phút
+  14,752/17,350   176.3 tin/s  còn ~  0.2 phút
+  15,392/17,350   176.3 tin/s  còn ~  0.2 phút
+  16,032/17,350   176.3 tin/s  còn ~  0.1 phút
+  16,672/17,350   176.5 tin/s  còn ~  0.1 phút
+  17,312/17,350   176.5 tin/s  còn ~  0.0 phút
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/train-masked-len256-tok.f16.npy  (17,350, 256, 768) float16 · mask train-masked-len256-mask.npy
+[dev] phobert · 1,927 tin · cột ['job_title_masked_seg', 'description_masked_seg', 'requirements_masked_seg'] · max_len=256 · token-level
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/1,927   150.8 tin/s  còn ~  0.2 phút
+     672/1,927   175.5 tin/s  còn ~  0.1 phút
+   1,312/1,927   177.1 tin/s  còn ~  0.1 phút
+   1,927/1,927   179.0 tin/s  còn ~  0.0 phút
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/dev-masked-len256-tok.f16.npy  (1,927, 256, 768) float16 · mask dev-masked-len256-mask.npy
+=== Encode cafebert len 512 (salary, train + dev): pooled rồi token cache ===
+[train] cafebert · 17,350 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/17,350    24.2 tin/s  còn ~ 11.9 phút
+     672/17,350    31.9 tin/s  còn ~  8.7 phút
+   1,312/17,350    32.1 tin/s  còn ~  8.3 phút
+   1,952/17,350    32.0 tin/s  còn ~  8.0 phút
+   2,592/17,350    31.9 tin/s  còn ~  7.7 phút
+   3,232/17,350    31.8 tin/s  còn ~  7.4 phút
+   3,872/17,350    31.8 tin/s  còn ~  7.1 phút
+   4,512/17,350    31.8 tin/s  còn ~  6.7 phút
+   5,152/17,350    31.9 tin/s  còn ~  6.4 phút
+   5,792/17,350    31.9 tin/s  còn ~  6.0 phút
+   6,432/17,350    31.9 tin/s  còn ~  5.7 phút
+   7,072/17,350    32.0 tin/s  còn ~  5.4 phút
+   7,712/17,350    32.0 tin/s  còn ~  5.0 phút
+   8,352/17,350    31.9 tin/s  còn ~  4.7 phút
+   8,992/17,350    31.9 tin/s  còn ~  4.4 phút
+   9,632/17,350    31.9 tin/s  còn ~  4.0 phút
+  10,272/17,350    31.9 tin/s  còn ~  3.7 phút
+  10,912/17,350    31.9 tin/s  còn ~  3.4 phút
+  11,552/17,350    31.9 tin/s  còn ~  3.0 phút
+  12,192/17,350    32.0 tin/s  còn ~  2.7 phút
+  12,832/17,350    32.0 tin/s  còn ~  2.4 phút
+  13,472/17,350    32.0 tin/s  còn ~  2.0 phút
+  14,112/17,350    32.0 tin/s  còn ~  1.7 phút
+  14,752/17,350    32.1 tin/s  còn ~  1.4 phút
+  15,392/17,350    32.1 tin/s  còn ~  1.0 phút
+  16,032/17,350    32.1 tin/s  còn ~  0.7 phút
+  16,672/17,350    32.1 tin/s  còn ~  0.4 phút
+  17,312/17,350    32.1 tin/s  còn ~  0.0 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (580 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/cafebert-train-masked-len512.npy  (17350, 1024)
+[dev] cafebert · 1,927 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/1,927    31.9 tin/s  còn ~  1.0 phút
+     672/1,927    32.0 tin/s  còn ~  0.7 phút
+   1,312/1,927    32.0 tin/s  còn ~  0.3 phút
+   1,927/1,927    32.3 tin/s  còn ~  0.0 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (540 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/cafebert-dev-masked-len512.npy  (1927, 1024)
+[train] cafebert · 17,350 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/17,350    23.9 tin/s  còn ~ 12.1 phút
+     672/17,350    29.9 tin/s  còn ~  9.3 phút
+   1,312/17,350    30.2 tin/s  còn ~  8.9 phút
+   1,952/17,350    30.1 tin/s  còn ~  8.5 phút
+   2,592/17,350    30.1 tin/s  còn ~  8.2 phút
+   3,232/17,350    30.2 tin/s  còn ~  7.8 phút
+   3,872/17,350    30.2 tin/s  còn ~  7.4 phút
+   4,512/17,350    30.3 tin/s  còn ~  7.1 phút
+   5,152/17,350    30.4 tin/s  còn ~  6.7 phút
+   5,792/17,350    30.5 tin/s  còn ~  6.3 phút
+   6,432/17,350    30.5 tin/s  còn ~  6.0 phút
+   7,072/17,350    30.7 tin/s  còn ~  5.6 phút
+   7,712/17,350    30.7 tin/s  còn ~  5.2 phút
+   8,352/17,350    30.7 tin/s  còn ~  4.9 phút
+   8,992/17,350    30.7 tin/s  còn ~  4.5 phút
+   9,632/17,350    30.7 tin/s  còn ~  4.2 phút
+  10,272/17,350    30.7 tin/s  còn ~  3.8 phút
+  10,912/17,350    30.8 tin/s  còn ~  3.5 phút
+  11,552/17,350    30.8 tin/s  còn ~  3.1 phút
+  12,192/17,350    30.8 tin/s  còn ~  2.8 phút
+  12,832/17,350    30.9 tin/s  còn ~  2.4 phút
+  13,472/17,350    30.9 tin/s  còn ~  2.1 phút
+  14,112/17,350    30.9 tin/s  còn ~  1.7 phút
+  14,752/17,350    31.0 tin/s  còn ~  1.4 phút
+  15,392/17,350    31.0 tin/s  còn ~  1.1 phút
+  16,032/17,350    31.0 tin/s  còn ~  0.7 phút
+  16,672/17,350    31.0 tin/s  còn ~  0.4 phút
+  17,312/17,350    31.0 tin/s  còn ~  0.0 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (580 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/cafebert-train-masked-len512-tok.f16.npy  (17,350, 512, 1024) float16 · mask cafebert-train-masked-len512-mask.npy
+[dev] cafebert · 1,927 tin · cột ['job_title_masked', 'description_masked', 'requirements_masked'] · max_len=512 · token-level
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      32/1,927    30.3 tin/s  còn ~  1.0 phút
+     672/1,927    30.9 tin/s  còn ~  0.7 phút
+   1,312/1,927    31.0 tin/s  còn ~  0.3 phút
+   1,927/1,927    31.3 tin/s  còn ~  0.0 phút
+Token indices sequence length is longer than the specified maximum sequence length for this model (540 > 512). Running this sequence through the model will result in indexing errors
+  -> /workspace/vietjobs/artifacts/embeddings/splits-minhash-1label/cafebert-dev-masked-len512-tok.f16.npy  (1,927, 512, 1024) float16 · mask cafebert-dev-masked-len512-mask.npy
+  epoch   1  loss 0.7908  val_mae_trieu 5.5180  val_r2_log -0.1155
+  epoch   2  loss 0.1441  val_mae_trieu 4.4780  val_r2_log 0.3339
+  epoch   3  loss 0.1140  val_mae_trieu 4.1738  val_r2_log 0.4293
+  epoch   4  loss 0.1003  val_mae_trieu 4.1073  val_r2_log 0.4453
+  epoch   5  loss 0.0889  val_mae_trieu 3.9965  val_r2_log 0.4656
+  epoch   6  loss 0.0827  val_mae_trieu 3.8987  val_r2_log 0.5022
+  epoch   7  loss 0.0774  val_mae_trieu 3.8887  val_r2_log 0.5056
+  epoch   8  loss 0.0749  val_mae_trieu 3.7939  val_r2_log 0.5119
+  epoch   9  loss 0.0709  val_mae_trieu 3.7609  val_r2_log 0.5307
+  epoch  10  loss 0.0673  val_mae_trieu 3.7635  val_r2_log 0.5251
+  epoch  11  loss 0.0659  val_mae_trieu 3.7704  val_r2_log 0.5285
+  epoch  12  loss 0.0618  val_mae_trieu 3.7962  val_r2_log 0.5290
+  epoch  13  loss 0.0617  val_mae_trieu 3.7714  val_r2_log 0.5308
+  epoch  14  loss 0.0591  val_mae_trieu 3.7304  val_r2_log 0.5365
+  epoch  15  loss 0.0577  val_mae_trieu 3.7623  val_r2_log 0.5315
+  epoch  16  loss 0.0569  val_mae_trieu 3.7611  val_r2_log 0.5372
+  epoch  17  loss 0.0558  val_mae_trieu 3.7823  val_r2_log 0.5297
+  epoch  18  loss 0.0543  val_mae_trieu 3.7455  val_r2_log 0.5344
+  epoch  19  loss 0.0530  val_mae_trieu 3.7300  val_r2_log 0.5433
+  epoch  20  loss 0.0522  val_mae_trieu 3.7025  val_r2_log 0.5480
+  epoch  21  loss 0.0507  val_mae_trieu 3.7610  val_r2_log 0.5375
+  epoch  22  loss 0.0511  val_mae_trieu 3.7404  val_r2_log 0.5459
+  epoch  23  loss 0.0498  val_mae_trieu 3.6937  val_r2_log 0.5525
+  epoch  24  loss 0.0488  val_mae_trieu 3.7170  val_r2_log 0.5471
+  epoch  25  loss 0.0494  val_mae_trieu 3.7613  val_r2_log 0.5352
+  epoch  26  loss 0.0480  val_mae_trieu 3.6933  val_r2_log 0.5506
+  epoch  27  loss 0.0482  val_mae_trieu 3.7475  val_r2_log 0.5441
+  epoch  28  loss 0.0453  val_mae_trieu 3.7589  val_r2_log 0.5434
+  epoch  29  loss 0.0454  val_mae_trieu 3.7575  val_r2_log 0.5442
+  epoch  30  loss 0.0464  val_mae_trieu 3.6577  val_r2_log 0.5617
+  epoch  31  loss 0.0450  val_mae_trieu 3.7038  val_r2_log 0.5536
+  epoch  32  loss 0.0442  val_mae_trieu 3.7130  val_r2_log 0.5564
+  epoch  33  loss 0.0432  val_mae_trieu 3.7691  val_r2_log 0.5435
+  epoch  34  loss 0.0430  val_mae_trieu 3.7691  val_r2_log 0.5381
+  epoch  35  loss 0.0417  val_mae_trieu 3.7424  val_r2_log 0.5534
+  epoch  36  loss 0.0417  val_mae_trieu 3.8055  val_r2_log 0.5410
+  epoch  37  loss 0.0416  val_mae_trieu 3.8167  val_r2_log 0.5407
+  epoch  38  loss 0.0411  val_mae_trieu 3.8858  val_r2_log 0.5191
+  dừng sớm ở epoch 38 (tốt nhất: 30)
+
+[mh-sal-pho-dense-256-s42] salary · best epoch 30/38 · MAE=3.66tr · RMSE=6.04tr · R2log=0.562 · R2raw=0.429 · ±20%=53.2%
+  -> artifacts/mh-sal-pho-dense-256-s42/
+  epoch   1  loss 0.7054  val_mae_trieu 5.5880  val_r2_log -0.0262
+  epoch   2  loss 0.1492  val_mae_trieu 4.5909  val_r2_log 0.3027
+  epoch   3  loss 0.1154  val_mae_trieu 4.3127  val_r2_log 0.3912
+  epoch   4  loss 0.1020  val_mae_trieu 4.1909  val_r2_log 0.4117
+  epoch   5  loss 0.0895  val_mae_trieu 4.1549  val_r2_log 0.4284
+  epoch   6  loss 0.0825  val_mae_trieu 4.0285  val_r2_log 0.4629
+  epoch   7  loss 0.0777  val_mae_trieu 4.0504  val_r2_log 0.4442
+  epoch   8  loss 0.0750  val_mae_trieu 3.8584  val_r2_log 0.4961
+  epoch   9  loss 0.0708  val_mae_trieu 3.8647  val_r2_log 0.5059
+  epoch  10  loss 0.0675  val_mae_trieu 3.7552  val_r2_log 0.5332
+  epoch  11  loss 0.0663  val_mae_trieu 3.8350  val_r2_log 0.5063
+  epoch  12  loss 0.0622  val_mae_trieu 3.8373  val_r2_log 0.5092
+  epoch  13  loss 0.0596  val_mae_trieu 3.7826  val_r2_log 0.5254
+  epoch  14  loss 0.0586  val_mae_trieu 3.7650  val_r2_log 0.5270
+  epoch  15  loss 0.0577  val_mae_trieu 3.8120  val_r2_log 0.5143
+  epoch  16  loss 0.0557  val_mae_trieu 3.7928  val_r2_log 0.5202
+  epoch  17  loss 0.0547  val_mae_trieu 3.7153  val_r2_log 0.5288
+  epoch  18  loss 0.0530  val_mae_trieu 3.7404  val_r2_log 0.5275
+  epoch  19  loss 0.0525  val_mae_trieu 3.7228  val_r2_log 0.5278
+  epoch  20  loss 0.0511  val_mae_trieu 3.6918  val_r2_log 0.5416
+  epoch  21  loss 0.0502  val_mae_trieu 3.7047  val_r2_log 0.5355
+  epoch  22  loss 0.0498  val_mae_trieu 3.7437  val_r2_log 0.5270
+  epoch  23  loss 0.0489  val_mae_trieu 3.7104  val_r2_log 0.5294
+  epoch  24  loss 0.0484  val_mae_trieu 3.7289  val_r2_log 0.5370
+  epoch  25  loss 0.0474  val_mae_trieu 3.6514  val_r2_log 0.5433
+  epoch  26  loss 0.0463  val_mae_trieu 3.6331  val_r2_log 0.5451
+  epoch  27  loss 0.0465  val_mae_trieu 3.6867  val_r2_log 0.5364
+  epoch  28  loss 0.0465  val_mae_trieu 3.7298  val_r2_log 0.5374
+  epoch  29  loss 0.0447  val_mae_trieu 3.6750  val_r2_log 0.5402
+  epoch  30  loss 0.0447  val_mae_trieu 3.7038  val_r2_log 0.5335
+  epoch  31  loss 0.0446  val_mae_trieu 3.6613  val_r2_log 0.5536
+  epoch  32  loss 0.0424  val_mae_trieu 3.6608  val_r2_log 0.5465
+  epoch  33  loss 0.0426  val_mae_trieu 3.6781  val_r2_log 0.5417
+  epoch  34  loss 0.0424  val_mae_trieu 3.6674  val_r2_log 0.5429
+  dừng sớm ở epoch 34 (tốt nhất: 26)
+
+[mh-sal-cafe-dense-512-s42] salary · best epoch 26/34 · MAE=3.63tr · RMSE=6.07tr · R2log=0.545 · R2raw=0.423 · ±20%=53.8%
+  -> artifacts/mh-sal-cafe-dense-512-s42/
+  epoch   1  loss 0.8024  val_mae_trieu 5.7238  val_r2_log -0.1031
+  epoch   2  loss 0.1465  val_mae_trieu 4.4486  val_r2_log 0.3239
+  epoch   3  loss 0.1146  val_mae_trieu 4.2220  val_r2_log 0.4088
+  epoch   4  loss 0.1004  val_mae_trieu 4.2534  val_r2_log 0.3955
+  epoch   5  loss 0.0894  val_mae_trieu 4.0420  val_r2_log 0.4567
+  epoch   6  loss 0.0828  val_mae_trieu 3.9690  val_r2_log 0.4705
+  epoch   7  loss 0.0789  val_mae_trieu 3.9484  val_r2_log 0.4902
+  epoch   8  loss 0.0741  val_mae_trieu 3.9510  val_r2_log 0.4845
+  epoch   9  loss 0.0705  val_mae_trieu 3.8284  val_r2_log 0.5104
+  epoch  10  loss 0.0677  val_mae_trieu 3.8368  val_r2_log 0.5090
+  epoch  11  loss 0.0662  val_mae_trieu 3.8205  val_r2_log 0.5191
+  epoch  12  loss 0.0633  val_mae_trieu 3.7924  val_r2_log 0.5272
+  epoch  13  loss 0.0622  val_mae_trieu 3.8091  val_r2_log 0.5220
+  epoch  14  loss 0.0597  val_mae_trieu 3.7945  val_r2_log 0.5243
+  epoch  15  loss 0.0580  val_mae_trieu 3.7724  val_r2_log 0.5284
+  epoch  16  loss 0.0571  val_mae_trieu 3.7431  val_r2_log 0.5370
+  epoch  17  loss 0.0559  val_mae_trieu 3.7462  val_r2_log 0.5373
+  epoch  18  loss 0.0546  val_mae_trieu 3.7665  val_r2_log 0.5259
+  epoch  19  loss 0.0545  val_mae_trieu 3.8263  val_r2_log 0.5265
+  epoch  20  loss 0.0535  val_mae_trieu 3.8485  val_r2_log 0.5165
+  epoch  21  loss 0.0524  val_mae_trieu 3.7452  val_r2_log 0.5337
+  epoch  22  loss 0.0512  val_mae_trieu 3.7940  val_r2_log 0.5281
+  epoch  23  loss 0.0507  val_mae_trieu 3.7910  val_r2_log 0.5257
+  epoch  24  loss 0.0493  val_mae_trieu 3.7938  val_r2_log 0.5337
+  dừng sớm ở epoch 24 (tốt nhất: 16)
+
+[mh-sal-pho-dense-256-s43] salary · best epoch 16/24 · MAE=3.74tr · RMSE=6.13tr · R2log=0.537 · R2raw=0.412 · ±20%=52.2%
+  -> artifacts/mh-sal-pho-dense-256-s43/
+  epoch   1  loss 0.7462  val_mae_trieu 5.5693  val_r2_log -0.0351
+  epoch   2  loss 0.1516  val_mae_trieu 4.6290  val_r2_log 0.2441
+  epoch   3  loss 0.1163  val_mae_trieu 4.3267  val_r2_log 0.3607
+  epoch   4  loss 0.1011  val_mae_trieu 4.4096  val_r2_log 0.3477
+  epoch   5  loss 0.0935  val_mae_trieu 4.0985  val_r2_log 0.4372
+  epoch   6  loss 0.0848  val_mae_trieu 4.1264  val_r2_log 0.4406
+  epoch   7  loss 0.0802  val_mae_trieu 4.0097  val_r2_log 0.4724
+  epoch   8  loss 0.0760  val_mae_trieu 4.0017  val_r2_log 0.4722
+  epoch   9  loss 0.0724  val_mae_trieu 3.8983  val_r2_log 0.4907
+  epoch  10  loss 0.0679  val_mae_trieu 3.8947  val_r2_log 0.5020
+  epoch  11  loss 0.0663  val_mae_trieu 3.8300  val_r2_log 0.5157
+  epoch  12  loss 0.0641  val_mae_trieu 3.8477  val_r2_log 0.5117
+  epoch  13  loss 0.0624  val_mae_trieu 3.8114  val_r2_log 0.5117
+  epoch  14  loss 0.0613  val_mae_trieu 3.8132  val_r2_log 0.5183
+  epoch  15  loss 0.0584  val_mae_trieu 3.7772  val_r2_log 0.5259
+  epoch  16  loss 0.0574  val_mae_trieu 3.8167  val_r2_log 0.5173
+  epoch  17  loss 0.0565  val_mae_trieu 3.7334  val_r2_log 0.5304
+  epoch  18  loss 0.0553  val_mae_trieu 3.7802  val_r2_log 0.5222
+  epoch  19  loss 0.0527  val_mae_trieu 3.8067  val_r2_log 0.5279
+  epoch  20  loss 0.0522  val_mae_trieu 3.8011  val_r2_log 0.5243
+  epoch  21  loss 0.0506  val_mae_trieu 3.7562  val_r2_log 0.5261
+  epoch  22  loss 0.0515  val_mae_trieu 3.8000  val_r2_log 0.5278
+  epoch  23  loss 0.0500  val_mae_trieu 3.7266  val_r2_log 0.5399
+  epoch  24  loss 0.0497  val_mae_trieu 3.7789  val_r2_log 0.5274
+  epoch  25  loss 0.0486  val_mae_trieu 3.7357  val_r2_log 0.5409
+  epoch  26  loss 0.0476  val_mae_trieu 3.7018  val_r2_log 0.5422
+  epoch  27  loss 0.0479  val_mae_trieu 3.7716  val_r2_log 0.5328
+  epoch  28  loss 0.0461  val_mae_trieu 3.6905  val_r2_log 0.5439
+  epoch  29  loss 0.0447  val_mae_trieu 3.7551  val_r2_log 0.5418
+  epoch  30  loss 0.0454  val_mae_trieu 3.7172  val_r2_log 0.5426
+  epoch  31  loss 0.0447  val_mae_trieu 3.6933  val_r2_log 0.5445
+  epoch  32  loss 0.0448  val_mae_trieu 3.7183  val_r2_log 0.5483
+  epoch  33  loss 0.0425  val_mae_trieu 3.7161  val_r2_log 0.5495
+  epoch  34  loss 0.0429  val_mae_trieu 3.7362  val_r2_log 0.5504
+  epoch  35  loss 0.0434  val_mae_trieu 3.7066  val_r2_log 0.5501
+  epoch  36  loss 0.0410  val_mae_trieu 3.7054  val_r2_log 0.5429
+  dừng sớm ở epoch 36 (tốt nhất: 28)
+
+[mh-sal-cafe-dense-512-s43] salary · best epoch 28/36 · MAE=3.69tr · RMSE=6.20tr · R2log=0.544 · R2raw=0.398 · ±20%=52.9%
+  -> artifacts/mh-sal-cafe-dense-512-s43/
+  epoch   1  loss 0.7677  val_mae_trieu 5.5637  val_r2_log -0.0648
+  epoch   2  loss 0.1474  val_mae_trieu 4.3685  val_r2_log 0.3693
+  epoch   3  loss 0.1150  val_mae_trieu 4.3529  val_r2_log 0.3547
+  epoch   4  loss 0.1012  val_mae_trieu 4.2545  val_r2_log 0.4007
+  epoch   5  loss 0.0933  val_mae_trieu 4.1869  val_r2_log 0.4154
+  epoch   6  loss 0.0860  val_mae_trieu 4.0279  val_r2_log 0.4516
+  epoch   7  loss 0.0799  val_mae_trieu 3.9287  val_r2_log 0.4928
+  epoch   8  loss 0.0752  val_mae_trieu 3.9428  val_r2_log 0.4849
+  epoch   9  loss 0.0725  val_mae_trieu 3.8951  val_r2_log 0.4892
+  epoch  10  loss 0.0697  val_mae_trieu 3.9775  val_r2_log 0.4824
+  epoch  11  loss 0.0666  val_mae_trieu 3.8673  val_r2_log 0.5036
+  epoch  12  loss 0.0651  val_mae_trieu 3.8429  val_r2_log 0.5075
+  epoch  13  loss 0.0627  val_mae_trieu 3.7805  val_r2_log 0.5258
+  epoch  14  loss 0.0607  val_mae_trieu 3.8115  val_r2_log 0.5124
+  epoch  15  loss 0.0589  val_mae_trieu 3.7611  val_r2_log 0.5329
+  epoch  16  loss 0.0572  val_mae_trieu 3.8250  val_r2_log 0.5194
+  epoch  17  loss 0.0562  val_mae_trieu 3.7472  val_r2_log 0.5340
+  epoch  18  loss 0.0563  val_mae_trieu 3.7908  val_r2_log 0.5295
+  epoch  19  loss 0.0542  val_mae_trieu 3.7543  val_r2_log 0.5354
+  epoch  20  loss 0.0528  val_mae_trieu 3.7463  val_r2_log 0.5402
+  epoch  21  loss 0.0521  val_mae_trieu 3.8151  val_r2_log 0.5291
+  epoch  22  loss 0.0508  val_mae_trieu 3.7250  val_r2_log 0.5415
+  epoch  23  loss 0.0517  val_mae_trieu 3.7781  val_r2_log 0.5337
+  epoch  24  loss 0.0492  val_mae_trieu 3.7756  val_r2_log 0.5409
+  epoch  25  loss 0.0495  val_mae_trieu 3.7462  val_r2_log 0.5411
+  epoch  26  loss 0.0479  val_mae_trieu 3.7612  val_r2_log 0.5381
+  epoch  27  loss 0.0482  val_mae_trieu 3.7217  val_r2_log 0.5433
+  epoch  28  loss 0.0473  val_mae_trieu 3.7601  val_r2_log 0.5332
+  epoch  29  loss 0.0468  val_mae_trieu 3.7649  val_r2_log 0.5380
+  epoch  30  loss 0.0457  val_mae_trieu 3.7566  val_r2_log 0.5373
+  epoch  31  loss 0.0458  val_mae_trieu 3.7977  val_r2_log 0.5355
+  epoch  32  loss 0.0449  val_mae_trieu 3.7792  val_r2_log 0.5357
+  epoch  33  loss 0.0441  val_mae_trieu 3.7810  val_r2_log 0.5386
+  epoch  34  loss 0.0430  val_mae_trieu 3.7909  val_r2_log 0.5327
+  epoch  35  loss 0.0438  val_mae_trieu 3.7679  val_r2_log 0.5304
+  dừng sớm ở epoch 35 (tốt nhất: 27)
+
+[mh-sal-pho-dense-256-s44] salary · best epoch 27/35 · MAE=3.72tr · RMSE=6.12tr · R2log=0.543 · R2raw=0.414 · ±20%=51.5%
+  -> artifacts/mh-sal-pho-dense-256-s44/
+  epoch   1  loss 0.6887  val_mae_trieu 5.2591  val_r2_log 0.0581
+  epoch   2  loss 0.1433  val_mae_trieu 4.4267  val_r2_log 0.3269
+  epoch   3  loss 0.1142  val_mae_trieu 4.3024  val_r2_log 0.3574
+  epoch   4  loss 0.1003  val_mae_trieu 4.1738  val_r2_log 0.4215
+  epoch   5  loss 0.0894  val_mae_trieu 4.0589  val_r2_log 0.4569
+  epoch   6  loss 0.0828  val_mae_trieu 4.0238  val_r2_log 0.4508
+  epoch   7  loss 0.0775  val_mae_trieu 3.9594  val_r2_log 0.4813
+  epoch   8  loss 0.0720  val_mae_trieu 3.9003  val_r2_log 0.4909
+  epoch   9  loss 0.0696  val_mae_trieu 3.8516  val_r2_log 0.4999
+  epoch  10  loss 0.0675  val_mae_trieu 3.8079  val_r2_log 0.5235
+  epoch  11  loss 0.0633  val_mae_trieu 3.7858  val_r2_log 0.5176
+  epoch  12  loss 0.0612  val_mae_trieu 3.7755  val_r2_log 0.5142
+  epoch  13  loss 0.0597  val_mae_trieu 3.7345  val_r2_log 0.5319
+  epoch  14  loss 0.0581  val_mae_trieu 3.7530  val_r2_log 0.5319
+  epoch  15  loss 0.0569  val_mae_trieu 3.6957  val_r2_log 0.5452
+  epoch  16  loss 0.0561  val_mae_trieu 3.7316  val_r2_log 0.5379
+  epoch  17  loss 0.0550  val_mae_trieu 3.7400  val_r2_log 0.5373
+  epoch  18  loss 0.0531  val_mae_trieu 3.6454  val_r2_log 0.5418
+  epoch  19  loss 0.0534  val_mae_trieu 3.6515  val_r2_log 0.5496
+  epoch  20  loss 0.0512  val_mae_trieu 3.6962  val_r2_log 0.5420
+  epoch  21  loss 0.0496  val_mae_trieu 3.6883  val_r2_log 0.5429
+  epoch  22  loss 0.0486  val_mae_trieu 3.6874  val_r2_log 0.5473
+  epoch  23  loss 0.0494  val_mae_trieu 3.6328  val_r2_log 0.5430
+  epoch  24  loss 0.0471  val_mae_trieu 3.7855  val_r2_log 0.5289
+  epoch  25  loss 0.0476  val_mae_trieu 3.7222  val_r2_log 0.5315
+  epoch  26  loss 0.0467  val_mae_trieu 3.7231  val_r2_log 0.5327
+  epoch  27  loss 0.0463  val_mae_trieu 3.7391  val_r2_log 0.5447
+  epoch  28  loss 0.0450  val_mae_trieu 3.6909  val_r2_log 0.5518
+  epoch  29  loss 0.0450  val_mae_trieu 3.8256  val_r2_log 0.5199
+  epoch  30  loss 0.0439  val_mae_trieu 3.7085  val_r2_log 0.5417
+  epoch  31  loss 0.0429  val_mae_trieu 3.7195  val_r2_log 0.5480
+  dừng sớm ở epoch 31 (tốt nhất: 23)
+
+[mh-sal-cafe-dense-512-s44] salary · best epoch 23/31 · MAE=3.63tr · RMSE=6.09tr · R2log=0.543 · R2raw=0.419 · ±20%=54.9%
+  -> artifacts/mh-sal-cafe-dense-512-s44/
+  epoch   1  loss 0.7891  val_mae_trieu 5.5401  val_r2_log -0.0619
+  epoch   2  loss 0.1453  val_mae_trieu 4.4733  val_r2_log 0.3386
+  epoch   3  loss 0.1137  val_mae_trieu 4.2509  val_r2_log 0.4037
+  epoch   4  loss 0.0986  val_mae_trieu 4.0197  val_r2_log 0.4713
+  epoch   5  loss 0.0884  val_mae_trieu 4.0673  val_r2_log 0.4519
+  epoch   6  loss 0.0815  val_mae_trieu 4.0048  val_r2_log 0.4640
+  epoch   7  loss 0.0759  val_mae_trieu 3.8394  val_r2_log 0.5016
+  epoch   8  loss 0.0728  val_mae_trieu 3.8900  val_r2_log 0.4978
+  epoch   9  loss 0.0703  val_mae_trieu 3.8189  val_r2_log 0.5154
+  epoch  10  loss 0.0662  val_mae_trieu 3.7826  val_r2_log 0.5244
+  epoch  11  loss 0.0656  val_mae_trieu 3.8337  val_r2_log 0.5262
+  epoch  12  loss 0.0626  val_mae_trieu 3.8001  val_r2_log 0.5216
+  epoch  13  loss 0.0610  val_mae_trieu 3.7825  val_r2_log 0.5301
+  epoch  14  loss 0.0586  val_mae_trieu 3.7549  val_r2_log 0.5302
+  epoch  15  loss 0.0595  val_mae_trieu 3.7714  val_r2_log 0.5347
+  epoch  16  loss 0.0566  val_mae_trieu 3.7799  val_r2_log 0.5307
+  epoch  17  loss 0.0543  val_mae_trieu 3.7173  val_r2_log 0.5407
+  epoch  18  loss 0.0532  val_mae_trieu 3.7424  val_r2_log 0.5417
+  epoch  19  loss 0.0537  val_mae_trieu 3.7873  val_r2_log 0.5382
+  epoch  20  loss 0.0523  val_mae_trieu 3.8049  val_r2_log 0.5149
+  epoch  21  loss 0.0504  val_mae_trieu 3.7369  val_r2_log 0.5480
+  epoch  22  loss 0.0515  val_mae_trieu 3.7416  val_r2_log 0.5498
+  epoch  23  loss 0.0506  val_mae_trieu 3.7727  val_r2_log 0.5390
+  epoch  24  loss 0.0488  val_mae_trieu 3.8007  val_r2_log 0.5404
+  epoch  25  loss 0.0488  val_mae_trieu 3.8226  val_r2_log 0.5307
+  dừng sớm ở epoch 25 (tốt nhất: 17)
+
+[mh-sal-pho-dense-256-s45] salary · best epoch 17/25 · MAE=3.72tr · RMSE=6.15tr · R2log=0.541 · R2raw=0.407 · ±20%=52.3%
+  -> artifacts/mh-sal-pho-dense-256-s45/
+  epoch   1  loss 0.7801  val_mae_trieu 5.3944  val_r2_log -0.0795
+  epoch   2  loss 0.1569  val_mae_trieu 4.5572  val_r2_log 0.2655
+  epoch   3  loss 0.1224  val_mae_trieu 4.2305  val_r2_log 0.3931
+  epoch   4  loss 0.1048  val_mae_trieu 4.1506  val_r2_log 0.4144
+  epoch   5  loss 0.0934  val_mae_trieu 4.2250  val_r2_log 0.3864
+  epoch   6  loss 0.0872  val_mae_trieu 4.0718  val_r2_log 0.4468
+  epoch   7  loss 0.0823  val_mae_trieu 3.8800  val_r2_log 0.4929
+  epoch   8  loss 0.0766  val_mae_trieu 3.8541  val_r2_log 0.4902
+  epoch   9  loss 0.0728  val_mae_trieu 3.8787  val_r2_log 0.4909
+  epoch  10  loss 0.0699  val_mae_trieu 3.8050  val_r2_log 0.5124
+  epoch  11  loss 0.0682  val_mae_trieu 3.8203  val_r2_log 0.5163
+  epoch  12  loss 0.0660  val_mae_trieu 3.7857  val_r2_log 0.5247
+  epoch  13  loss 0.0620  val_mae_trieu 3.8899  val_r2_log 0.5065
+  epoch  14  loss 0.0613  val_mae_trieu 3.7319  val_r2_log 0.5327
+  epoch  15  loss 0.0586  val_mae_trieu 3.7999  val_r2_log 0.5249
+  epoch  16  loss 0.0572  val_mae_trieu 3.7826  val_r2_log 0.5211
+  epoch  17  loss 0.0553  val_mae_trieu 3.6830  val_r2_log 0.5274
+  epoch  18  loss 0.0547  val_mae_trieu 3.7441  val_r2_log 0.5344
+  epoch  19  loss 0.0550  val_mae_trieu 3.7414  val_r2_log 0.5328
+  epoch  20  loss 0.0528  val_mae_trieu 3.7108  val_r2_log 0.5324
+  epoch  21  loss 0.0534  val_mae_trieu 3.6623  val_r2_log 0.5376
+  epoch  22  loss 0.0509  val_mae_trieu 3.7094  val_r2_log 0.5270
+  epoch  23  loss 0.0510  val_mae_trieu 3.7489  val_r2_log 0.5372
+  epoch  24  loss 0.0493  val_mae_trieu 3.7538  val_r2_log 0.5401
+  epoch  25  loss 0.0491  val_mae_trieu 3.7898  val_r2_log 0.5276
+  epoch  26  loss 0.0476  val_mae_trieu 3.7719  val_r2_log 0.5337
+  epoch  27  loss 0.0471  val_mae_trieu 3.7731  val_r2_log 0.5326
+  epoch  28  loss 0.0472  val_mae_trieu 3.8156  val_r2_log 0.5292
+  epoch  29  loss 0.0468  val_mae_trieu 3.7176  val_r2_log 0.5529
+  dừng sớm ở epoch 29 (tốt nhất: 21)
+
+[mh-sal-cafe-dense-512-s45] salary · best epoch 21/29 · MAE=3.66tr · RMSE=6.14tr · R2log=0.538 · R2raw=0.410 · ±20%=53.0%
+  -> artifacts/mh-sal-cafe-dense-512-s45/
+  epoch   1  loss 0.8559  val_mae_trieu 5.5094  val_r2_log -0.1288
+  epoch   2  loss 0.1526  val_mae_trieu 4.5122  val_r2_log 0.3155
+  epoch   3  loss 0.1203  val_mae_trieu 4.3301  val_r2_log 0.3674
+  epoch   4  loss 0.1043  val_mae_trieu 4.2317  val_r2_log 0.3968
+  epoch   5  loss 0.0944  val_mae_trieu 4.1152  val_r2_log 0.4522
+  epoch   6  loss 0.0865  val_mae_trieu 4.0171  val_r2_log 0.4707
+  epoch   7  loss 0.0801  val_mae_trieu 4.0829  val_r2_log 0.4445
+  epoch   8  loss 0.0766  val_mae_trieu 3.9906  val_r2_log 0.4711
+  epoch   9  loss 0.0730  val_mae_trieu 3.8644  val_r2_log 0.5030
+  epoch  10  loss 0.0706  val_mae_trieu 3.8753  val_r2_log 0.5073
+  epoch  11  loss 0.0679  val_mae_trieu 3.8392  val_r2_log 0.5093
+  epoch  12  loss 0.0653  val_mae_trieu 3.8251  val_r2_log 0.5113
+  epoch  13  loss 0.0632  val_mae_trieu 3.8772  val_r2_log 0.4944
+  epoch  14  loss 0.0621  val_mae_trieu 3.8393  val_r2_log 0.5129
+  epoch  15  loss 0.0598  val_mae_trieu 3.8291  val_r2_log 0.5205
+  epoch  16  loss 0.0583  val_mae_trieu 3.8052  val_r2_log 0.5209
+  epoch  17  loss 0.0569  val_mae_trieu 3.7967  val_r2_log 0.5254
+  epoch  18  loss 0.0566  val_mae_trieu 3.7855  val_r2_log 0.5256
+  epoch  19  loss 0.0547  val_mae_trieu 3.7560  val_r2_log 0.5427
+  epoch  20  loss 0.0540  val_mae_trieu 3.7641  val_r2_log 0.5358
+  epoch  21  loss 0.0526  val_mae_trieu 3.8123  val_r2_log 0.5238
+  epoch  22  loss 0.0526  val_mae_trieu 3.7613  val_r2_log 0.5361
+  epoch  23  loss 0.0506  val_mae_trieu 3.7382  val_r2_log 0.5402
+  epoch  24  loss 0.0511  val_mae_trieu 3.7897  val_r2_log 0.5311
+  epoch  25  loss 0.0501  val_mae_trieu 3.7030  val_r2_log 0.5412
+  epoch  26  loss 0.0495  val_mae_trieu 3.8362  val_r2_log 0.5304
+  epoch  27  loss 0.0483  val_mae_trieu 3.7868  val_r2_log 0.5327
+  epoch  28  loss 0.0478  val_mae_trieu 3.7586  val_r2_log 0.5402
+  epoch  29  loss 0.0465  val_mae_trieu 3.7275  val_r2_log 0.5436
+  epoch  30  loss 0.0465  val_mae_trieu 3.7745  val_r2_log 0.5297
+  epoch  31  loss 0.0471  val_mae_trieu 3.7083  val_r2_log 0.5457
+  epoch  32  loss 0.0461  val_mae_trieu 3.7431  val_r2_log 0.5347
+  epoch  33  loss 0.0448  val_mae_trieu 3.7618  val_r2_log 0.5323
+  dừng sớm ở epoch 33 (tốt nhất: 25)
+
+[mh-sal-pho-dense-256-s46] salary · best epoch 25/33 · MAE=3.70tr · RMSE=6.06tr · R2log=0.541 · R2raw=0.426 · ±20%=53.1%
+  -> artifacts/mh-sal-pho-dense-256-s46/
+  epoch   1  loss 0.7364  val_mae_trieu 5.3262  val_r2_log -0.0089
+  epoch   2  loss 0.1532  val_mae_trieu 4.5286  val_r2_log 0.2963
+  epoch   3  loss 0.1226  val_mae_trieu 4.5319  val_r2_log 0.3076
+  epoch   4  loss 0.1051  val_mae_trieu 4.3843  val_r2_log 0.3726
+  epoch   5  loss 0.0948  val_mae_trieu 4.1081  val_r2_log 0.4480
+  epoch   6  loss 0.0863  val_mae_trieu 4.1009  val_r2_log 0.4453
+  epoch   7  loss 0.0812  val_mae_trieu 4.1597  val_r2_log 0.4300
+  epoch   8  loss 0.0766  val_mae_trieu 3.9857  val_r2_log 0.4691
+  epoch   9  loss 0.0724  val_mae_trieu 3.8482  val_r2_log 0.5036
+  epoch  10  loss 0.0686  val_mae_trieu 3.8412  val_r2_log 0.5123
+  epoch  11  loss 0.0675  val_mae_trieu 3.8250  val_r2_log 0.5083
+  epoch  12  loss 0.0641  val_mae_trieu 3.8141  val_r2_log 0.5124
+  epoch  13  loss 0.0623  val_mae_trieu 3.7897  val_r2_log 0.5225
+  epoch  14  loss 0.0603  val_mae_trieu 3.7606  val_r2_log 0.5250
+  epoch  15  loss 0.0587  val_mae_trieu 3.7641  val_r2_log 0.5271
+  epoch  16  loss 0.0580  val_mae_trieu 3.7719  val_r2_log 0.5245
+  epoch  17  loss 0.0559  val_mae_trieu 3.7903  val_r2_log 0.5240
+  epoch  18  loss 0.0544  val_mae_trieu 3.7092  val_r2_log 0.5437
+  epoch  19  loss 0.0542  val_mae_trieu 3.8856  val_r2_log 0.5151
+  epoch  20  loss 0.0532  val_mae_trieu 3.7323  val_r2_log 0.5398
+  epoch  21  loss 0.0521  val_mae_trieu 3.7207  val_r2_log 0.5320
+  epoch  22  loss 0.0499  val_mae_trieu 3.7095  val_r2_log 0.5426
+  epoch  23  loss 0.0492  val_mae_trieu 3.6908  val_r2_log 0.5454
+  epoch  24  loss 0.0490  val_mae_trieu 3.7491  val_r2_log 0.5394
+  epoch  25  loss 0.0483  val_mae_trieu 3.6942  val_r2_log 0.5369
+  epoch  26  loss 0.0475  val_mae_trieu 3.7646  val_r2_log 0.5329
+  epoch  27  loss 0.0475  val_mae_trieu 3.7460  val_r2_log 0.5344
+  epoch  28  loss 0.0470  val_mae_trieu 3.8071  val_r2_log 0.5214
+  epoch  29  loss 0.0457  val_mae_trieu 3.7545  val_r2_log 0.5345
+  epoch  30  loss 0.0459  val_mae_trieu 3.7381  val_r2_log 0.5261
+  epoch  31  loss 0.0449  val_mae_trieu 3.6773  val_r2_log 0.5487
+  epoch  32  loss 0.0429  val_mae_trieu 3.7965  val_r2_log 0.5316
+  epoch  33  loss 0.0440  val_mae_trieu 3.7036  val_r2_log 0.5380
+  epoch  34  loss 0.0418  val_mae_trieu 3.7726  val_r2_log 0.5304
+  epoch  35  loss 0.0429  val_mae_trieu 3.7457  val_r2_log 0.5359
+  epoch  36  loss 0.0417  val_mae_trieu 3.7122  val_r2_log 0.5459
+  epoch  37  loss 0.0418  val_mae_trieu 3.7324  val_r2_log 0.5456
+  epoch  38  loss 0.0409  val_mae_trieu 3.7552  val_r2_log 0.5355
+  epoch  39  loss 0.0404  val_mae_trieu 3.7299  val_r2_log 0.5453
+  dừng sớm ở epoch 39 (tốt nhất: 31)
+
+[mh-sal-cafe-dense-512-s46] salary · best epoch 31/39 · MAE=3.68tr · RMSE=6.03tr · R2log=0.549 · R2raw=0.430 · ±20%=52.5%
+  -> artifacts/mh-sal-cafe-dense-512-s46/
+  thống kê chuẩn hoá: 5,120/12,102 dòng (42.3%,     5s)
+  thống kê chuẩn hoá: 10,240/12,102 dòng (84.6%,    11s)
+  epoch   1  loss 0.4050  val_mae_trieu 4.1786  val_r2_log 0.3402
+  epoch   2  loss 0.0939  val_mae_trieu 3.7687  val_r2_log 0.5177
+  epoch   3  loss 0.0751  val_mae_trieu 3.5757  val_r2_log 0.5698
+  epoch   4  loss 0.0697  val_mae_trieu 3.5693  val_r2_log 0.5664
+  epoch   5  loss 0.0667  val_mae_trieu 3.4672  val_r2_log 0.5895
+  epoch   6  loss 0.0641  val_mae_trieu 3.4394  val_r2_log 0.5996
+  epoch   7  loss 0.0622  val_mae_trieu 3.5331  val_r2_log 0.5699
+  epoch   8  loss 0.0593  val_mae_trieu 3.6787  val_r2_log 0.5338
+  epoch   9  loss 0.0556  val_mae_trieu 3.4626  val_r2_log 0.6017
+  epoch  10  loss 0.0537  val_mae_trieu 3.5018  val_r2_log 0.5740
+  epoch  11  loss 0.0509  val_mae_trieu 3.4676  val_r2_log 0.5804
+  epoch  12  loss 0.0496  val_mae_trieu 3.4002  val_r2_log 0.5917
+  epoch  13  loss 0.0477  val_mae_trieu 3.5409  val_r2_log 0.5915
+  epoch  14  loss 0.0455  val_mae_trieu 3.4161  val_r2_log 0.5986
+  epoch  15  loss 0.0443  val_mae_trieu 3.4633  val_r2_log 0.6005
+  epoch  16  loss 0.0412  val_mae_trieu 3.4628  val_r2_log 0.5822
+  epoch  17  loss 0.0397  val_mae_trieu 3.7306  val_r2_log 0.5237
+  epoch  18  loss 0.0389  val_mae_trieu 3.4715  val_r2_log 0.5819
+  epoch  19  loss 0.0382  val_mae_trieu 3.4884  val_r2_log 0.5955
+  epoch  20  loss 0.0371  val_mae_trieu 3.4544  val_r2_log 0.5858
+  dừng sớm ở epoch 20 (tốt nhất: 12)
+
+[mh-sal-pho-rnn-256-s42] salary · best epoch 12/20 · MAE=3.40tr · RMSE=5.74tr · R2log=0.592 · R2raw=0.485 · ±20%=57.7%
+  -> artifacts/mh-sal-pho-rnn-256-s42/
+  thống kê chuẩn hoá: 5,120/12,102 dòng (42.3%,    14s)
+  thống kê chuẩn hoá: 10,240/12,102 dòng (84.6%,    29s)
+  epoch   1  loss 0.4529  val_mae_trieu 4.3111  val_r2_log 0.3314
+  epoch   2  loss 0.0955  val_mae_trieu 3.7761  val_r2_log 0.5102
+  epoch   3  loss 0.0753  val_mae_trieu 3.5269  val_r2_log 0.5868
+  epoch   4  loss 0.0692  val_mae_trieu 3.5475  val_r2_log 0.5757
+  epoch   5  loss 0.0653  val_mae_trieu 3.4839  val_r2_log 0.6069
+  epoch   6  loss 0.0624  val_mae_trieu 3.6131  val_r2_log 0.5664
+  epoch   7  loss 0.0597  val_mae_trieu 3.8246  val_r2_log 0.5058
+  epoch   8  loss 0.0587  val_mae_trieu 3.4437  val_r2_log 0.6070
+  epoch   9  loss 0.0559  val_mae_trieu 3.4103  val_r2_log 0.6137
+  epoch  10  loss 0.0553  val_mae_trieu 3.4815  val_r2_log 0.5977
+  epoch  11  loss 0.0525  val_mae_trieu 3.4496  val_r2_log 0.6011
+  epoch  12  loss 0.0504  val_mae_trieu 3.4105  val_r2_log 0.6036
+  epoch  13  loss 0.0492  val_mae_trieu 3.3586  val_r2_log 0.6289
+  epoch  14  loss 0.0473  val_mae_trieu 3.5407  val_r2_log 0.5727
+  epoch  15  loss 0.0449  val_mae_trieu 3.4554  val_r2_log 0.5872
+  epoch  16  loss 0.0433  val_mae_trieu 3.6027  val_r2_log 0.5982
+  epoch  17  loss 0.0413  val_mae_trieu 3.5327  val_r2_log 0.5765
+  epoch  18  loss 0.0400  val_mae_trieu 3.3992  val_r2_log 0.6035
+  epoch  19  loss 0.0385  val_mae_trieu 3.3978  val_r2_log 0.6005
+  epoch  20  loss 0.0375  val_mae_trieu 3.4196  val_r2_log 0.6089
+  epoch  21  loss 0.0349  val_mae_trieu 3.4319  val_r2_log 0.6099
+  dừng sớm ở epoch 21 (tốt nhất: 13)
+
+[mh-sal-cafe-rnn-512-s42] salary · best epoch 13/21 · MAE=3.36tr · RMSE=5.69tr · R2log=0.629 · R2raw=0.493 · ±20%=58.1%
+  -> artifacts/mh-sal-cafe-rnn-512-s42/
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    34.0 tin/s  còn ~  3.0 phút
+     336/6,161   167.0 tin/s  còn ~  0.6 phút
+     656/6,161   188.3 tin/s  còn ~  0.5 phút
+     976/6,161   195.6 tin/s  còn ~  0.4 phút
+   1,296/6,161   199.9 tin/s  còn ~  0.4 phút
+   1,616/6,161   203.3 tin/s  còn ~  0.4 phút
+   1,936/6,161   205.2 tin/s  còn ~  0.3 phút
+   2,256/6,161   206.6 tin/s  còn ~  0.3 phút
+   2,576/6,161   207.8 tin/s  còn ~  0.3 phút
+   2,896/6,161   209.0 tin/s  còn ~  0.3 phút
+   3,216/6,161   209.8 tin/s  còn ~  0.2 phút
+   3,536/6,161   210.3 tin/s  còn ~  0.2 phút
+   3,856/6,161   210.9 tin/s  còn ~  0.2 phút
+   4,176/6,161   211.5 tin/s  còn ~  0.2 phút
+   4,496/6,161   212.0 tin/s  còn ~  0.1 phút
+   4,816/6,161   212.5 tin/s  còn ~  0.1 phút
+   5,136/6,161   212.7 tin/s  còn ~  0.1 phút
+   5,456/6,161   212.8 tin/s  còn ~  0.1 phút
+   5,776/6,161   213.0 tin/s  còn ~  0.0 phút
+   6,096/6,161   213.3 tin/s  còn ~  0.0 phút
+wrote ext37k-sal-masked-len256.npy n=6161 in 0.6 min (184.14 texts/s)
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+      16/6,161    57.6 tin/s  còn ~  1.8 phút
+     336/6,161    57.0 tin/s  còn ~  1.7 phút
+     656/6,161    57.2 tin/s  còn ~  1.6 phút
+     976/6,161    56.8 tin/s  còn ~  1.5 phút
+   1,296/6,161    56.8 tin/s  còn ~  1.4 phút
+   1,616/6,161    56.8 tin/s  còn ~  1.3 phút
+   1,936/6,161    56.7 tin/s  còn ~  1.2 phút
+   2,256/6,161    56.7 tin/s  còn ~  1.1 phút
+   2,576/6,161    56.6 tin/s  còn ~  1.1 phút
+   2,896/6,161    56.6 tin/s  còn ~  1.0 phút
+   3,216/6,161    56.6 tin/s  còn ~  0.9 phút
+   3,536/6,161    56.6 tin/s  còn ~  0.8 phút
+   3,856/6,161    56.6 tin/s  còn ~  0.7 phút
+   4,176/6,161    56.6 tin/s  còn ~  0.6 phút
+   4,496/6,161    56.5 tin/s  còn ~  0.5 phút
+   4,816/6,161    56.5 tin/s  còn ~  0.4 phút
+   5,136/6,161    56.5 tin/s  còn ~  0.3 phút
+   5,456/6,161    56.5 tin/s  còn ~  0.2 phút
+   5,776/6,161    56.4 tin/s  còn ~  0.1 phút
+   6,096/6,161    56.4 tin/s  còn ~  0.0 phút
+wrote cafebert-ext37k-sal-masked-len512.npy n=6161 in 1.9 min (55.11 texts/s)
+mh-sal-pho-dense-256-s42 {'sal_mae': 4.938}
+mh-sal-pho-dense-256-s43 {'sal_mae': 4.898}
+mh-sal-pho-dense-256-s44 {'sal_mae': 5.171}
+mh-sal-pho-dense-256-s45 {'sal_mae': 5.199}
+mh-sal-pho-dense-256-s46 {'sal_mae': 5.211}
+mh-sal-cafe-dense-512-s42 {'sal_mae': 5.835}
+mh-sal-cafe-dense-512-s43 {'sal_mae': 6.054}
+mh-sal-cafe-dense-512-s44 {'sal_mae': 6.109}
+mh-sal-cafe-dense-512-s45 {'sal_mae': 6.391}
+mh-sal-cafe-dense-512-s46 {'sal_mae': 6.288}
+Some weights of RobertaModel were not initialized from the model checkpoint at vinai/phobert-base-v2 and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn phobert 16/6,111
+  rnn phobert 816/6,111
+  rnn phobert 1,616/6,111
+  rnn phobert 2,416/6,111
+  rnn phobert 3,216/6,111
+  rnn phobert 4,016/6,111
+  rnn phobert 4,816/6,111
+  rnn phobert 5,616/6,111
+mh-sal-pho-rnn-256-s42 {'sal_mae': 5.074}
+Some weights of XLMRobertaModel were not initialized from the model checkpoint at uitnlp/CafeBERT and are newly initialized: ['roberta.pooler.dense.bias', 'roberta.pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+  rnn cafebert 16/6,111
+  rnn cafebert 816/6,111
+  rnn cafebert 1,616/6,111
+  rnn cafebert 2,416/6,111
+  rnn cafebert 3,216/6,111
+  rnn cafebert 4,016/6,111
+  rnn cafebert 4,816/6,111
+  rnn cafebert 5,616/6,111
+mh-sal-cafe-rnn-512-s42 {'sal_mae': 5.298}
