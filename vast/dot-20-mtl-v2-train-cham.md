@@ -45,4 +45,4 @@ Script có `pipefail` và tự dừng nếu ổ chứa `artifacts/` còn < 70 GB
 ## Kết quả (cập nhật 2026-10-21)
 
 - **Dense (máy 3090, 10:34–11:43 UTC): xong.** 5 MTL Dense + 25 Salary Dense `-v2` train và chấm cùng máy; cổng `check_mtl_dev.py` khớp 5/5; đã kéo về Mac và kiểm 30/30 (`torch.load`, checksum). Số liệu: [06-baseline-dl.md §5.9](../docs/06-baseline-dl.md); đã ghi `Dashboard_last4` (dòng 19–28) và `Score_last4` (dòng 16–25).
-- **RNN (máy 4090, từ 10:48 UTC): đang chạy.** CafeBERT `dl-mtl-caf-rnn-b01-cw-s42-v2` đang train; PhoBERT chạy tiếp ngay sau đó.
+- **RNN (máy 4090, từ 10:48 UTC): CafeBERT xong, PhoBERT đang chạy.** CafeBERT `dl-mtl-caf-rnn-b01-cw-s42-v2`: 10:48–13:01 UTC, dừng sớm epoch 42, cổng `dev` khớp, đã chấm, kéo về Mac 1/1 đạt, đã ghi sheet (Dashboard dòng 29, Score dòng 26). PhoBERT `dl-mtl-pho-rnn-b01-cw-s42-v2` bắt đầu 13:01 UTC.
