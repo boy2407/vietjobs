@@ -4,12 +4,16 @@ cd /workspace/vietjobs
 export PYTHONPATH=src
 mkdir -p logs
 
-echo "=== [1/5] PhoBERT RNN MTL ==="
-/venv/main/bin/python -m vietjobs.dl.train_mtl \
-    --encoder phobert --max-len 256 --head rnn --conv-channels 64 --class-weight \
-    --alpha-sal 5.0 --beta-sal 0.1 --epochs 80 --patience 12 --device cuda \
-    --seed 42 --run-id dl-mtl-pho-rnn-b01-cw-s42 \
-    2>&1 | tee logs/dl-mtl-pho-rnn-b01-cw-s42.txt
+if [ -f "artifacts/dl-mtl-pho-rnn-b01-cw-s42/metrics.json" ]; then
+    echo "=== [1/5] PhoBERT RNN MTL: ĐÃ CHẠY XONG (bỏ qua) ==="
+else
+    echo "=== [1/5] PhoBERT RNN MTL ==="
+    /venv/main/bin/python -m vietjobs.dl.train_mtl \
+        --encoder phobert --max-len 256 --head rnn --conv-channels 64 --class-weight \
+        --alpha-sal 5.0 --beta-sal 0.1 --epochs 80 --patience 12 --device cuda \
+        --seed 42 --run-id dl-mtl-pho-rnn-b01-cw-s42 \
+        2>&1 | tee logs/dl-mtl-pho-rnn-b01-cw-s42.txt
+fi
 
 echo "=== [2/5] CafeBERT RNN MTL ==="
 /venv/main/bin/python -m vietjobs.dl.train_mtl \
