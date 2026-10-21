@@ -533,7 +533,7 @@ Bài lương đơn nhiệm, trunk dense, `last4 + cw + β = 0,1`, 5 seed (42–4
 
 Với cùng encoder và cùng trunk RNN, đổi sang hàm mất mát gộp mới tăng macro-F1 `dev` từ 0,6030 lên 0,6322, `test` từ 0,6037 lên 0,6278 và `ext37k` từ 0,5569 lên 0,6090; MAE lương `dev` giảm từ 3,766 xuống 3,700 triệu. Với PhoBERT (256 token, huấn luyện và chấm trên 1× RTX 3090 Ti, dừng sớm ở epoch 58; epoch tốt nhất ngành 21, lương 46): macro-F1 `dev` tăng từ 0,6107 lên 0,6261 và `test` từ 0,5992 lên 0,6242, MAE lương `dev` 3,666 → 3,653 triệu, nhưng RMSE `dev` tăng từ 7,215 lên 7,469 triệu và R² log giảm từ 0,6384 xuống 0,6123. Phần `ext37k` của PhoBERT loss cũ chưa có số liệu. Một seed nên chưa tách được hiệu ứng khỏi nhiễu giữa seed.
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): XLM-R (`dl-mtl-xlm-rnn-b01-cw-s42-v2`, đang chạy) và BamiBERT trunk RNN với loss gộp mới — đang chạy hoặc hoãn.
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): XLM-R (`dl-mtl-xlm-rnn-b01-cw-s42-v2`, run bị dừng ở epoch 24, chưa có checkpoint) và BamiBERT trunk RNN với loss gộp mới — chưa chạy xong.
 
 **Một lần chấm bị loại.** Lần chấm đầu của `eval_mtl_all.py` và `eval_dense_all.py` trên một máy khác máy huấn luyện cho `test` cao hơn `dev` ở mọi mô hình Dense (khoảng 0,03–0,09 macro-F1), tức vector lúc chấm không trùng vector lúc huấn luyện; các số đó bị loại, không dùng ở bất cứ bảng nào. Cách khắc phục là huấn luyện lại và chấm trên cùng một máy, kèm cổng `check_mtl_dev.py` như trên.
 
