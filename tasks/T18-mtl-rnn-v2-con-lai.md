@@ -20,17 +20,19 @@ Cũng đã xong: 5 MTL Dense `-v2` và 25 Salary Dense `-v2` (đã lên sheet, t
 2. Thuê máy và gửi `ssh -p PORT root@IP`; thêm khoá ssh trước khi thuê.
 3. Quyết định ngân sách (xem §6) và có cho phép `git push` thêm lần sau hay không.
 
-## 3. Code trước khi thuê (làm trên Mac, không tốn tiền)
+## 3. Code trước khi thuê (làm trên Mac, không tốn tiền) — ĐÃ XONG 2026-10-21
 
 Lý do: `train_mtl.py` chỉ ghi `best.pt`/`best_sal.pt` **khi train kết thúc** → máy tắt giữa chừng là mất sạch (đã xảy ra với PhoBERT ở máy 4090 và XLM-R ở máy 3090 Ti; ~3 giờ và ~1 giờ GPU).
 
 | Bước | Việc | Kiểm chứng |
 |---|---|---|
-| 3.1 | Ghi `best.pt` / `best_sal.pt` **ngay mỗi khi có mức mới** (ghi vào file tạm rồi đổi tên, tránh file hỏng khi tắt máy) | test: sau mỗi epoch cải thiện thì file có mặt và `torch.load` mở được |
-| 3.2 | Thêm `last.pt` (trọng số + optimizer + epoch + bộ đếm patience + `best_*`) và cờ `--resume` đọc lại | test: dừng giữa chừng rồi chạy tiếp cho cùng `history.jsonl` như chạy liền |
-| 3.3 | Không đổi hành vi khi không dùng `--resume` | `pytest -q` xanh; `check_mtl_dev.py` vẫn khớp trên một run nhỏ |
+| 3.1 ✅ | Ghi `best.pt` / `best_sal.pt` **ngay mỗi khi có mức mới** (ghi vào file tạm rồi đổi tên, tránh file hỏng khi tắt máy) | test: sau mỗi epoch cải thiện thì file có mặt và `torch.load` mở được |
+| 3.2 ✅ | Thêm `last.pt` (trọng số + optimizer + epoch + bộ đếm patience + `best_*`) và cờ `--resume` đọc lại | test: dừng giữa chừng rồi chạy tiếp cho cùng `history.jsonl` như chạy liền |
+| 3.3 ✅ | Không đổi hành vi khi không dùng `--resume` | `pytest -q` xanh; `check_mtl_dev.py` vẫn khớp trên một run nhỏ |
 
 Không cần dòng ablation trong `04-results.md`: đây là thay đổi lưu trữ, không đổi số học (Rule 2 mục 4 chỉ áp cho bước tiền xử lý). Cập nhật `08-ma-nguon.md` nếu đổi tệp (Rule 1).
+
+Kết quả kiểm chứng (đầu Dense, PhoBERT last4, `cpu`, seed 42, `--no-log`): chạy liền 6 epoch so với "mất điện" sau epoch 3 (ngắt bằng lỗi giả ngay sau khi ghi `last.pt`) rồi `--resume` đến epoch 6 — `history.jsonl` trùng ở cả 6 epoch (sai khác < 1e-9) và `metrics.json` cuối trùng (F1, MAE, epoch tốt nhất). Lần đầu epoch 4–6 lệch vì bộ sinh số ngẫu nhiên toàn cục (dropout) chưa được lưu; đã thêm `rng_cpu`/`rng_np`/`rng_cuda` vào `last.pt`. Chưa kiểm trên `cuda` (RNN, máy thuê) — kiểm ở lần thuê tới bằng cách so epoch sau khi chạy tiếp. `pytest -q`: 218 passed (main), 2 test mới trong `tests/test_train_mtl_checkpoint.py` (ghi nguyên tử; lỗi giữa chừng giữ bản cũ). `last.pt` nặng (trọng số + optimizer + hai bản tốt nhất, ước vài chục MB) nên bị xoá khi run kết thúc và không nằm trong danh sách file kéo về.
 
 ## 4. Thuê máy và chạy
 
@@ -76,3 +78,4 @@ Tiền máy rảnh qua đêm không đáng: 8 giờ ≈ $1,8 (xem T17). Luôn k�
 
 ## Nhật ký
 - 2026-10-21: tạo task; XLM-R bị dừng ở epoch 24 (người dùng dừng máy); PhoBERT xong, sheet chờ `gws auth login`.
+- 2026-10-21: xong §3 (checkpoint nguyên tử, `last.pt`, `--resume` trùng bit với chạy liền trên cpu); `gws auth login` đã xong, hai dòng PhoBERT `-v2` đã lên sheet (Dashboard dòng 30, Score dòng 27).
