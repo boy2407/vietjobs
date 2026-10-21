@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import subprocess
 import sys
@@ -27,6 +28,15 @@ from . import text as T
 from .focal_loss import FocalLoss
 from .heads import MultiTaskHead, MultiTaskRnn, class_weights
 from .train_dl import token_stats, compute_salary_bin_weights
+
+
+def save_atomic(obj, path) -> None:
+    """``torch.save`` vào file tạm rồi đổi tên: máy tắt giữa lúc ghi không để lại file hỏng,
+    ``path`` hoặc là bản cũ nguyên vẹn hoặc là bản mới đầy đủ."""
+    path = os.fspath(path)
+    tmp = path + ".tmp"
+    torch.save(obj, tmp)
+    os.replace(tmp, path)
 
 
 def _git(*args: str) -> str:
@@ -115,6 +125,9 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--eval", default="dev", choices=["dev", "test"])
     ap.add_argument("--confirm-test", action="store_true")
     ap.add_argument("--no-log", action="store_true")
+    ap.add_argument("--resume", action="store_true",
+                    help="chạy tiếp từ last.pt của run_id này (trọng số, optimizer, epoch, bộ đếm patience); "
+                         "không có last.pt thì chạy từ đầu")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--seed", type=int, default=C.RANDOM_SEED)
     return ap
@@ -214,7 +227,10 @@ def run(args: argparse.Namespace) -> dict:
     out_dir = C.ARTIFACT_DIR / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
     hist_path = out_dir / "history.jsonl"
-    hist_path.write_text("", encoding="utf-8")
+    last_path = out_dir / "last.pt"
+    # Ghi sớm để một run bị ngắt vẫn chấm được từ best.pt (cần scaler và cấu hình).
+    np.savez(out_dir / "scaler.npz", mean=mu, std=sigma)
+    (out_dir / "config.json").write_text(json.dumps(vars(args), indent=2), encoding="utf-8")
 
     gen = torch.Generator().manual_seed(args.seed)
     # Mỗi task giữ best epoch riêng (cat theo macro-F1, sal theo MAE), giống run đơn
@@ -222,9 +238,31 @@ def run(args: argparse.Namespace) -> dict:
     best_f1, best_epoch, best_state = -np.inf, -1, None
     best_mae, best_epoch_sal, best_state_sal = np.inf, -1, None
     waited = 0
-    t0 = time.time()
+    elapsed = 0.0
+    start_epoch = 1
+    if args.resume and last_path.exists():
+        ck = torch.load(last_path, map_location="cpu")
+        model.load_state_dict(ck["model"])
+        opt.load_state_dict(ck["opt"])
+        gen.set_state(ck["gen"])
+        # Dropout dùng bộ sinh ngẫu nhiên toàn cục: không khôi phục thì epoch sau lúc chạy tiếp
+        # khác với chạy liền (đo ở smoke test: epoch 4–6 lệch).
+        torch.set_rng_state(ck["rng_cpu"])
+        np.random.set_state(ck["rng_np"])
+        if torch.cuda.is_available() and ck.get("rng_cuda"):
+            torch.cuda.set_rng_state_all(ck["rng_cuda"])
+        start_epoch, waited, elapsed = ck["epoch"] + 1, ck["waited"], ck["elapsed"]
+        best_f1, best_epoch, best_state = ck["best_f1"], ck["best_epoch"], ck["best_state"]
+        best_mae, best_epoch_sal, best_state_sal = ck["best_mae"], ck["best_epoch_sal"], ck["best_state_sal"]
+        best_m_cat, best_pred_cat, best_proba_cat = ck["best_m_cat"], ck["best_pred_cat"], ck["best_proba_cat"]
+        best_m_sal, best_pred_sal = ck["best_m_sal"], ck["best_pred_sal"]
+        print(f"  chạy tiếp từ epoch {start_epoch} (đã có {ck['epoch']} epoch, tốt nhất: cat {best_epoch}, sal {best_epoch_sal})", flush=True)
+    else:
+        hist_path.write_text("", encoding="utf-8")
+    t0 = time.time() - elapsed
 
-    for epoch in range(1, args.epochs + 1):
+    epoch = start_epoch - 1
+    for epoch in range(start_epoch, args.epochs + 1):
         model.train()
         total_loss, sum_cat, sum_sal, seen = 0.0, 0.0, 0.0, 0
         for idx in batches(n_train, args.batch, True, gen):
@@ -295,23 +333,31 @@ def run(args: argparse.Namespace) -> dict:
             best_f1, best_epoch, improved = m_cat["f1_macro"], epoch, True
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
             best_m_cat, best_pred_cat, best_proba_cat = m_cat, pred_cat, proba_cat
+            save_atomic(best_state, out_dir / "best.pt")
         if m_sal["mae_trieu"] < best_mae:
             best_mae, best_epoch_sal, improved = m_sal["mae_trieu"], epoch, True
             best_state_sal = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
             best_m_sal, best_pred_sal = m_sal, pred_log_sal
-        if improved:
-            waited = 0
-        else:
-            waited += 1
-            if waited >= args.patience:
-                print(f"  dừng sớm ở epoch {epoch} (tốt nhất: cat {best_epoch}, sal {best_epoch_sal})")
-                break
+            save_atomic(best_state_sal, out_dir / "best_sal.pt")
+        waited = 0 if improved else waited + 1
+        save_atomic({"epoch": epoch, "waited": waited, "elapsed": time.time() - t0,
+                     "model": model.state_dict(), "opt": opt.state_dict(), "gen": gen.get_state(),
+                     "rng_cpu": torch.get_rng_state(), "rng_np": np.random.get_state(),
+                     "rng_cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None,
+                     "best_f1": best_f1, "best_epoch": best_epoch, "best_state": best_state,
+                     "best_mae": best_mae, "best_epoch_sal": best_epoch_sal, "best_state_sal": best_state_sal,
+                     "best_m_cat": best_m_cat, "best_pred_cat": best_pred_cat, "best_proba_cat": best_proba_cat,
+                     "best_m_sal": best_m_sal, "best_pred_sal": best_pred_sal}, last_path)
+        if not improved and waited >= args.patience:
+            print(f"  dừng sớm ở epoch {epoch} (tốt nhất: cat {best_epoch}, sal {best_epoch_sal})")
+            break
 
     seconds = time.time() - t0
     model.load_state_dict(best_state)
-    torch.save(best_state, out_dir / "best.pt")            # theo cat macro-F1
-    torch.save(best_state_sal, out_dir / "best_sal.pt")    # theo sal MAE
+    save_atomic(best_state, out_dir / "best.pt")            # theo cat macro-F1
+    save_atomic(best_state_sal, out_dir / "best_sal.pt")    # theo sal MAE
     np.savez(out_dir / "scaler.npz", mean=mu, std=sigma)
+    last_path.unlink(missing_ok=True)                       # run xong thì không cần chạy tiếp nữa
 
     pred_frame = {
         "y_true_cat": y_cat_ev,
