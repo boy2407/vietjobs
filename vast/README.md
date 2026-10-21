@@ -21,7 +21,10 @@ Script chạy nằm ở `scripts/vast_run_*.sh`; kết quả gốc nằm ở `ar
 | 14 | [dot-14-last4-rnn-visobert.md](dot-14-last4-rnn-visobert.md) | chưa có ID — ViSoBERT RNN last4 + cw + ls, cache pooled last4 | `scripts/vast_run_last4_rnn.sh visobert 512 32` | ĐANG CHẠY |
 | 15 | [dot-15-bert-last4-dense.md](dot-15-bert-last4-dense.md) | Toàn bộ BERT last4 encode + Dense (Category & Salary với Improved Loss) | `scripts/vast_run_dot5.sh` | đã xong |
 | 16 | [dot-16-last4-dense-score.md](dot-16-last4-dense-score.md) | Hoàn thiện metric: ViSoBERT encode+train Dense; chấm Test/Ext37k Dense (CafeBERT, ViSoBERT) | `scripts/vast_run_dot16.sh` | CHỜ THUÊ |
-| 17 | [dot-17-mtl-rnn-score-dense.md](dot-17-mtl-rnn-score-dense.md) | Huấn luyện 4 MTL RNN còn lại + Chấm điểm toàn diện Test & Ext37K (MTL RNN, MTL Dense, Salary Dense) | `scripts/vast_run_dot17.sh` | CHƯA THUÊ |
+| 17 | [dot-17-mtl-rnn-score-dense.md](dot-17-mtl-rnn-score-dense.md) | Huấn luyện 4 MTL RNN còn lại + Chấm điểm toàn diện Test & Ext37K (MTL RNN, MTL Dense, Salary Dense) | `scripts/vast_run_dot17.sh` | ĐÃ TẮT 2026-10-21 (CafeBERT xong + 30 Dense chấm lệch môi trường; BamiBERT dở dang) |
+| 18 | [dot-18-visobert-mtl-rnn-3090.md](dot-18-visobert-mtl-rnn-3090.md) | T17 — ViSoBERT MTL RNN (tách từ Đợt 17; XLM-R hoãn) | `/workspace/run_one.sh vis` | ĐÃ TẮT 2026-10-21 (ViSoBERT xong; XLM-R dở dang) |
+| 19 | [dot-19-xlmr-mtl-rnn-3090-huy.md](dot-19-xlmr-mtl-rnn-3090-huy.md) | T17 — XLM-R MTL RNN | `/workspace/run_one.sh xlm` | ĐÃ HỦY (lỗi ổ `/workspace` 10 GB, rồi destroy) |
+| 20 | [dot-20-mtl-v2-train-cham.md](dot-20-mtl-v2-train-cham.md) | T17 — train lại 5 MTL RNN + 5 MTL Dense (loss mới) + 25 Salary Dense, chấm cùng máy | `scripts/vast_run_dot20.sh` | CHƯA THUÊ |
 
 Kinh nghiệm chung cho mọi đợt: [kinh-nghiem.md](kinh-nghiem.md).
 

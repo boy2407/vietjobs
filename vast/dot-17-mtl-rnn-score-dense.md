@@ -1,8 +1,10 @@
-# Đợt 17: Huấn luyện 4 MTL RNN còn lại + Chấm điểm toàn diện Test & Ext37K (MTL RNN, MTL Dense, Salary Dense) — CHƯA THUÊ
+# Đợt 17: Huấn luyện 4 MTL RNN còn lại + Chấm điểm toàn diện Test & Ext37K (MTL RNN, MTL Dense, Salary Dense) — ĐÃ TẮT
 
 Task: Hoàn tất toàn bộ các mô hình Đa nhiệm (MTL RNN) và chấm điểm toàn bộ các mô hình Dense trên tập `test` (9.541 tin) và `ext37k-sal` (6.111 tin) để điền trọn vẹn vào `Score_last4` và `Dashboard_last4`.
 Script tổng hợp: `scripts/vast_run_dot17.sh`
-Instance đề xuất: 1x RTX 4090 24 GB / RTX 3090 24 GB / RTX A5000 / A6000 (>= 24 GB VRAM, RAM >= 64 GB, đĩa >= 80 GB NVMe), giá ~$0.30 – $0.45/giờ.
+Instance thực tế: 1x RTX 5090 32 GB, 64 vCPU, RAM 251 GB, đĩa 100 GB, `61.32.91.194:18549`, torch 2.14.1+cu132, transformers 4.46.3. Bắt đầu 2026-10-21 07:17 UTC; chạy `/workspace/run17.sh` (tmux `dot17`) — giống `vast_run_dot17.sh` nhưng xóa cache token sau mỗi mô hình vì 4 cache RNN (~120 GB) vượt đĩa 100 GB, và bỏ giai đoạn xuất Excel (chạy trên Mac).
+Thay đổi 2026-10-21 08:50 UTC (tác giả): hôm nay chỉ train CafeBERT (máy này) + ViSoBERT (Đợt 18); **BamiBERT và XLM-R hoãn sang hôm sau**. Trên máy này có `metrics.json` giả trong `artifacts/dl-mtl-{vis,xlm,bam}-rnn-b01-cw-s42/` để `run17.sh` bỏ qua — xóa trước khi kéo về.
+Instance đề xuất ban đầu: 1x RTX 4090 24 GB / RTX 3090 24 GB / RTX A5000 / A6000 (>= 24 GB VRAM, RAM >= 64 GB, đĩa >= 80 GB NVMe), giá ~$0.30 – $0.45/giờ.
 
 ---
 
@@ -125,8 +127,8 @@ ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - \
 | # | Bước công việc | Trạng thái |
 |:---:|---|:---:|
 | 1 | Chuẩn bị script chạy và tài liệu Đợt 17 | done |
-| 2 | Thuê instance vast.ai, cấu hình môi trường | todo |
-| 3 | Chạy `scripts/vast_run_dot17.sh` trong tmux `dot17` | todo |
+| 2 | Thuê instance vast.ai, cấu hình môi trường | done |
+| 3 | Chạy `/workspace/run17.sh` trong tmux `dot17` | doing |
 | 4 | Kéo toàn bộ artifacts và logs về Mac, kiểm tra `best.pt` bằng `torch.load` | todo |
 | 5 | Chạy `gws` cập nhật tự động vào `Score_last4` và `Dashboard_last4` | todo |
 | 6 | Cập nhật kết quả vào `docs/04-results.md` và `docs/06-baseline-dl.md` | todo |
@@ -163,3 +165,10 @@ ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - \
 | ViSoBERT Salary Dense | Sal Dense (5s) | — | — | ... | ... | — | ... | ... |
 | XLM-R Salary Dense | Sal Dense (5s) | — | — | ... | ... | — | ... | ... |
 | BamiBERT Salary Dense | Sal Dense (5s) | — | — | ... | ... | — | ... | ... |
+
+## Kết thúc 2026-10-21 ~10:20 UTC (tác giả tắt máy)
+
+- CafeBERT MTL RNN train xong, chấm cùng máy → hợp lệ (dev chấm lại khớp `metrics.json` tuyệt đối). Đã kéo về Mac, 32/32 run kiểm đạt.
+- Chấm lần 1 lỗi `KeyError: 'strict_target'` (thiếu crosswalk 60→16) — đã sửa `eval_mtl_all.py`, `eval_dense_all.py`; log ở `logs/vast-dot17/*.fail1`.
+- 30 run Dense + PhoBERT MTL RNN chấm ở đây cho số **phồng** (train ở môi trường khác): không dùng. File của PhoBERT giữ ở `*.eval_mtl_all-loi.json`; số test cũ 0,5992 đã khôi phục.
+- BamiBERT MTL RNN (loss cũ) bị tắt giữa chừng ở ~epoch 12 — không có kết quả. Làm lại ở Đợt 20.
