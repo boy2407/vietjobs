@@ -25,6 +25,7 @@ Script chạy nằm ở `scripts/vast_run_*.sh`; kết quả gốc nằm ở `ar
 | 18 | [dot-18-visobert-mtl-rnn-3090.md](dot-18-visobert-mtl-rnn-3090.md) | T17 — ViSoBERT MTL RNN (tách từ Đợt 17; XLM-R hoãn) | `/workspace/run_one.sh vis` | ĐÃ TẮT 2026-10-21 (ViSoBERT xong; XLM-R dở dang) |
 | 19 | [dot-19-xlmr-mtl-rnn-3090-huy.md](dot-19-xlmr-mtl-rnn-3090-huy.md) | T17 — XLM-R MTL RNN | `/workspace/run_one.sh xlm` | ĐÃ HỦY (lỗi ổ `/workspace` 10 GB, rồi destroy) |
 | 20 | [dot-20-mtl-v2-train-cham.md](dot-20-mtl-v2-train-cham.md) | T17 — train lại 5 MTL RNN + 5 MTL Dense (loss mới) + 25 Salary Dense, chấm cùng máy | `scripts/vast_run_dot20.sh` | Dense XONG (3090, chờ destroy); RNN ĐANG CHẠY (4090) |
+| 21 | [dot-21-phobert-xlmr-mtl-rnn-v2.md](dot-21-phobert-xlmr-mtl-rnn-v2.md) | T17 - PhoBERT and XLM-R MTL RNN `-v2` (combined loss), 1x 3090 Ti | `scripts/vast_run_dot20.sh rnn:phobert` / `rnn:xlmr` | PhoBERT done, XLM-R RUNNING |
 
 Kinh nghiệm chung cho mọi đợt: [kinh-nghiem.md](kinh-nghiem.md).
 
