@@ -25,7 +25,7 @@ from .. import evaluate as E
 from . import encode as ENC
 from . import text as T
 from .focal_loss import FocalLoss
-from .heads import MultiTaskHead, MultiTaskRnn
+from .heads import MultiTaskHead, MultiTaskRnn, class_weights
 from .train_dl import token_stats, compute_salary_bin_weights
 
 
@@ -60,7 +60,7 @@ def load_mtl(split: str, max_len: int, encoder: str = ENC.DEFAULT_ENCODER, head:
     # Trunk reads 'masked' family (use task 'salary' to get masked cache).
     # head="rnn": X là memmap float16 [n, T, dim] chưa gộp, mask [n, T] uint8.
     if head == "rnn":
-        X, mask = ENC.token_cache_for(split, "salary", max_len=max_len, encoder=encoder)
+        X, mask = ENC.token_cache_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4)
     else:
         X, mask = ENC.embeddings_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4), None
     
@@ -104,6 +104,12 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--max-len", type=int, default=256)
     ap.add_argument("--patience", type=int, default=15)
     ap.add_argument("--class-weight", action="store_true")
+    ap.add_argument("--cw-mode", default="inverse", choices=["inverse", "sqrt", "effective"],
+                    help="trọng số lớp cho đầu category, như train_dl; 'inverse' giữ công thức cũ")
+    ap.add_argument("--cw-beta", type=float, default=0.9999,
+                    help="beta của effective number; chỉ dùng với --cw-mode effective")
+    ap.add_argument("--label-smoothing", type=float, default=0.0,
+                    help="label smoothing cho CE của đầu category (0 = tắt)")
     ap.add_argument("--alpha-sal", type=float, default=5.0, help="Weight for salary loss")
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--eval", default="dev", choices=["dev", "test"])
@@ -180,8 +186,12 @@ def run(args: argparse.Namespace) -> dict:
     w_cat = None
     if args.class_weight:
         counts = np.bincount(y_cat_tr_t.numpy(), minlength=out_dim_cat).astype(np.float32)
-        w_cat = torch.tensor(counts.sum() / (out_dim_cat * np.clip(counts, 1, None))).to(device)
-    loss_fn_cat = nn.CrossEntropyLoss(weight=w_cat)
+        if args.cw_mode == "inverse":
+            # Công thức gốc của MTL — giữ nguyên để các run cũ tái tạo được.
+            w_cat = torch.tensor(counts.sum() / (out_dim_cat * np.clip(counts, 1, None))).to(device)
+        else:
+            w_cat = torch.tensor(class_weights(counts, args.cw_mode, args.cw_beta)).to(device)
+    loss_fn_cat = nn.CrossEntropyLoss(weight=w_cat, label_smoothing=args.label_smoothing)
 
     # Sample weights cho bài salary theo mật độ hiệu dụng (Cui et al. 2019)
     w_sal_np = np.ones(n_train, dtype=np.float32)
@@ -195,6 +205,8 @@ def run(args: argparse.Namespace) -> dict:
         f"dl-mtl-{enc_tag}-{args.head}"
         f"{'-last4' if args.last4 else ''}"
         f"{'-cw' if args.class_weight else ''}"
+        f"{f'-cw{args.cw_mode[:3]}{args.cw_beta:g}' if args.class_weight and args.cw_mode != 'inverse' else ''}"
+        f"{f'-ls{args.label_smoothing:g}' if args.label_smoothing else ''}"
         f"-a{args.alpha_sal:g}"
         f"{f'-b{args.beta_sal:g}' if args.beta_sal != 1.0 else ''}"
         f"-s{args.seed}"
