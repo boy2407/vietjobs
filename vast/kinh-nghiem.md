@@ -45,3 +45,4 @@
 - **Đẩy dữ liệu: `ssh … 'cd /workspace/vietjobs && tar xzf -'`**, không dùng `cd … || (…)` trong subshell — `cd` không có tác dụng và dữ liệu rơi vào `/root`.
 - Mỗi encoder 512 token cần cache token: CafeBERT last4 ~40 GB (train) + 4 GB (dev), ViSoBERT/XLM-R ~27 + 3 GB; xoá sau mỗi mô hình (script làm sẵn).
 - **File `docs/04-results.md` trên máy thuê chứa các dòng nhật ký của run** — lấy chúng (`git diff docs/04-results.md`) trước khi destroy máy.
+- **`train_mtl.py` chỉ ghi `best.pt`/`best_sal.pt` khi train kết thúc** ([train_mtl.py](../src/vietjobs/dl/train_mtl.py) cuối hàm `main`). Máy bị tắt (hết tiền) ngay sau khi PhoBERT `-v2` train xong → mất 41 epoch. Khi tài khoản sắp hết tiền, không bắt đầu một run dài; nếu code ghi checkpoint mỗi lần có mức mới thì kéo về được bất cứ lúc nào.
