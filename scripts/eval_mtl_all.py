@@ -6,7 +6,9 @@ Tính toán F1-macro, Accuracy, MAE, RMSE, R2, Spearman và tự động ghi:
 - artifacts/<run_id>/external_37k/metrics.json
 - artifacts/eval_mtl_results_summary.json
 """
+import ast
 import json
+import os
 import time
 from pathlib import Path
 import numpy as np
@@ -40,9 +42,12 @@ def load_data():
 
     sal_file = C.ROOT / "data" / "external" / "vietjobs37k" / "ext37k-sal.csv"
     full = pd.read_csv(sal_file, keep_default_na=False, na_values=[""])
+    for col in ("labels", "label_ids"):
+        full[col] = full[col].map(ast.literal_eval)
     overlap, dedup = X.overlap_mask(full, X.OurIndex())
     keep = ~np.asarray(overlap)
-    df_ext = full[keep].reset_index(drop=True)
+    # strict_target không nằm trong CSV: nó đến từ crosswalk 60 → 16, như eval_external_mtl.py.
+    df_ext, _ = X.apply_crosswalk(full[keep].reset_index(drop=True), X.load_crosswalk())
     print(f"Ext37K: {len(df_ext):,} rows after dedup overlap")
 
     # Đảm bảo phân đoạn cho PhoBERT nếu cần
@@ -55,7 +60,7 @@ def load_data():
     return df_test, df_ext
 
 
-def eval_rnn_on_df(m_cat, m_sal, df, task_type, encoder, max_len, segmented, mu, sigma, device, batch=32):
+def eval_rnn_on_df(m_cat, m_sal, df, task_type, encoder, max_len, segmented, mu, sigma, device, batch=32, layers=1):
     texts = T.build_text(df, task=C.TASK_SALARY, segmented=segmented)
     tok, enc, dev_hf = ENC._load_model("cuda" if torch.cuda.is_available() else "cpu", encoder)
     
@@ -67,7 +72,8 @@ def eval_rnn_on_df(m_cat, m_sal, df, task_type, encoder, max_len, segmented, mu,
             e = tok(texts[i:i + batch], padding="max_length", truncation=True,
                     max_length=max_len, return_tensors="pt").to(dev_hf)
             m = e["attention_mask"]
-            h = (enc(**e).last_hidden_state * m.unsqueeze(-1)).to(torch.float16).cpu().numpy()
+            # Cùng hàm với encode_tokens lúc train (Rule 4): layers=4 khi run dùng last4.
+            h = (ENC._hidden(enc, e, layers) * m.unsqueeze(-1)).to(torch.float16).cpu().numpy()
             x = torch.from_numpy((h.astype(np.float32) - mu) / sigma).to(device)
             mk = m.to(torch.uint8).to(device)
             
@@ -106,7 +112,14 @@ def evaluate_all():
 
     results_summary = []
 
+    # ONLY="run_a,run_b": chỉ chấm các run này — mỗi run phải chấm trên đúng máy/môi trường đã train nó.
+    only = [r for r in os.environ.get("ONLY", "").split(",") if r]
+    # RUN_SUFFIX="-v2": chấm bộ run train lại với cấu hình loss mới, không đụng run gốc.
+    suffix = os.environ.get("RUN_SUFFIX", "")
     for run_id, encoder, max_len, segmented in MTL_RNN_MODELS:
+        run_id += suffix
+        if only and run_id not in only:
+            continue
         run_dir = C.ARTIFACT_DIR / run_id
         if not (run_dir / "best.pt").exists():
             print(f"Skipping {run_id}: chưa có checkpoint {run_dir / 'best.pt'}")
@@ -138,7 +151,8 @@ def evaluate_all():
         # 1. Chấm trên Test split
         print(f"  [1/2] Đang chấm Test set (9.541 tin)...")
         proba_test, pred_log_test = eval_rnn_on_df(m_cat, m_sal, df_test, C.TASK_SALARY,
-                                                    encoder, max_len, segmented, mu, sigma, device)
+                                                    encoder, max_len, segmented, mu, sigma, device,
+                                                    layers=4 if cfg.get("last4") else 1)
         pred_cat_test = np.array(labels)[proba_test.argmax(1)]
         pred_sal_test = np.expm1(pred_log_test)
 
@@ -159,7 +173,8 @@ def evaluate_all():
         # 2. Chấm trên Ext37K
         print(f"  [2/2] Đang chấm Ext37K (6.111 tin)...")
         proba_ext, pred_log_ext = eval_rnn_on_df(m_cat, m_sal, df_ext, C.TASK_SALARY,
-                                                  encoder, max_len, segmented, mu, sigma, device)
+                                                  encoder, max_len, segmented, mu, sigma, device,
+                                                    layers=4 if cfg.get("last4") else 1)
         pred_cat_ext = np.array(labels)[proba_ext.argmax(1)]
         pred_sal_ext = np.expm1(pred_log_ext)
 

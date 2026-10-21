@@ -1,4 +1,5 @@
 import json
+import os
 import time
 import ast
 from pathlib import Path
@@ -35,6 +36,9 @@ MTL_MODELS = [
     ('dl-mtl-bam-dense-last4-cw-s42', 'bamibert'),
 ]
 
+# RUN_SUFFIX="-r3": chấm bộ run train lại (cùng máy với lúc chấm), không đụng run gốc.
+RUN_SUFFIX = os.environ.get('RUN_SUFFIX', '')
+
 SALARY_MODELS = [
     ('pho', 'phobert'),
     ('cafe', 'cafebert'),
@@ -50,9 +54,12 @@ def load_data():
     
     sal_file = C.ROOT / 'data' / 'external' / 'vietjobs37k' / 'ext37k-sal.csv'
     full = pd.read_csv(sal_file, keep_default_na=False, na_values=[''])
+    for col in ('labels', 'label_ids'):
+        full[col] = full[col].map(ast.literal_eval)
     overlap, dedup = X.overlap_mask(full, X.OurIndex())
     keep = ~np.asarray(overlap)
-    df_ext = full[keep].reset_index(drop=True)
+    # strict_target không nằm trong CSV: nó đến từ crosswalk 60 → 16, như eval_external_mtl.py.
+    df_ext, _ = X.apply_crosswalk(full[keep].reset_index(drop=True), X.load_crosswalk())
     print(f'Ext37K: {len(df_ext):,} rows after dedup overlap')
     
     # Pre-segment Ext37K text for PhoBERT if needed
@@ -122,6 +129,7 @@ def eval_mtl(df_test, df_ext, embeddings_dict, labels):
     mtl_results = []
     
     for run_id, encoder in MTL_MODELS:
+        run_id += RUN_SUFFIX
         run_dir = C.ARTIFACT_DIR / run_id
         cfg = json.loads((run_dir / 'config.json').read_text(encoding='utf-8'))
         sc = np.load(run_dir / 'scaler.npz')
@@ -233,7 +241,7 @@ def eval_salary_dense(df_test, df_ext, embeddings_dict):
         seeds_ext_mae, seeds_ext_rmse, seeds_ext_r2, seeds_ext_spearman = [], [], [], []
         
         for seed in (42, 43, 44, 45, 46):
-            run_id = f'dl-sal-{short_name}-dense-last4-b01-cw-s{seed}'
+            run_id = f'dl-sal-{short_name}-dense-last4-b01-cw-s{seed}{RUN_SUFFIX}'
             run_dir = C.ARTIFACT_DIR / run_id
             if not (run_dir / 'best.pt').exists():
                 continue
