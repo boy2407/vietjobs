@@ -19,6 +19,7 @@ Script chạy nằm ở `scripts/vast_run_*.sh`; kết quả gốc nằm ở `ar
 | 12 | [dot-12-last4-rnn-xlmr-visobert.md](dot-12-last4-rnn-xlmr-visobert.md) | chưa có ID — XLM-R RNN last4 + cw + ls (ViSoBERT chuyển sang dot-14) | `scripts/vast_run_last4_rnn.sh` | ĐANG CHẠY |
 | 13 | [dot-13-last4-rnn-cafebert-phobert.md](dot-13-last4-rnn-cafebert-phobert.md) | chưa có ID — CafeBERT + PhoBERT RNN last4 + cw + ls | `scripts/vast_run_last4_rnn.sh` | ĐANG CHẠY |
 | 14 | [dot-14-last4-rnn-visobert.md](dot-14-last4-rnn-visobert.md) | chưa có ID — ViSoBERT RNN last4 + cw + ls, cache pooled last4 | `scripts/vast_run_last4_rnn.sh visobert 512 32` | ĐANG CHẠY |
+| 15 | [dot-15-bert-last4-dense.md](dot-15-bert-last4-dense.md) | Toàn bộ BERT last4 encode + Dense (Category & Salary với Improved Loss) | `scripts/vast_run_dot5.sh` | đã xong |
 
 Kinh nghiệm chung cho mọi đợt: [kinh-nghiem.md](kinh-nghiem.md).
 

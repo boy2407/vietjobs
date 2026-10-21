@@ -70,13 +70,15 @@ def hidden_of(encoder: str) -> int:
 
 
 def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
-               encoder: str = DEFAULT_ENCODER, layers: int = 1) -> Path:
+               encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False) -> Path:
     """``kind``: ``pooled`` (tên cũ, giữ nguyên để cache đã có vẫn hợp lệ), ``tok``, ``mask``.
 
     ``layers > 1``: trung bình ``layers`` lớp ẩn cuối thay vì chỉ lớp cuối; ``pooled`` và
     ``tok`` mang hậu tố ``-last{layers}`` để đối chứng A/B với cache cũ mà không ghi đè nó.
     ``mask`` chỉ phụ thuộc tokenizer nên dùng chung tên với cache lớp cuối.
     """
+    if last4:
+        layers = 4
     prefix = "" if encoder == DEFAULT_ENCODER else f"{encoder}-"
     stem = f"{prefix}{split}-{family(task)}-len{max_len}"
     if layers > 1 and kind != "mask":
@@ -160,7 +162,7 @@ def _hidden(model, enc, layers: int):
 
 def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
                  device: str = "auto", quiet: bool = False,
-                 encoder: str = DEFAULT_ENCODER, layers: int = 1) -> np.ndarray:
+                 encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False) -> np.ndarray:
     """Trả về ``[n, hidden]`` — trung bình có mặt nạ của lớp ẩn cuối
     (hoặc trung bình ``layers`` lớp ẩn cuối rồi mới gộp token, khi ``layers > 1``).
 
@@ -168,6 +170,8 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
     câu ``<s>`` không được huấn luyện cho tác vụ nào, còn trung bình token giữ
     được nhiều tín hiệu từ vựng hơn — thứ mà nhãn ngành nghề phụ thuộc vào.
     """
+    if last4:
+        layers = 4
     import torch
 
     tok, model, dev = _load_model(device, encoder)
@@ -220,15 +224,18 @@ def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: i
 
 def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
                    device: str = "auto", force: bool = False,
-                   encoder: str = DEFAULT_ENCODER, layers: int = 1) -> np.ndarray:
+                   encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False) -> np.ndarray:
     """Đọc cache nếu có, nếu chưa thì tính rồi ghi cache."""
+    if last4:
+        layers = 4
     path = cache_path(split, task, max_len, encoder=encoder, layers=layers)
     if path.exists() and not force:
         return np.load(path)
     df = D.load_split(split)
     seg = ENCODERS[encoder]["segmented"]
     texts = T.build_text(df, task=task, segmented=seg)
-    print(f"[{split}] {encoder} · {len(texts):,} tin · cột {T.columns_for(task, segmented=seg)} · max_len={max_len}")
+    tag = f" · last{layers}" if layers > 1 else ""
+    print(f"[{split}] {encoder} · {len(texts):,} tin · cột {T.columns_for(task, segmented=seg)} · max_len={max_len}{tag}")
     emb = encode_texts(texts, max_len=max_len, batch=batch, device=device, encoder=encoder,
                        layers=layers)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -241,7 +248,9 @@ def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32
 
 def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
                     device: str = "auto", force: bool = False,
-                    encoder: str = DEFAULT_ENCODER, layers: int = 1):
+                    encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False):
+    if last4:
+        layers = 4
     """Trả về ``(tok, mask)`` — ``tok`` là memmap chỉ-đọc float16 ``[n, max_len, 768]``,
     ``mask`` là mảng uint8 ``[n, max_len]`` nạp hẳn vào RAM (vài MB).
 
@@ -276,7 +285,10 @@ def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 3
 def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int,
                    pooling: str = "masked_mean", dtype: str = "float32",
                    shape: list | None = None, encoder: str = DEFAULT_ENCODER,
-                   texts: list | None = None, layers: int = 1) -> None:
+                   texts: list | None = None, layers: int = 1,
+                   last4: bool | None = None) -> None:
+    if last4:
+        layers = 4
     """Ghi ``<cache>.json`` cạnh file ``.npy``: đúng những gì đã tạo ra các vector.
 
     Một cache ``.npy`` không tự nói nó được nhúng bằng tokenizer nào, cắt ở đâu,
@@ -303,6 +315,7 @@ def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int,
         "max_len": max_len,
         "pooling": pooling,
         "layers": layers,
+        "last4": layers == 4,
         "dtype": dtype,
         "shape": shape or [n, spec["hidden"]],
         "split": split,
@@ -322,6 +335,8 @@ def main() -> None:
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--device", default="auto")
     ap.add_argument("--force", action="store_true")
+    ap.add_argument("--last4", action="store_true",
+                    help="gộp trung bình 4 tầng cuối (last4) thay vì 1 tầng cuối")
     ap.add_argument("--encoder", default=DEFAULT_ENCODER, choices=list(ENCODERS),
                     help="phobert (mặc định, cache cũ) | cafebert (T8.6, 1024 chiều, không tách từ)")
     ap.add_argument("--pooling", default="mean", choices=["mean", "none"],
@@ -331,6 +346,8 @@ def main() -> None:
                     help="số lớp ẩn cuối được lấy trung bình trước khi gộp token (1 = chỉ lớp cuối, "
                          "cache cũ); cả --pooling mean lẫn none")
     args = ap.parse_args()
+    if args.last4:
+        args.layers = 4
 
     if "test" in args.splits:
         raise SystemExit("test không được nhúng ở đây — xem docs/03-protocol.md, điều 2")

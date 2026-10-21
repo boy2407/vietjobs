@@ -61,6 +61,14 @@ def test_other_encoder_gets_its_own_cache_and_phobert_keeps_the_old_name():
     assert not ENC.ENCODERS["cafebert"]["segmented"]
 
 
+def test_last4_cache_path_naming():
+    """Cache last4 có đuôi -last4 và không đè lên cache mặc định."""
+    p_pho = ENC.cache_path("dev", C.TASK_SALARY, 256, last4=True)
+    assert p_pho.name == "dev-masked-len256-last4.npy"
+    p_cafe = ENC.cache_path("dev", C.TASK_SALARY, 512, encoder="cafebert", last4=True)
+    assert p_cafe.name == "cafebert-dev-masked-len512-last4.npy"
+
+
 @_needs_cache
 @pytest.mark.parametrize("split,task", COMBOS_PARAM)
 def test_masked_mean_of_token_cache_equals_pooled_cache(split, task):

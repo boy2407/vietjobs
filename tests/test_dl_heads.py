@@ -250,3 +250,31 @@ def test_residual_head_shape_and_skip_path():
     for p in m.deep.parameters():
         nn.init.zeros_(p)
     assert not torch.allclose(m(x), m(torch.randn(4, 768)))
+
+
+def test_compute_salary_bin_weights():
+    import numpy as np
+    from vietjobs.dl.train_dl import compute_salary_bin_weights
+    # Mock log1p values: 100 samples around 12-16M, 5 samples > 50M
+    y_log = np.concatenate([
+        np.full(100, np.log1p(14.0)),
+        np.full(5, np.log1p(60.0)),
+        np.full(10, np.log1p(4.0)),
+    ]).astype(np.float32)
+    w = compute_salary_bin_weights(y_log, beta_eff=0.999)
+    assert len(w) == len(y_log)
+    assert w.dtype == np.float32
+    assert np.isclose(w.mean(), 1.0, atol=1e-5)
+    # Vùng hiếm (>50tr) phải có trọng số cao hơn vùng dày (14tr)
+    assert w[100] > w[0]
+
+
+def test_salary_cli_parser_options():
+    from vietjobs.dl.train_dl import build_parser
+    args = build_parser().parse_args([
+        "--task", "salary", "--last4", "--beta-sal", "0.1", "--class-weight"
+    ])
+    assert args.task == "salary"
+    assert args.last4 is True
+    assert args.beta_sal == 0.1
+    assert args.class_weight is True

@@ -35,3 +35,7 @@ data/external/
 # Google Drive sync
 .tmp.driveupload
 .drive
+
+# Local logs & AI worktrees
+logs/
+.claude/

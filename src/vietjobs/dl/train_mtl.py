@@ -26,7 +26,7 @@ from . import encode as ENC
 from . import text as T
 from .focal_loss import FocalLoss
 from .heads import MultiTaskHead, MultiTaskRnn
-from .train_dl import token_stats
+from .train_dl import token_stats, compute_salary_bin_weights
 
 
 def _git(*args: str) -> str:
@@ -55,14 +55,14 @@ def environment(device, encoder: str = ENC.DEFAULT_ENCODER) -> dict:
     }
 
 
-def load_mtl(split: str, max_len: int, encoder: str = ENC.DEFAULT_ENCODER, head: str = "dense"):
+def load_mtl(split: str, max_len: int, encoder: str = ENC.DEFAULT_ENCODER, head: str = "dense", last4: bool = False):
     df = D.load_split(split)
     # Trunk reads 'masked' family (use task 'salary' to get masked cache).
     # head="rnn": X là memmap float16 [n, T, dim] chưa gộp, mask [n, T] uint8.
     if head == "rnn":
         X, mask = ENC.token_cache_for(split, "salary", max_len=max_len, encoder=encoder)
     else:
-        X, mask = ENC.embeddings_for(split, "salary", max_len=max_len, encoder=encoder), None
+        X, mask = ENC.embeddings_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4), None
     
     if len(X) != len(df):
         raise SystemExit(f"cache {split} có {len(X)} dòng nhưng split có {len(df)}")
@@ -83,7 +83,7 @@ def batches(n: int, size: int, shuffle: bool, gen: torch.Generator):
 
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--epochs", type=int, default=40)
+    ap.add_argument("--epochs", type=int, default=80)
     ap.add_argument("--batch", type=int, default=256)
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--clip", type=float, default=1.0)
@@ -91,6 +91,10 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--hidden", type=int, default=256)
     ap.add_argument("--dropout", type=float, default=0.3)
     ap.add_argument("--pre-hidden", type=int, default=0)
+    ap.add_argument("--last4", action="store_true",
+                    help="đọc cache gộp từ 4 tầng cuối (last4)")
+    ap.add_argument("--beta-sal", type=float, default=0.1,
+                    help="ngưỡng chuyển đổi Huber (Smooth L1) cho bài salary; mặc định 0.1")
     ap.add_argument("--head", default="dense", choices=["dense", "rnn"],
                     help="trunk: dense trên vector đã gộp, hoặc rnn trên token cache (--pooling none)")
     ap.add_argument("--branches", default="both", choices=["both", "gru", "lstm"])
@@ -98,9 +102,9 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--conv-channels", type=int, default=64)
     ap.add_argument("--encoder", default=ENC.DEFAULT_ENCODER, choices=list(ENC.ENCODERS))
     ap.add_argument("--max-len", type=int, default=256)
-    ap.add_argument("--patience", type=int, default=8)
+    ap.add_argument("--patience", type=int, default=15)
     ap.add_argument("--class-weight", action="store_true")
-    ap.add_argument("--alpha-sal", type=float, default=1.0, help="Weight for salary loss")
+    ap.add_argument("--alpha-sal", type=float, default=5.0, help="Weight for salary loss")
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--eval", default="dev", choices=["dev", "test"])
     ap.add_argument("--confirm-test", action="store_true")
@@ -129,8 +133,8 @@ def run(args: argparse.Namespace) -> dict:
     np.random.seed(args.seed)
     device = ENC.pick_device(args.device)
 
-    Xtr, mtr, y_cat_tr, y_sal_tr, df_tr, keep_sal_tr = load_mtl("train", args.max_len, args.encoder, args.head)
-    Xev, mev, y_cat_ev, y_sal_ev, df_ev, keep_sal_ev = load_mtl(args.eval, args.max_len, args.encoder, args.head)
+    Xtr, mtr, y_cat_tr, y_sal_tr, df_tr, keep_sal_tr = load_mtl("train", args.max_len, args.encoder, args.head, last4=args.last4)
+    Xev, mev, y_cat_ev, y_sal_ev, df_ev, keep_sal_ev = load_mtl(args.eval, args.max_len, args.encoder, args.head, last4=args.last4)
 
     n_train = len(y_cat_tr)
     labels = sorted(set(y_cat_tr.tolist()))
@@ -172,18 +176,28 @@ def run(args: argparse.Namespace) -> dict:
                               pre_hidden=args.pre_hidden).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-    loss_fn_sal = nn.SmoothL1Loss(reduction='none')
-    w = None
+    loss_fn_sal = nn.SmoothL1Loss(reduction='none', beta=args.beta_sal)
+    w_cat = None
     if args.class_weight:
         counts = np.bincount(y_cat_tr_t.numpy(), minlength=out_dim_cat).astype(np.float32)
-        w = torch.tensor(counts.sum() / (out_dim_cat * np.clip(counts, 1, None))).to(device)
-    loss_fn_cat = nn.CrossEntropyLoss(weight=w)
+        w_cat = torch.tensor(counts.sum() / (out_dim_cat * np.clip(counts, 1, None))).to(device)
+    loss_fn_cat = nn.CrossEntropyLoss(weight=w_cat)
 
+    # Sample weights cho bài salary theo mật độ hiệu dụng (Cui et al. 2019)
+    w_sal_np = np.ones(n_train, dtype=np.float32)
+    if args.class_weight:
+        w_sal_valid = compute_salary_bin_weights(y_sal_tr[keep_sal_tr])
+        w_sal_np[keep_sal_tr] = w_sal_valid
+    w_sal_t = torch.tensor(w_sal_np, dtype=torch.float32).unsqueeze(1).to(device)
+
+    enc_tag = args.encoder[:3] if args.encoder != ENC.DEFAULT_ENCODER else "pho"
     run_id = args.run_id or (
-        f"dl-mtl{'-rnn' if is_rnn else ''}-h{args.hidden}"
+        f"dl-mtl-{enc_tag}-{args.head}"
+        f"{'-last4' if args.last4 else ''}"
         f"{'-cw' if args.class_weight else ''}"
-        f"-a{args.alpha_sal}"
-        f"-{datetime.now().strftime('%m%d-%H%M')}"
+        f"-a{args.alpha_sal:g}"
+        f"{f'-b{args.beta_sal:g}' if args.beta_sal != 1.0 else ''}"
+        f"-s{args.seed}"
     )
     out_dir = C.ARTIFACT_DIR / run_id
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -206,12 +220,13 @@ def run(args: argparse.Namespace) -> dict:
             yc_b = y_cat_tr_t[idx].to(device)
             ys_b = y_sal_tr_t[idx].to(device)
             ms_b = mask_sal_tr_t[idx].to(device)
+            ws_b = w_sal_t[idx]
             
             opt.zero_grad()
             logits_cat, logits_sal = model(xb, mb)
             
             l_cat = loss_fn_cat(logits_cat, yc_b)
-            l_sal_all = loss_fn_sal(logits_sal, ys_b)
+            l_sal_all = loss_fn_sal(logits_sal, ys_b) * ws_b
             l_sal = (l_sal_all * ms_b).sum() / (ms_b.sum() + 1e-6)
             
             loss = l_cat + args.alpha_sal * l_sal

@@ -103,9 +103,30 @@ def environment(device, encoder: str = ENC.DEFAULT_ENCODER) -> dict:
     }
 
 
+def compute_salary_bin_weights(y_log: np.ndarray, beta_eff: float = 0.999) -> np.ndarray:
+    """Trọng số mẫu theo mật độ hiệu dụng (Effective Number of Samples, Cui et al. CVPR 2019).
+
+    Chia mức lương log1p(salary_mid) thành các khoảng (buckets), tính trọng số từng
+    khoảng theo (1 - beta) / (1 - beta^n) và chuẩn hoá để mean(w) == 1.0.
+    """
+    bins = np.log1p([0.0, 6.0, 10.0, 15.0, 20.0, 30.0, 50.0, np.inf])
+    bin_idx = np.digitize(y_log, bins) - 1
+    bin_idx = np.clip(bin_idx, 0, len(bins) - 2)
+    counts = np.bincount(bin_idx, minlength=len(bins) - 1)
+    w_bin = np.zeros(len(counts), dtype=np.float32)
+    for b, n in enumerate(counts):
+        if n > 0:
+            w_bin[b] = (1.0 - beta_eff) / (1.0 - (beta_eff ** n))
+        else:
+            w_bin[b] = 1.0
+    w = w_bin[bin_idx]
+    w = w / max(w.mean(), 1e-9)
+    return w.astype(np.float32)
+
+
 def load_task(split: str, task: str, max_len: int, head: str = "dense",
               encoder: str = ENC.DEFAULT_ENCODER, concat: tuple[str, int] | None = None,
-              layers: int = 1):
+              layers: int = 1, last4: bool | None = None):
     """Trả về ``(X, mask, y, frame)`` — frame giữ lại để cắt lát kết quả theo ngành.
 
     ``head="dense"``  → ``X`` là ma trận ``[n, 768]`` đã gộp, ``mask`` là ``None``.
@@ -114,6 +135,8 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
     nạp cả 13,5 GB vào RAM), nên ở đây chỉ trả về **chỉ số dòng được giữ**; vòng
     huấn luyện đọc theo batch qua chỉ số đó.
     """
+    if last4:
+        layers = 4
     df = D.load_split(split)
     if head == "rnn":
         X, mask = ENC.token_cache_for(split, task, max_len=max_len, encoder=encoder,
@@ -124,7 +147,7 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
         if concat is not None:
             c_enc, c_len = concat
             ENC.check_same_rows(split, task, len(df), (encoder, max_len), (c_enc, c_len))
-            path = ENC.cache_path(split, task, c_len, encoder=c_enc)
+            path = ENC.cache_path(split, task, c_len, encoder=c_enc, layers=layers)
             if not path.exists():
                 raise SystemExit(f"thiếu {path.name}: concat không nhúng lại — encode trước")
             X2 = np.load(path)
@@ -229,8 +252,12 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--max-minutes", type=float, default=0,
                     help="trần thời gian huấn luyện (phút, tính từ epoch 1); 0 = không giới hạn. "
                          "Hết giờ thì dừng và giữ best.pt tới lúc đó — dùng cho phiên Colab có cap")
+    ap.add_argument("--last4", action="store_true",
+                    help="đọc cache gộp từ 4 tầng cuối (last4)")
+    ap.add_argument("--beta-sal", type=float, default=1.0,
+                    help="ngưỡng chuyển đổi Huber (Smooth L1) cho bài salary; mặc định 1.0")
     ap.add_argument("--class-weight", action="store_true",
-                    help="cân bằng lớp cho bài phân lớp (lệch 27:1)")
+                    help="cân bằng: theo lớp cho category (lệch 27:1), theo mật độ hiệu dụng cho salary")
     ap.add_argument("--label-smoothing", type=float, default=0.0,
                     help="label smoothing epsilon cho CE phân lớp (0 = tắt); không đi với focal")
     ap.add_argument("--cw-mode", default="inverse", choices=["inverse", "sqrt", "effective"],
@@ -239,8 +266,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--cw-beta", type=float, default=0.9999,
                     help="beta của effective number; chỉ dùng với --cw-mode effective")
     ap.add_argument("--loss", default="ce", choices=["ce", "focal", "quantile", "ahuber"],
-                    help="chỉ áp dụng cho phân lớp; focal cân theo độ khó từng mẫu "
-                         "thay vì độ hiếm của lớp — dùng cùng --class-weight được")
+                    help="phân lớp (ce, focal) hoặc hồi quy lương (quantile, ahuber)")
     ap.add_argument("--focal-gamma", type=float, default=2.0,
                     help="gamma của focal loss; gamma=0 trùng CrossEntropyLoss")
     ap.add_argument("--tau", type=float, default=0.5,
@@ -303,6 +329,8 @@ def run(args: argparse.Namespace) -> dict:
     device = ENC.pick_device(args.device)
     is_reg = args.task == C.TASK_SALARY
 
+    if getattr(args, "last4", False):
+        args.layers = 4
     Xtr, mtr, ytr, tr_df = load_task("train", args.task, args.max_len, args.head, args.encoder,
                                      concat, args.layers)
     Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder,
@@ -369,13 +397,17 @@ def run(args: argparse.Namespace) -> dict:
                           pre_hidden=args.pre_hidden).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
+    sample_weights = None
     if is_reg:
         if args.loss == "quantile":
             loss_fn = QuantileLoss(args.tau)
         elif args.loss == "ahuber":
             loss_fn = AsymHuberLoss(args.tau)
         else:
-            loss_fn = nn.SmoothL1Loss()  # đuôi lương rất dài (skew 11,8) — huber chịu đuôi tốt hơn MSE
+            loss_fn = nn.SmoothL1Loss(beta=args.beta_sal)
+        if args.class_weight:
+            w_np = compute_salary_bin_weights(ytr)
+            sample_weights = torch.tensor(w_np, dtype=torch.float32).unsqueeze(1).to(device)
     else:
         w = None
         if args.class_weight:
@@ -388,9 +420,11 @@ def run(args: argparse.Namespace) -> dict:
             loss_fn = nn.CrossEntropyLoss(weight=w, label_smoothing=args.label_smoothing)
 
     run_id = args.run_id or (
-        f"dl-{'reg' if is_reg else args.task[:3]}-h{args.hidden}"
+        f"dl-{'sal' if is_reg else args.task[:3]}-{args.encoder[:3] if args.encoder != ENC.DEFAULT_ENCODER else 'pho'}-{args.head}"
+        f"{f'-last{args.layers}' if args.layers > 1 else ''}"
         f"{f'-cw-{args.cw_mode}' if args.class_weight and args.cw_mode != 'inverse' else '-cw' if args.class_weight else ''}"
         f"{f'-ls{args.label_smoothing:g}' if args.label_smoothing else ''}"
+        f"{f'-b{args.beta_sal:g}' if is_reg and args.beta_sal != 1.0 else ''}"
         f"{f'-focal-g{args.focal_gamma:g}' if args.loss == 'focal' else ''}"
         f"-{datetime.now().strftime('%m%d-%H%M')}"
     )
@@ -411,7 +445,13 @@ def run(args: argparse.Namespace) -> dict:
             xb, mb = take(Xtr, mtr, idx)
             yb = ytr_t[idx].to(device)
             opt.zero_grad()
-            loss = loss_fn(model(xb, mb), yb)
+            out = model(xb, mb)
+            if is_reg and sample_weights is not None:
+                wb = sample_weights[idx]
+                loss_none = nn.functional.smooth_l1_loss(out, yb, beta=args.beta_sal, reduction="none")
+                loss = (loss_none * wb).mean()
+            else:
+                loss = loss_fn(out, yb)
             loss.backward()
             if args.clip:
                 nn.utils.clip_grad_norm_(model.parameters(), args.clip)
@@ -535,6 +575,7 @@ def run(args: argparse.Namespace) -> dict:
         with path.open("a", encoding="utf-8") as fh:
             loss_tag = (f",focal(g={args.focal_gamma:g})" if args.loss == "focal"
                         else f",{args.loss}(tau={args.tau:g})" if args.loss in ("quantile", "ahuber")
+                        else f",b={args.beta_sal:g}" if (is_reg and args.beta_sal != 1.0)
                         else "")
             cw_tag = ("" if not args.class_weight else ",cw" if args.cw_mode == "inverse"
                       else f",cw({args.cw_mode}" + (f",b={args.cw_beta:g}" if args.cw_mode == "effective" else "") + ")")
