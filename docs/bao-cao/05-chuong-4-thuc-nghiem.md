@@ -452,7 +452,16 @@ Nhận xét: macro-F1 trên `dev` của cả năm encoder tăng khi dùng loss m
 | CafeBERT (512) | 0,6030 | 3,766 | 0,6037 | 0,6404 | 0,5569 | 4,547 |
 | ViSoBERT (512) | 0,5990 | 3,903 | 0,5952 | 0,6305 | 0,5536 | 5,217 |
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): trunk RNN với loss gộp mới (`dl-mtl-{caf,pho}-rnn-b01-cw-s42-v2`), BamiBERT và XLM-R RNN — đang chạy hoặc hoãn.
+**Bảng 4.20: Trunk RNN, loss gộp mới (`-v2`) so với loss cũ, CafeBERT 512 token**
+
+| Mô hình | Dev F1 | Dev MAE (triệu) | Test F1 | Test Acc | Ext37K F1 | Ext37K MAE (triệu) |
+|---|---|---|---|---|---|---|
+| Loss cũ | 0,6030 | 3,766 | 0,6037 | 0,6404 | 0,5569 | 4,547 |
+| Loss gộp mới `-v2` | 0,6322 | 3,700 | 0,6278 | 0,6682 | 0,6090 | 5,215 |
+
+Run `dl-mtl-caf-rnn-b01-cw-s42-v2`: huấn luyện và chấm trên cùng một máy RTX 4090; dừng sớm ở epoch 42; cổng `check_mtl_dev.py` khớp tuyệt đối. Một seed nên chưa tách được hiệu ứng khỏi nhiễu giữa seed.
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): `dl-mtl-pho-rnn-b01-cw-s42-v2`, BamiBERT và XLM-R trunk RNN với loss gộp mới — đang chạy hoặc hoãn.
 
 **Hồ sơ lần chạy (Quy tắc 10).**
 1. *Đã chạy:* T17, ngày 21/10/2026; `run_id` các run `-v2` ở Bảng 4.17–4.18; lệnh `bash scripts/vast_run_dot20.sh dense` (encode pooled `last4` rồi `train_mtl.py --head dense --last4 --class-weight --cw-mode effective --cw-beta 0.999 --label-smoothing 0.05 --beta-sal 0.1 --alpha-sal 5.0` và `train_dl.py --task salary --head dense --last4 --class-weight --beta-sal 0.1`); Vast.ai, 1× RTX 3090, môi trường `/venv/main` (torch 2.14.1+cu132, transformers 4.46.3); đọc `train`, chọn mô hình trên `dev` (3.812 tin phân lớp, 2.698 tin có lương), chấm `test` (9.541 tin) và `ext37k-sal`.
@@ -463,7 +472,7 @@ Nhận xét: macro-F1 trên `dev` của cả năm encoder tăng khi dùng loss m
 
 **Điều kiện chấm.** Mỗi run được huấn luyện và chấm trên cùng một máy; trước khi chấm `test`, `scripts/check_mtl_dev.py` chấm lại `dev` bằng đúng đường chấm và so với `metrics.json` (cả năm MTL Dense khớp tuyệt đối). Một lần chấm đầu ở máy khác máy huấn luyện cho `test` cao hơn `dev` ở mọi mô hình Dense (khoảng 0,03–0,09 macro-F1), tức vectơ lúc chấm không trùng vectơ lúc huấn luyện; các số đó bị loại. Số `test` là test-informed theo ngoại lệ 2026-10-15 của Quy tắc 5.
 
-> **Nguồn số liệu:** `artifacts/dl-mtl-{pho,caf,vis,xlm,bam}-dense-last4-cw-s42{,-v2}/`, `artifacts/dl-sal-{pho,cafe,visobert,xlmr,bamibert}-dense-last4-b01-cw-s{42..46}-v2/`, `artifacts/dl-mtl-{pho,caf,vis}-rnn-b01-cw-s42/` (`metrics.json`, `metrics_test.json`, `external_37k/metrics.json`); các dòng `-v2` trong [04-results.md](../04-results.md).
+> **Nguồn số liệu:** `artifacts/dl-mtl-{pho,caf,vis,xlm,bam}-dense-last4-cw-s42{,-v2}/`, `artifacts/dl-sal-{pho,cafe,visobert,xlmr,bamibert}-dense-last4-b01-cw-s{42..46}-v2/`, `artifacts/dl-mtl-{pho,caf,vis}-rnn-b01-cw-s42/`, `artifacts/dl-mtl-caf-rnn-b01-cw-s42-v2/` (`metrics.json`, `metrics_test.json`, `external_37k/metrics.json`); các dòng `-v2` trong [04-results.md](../04-results.md).
 
 ## 4.5. Phân tích lỗi
 

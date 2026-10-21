@@ -522,8 +522,17 @@ Bài lương đơn nhiệm, trunk dense, `last4 + cw + β = 0,1`, 5 seed (42–4
 | CafeBERT (512) | 0,6030 | 3,766 | 0,6037 | 0,6404 | 0,5569 | 4,547 |
 | ViSoBERT (512) | 0,5990 | 3,903 | 0,5952 | 0,6305 | 0,5536 | 5,217 |
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): trunk RNN với hàm mất mát gộp mới (`dl-mtl-{caf,pho}-rnn-b01-cw-s42-v2`) — đang chạy; bảng trên sẽ thêm hai dòng khi có số.
+**Trunk RNN, hàm mất mát gộp mới (`-v2`).** `dl-mtl-caf-rnn-b01-cw-s42-v2`: `--head rnn --last4`, loss như trên, `patience` 12, `cuda`, 1× RTX 4090 (Vast.ai), huấn luyện và chấm trên cùng máy; dừng sớm ở epoch 42 (epoch tốt nhất ngành 21, lương 30); cổng `check_mtl_dev.py` khớp (F1 0,6322 · MAE 3,700 triệu).
+
+| Mô hình | Dev F1 | Dev MAE (triệu) | Test F1 | Test Acc | Ext37K F1 | Ext37K MAE (triệu) |
+|---|---|---|---|---|---|---|
+| CafeBERT (512), loss cũ | 0,6030 | 3,766 | 0,6037 | 0,6404 | 0,5569 | 4,547 |
+| CafeBERT (512), loss gộp mới `-v2` | 0,6322 | 3,700 | 0,6278 | 0,6682 | 0,6090 | 5,215 |
+
+Với cùng encoder và cùng trunk RNN, đổi sang hàm mất mát gộp mới tăng macro-F1 `dev` từ 0,6030 lên 0,6322, `test` từ 0,6037 lên 0,6278 và `ext37k` từ 0,5569 lên 0,6090; MAE lương `dev` giảm từ 3,766 xuống 3,700 triệu. Một seed nên chưa tách được hiệu ứng khỏi nhiễu giữa seed.
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): `dl-mtl-pho-rnn-b01-cw-s42-v2` (PhoBERT), BamiBERT và XLM-R trunk RNN với loss gộp mới — đang chạy hoặc hoãn.
 
 **Một lần chấm bị loại.** Lần chấm đầu của `eval_mtl_all.py` và `eval_dense_all.py` trên một máy khác máy huấn luyện cho `test` cao hơn `dev` ở mọi mô hình Dense (khoảng 0,03–0,09 macro-F1), tức vector lúc chấm không trùng vector lúc huấn luyện; các số đó bị loại, không dùng ở bất cứ bảng nào. Cách khắc phục là huấn luyện lại và chấm trên cùng một máy, kèm cổng `check_mtl_dev.py` như trên.
 
-> **Nguồn số liệu:** `artifacts/dl-mtl-{pho,caf,vis,xlm,bam}-dense-last4-cw-s42{,-v2}/{metrics.json,metrics_test.json,external_37k/metrics.json}`; `artifacts/dl-sal-{pho,cafe,visobert,xlmr,bamibert}-dense-last4-b01-cw-s{42..46}-v2/` (cùng ba file); `artifacts/dl-mtl-{pho,caf,vis}-rnn-b01-cw-s42/`; các dòng `*-v2` trong [04-results.md](04-results.md); `logs/vast-dot20/` (log huấn luyện và chấm).
+> **Nguồn số liệu:** `artifacts/dl-mtl-{pho,caf,vis,xlm,bam}-dense-last4-cw-s42{,-v2}/{metrics.json,metrics_test.json,external_37k/metrics.json}`; `artifacts/dl-sal-{pho,cafe,visobert,xlmr,bamibert}-dense-last4-b01-cw-s{42..46}-v2/` (cùng ba file); `artifacts/dl-mtl-{pho,caf,vis}-rnn-b01-cw-s42/`, `artifacts/dl-mtl-caf-rnn-b01-cw-s42-v2/`; các dòng `*-v2` trong [04-results.md](04-results.md); `logs/vast-dot20/` (log huấn luyện và chấm).
