@@ -485,3 +485,45 @@ Hai encoder đông lạnh, không nhúng lại: PhoBERT 256 token (768 chiều) 
 Lớp tệ nhất ở seed 42 là `nhóm_nghề_khác` (F1 0,2069, 25 mẫu `dev`): hàng nhầm lẫn của lớp này (16 ô, mỗi ô là số mẫu đúng lớp này bị đoán thành lớp đó) nằm ở `artifacts/dl-cat-concat-cpu-s42/confusion_worst_row.csv`. Hàng đó rải trên nhiều lớp, ô lớn nhất là `sản_xuất_lao_động_phổ_thông_cơ_khí` (8 trên 25).
 
 > **Nguồn số liệu:** `artifacts/dl-{cat,sal}-concat-cpu-s{42..46}/metrics.json`; tham chiếu `artifacts/dl-cat-ce-cpu-{0920,s43..s46}`, `dl-cat-cafe-dense-512{,-s43..s46}`, `dl-sal-cpu-{0920,s43..s46}`, `dl-sal-cafe-dense-512{,-s43..s46}`; bảng và KTC từ `scripts/t121_concat_stats.py` → `artifacts/t121/summary.json`; các dòng trong [04-results.md](04-results.md).
+
+### 5.9 T17 — đa nhiệm với hàm mất mát gộp từ hai bài đơn nhiệm, trunk dense (2026-10-21)
+
+**Hàm mất mát.** `loss = CE(cat) + α · SmoothL1(sal)`, α = 5, trong đó mỗi vế đúng bằng hàm của bài đơn nhiệm tương ứng: phân lớp dùng trọng số lớp *effective number* (β = 0,999) và label smoothing 0,05; lương dùng SmoothL1 β = 0,1 với trọng số mẫu theo mật độ hiệu dụng. Đầu vào là vector gộp 4 tầng cuối (`last4`). `train_mtl.py` nhận các cờ `--cw-mode effective --cw-beta 0.999 --label-smoothing 0.05` (mặc định giữ công thức cũ, nên các run trước đó tái tạo được). Seed 42, `patience` 15, `cuda`. Run mới mang đuôi `-v2`; run cũ không bị đụng.
+
+**Điều kiện chấm.** Mỗi run được huấn luyện và chấm trên **cùng một máy** (3090, Vast.ai). Trước khi chấm `test`, `scripts/check_mtl_dev.py` chấm lại `dev` bằng đúng đường chấm và so với `metrics.json`; cả 5 run MTL Dense khớp tuyệt đối. `test` và `ext37k-sal` được chấm bằng `eval_dense_all.py` (ngoại lệ 2026-10-15 của Rule 5: số `test` là test-informed). Phân lớp trên `ext37k` dùng nhãn `strict` (2.812 tin), lương dùng 6.111 tin.
+
+| Encoder | Dev F1 cũ | **Dev F1 `-v2`** | Dev MAE (triệu) cũ → `-v2` | Test F1 | Test MAE (triệu) | Ext37K F1 | Ext37K MAE (triệu) |
+|---|---|---|---|---|---|---|---|
+| PhoBERT | 0,5809 | **0,6068** | 4,261 → 4,221 | 0,6061 | 4,373 | 0,5210 | 5,079 |
+| CafeBERT | 0,5854 | **0,6190** | 4,128 → 4,122 | 0,6153 | 4,354 | 0,5330 | 5,278 |
+| ViSoBERT | 0,5487 | **0,5888** | 4,629 → 4,564 | 0,5931 | 4,724 | 0,4592 | 7,794 |
+| XLM-R | 0,5784 | **0,6014** | 4,330 → 4,216 | 0,6011 | 4,392 | 0,5056 | 5,366 |
+| BamiBERT | 0,5720 | **0,6086** | 4,268 → 4,265 | 0,6094 | 4,472 | 0,5209 | 6,168 |
+
+Đọc kết quả: trên `dev`, macro-F1 của cả năm encoder tăng khi đổi sang hàm mất mát mới (từ +0,023 ở XLM-R đến +0,040 ở ViSoBERT), còn MAE lương gần như không đổi. Mỗi encoder chỉ có một seed, nên chưa tách được hiệu ứng khỏi nhiễu giữa các seed. ViSoBERT yếu rõ ở `ext37k` (MAE 7,794 triệu, Spearman 0,243), kém hẳn bốn encoder còn lại.
+
+Bài lương đơn nhiệm, trunk dense, `last4 + cw + β = 0,1`, 5 seed (42–46), cùng điều kiện chấm:
+
+| Encoder | Dev MAE (triệu) | Test MAE (triệu) | Test R² log | Ext37K MAE (triệu) | Ext37K Spearman |
+|---|---|---|---|---|---|
+| PhoBERT | 4,208 ± 0,061 | 4,415 ± 0,054 | 0,508 ± 0,011 | 5,068 ± 0,056 | 0,647 ± 0,034 |
+| CafeBERT | 4,146 ± 0,038 | 4,375 ± 0,024 | 0,520 ± 0,009 | 5,348 ± 0,163 | 0,582 ± 0,066 |
+| ViSoBERT | 4,584 ± 0,027 | 4,706 ± 0,020 | 0,427 ± 0,004 | 5,859 ± 0,379 | 0,454 ± 0,080 |
+| XLM-R | 4,301 ± 0,024 | 4,478 ± 0,058 | 0,485 ± 0,013 | 6,467 ± 0,283 | 0,415 ± 0,040 |
+| BamiBERT | 4,321 ± 0,039 | 4,481 ± 0,034 | 0,484 ± 0,011 | 5,527 ± 0,143 | 0,564 ± 0,039 |
+
+Độ lệch chuẩn là độ lệch chuẩn mẫu (n − 1) trên 5 seed.
+
+**Trunk RNN, hàm mất mát cũ (CE trọng số nghịch đảo tần suất, không label smoothing, lớp cuối, không `last4`).** Hai run đã huấn luyện và chấm cùng máy; PhoBERT chỉ có `test` từ lần chấm trước đó, chưa có `ext37k`.
+
+| Encoder | Dev F1 | Dev MAE (triệu) | Test F1 | Test Acc | Ext37K F1 | Ext37K MAE (triệu) |
+|---|---|---|---|---|---|---|
+| PhoBERT (256) | 0,6107 | 3,666 | 0,5992 | 0,6316 | ⛔ | ⛔ |
+| CafeBERT (512) | 0,6030 | 3,766 | 0,6037 | 0,6404 | 0,5569 | 4,547 |
+| ViSoBERT (512) | 0,5990 | 3,903 | 0,5952 | 0,6305 | 0,5536 | 5,217 |
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T17): trunk RNN với hàm mất mát gộp mới (`dl-mtl-{caf,pho}-rnn-b01-cw-s42-v2`) — đang chạy; bảng trên sẽ thêm hai dòng khi có số.
+
+**Một lần chấm bị loại.** Lần chấm đầu của `eval_mtl_all.py` và `eval_dense_all.py` trên một máy khác máy huấn luyện cho `test` cao hơn `dev` ở mọi mô hình Dense (khoảng 0,03–0,09 macro-F1), tức vector lúc chấm không trùng vector lúc huấn luyện; các số đó bị loại, không dùng ở bất cứ bảng nào. Cách khắc phục là huấn luyện lại và chấm trên cùng một máy, kèm cổng `check_mtl_dev.py` như trên.
+
+> **Nguồn số liệu:** `artifacts/dl-mtl-{pho,caf,vis,xlm,bam}-dense-last4-cw-s42{,-v2}/{metrics.json,metrics_test.json,external_37k/metrics.json}`; `artifacts/dl-sal-{pho,cafe,visobert,xlmr,bamibert}-dense-last4-b01-cw-s{42..46}-v2/` (cùng ba file); `artifacts/dl-mtl-{pho,caf,vis}-rnn-b01-cw-s42/`; các dòng `*-v2` trong [04-results.md](04-results.md); `logs/vast-dot20/` (log huấn luyện và chấm).
