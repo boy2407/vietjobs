@@ -241,7 +241,8 @@ def run(args: argparse.Namespace) -> dict:
     elapsed = 0.0
     start_epoch = 1
     if args.resume and last_path.exists():
-        ck = torch.load(last_path, map_location="cpu")
+        # last.pt là file do chính run này ghi, có trạng thái numpy RNG: weights_only=True sẽ từ chối
+        ck = torch.load(last_path, map_location="cpu", weights_only=False)
         model.load_state_dict(ck["model"])
         opt.load_state_dict(ck["opt"])
         gen.set_state(ck["gen"])
