@@ -5,6 +5,7 @@
 #   bash scripts/vast_run_dot20.sh rnn:cafebert rnn:phobert  # máy 2
 #
 # Mỗi job rnn:<enc>: train MTL RNN (last4 + cw effective 0.999 + ls 0.05 + beta 0.1)
+#   (--resume: máy bị ngắt thì chạy lại lệnh, train tiếp từ last.pt)
 #   -> check_mtl_dev.py (dev phải khớp metrics.json) -> chấm test + ext37k -> xoá cache token.
 # Job dense: encode pooled last4 5 encoder -> 5 MTL Dense (loss mới) + 25 Salary Dense
 #   (last4 + cw + beta 0.1, lệnh gốc Đợt 5) -> kiểm dev MTL Dense -> chấm test + ext37k.
@@ -39,7 +40,7 @@ run_rnn() {
   [ "$e" = bamibert ] || extra="--conv-channels 64"
   say "TRAIN $rid"
   $PY -m vietjobs.dl.train_mtl --encoder $e --max-len $L --head rnn --last4 $LOSS $extra \
-    --epochs 80 --patience 12 --device cuda --seed 42 --run-id $rid 2>&1 | tee logs/$rid.txt
+    --epochs 80 --patience 12 --device cuda --seed 42 --run-id $rid --resume 2>&1 | tee logs/$rid.txt
   say "KIEM DEV $rid"
   $PY scripts/check_mtl_dev.py $rid 2>&1 | grep -a DEV | tee -a $LOG
   say "CHAM $rid"
