@@ -79,3 +79,4 @@ Tiền máy rảnh qua đêm không đáng: 8 giờ ≈ $1,8 (xem T17). Luôn k�
 ## Nhật ký
 - 2026-10-21: tạo task; XLM-R bị dừng ở epoch 24 (người dùng dừng máy); PhoBERT xong, sheet chờ `gws auth login`.
 - 2026-10-21: xong §3 (checkpoint nguyên tử, `last.pt`, `--resume` trùng bit với chạy liền trên cpu); `gws auth login` đã xong, hai dòng PhoBERT `-v2` đã lên sheet (Dashboard dòng 30, Score dòng 27).
+- 2026-10-23: tác giả chọn chạy BamiBERT MTL RNN `-v2`; XLM-R, ViSoBERT `-v2` đã có trên Mac (Đợt 22), máy Đợt 22 đã tắt. Tạo `vast/dot-23-bamibert-mtl-rnn-v2.md` (CHƯA THUÊ); chờ tác giả thuê máy (đĩa ≥ 150 GB).

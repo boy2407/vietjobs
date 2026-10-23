@@ -30,14 +30,14 @@ spec() { # encoder -> short max_len extra
     cafebert) echo "caf 512" ;;
     visobert) echo "vis 512" ;;
     xlmr)     echo "xlm 512" ;;
-    bamibert) echo "bam 1024 --hidden 100 --conv-channels 50" ;;
+    bamibert) echo "bam 1024" ;;
   esac
 }
 
 run_rnn() {
   local e=$1; read -r s L extra <<<"$(spec $e)"
   local rid=dl-mtl-$s-rnn-b01-cw-s42$SUF
-  [ "$e" = bamibert ] || extra="--conv-channels 64"
+  extra="--conv-channels 64"  # cùng đầu với 4 encoder kia (hidden 256 mặc định), so sánh công bằng
   say "TRAIN $rid"
   $PY -m vietjobs.dl.train_mtl --encoder $e --max-len $L --head rnn --last4 $LOSS $extra \
     --epochs 80 --patience 12 --device cuda --seed 42 --run-id $rid --resume 2>&1 | tee logs/$rid.txt

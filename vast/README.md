@@ -27,6 +27,7 @@ Script chạy nằm ở `scripts/vast_run_*.sh`; kết quả gốc nằm ở `ar
 | 20 | [dot-20-mtl-v2-train-cham.md](dot-20-mtl-v2-train-cham.md) | T17 — train lại 5 MTL RNN + 5 MTL Dense (loss mới) + 25 Salary Dense, chấm cùng máy | `scripts/vast_run_dot20.sh` | Dense XONG (3090, chờ destroy); RNN ĐANG CHẠY (4090) |
 | 21 | [dot-21-phobert-xlmr-mtl-rnn-v2.md](dot-21-phobert-xlmr-mtl-rnn-v2.md) | T17 - PhoBERT and XLM-R MTL RNN `-v2` (combined loss), 1x 3090 Ti | `scripts/vast_run_dot20.sh rnn:phobert` / `rnn:xlmr` | PhoBERT done; XLM-R stopped at epoch 24, no result |
 | 22 | [dot-22-xlmr-visobert-bamibert-mtl-rnn-v2.md](dot-22-xlmr-visobert-bamibert-mtl-rnn-v2.md) | T17 — 3 MTL RNN `-v2` cuối: XLM-R, ViSoBERT, BamiBERT | `scripts/vast_run_dot20.sh rnn:xlmr rnn:visobert rnn:bamibert` | ĐANG CHẠY |
+| 23 | [dot-23-bamibert-mtl-rnn-v2.md](dot-23-bamibert-mtl-rnn-v2.md) | T18 — BamiBERT MTL RNN `-v2` (run cuối) | `scripts/vast_run_dot20.sh rnn:bamibert` | CHƯA THUÊ |
 
 Kinh nghiệm chung cho mọi đợt: [kinh-nghiem.md](kinh-nghiem.md).
 
