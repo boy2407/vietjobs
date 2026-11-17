@@ -2,9 +2,9 @@
 
 # Mã nguồn
 
-11 mô-đun trong `src/vietjobs/` (không tính `__init__.py`) · 2.942 dòng · 211 kiểm thử (209 chạy, 2 bỏ qua; đo 2026-10-17)
-(165 chạy ở `.venv`, 2 kiểm thử chạy hết vòng huấn luyện cần `transformers` nên chỉ chạy ở
-`.venv-dl`, nơi 29 kiểm thử có torch đều xanh).
+14 mô-đun trong `src/vietjobs/` (không tính `__init__.py`) · 4.273 dòng · 192 kiểm thử chạy ở
+`.venv` (đo 2026-11-17). Ba tệp kiểm thử cần torch (`test_dl_heads.py`, `test_dl_jepa.py`,
+`test_train_mtl_checkpoint.py`) bị bỏ qua ở `.venv` và chạy ở `.venv-dl`.
 Nhánh chính là gói [`dl/`](../src/vietjobs/dl/).
 
 ---
@@ -29,6 +29,7 @@ flowchart LR
       EN["encode.py<br/>PhoBERT đông cứng<br/>→ bộ nhớ đệm .npy"]
       HD["heads.py<br/>dense 768→h→h/2→out"]
       TD["train_dl.py<br/>CLI · history.jsonl"]
+      JP["jepa.py · train_jepa.py<br/>JEPA: encoder nhỏ tự học (T19)"]
     end
     EX["external.py<br/>VietJobs-37K: tách chuỗi ·<br/>ánh xạ 60→16 · bắt trùng"]
 
@@ -40,6 +41,8 @@ flowchart LR
     FT --> TX --> EN --> TD
     HD --> TD
     EV --> TD
+    TX --> JP
+    HD --> JP
 ```
 
 
@@ -55,6 +58,8 @@ flowchart LR
 | **[`dl/heads.py`](../src/vietjobs/dl/heads.py)** | 171 | `MultiTaskHead`, `MultiTaskRnn` (T4.1: thân `BiGruLstmCnn.features` dùng chung, hai đầu), `DenseHead` in_dim → [pre_hidden] → h → h/2 → out (`pre_hidden` T8.10), và `BiGruLstmCnn` (T8.2): SpatialDropout → Bi-GRU ‖ Bi-LSTM → Conv1d → avg/max pool có mặt nạ → dense; `pack_padded_sequence` nên đầu ra bất biến với pad | [06](06-baseline-dl.md) |
 | **[`dl/train_dl.py`](../src/vietjobs/dl/train_dl.py)** | 539 | `run(args)` = một lượt chạy = một dòng trong [04-results.md](04-results.md) + `history.jsonl`; `--head {dense,rnn}` đọc cache gộp hay memmap token theo batch; `--max-minutes` trần thời gian (ghi `stopped_by`); `--conv-channels`, `--branches` cho T8.5; `--concat-encoder` nối vectơ cache của encoder thứ hai cho head dense (T12.1, mặc định tắt) | [03](03-protocol.md) · [06](06-baseline-dl.md) |
 | **[`dl/train_mtl.py`](../src/vietjobs/dl/train_mtl.py)** | 323 | T4.1: một trunk, hai đầu (`MultiTaskHead` dense hoặc `MultiTaskRnn` với `--head rnn`), đọc họ `masked`. Loss `CE + α·SmoothL1` (`--alpha-sal`), phần lương chỉ trên tin có lương; ghi riêng `train_loss_cat`/`train_loss_sal`; mỗi bài một best epoch (`best.pt`, `best_sal.pt`) | [06 §5.7](06-baseline-dl.md#57-t41--đa-nhiệm-trunk-dense-2026-10-02) |
+| **[`dl/jepa.py`](../src/vietjobs/dl/jepa.py)** | 112 | T19: `block_mask` (che 4 khối token, không che `<s>`, `</s>`, pad), `JepaEncoder` (bảng embedding từ vựng CafeBERT đóng băng → Transformer nhỏ; token bị che loại khỏi attention), `Predictor`, `ema_update`, `jepa_loss`. Đầu vào không lấy token cache vì cache đã đọc cả câu, token bị che sẽ rò qua token lân cận | ⛔ **CHƯA CÓ SỐ LIỆU** (T19) |
+| **[`dl/train_jepa.py`](../src/vietjobs/dl/train_jepa.py)** | 361 | T19: `pretrain` chỉ đọc text `train` họ `masked`, theo dõi loss `dev` và `collapse_std`; `finetune --init {jepa,random}` đóng băng encoder rồi học `MultiTaskRnn` với cấu hình head của `dl-mtl-caf-rnn-b01-cw-s42-v2`. Từ chối đọc `test` | ⛔ **CHƯA CÓ SỐ LIỆU** (T19) |
 | [`notebooks/colab_setup.py`](../notebooks/colab_setup.py) | 164 | Khôi phục splits + cache nhỏ từ Google Drive cho một phiên Colab, encode lại train token của họ cần dùng, chạy cổng test. Ba notebook `T8_3_category` / `T8_4_salary` / `T8_5_ablation.ipynb` gọi chung nó | memory `colab-drive-paths` |
 | [`external.py`](../src/vietjobs/external.py) | 549 | VietJobs-37K làm tập ngoài: tách `[TITLE]/[REQ]/[DESC]` về ba cột của ta, ánh xạ 60 → 16 (`apply_crosswalk`), bắt tin trùng với ba tập chia bằng băm chính xác **hoặc** cùng tiêu đề + Jaccard ≥ 0,5 (`overlap_mask`), quy ước lenient. Đọc lương bạc từ văn bản: `extract_salary` (mỏ neo từ lương hoặc tiêu đề mục → con số cùng câu), `audit_salary` xếp mọi tin vào một nhóm phủ, `salary_note`, `salary_rule`, `template_ids`. Không phụ thuộc torch | [10](10-danh-gia-ngoai.md) |
 | [`scripts/eval_external.py`](../scripts/eval_external.py) | 199 | Chấm một run `category` trên VietJobs-37K: khử trùng → ánh xạ → mã hóa PhoBERT (cache `ext37k-*`) → nạp `best.pt` + `scaler.npz` → strict/lenient + bootstrap → một dòng [04-results.md](04-results.md) mỗi tập | [10](10-danh-gia-ngoai.md) |
