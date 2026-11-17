@@ -68,6 +68,12 @@ def test_target_gets_no_gradient_and_ema_moves_it():
     assert torch.allclose(tgt.proj.weight, expected, atol=1e-6)
 
 
+def test_jepa_never_reads_test_split():
+    from vietjobs.dl.train_jepa import token_ids
+    with pytest.raises(SystemExit):
+        token_ids("test", 512)
+
+
 def test_table_not_in_state_dict():
     enc, _, _ = _models()
     assert "table" not in enc.state_dict()
