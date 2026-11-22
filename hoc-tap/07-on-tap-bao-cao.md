@@ -71,6 +71,48 @@ tin "12–15" vẫn bị tính sai 0,5 dù nằm trong khoảng — MAE khắt k
 
 ---
 
+## Chương 2 — Hai bài báo phải đọc (§2.3)
+
+Đọc kèm PDF: [19] arXiv:2603.05262, [20] arXiv:2112.11052. Số liệu của hai bài nằm ở §2.3.
+
+### 9. Bài [19] — bài công bố bộ dữ liệu VietJobs
+
+**Giải thích.** Nhóm tác giả ở VinUni thu tin tuyển dụng từ TopCV và công bố thành bộ
+VietJobs: 16 nhóm ngành, có lương, kỹ năng, địa điểm. Họ thử hai bài giống đề tài —
+phân loại ngành và ước lượng lương — nhưng chỉ bằng **mô hình ngôn ngữ lớn sinh văn
+bản** (Qwen, Llama-SEA-LION…), theo ba cách: hỏi thẳng (zero-shot), hỏi kèm vài ví dụ
+(few-shot), tinh chỉnh nhẹ (LoRA). Bài lương của họ **không đọc mô tả công việc**, chỉ
+đọc chức danh, loại hợp đồng, địa điểm, quốc gia, kinh nghiệm; và đo bằng RMSE, R². Họ
+chia dữ liệu ngẫu nhiên 80/10/10. Phần hạn chế của chính họ nói mô tả công việc có chỗ
+**trùng lặp, theo mẫu** — khớp với phát hiện tin gần trùng ở §3.2.
+
+**Câu bảo vệ.** "Số của đề tài không so trực tiếp với [19] được: khác cách chia, khác
+đầu vào của bài lương, khác thước đo lương. Đề tài bổ sung cái [19] chưa có: mốc từ bộ
+mã hóa và mô hình đọc mô tả để ước lượng lương."
+
+**Câu hỏi.** (a) Bài lương của [19] đọc mô tả công việc không? (b) Vì sao không đặt
+MAE của đề tài cạnh RMSE của [19] để nói "hơn"?
+
+### 10. Bài [20] — nguồn của đầu RNN
+
+**Giải thích.** Nhóm tác giả ở UIT dự đoán **chức danh** từ mô tả công việc tiếng Việt
+(có lẫn tiếng Anh). Một tin có thể mang nhiều chức danh, nên đây là phân loại **đa
+nhãn** (mỗi nhãn một xác suất, quá 0,5 thì chọn), khác bài **một nhãn** của đề tài.
+Mô hình: vectơ từ một mô hình tiền huấn luyện → BiGRU và BiLSTM → tích chập → gộp
+trung bình và gộp cực đại → nối lại → lớp ra. Họ thử nhiều bộ mã hóa; các mô hình đa
+ngữ (mBERT, XLM-R) nhỉnh hơn PhoBERT vì dữ liệu lẫn tiếng Anh. Tập test được thu riêng,
+nên điểm test thấp hơn dev khá xa. Thước đo là F1 trung bình theo mẫu, không phải
+macro-F1.
+
+**Lưu ý.** Tác giả thứ ba là Son T. Luu (UIT) — rất có thể chính là giảng viên hướng dẫn.
+Hãy xác nhận; nếu đúng, hội đồng sẽ coi việc kế thừa kiến trúc này là tự nhiên, nhưng
+bạn phải nói rõ đề tài khác ở đâu: một nhãn, thêm đầu lương, bộ mã hóa đóng băng.
+
+**Câu hỏi.** (a) Bài [20] là một nhãn hay đa nhãn? (b) Đề tài lấy gì từ [20], và khác
+[20] ở ba điểm nào?
+
+---
+
 ## Chương 3 — Dữ liệu
 
 ### 6. train, dev, test
