@@ -11,3 +11,4 @@ own rows, status and log; status is authoritative **in the sheet**.
 | T16 | Train lại 15 run T11 có dev lệch Mac, đuôi `-r2` ([sheet](T16-train-lai-r2.md)) | doing (Đợt 8, 9 đang chạy) | Claude | 2026-10-19 |
 | T17 | Đợt 17: 4 MTL RNN còn lại + chấm Test/Ext37K ([sheet](T17-dot17-mtl-rnn-cham-diem.md)) | doing (train trên vast 5090) | Claude | 2026-10-21 |
 | T18 | MTL RNN `-v2` còn lại (XLM-R, BamiBERT), checkpoint an toàn, sheet và tài liệu ([sheet](T18-mtl-rnn-v2-con-lai.md)) | todo (chờ thuê máy và `gws auth login`) | Claude | 2026-10-21 |
+| T19 | Tuần 9: 1k tin ext37k-sal (CM + lương vs dev), `nhóm_nghề_khác`, tứ phân vị lương ≥ 100tr ([sheet](T19-tuan9-phan-tich.md)) | done | Claude (main session) | 2026-10-30 |
