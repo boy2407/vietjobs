@@ -73,7 +73,7 @@ tin "12–15" vẫn bị tính sai 0,5 dù nằm trong khoảng — MAE khắt k
 
 ## Chương 2 — Hai bài báo phải đọc (§2.3)
 
-Đọc kèm PDF: [19] arXiv:2603.05262, [20] arXiv:2112.11052. Số liệu của hai bài nằm ở §2.3.
+Đọc kèm PDF: [19] arXiv:2603.05262, [20] arXiv:2112.11052. Số liệu của hai bài nằm ở §2.3. Trong danh mục tham khảo mới, hai bài này mang số [13] và [14].
 
 ### 9. Bài [19] — bài công bố bộ dữ liệu VietJobs
 
@@ -110,6 +110,31 @@ bạn phải nói rõ đề tài khác ở đâu: một nhãn, thêm đầu lư�
 
 **Câu hỏi.** (a) Bài [20] là một nhãn hay đa nhãn? (b) Đề tài lấy gì từ [20], và khác
 [20] ở ba điểm nào?
+
+### 11. Mười hai bài nền tảng và bộ mã hoá — đọc tóm tắt là đủ
+
+Số trong ngoặc theo `docs/bao-cao/08-tai-lieu-tham-khao.md`. Mỗi bài: **bài nói gì** →
+**đề tài dùng chỗ nào**. Mở phần tóm tắt (abstract) của từng bài, đối chiếu với hai dòng
+dưới đây; nói lại được hai dòng đó là đủ để trả lời hội đồng.
+
+| # | Bài | Bài nói gì | Đề tài dùng chỗ nào |
+|---|---|---|---|
+| [1] | Transformer (Vaswani và cộng sự) | Bỏ RNN, chỉ dùng cơ chế chú ý (attention) để mỗi từ "nhìn" mọi từ khác trong câu | Mọi bộ mã hoá của đề tài đều là Transformer |
+| [2] | BERT (Devlin và cộng sự) | Học trước trên kho văn bản lớn bằng cách che từ rồi đoán lại; sau đó dùng lại cho bài khác | Ý tưởng "vectơ ngữ cảnh dùng lại được" mà đề tài dựa vào |
+| [3] | RoBERTa (Liu và cộng sự) | Huấn luyện BERT lâu hơn, nhiều dữ liệu hơn, bỏ một nhiệm vụ phụ → tốt hơn | PhoBERT, XLM-R, CafeBERT, ViSoBERT, BamiBERT đều theo kiểu RoBERTa |
+| [4] | PhoBERT (Nguyen & Nguyen) | RoBERTa học trên tiếng Việt đã **tách từ**; tối đa 256 token | Bộ mã hoá đầu tiên của đề tài; lý do phải tách từ trước khi đưa vào |
+| [5] | underthesea | Bộ công cụ xử lý tiếng Việt (tách từ…) | Tách từ cho đường vào PhoBERT |
+| [6] | VnCoreNLP (Vu và cộng sự) | Bộ công cụ khác cho tiếng Việt, tách từ được dùng khi huấn luyện PhoBERT | Chỉ nhắc như lựa chọn thay thế |
+| [7] | Multitask learning (Caruana) | Học nhiều bài cùng lúc trên một phần chung giúp các bài hỗ trợ nhau | Mô hình đa nhiệm: một thân chung, hai đầu ngành và lương |
+| [8] | Huber | Hàm mất mát phạt bình phương khi sai nhỏ, phạt tuyến tính khi sai lớn → ít bị điểm ngoại lệ kéo | SmoothL1 (β = 0,1) cho đầu lương |
+| [15] | VLUE / CafeBERT (Do và cộng sự) | Bộ đánh giá hiểu tiếng Việt, kèm CafeBERT: XLM-R học thêm trên tiếng Việt | Bộ mã hoá của mô hình chốt; không cần tách từ, đọc được 512 token |
+| [16] | ViSoBERT (Nguyen và cộng sự) | Bộ mã hoá học trên văn bản mạng xã hội tiếng Việt | Một trong năm bộ mã hoá được so sánh |
+| [17] | XLM-R (Conneau và cộng sự) | Bộ mã hoá đa ngữ, học trên khoảng 100 ngôn ngữ | Một trong năm bộ mã hoá; CafeBERT dựng trên bản large của nó, còn đề tài dùng bản base |
+| [18] | BamiBERT (Nguyen và cộng sự) | Bộ mã hoá tiếng Việt mới, đọc được tới 2048 token | Một trong năm bộ mã hoá; đề tài cho nó đọc 1024 token |
+
+**Câu hỏi.** (a) Vì sao PhoBERT phải tách từ còn CafeBERT thì không? (b) Học đa nhiệm
+[7] là gì, đề tài áp dụng ở đâu? (c) Vì sao dùng hàm Huber [8] cho lương mà không dùng
+bình phương sai số?
 
 ---
 

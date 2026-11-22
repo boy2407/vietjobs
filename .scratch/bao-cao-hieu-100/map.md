@@ -21,6 +21,7 @@ Bản báo cáo Chương 1–3 (Google Doc) mà tác giả tự giải thích đ
 - [Đợt vast dot-24: chấm test phần sạch](issues/06-vast-dot24-cham-test-sach.md): test phần sạch MAE 4,109 (toàn bộ 3,923), macro-F1 0,6488 (toàn bộ 0,6278)
 - [Ghi số dev hay test vào §3.2 và §6.2](issues/07-so-dev-hay-test.md): ghi số test, toàn bộ là số chính, phần sạch là số phụ
 - [Đối chiếu số liệu Chương 1–3 với nguồn](issues/08-doi-chieu-so-lieu.md): không số đo nào lệch nguồn; 10 câu nói quá, số trích bài [13]–[21] không có nguồn, Chương 1–2 repo đã cũ
+- [§2.2: tài liệu đã đọc thật](issues/09-tai-lieu-da-doc.md): giữ công cụ/phương pháp đã dùng và [19], [20]; bỏ các bài liên quan chưa đọc
 - [Cách đưa phần sửa từ repo sang Google Doc](issues/10-dong-bo-repo-doc.md): sửa trong repo, chép sang Doc một lần khi xong Chương 1–3
 
 ## Not yet specified
