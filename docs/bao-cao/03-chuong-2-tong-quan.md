@@ -96,47 +96,34 @@ gần như đối xứng.
 
 ## 2.3. Các nghiên cứu liên quan
 
-**Trên thế giới.** Phân loại nghề nghiệp từ văn bản đã được làm bằng các mô hình
-Transformer tinh chỉnh trên tiếng Đức [13], tiếng Ba Lan [14] và tiếng Hà Lan–Anh [15].
-Dự đoán lương từ tin tuyển dụng đã được làm bằng Bi-GRU→CNN trên tiếng Nhật [16], bằng
-mô hình dựa trên kỹ năng trên tiếng Trung [17] và bằng BERT trên tiếng Anh [18]. Các
-công trình này mỗi công trình giải một bài toán và không xử lý tin không công bố lương
-trong lúc huấn luyện.
+Bộ dữ liệu của đề tài do Phạm Dinh, Nguyễn Huy và El-Haj [13] công bố: 48.092 tin từ
+TopCV, 16 nhóm ngành. Bài báo chỉ đánh giá các mô hình ngôn ngữ lớn sinh văn bản. Kết
+quả tốt nhất là macro-F1 0,42 cho phân loại, và RMSE 10,60 triệu, R² 0,17 cho ước lượng
+lương khi chỉ tinh chỉnh trên VietJobs. Bài lương của họ không đọc mô tả công việc, và
+dữ liệu được chia ngẫu nhiên 80/10/10, khác đề tài, nên các con số không so sánh trực
+tiếp được.
 
-**Trong nước.** Bộ dữ liệu của đề tài do Phạm Dinh, Nguyễn Huy và El-Haj [19] công bố:
-48.092 tin từ TopCV, 16 nhóm ngành. Bài báo chỉ đánh giá các mô hình ngôn ngữ lớn sinh
-văn bản. Kết quả tốt nhất là macro-F1 0,42 cho phân loại, và RMSE 10,60 triệu, R² 0,17
-cho ước lượng lương khi chỉ tinh chỉnh trên VietJobs. Bài báo chia dữ liệu khác đề tài,
-nên các con số không so sánh trực tiếp được. Tran, Vo và Luu [20] dự đoán chức danh từ
-mô tả công việc tiếng Việt bằng đầu mạng Bi-GRU‖Bi-LSTM→CNN trên các bộ mã hóa
-Transformer, đạt F1 62,20 % trên tập dev và 47,44 % trên tập test; đầu RNN của đề tài kế
-thừa kiến trúc này. Huynh và cộng sự [21] phân loại mô tả công việc ngành công nghệ
-thông tin bằng các mạng CNN và RNN trên vectơ từ tĩnh.
+Tran, Vo và Luu [14] dự đoán chức danh từ mô tả công việc tiếng Việt dưới dạng phân loại
+đa nhãn với 68 chức danh, dùng đầu mạng Bi-GRU‖Bi-LSTM→CNN trên nhiều bộ mã hóa. Kết quả
+tốt nhất thuộc về mBERT với F1 62,20 % trên tập dev và 47,44 % trên tập test. Đầu RNN của
+đề tài kế thừa kiến trúc này, nhưng giải bài một nhãn, thêm đầu ước lượng lương và giữ
+bộ mã hóa đóng băng.
 
-Chưa có công trình nào trên tin tuyển dụng tiếng Việt học chung nhóm ngành và mức
-lương trong một mô hình, hay so sánh có hệ thống các bộ mã hóa ở chế độ đóng băng. Đề
-tài nhắm vào khoảng trống đó.
-
-> **Nguồn số liệu:** [19] Table 3 (macro-F1 0,42) và bảng kết quả tinh chỉnh, cấu hình
-> "Fine-tuned on VietJobs" (RMSE 10,60, R² 0,17); [20] phần tóm tắt.
->
-> ✍️ **CẦN VIẾT TAY** (ticket "§2.2: tài liệu đã đọc thật"): tác giả xác nhận đã đọc
-> [13]–[18] và [21], rồi thêm chúng vào `08-tai-lieu-tham-khao.md`. Bài nào chưa đọc thì
-> bỏ câu đó.
+Chưa có công trình nào trên tin tuyển dụng tiếng Việt học chung nhóm ngành và mức lương
+trong một mô hình, hay so sánh có hệ thống các bộ mã hóa ở chế độ đóng băng. Đề tài nhắm
+vào khoảng trống đó.
 
 ### 2.3.1. Bảng hệ thống hoá các công trình tham khảo
 
 **Bảng 2.1: Hệ thống hoá các công trình liên quan**
 
-| STT | Công trình | Dữ liệu & phương pháp | Kết quả công bố | Hạn chế / khoảng trống |
+| STT | Công trình | Dữ liệu & phương pháp | Kết quả công bố | Hạn chế so với đề tài |
 |---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
+| 1 | Phạm Dinh, Nguyễn Huy và El-Haj, 2026 [13] | VietJobs: 48.092 tin TopCV, 16 nhóm ngành; mô hình ngôn ngữ lớn zero-shot, few-shot, LoRA | Phân loại: macro-F1 0,42 (few-shot); lương: RMSE 10,60 triệu, R² 0,17 (tinh chỉnh trên VietJobs) | Không có mốc từ bộ mã hóa; bài lương không đọc mô tả; hai bài toán tách riêng |
+| 2 | Tran, Vo và Luu, 2021 [14] | Mô tả công việc tiếng Việt, 68 chức danh, đa nhãn; Bi-GRU‖Bi-LSTM→CNN trên mBERT, XLM-R, PhoBERT, DistilBERT | F1 62,20 % (dev), 47,44 % (test), mBERT | Chỉ phân loại chức danh; không có lương |
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T6.1)
-> Mẫu báo cáo của trường đều có bảng này (xem `Bảng 2.1` trong quyển mẫu), nên nó
-> không được bỏ.
+> **Nguồn số liệu:** [13] Table 3 (macro-F1 0,42) và bảng kết quả tinh chỉnh, cấu hình
+> "Fine-tuned on VietJobs" (RMSE 10,60, R² 0,17); [14] phần tóm tắt và Table V.
 
 ---
 
