@@ -86,6 +86,37 @@ kinh doanh" đăng lại tuần sau với một câu phúc lợi sửa khác đi
 thật**. Xoá chúng là vứt mẫu đi. Nhưng để chúng rơi vào hai tập khác nhau là rò rỉ.
 Giải pháp: giữ lại, và ép cả nhóm vào cùng một tập (§3.5).
 
+**Thế nào là "gần giống".** `group_key()` ghép tiêu đề, mô tả và yêu cầu, đưa về chữ
+thường, bỏ dấu tiếng Việt và dấu câu, rồi băm thành một mã. Hai tin cùng mã khi ba
+trường này chỉ khác nhau ở chữ hoa/thường, dấu thanh hoặc dấu câu; các cột khác như
+phúc lợi hay địa điểm không tham gia. Hai tin khác nhau dù chỉ một từ trong ba
+trường đó sẽ ra hai mã khác nhau và có thể rơi vào hai tập khác nhau.
+
+**Đo phần `group_key` bỏ sót.** So mỗi tin `test` với tin `train` giống nhất theo
+Jaccard trên tập từ của ba trường: 1.089 tin test (11,4 %) có một bản trong train
+giống từ 90 % trở lên. Ở các cặp này, nhãn ngành chỉ trùng nhau 30,6 %, nhưng ở 773
+cặp cả hai cùng công bố lương thì lương trùng nhau 82,8 %. Hệ quả: phần trùng này
+không làm macro-F1 trên test đẹp lên, nhưng có thể làm MAE trên test thấp hơn thực tế.
+
+**Ảnh hưởng lên điểm của mô hình chốt.** Chấm mô hình chốt (`dl-mtl-caf-rnn-b01-cw-s42-v2`)
+riêng trên **phần sạch** của test, tức là bỏ qua khi tính điểm các tin có bản giống từ
+90 % trở lên. `test.csv` không bị sửa; phép đo này chỉ để biết điểm lệch bao nhiêu, không
+dùng để chọn mô hình.
+
+| Phần test được chấm | Số tin | Macro-F1 | Số tin có lương | MAE (triệu) |
+|---|---|---|---|---|
+| Toàn bộ | 9.541 | 0,6278 | 6.773 | 3,923 |
+| Bỏ tin gần trùng với train | 8.452 | 0,6488 | 5.965 | 4,109 |
+| Bỏ tin gần trùng với train hoặc dev | 8.229 | 0,6511 | 5.796 | 4,116 |
+
+Trên phần sạch, macro-F1 tăng, và MAE cũng tăng, từ 3,923 lên 4,109–4,116 triệu. Điều này khớp với
+nhận định ở trên: tin gần trùng làm MAE trên toàn bộ test đẹp hơn một chút, nhưng không
+thổi phồng macro-F1. Loại thêm các tin gần trùng với dev chỉ bỏ ra 223 tin, và điểm gần
+như không đổi, vì mô hình không học trên dev.
+
+> **Nguồn số liệu:** `artifacts/eda/near_dup_test.json` (`scripts/near_dup_test_train.py`);
+> `artifacts/dl-mtl-caf-rnn-b01-cw-s42-v2/metrics_test_clean.json` (`scripts/score_test_clean.py`).
+
 **Số đo:** **12.808 dòng (26,8 %)** là tin đăng lại; nhóm lớn nhất có 33 dòng.
 
 ### 3.2.3. Sửa chữa nhãn lương
@@ -234,9 +265,9 @@ chung một hoán vị. Hạt giống `SPLIT_SEED = 20260826` không đổi.
 
 | Tập | Số dòng | Tỷ lệ | Tin có công bố lương | Số lớp |
 |---|---|---|---|---|
-| train | 34.354 | 72,01 % | 24.669 | 16 |
-| dev | 3.812 | 7,99 % | 2.705 | 16 |
-| test | 9.541 | 20,00 % | 6.719 | 16 |
+| train | 34.354 | 72,01 % | 24.622 | 16 |
+| dev | 3.812 | 7,99 % | 2.698 | 16 |
+| test | 9.541 | 20,00 % | 6.773 | 16 |
 
 `groups_straddling_splits` = **0**, và hàm `build()` có một câu lệnh `assert` kiểm
 tra điều đó. Câu lệnh này không bao giờ được phép tắt đi. Tỷ lệ thực tế lệch không

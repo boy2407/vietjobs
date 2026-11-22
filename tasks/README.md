@@ -13,3 +13,4 @@ own rows, status and log; status is authoritative **in the sheet**.
 | T18 | MTL RNN `-v2` còn lại (XLM-R, BamiBERT), checkpoint an toàn, sheet và tài liệu ([sheet](T18-mtl-rnn-v2-con-lai.md)) | todo (chờ thuê máy và `gws auth login`) | Claude | 2026-10-21 |
 | T19 | Tuần 9: 1k tin ext37k-sal (CM + lương vs dev), `nhóm_nghề_khác`, tứ phân vị lương ≥ 100tr ([sheet](T19-tuan9-phan-tich.md)) | done | Claude (main session) | 2026-10-30 |
 | T20 | Viết lại báo cáo theo mẫu KLTN UIT, chốt CafeBERT, xuất LaTeX ([sheet](T20-bao-cao-theo-mau-uit.md)) | doing | Claude (main session) | 2026-11-05 |
+| T21 | Trùng gần test↔train mà `group_key` bỏ sót: đo, ghi báo cáo, quyết cách xử lý ([sheet](T21-trung-gan-test-train.md)) | doing (đã chọn b; còn §6.2, §3.5.1) | Claude (main session) | 2026-11-22 |
