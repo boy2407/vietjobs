@@ -92,9 +92,9 @@ vol. 12, pp. 2825–2830, 2011.
 >
 > | Nhóm | Số lượng tối thiểu nên có | Kế hoạch tra cứu |
 > |---|---|---|
-> | Phân loại tin tuyển dụng theo chuẩn nghề nghiệp | 3–4 | §2.3.1 |
-> | Dự đoán mức lương từ mô tả công việc | 3–4 | §2.3.1 |
-> | Công trình trong nước về văn bản tuyển dụng tiếng Việt | 2–3 | §2.3.2 |
+> | Phân loại tin tuyển dụng theo chuẩn nghề nghiệp | 3–4 | §2.3 |
+> | Dự đoán mức lương từ mô tả công việc | 3–4 | §2.3 |
+> | Công trình trong nước về văn bản tuyển dụng tiếng Việt | 2–3 | §2.3 |
 >
 > Với mỗi công trình đọc được, làm hai việc trong cùng một lần: thêm một mục vào danh
 > sách trên, và thêm một dòng vào Bảng 2.1 ở

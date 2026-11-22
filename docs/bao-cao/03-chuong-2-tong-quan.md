@@ -96,32 +96,35 @@ gần như đối xứng.
 
 ## 2.3. Các nghiên cứu liên quan
 
-### 2.3.1. Các nghiên cứu trên thế giới
+**Trên thế giới.** Phân loại nghề nghiệp từ văn bản đã được làm bằng các mô hình
+Transformer tinh chỉnh trên tiếng Đức [13], tiếng Ba Lan [14] và tiếng Hà Lan–Anh [15].
+Dự đoán lương từ tin tuyển dụng đã được làm bằng Bi-GRU→CNN trên tiếng Nhật [16], bằng
+mô hình dựa trên kỹ năng trên tiếng Trung [17] và bằng BERT trên tiếng Anh [18]. Các
+công trình này mỗi công trình giải một bài toán và không xử lý tin không công bố lương
+trong lúc huấn luyện.
 
-> ✍️ **CẦN VIẾT TAY** — phần này bắt buộc phải do tác giả tự khảo sát và đọc thật.
-> Bản thảo cố tình **không** điền sẵn tên công trình, vì một trích dẫn chưa đọc là
-> đạo văn dù nội dung có đúng.
+**Trong nước.** Bộ dữ liệu của đề tài do Phạm Dinh, Nguyễn Huy và El-Haj [19] công bố:
+48.092 tin từ TopCV, 16 nhóm ngành. Bài báo chỉ đánh giá các mô hình ngôn ngữ lớn sinh
+văn bản. Kết quả tốt nhất là macro-F1 0,42 cho phân loại, và RMSE 10,60 triệu, R² 0,17
+cho ước lượng lương khi chỉ tinh chỉnh trên VietJobs. Bài báo chia dữ liệu khác đề tài,
+nên các con số không so sánh trực tiếp được. Tran, Vo và Luu [20] dự đoán chức danh từ
+mô tả công việc tiếng Việt bằng đầu mạng Bi-GRU‖Bi-LSTM→CNN trên các bộ mã hóa
+Transformer, đạt F1 62,20 % trên tập dev và 47,44 % trên tập test; đầu RNN của đề tài kế
+thừa kiến trúc này. Huynh và cộng sự [21] phân loại mô tả công việc ngành công nghệ
+thông tin bằng các mạng CNN và RNN trên vectơ từ tĩnh.
+
+Chưa có công trình nào trên tin tuyển dụng tiếng Việt học chung nhóm ngành và mức
+lương trong một mô hình, hay so sánh có hệ thống các bộ mã hóa ở chế độ đóng băng. Đề
+tài nhắm vào khoảng trống đó.
+
+> **Nguồn số liệu:** [19] Table 3 (macro-F1 0,42) và bảng kết quả tinh chỉnh, cấu hình
+> "Fine-tuned on VietJobs" (RMSE 10,60, R² 0,17); [20] phần tóm tắt.
 >
-> Kế hoạch tra cứu, mỗi truy vấn cho một nhóm công trình:
->
-> | Chủ đề cần tìm | Truy vấn gợi ý | Nơi tìm |
-> |---|---|---|
-> | Phân loại tin tuyển dụng theo chuẩn nghề nghiệp | `job posting classification ISCO/O*NET occupation` | ACL Anthology, Google Scholar |
-> | Dự đoán lương từ mô tả công việc | `salary prediction job description regression` | ACL Anthology, arXiv |
-> | Học đa nhiệm cho phân lớp + hồi quy trên văn bản | `multi-task text classification regression shared encoder` | arXiv |
-> | Nhãn khuyết không ngẫu nhiên trong hồi quy | `missing not at random regression selection bias` | Google Scholar |
->
-> Với mỗi công trình, ghi lại theo đúng bốn cột của Bảng 2.1 bên dưới. Ba câu là
-> đủ, nhưng ba câu đó phải là của người đã đọc bài báo.
+> ✍️ **CẦN VIẾT TAY** (ticket "§2.2: tài liệu đã đọc thật"): tác giả xác nhận đã đọc
+> [13]–[18] và [21], rồi thêm chúng vào `08-tai-lieu-tham-khao.md`. Bài nào chưa đọc thì
+> bỏ câu đó.
 
-### 2.3.2. Các nghiên cứu trong nước
-
-> ✍️ **CẦN VIẾT TAY** — tương tự. Nguồn nên tra: Tạp chí Tin học và Điều khiển học,
-> kỷ yếu hội nghị KSE, hội nghị FAIR, các luận văn cùng chủ đề tại các trường trong
-> nước. Truy vấn gợi ý: `phân loại ngành nghề tin tuyển dụng tiếng Việt`,
-> `dự đoán mức lương tiếng Việt PhoBERT`, `xử lý văn bản tuyển dụng tiếng Việt`.
-
-### 2.3.3. Bảng hệ thống hoá các công trình tham khảo
+### 2.3.1. Bảng hệ thống hoá các công trình tham khảo
 
 **Bảng 2.1: Hệ thống hoá các công trình liên quan**
 
