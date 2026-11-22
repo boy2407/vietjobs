@@ -29,6 +29,8 @@ Bản báo cáo Chương 1–3 (Google Doc) mà tác giả tự giải thích đ
 - Trình bày theo mẫu UIT: đánh số mục (Doc đang ra "4.", "17." thay vì 2.1.1), chú thích hình/bảng, Phụ lục A (thêm cột tên lớp có dấu; đang lặp lại Bảng 3.5), tiêu đề §2.1 không khớp nội dung.
 - Kết quả các bộ chia lọc trùng của T14 (`splits-dedup-norm-1label-mh`…) có được ghi ở đâu và có nên nhắc trong báo cáo.
 
+- `docs/06-baseline-dl.md` dòng 536 vẫn ghi ⛔ cho XLM-R/BamiBERT MTL RNN `-v2`, và `docs/04-results.md` thiếu dòng của 3 run XLM-R, ViSoBERT, BamiBERT: tài liệu chưa theo kịp run (Rule 1).
+
 ## Out of scope
 
 - Train lại hoặc thí nghiệm mới (Q5).

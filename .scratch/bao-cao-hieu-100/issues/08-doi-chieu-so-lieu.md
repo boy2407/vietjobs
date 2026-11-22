@@ -14,8 +14,8 @@ AFK: đối chiếu mọi con số trong Chương 1–3 của Doc với summary.
 **Số đo: không có số nào lệch nguồn trên Doc.** 108/147 khớp. Các số "repo≠Doc" ở Chương 3 là phần repo đã sửa hôm nay (Bảng 3.4/3.8, đoạn tin gần trùng), chờ chép sang Doc.
 
 **Câu nói quá (cần tác giả quyết cách viết lại):**
-1. "CafeBERT cho cả hai bài toán": cùng cấu hình MTL RNN `-v2`, PhoBERT có MAE dev thấp hơn (3,653 so với 3,700); CafeBERT chỉ hơn macro-F1 (0,6322 so với 0,6261).
-2. "So sánh có hệ thống với bốn bộ mã hóa khác": ở cấu hình chốt mới so đủ với PhoBERT.
+1. "CafeBERT cho cả hai bài toán": trong 5 bộ mã hóa cùng cấu hình MTL RNN `-v2` (dev, `metrics.json`), CafeBERT có macro-F1 cao nhất (0,6322; XLM-R 0,6285, BamiBERT 0,6267, PhoBERT 0,6261, ViSoBERT 0,6135) nhưng MAE chỉ đứng thứ ba (PhoBERT 3,653, BamiBERT 3,660, CafeBERT 3,700, XLM-R 3,794, ViSoBERT 3,845). Lý do chọn đúng là: chọn theo macro-F1 trên dev.
+2. ~~"So sánh có hệ thống với bốn bộ mã hóa khác": chỉ so với PhoBERT.~~ **Sai, đã sửa sau khi tác giả chỉ ra (Dashboard_last4):** cả 5 run MTL RNN `-v2` đều có `metrics.json` trên máy, nên câu này đúng. Trợ lý dò số đã dựa vào `docs/06-baseline-dl.md` dòng 536, nơi vẫn ghi ⛔ (T17) dù run đã xong. Hai chỗ tài liệu cũ: dòng đó, và `docs/04-results.md` chưa có dòng cho `dl-mtl-{xlm,vis,bam}-rnn-b01-cw-s42-v2`.
 3. F1 0,6322 và MAE 3,70 là của hai checkpoint (`best.pt` epoch 21, `best_sal.pt` epoch 30), Doc viết như một mô hình.
 4. "test chỉ dùng để báo cáo kết quả cuối": nhiều run đã được chấm test theo ngoại lệ Rule 5 mục 6.
 5. "Chia theo nhóm tin trùng lặp gần" và "tuần sau với một câu sửa khác vẫn cùng nhóm": `group_key` chỉ gom tin giống hệt sau khi bỏ dấu (repo đã sửa, Doc chưa).
