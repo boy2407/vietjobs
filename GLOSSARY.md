@@ -1,0 +1,30 @@
+# VietJobs
+
+Occupation classification and salary estimation from Vietnamese job postings. These are the
+terms the thesis and its defence use with one fixed meaning.
+
+## Language
+
+**Mô hình chốt** (final model):
+The single multi-task CafeBERT model with an RNN body that the thesis reports as its result.
+_Avoid_: "CafeBERT với bốn đầu", best model
+
+**Cấu hình CafeBERT** (CafeBERT configuration):
+One of the four CafeBERT set-ups compared before choosing the final model: Dense for
+classification, Dense for salary, multi-task Dense, multi-task RNN.
+_Avoid_: đầu (when a whole configuration is meant)
+
+**Nhóm tin đăng lại** (repost group):
+Postings whose title, description and requirements are identical after lower-casing and
+removing accents and punctuation; a group always lands in one split.
+_Avoid_: nhóm trùng gần (it does not catch postings that differ by a word)
+
+**Tin gần trùng** (near-duplicate posting):
+A dev or test posting that has a train posting with word-set Jaccard of at least 0.9 over
+title, description and requirements, while being in a different repost group.
+_Avoid_: tin trùng, leak (without qualification)
+
+**Phần sạch** (clean subset):
+The dev or test split with its near-duplicate postings left out, used only to measure how much
+they shift a score.
+_Avoid_: clean test, filtered test (test itself is never filtered)
