@@ -407,3 +407,6 @@ Việc chọn mô hình sử dụng `dev` (các dòng trước 2026-09-09 ghi `v
 | dl-sal-bamibert-dense-last4-b01-cw-s46-v2 | 10-21 11:31 | salary | bamibert[last4]-frozen+dense(h=256,cw,b=0.1) | title+desc+req | nosegment | dev | 2698 | MAE=4.28tr · RMSE=8.21tr · R2log=0.474 · R2raw=0.354 · ±20%=51.4% | 26.4s | 060a0ed6+dirty |
 | dl-mtl-caf-rnn-b01-cw-s42-v2 | 10-21 12:55 | mtl | cafebert-frozen+rnn-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6322 · MAE=3.70tr · R2log=0.604 | 6888.1s |
 | dl-mtl-pho-rnn-b01-cw-s42-v2 | 10-21 15:53 | mtl | phobert-frozen+rnn-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6261 · MAE=3.65tr · R2log=0.612 | 3841.5s |
+| dl-mtl-xlm-rnn-b01-cw-s42-v2 | 10-22 05:14 | mtl | xlmr-frozen+rnn-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6285 · MAE=3.79tr · R2log=0.634 | 8605.6s |
+| dl-mtl-vis-rnn-b01-cw-s42-v2 | 10-22 06:02 | mtl | visobert-frozen+rnn-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6135 · MAE=3.84tr · R2log=0.614 | 9573.8s |
+| dl-mtl-bam-rnn-b01-cw-s42-v2 | 10-23 08:09 | mtl | bamibert-frozen+rnn-mtl(h=256) | title+desc+req | mask+nosegment | dev | 3812 | macroF1=0.6267 · MAE=3.66tr · R2log=0.612 | 19306.3s |
