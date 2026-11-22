@@ -12,3 +12,4 @@ own rows, status and log; status is authoritative **in the sheet**.
 | T17 | Đợt 17: 4 MTL RNN còn lại + chấm Test/Ext37K ([sheet](T17-dot17-mtl-rnn-cham-diem.md)) | doing (train trên vast 5090) | Claude | 2026-10-21 |
 | T18 | MTL RNN `-v2` còn lại (XLM-R, BamiBERT), checkpoint an toàn, sheet và tài liệu ([sheet](T18-mtl-rnn-v2-con-lai.md)) | todo (chờ thuê máy và `gws auth login`) | Claude | 2026-10-21 |
 | T19 | Tuần 9: 1k tin ext37k-sal (CM + lương vs dev), `nhóm_nghề_khác`, tứ phân vị lương ≥ 100tr ([sheet](T19-tuan9-phan-tich.md)) | done | Claude (main session) | 2026-10-30 |
+| T20 | Viết lại báo cáo theo mẫu KLTN UIT, chốt CafeBERT, xuất LaTeX ([sheet](T20-bao-cao-theo-mau-uit.md)) | doing | Claude (main session) | 2026-11-05 |
