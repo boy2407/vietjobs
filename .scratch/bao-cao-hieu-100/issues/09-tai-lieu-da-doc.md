@@ -1,7 +1,7 @@
 # §2.2: tài liệu đã đọc thật
 
 Type: grilling
-Status: open
+Status: claimed
 
 ## Question
 

@@ -25,7 +25,7 @@ AFK: đối chiếu mọi con số trong Chương 1–3 của Doc với summary.
 9. XLM-R trong code là bản base; CafeBERT dựng trên XLM-R large. "BamiBERT tới 2048 token" không có nguồn.
 10. "Đuôi lương cao là thật" viết tuyệt đối; có 15 tin > 200 triệu bị coi là lỗi đơn vị.
 
-**Không có nguồn trong repo:** số liệu trích từ bài [13]–[18], [21] (repo chỉ có PDF [19], [20]); Bảng 2.1 trống trên Doc; 10,65 % và "nhóm lớn nhất 33" chỉ có trong docs, không có json (đo lại đúng).
+**Không có nguồn trong repo:** số liệu trích từ bài [13]–[18], [21] (repo chỉ có PDF [19], [20]); ~~Bảng 2.1 trống trên Doc~~ (sai: bảng có đủ 8+ dòng, bản xuất văn bản chỉ tách ô thành từng dòng; nhưng dòng [19] trong bảng còn RMSE 10,24 / R² 0,23 và tên "Dinh, Huy"); 10,65 % và "nhóm lớn nhất 33" chỉ có trong docs, không có json (đo lại đúng).
 
 **Lỗi chỉ có trong repo (Doc đúng hoặc không có):** Chương 1–2 repo còn tả bản chỉ PhoBERT với số cũ (MAE 4,13, macro-F1 0,6030); "gần một phần ba" phải là "hơn một phần tư"; §3.5.2 "198 trong train" phải là 257; §3.1 "780,3 giây" khác `manifest.json` `segment_seconds` 108,9 (cần xác định số nào đúng); Bảng 3.3 repo còn ghi cột đếm/one-hot dù mô hình chỉ đọc 3 trường văn bản; "lớp có 196 dòng" không có nguồn.
 
