@@ -82,16 +82,50 @@ in Natural Language Processing: System Demonstrations*, 2020, pp. 38–45.
 "Scikit-learn: Machine learning in Python," *Journal of Machine Learning Research*,
 vol. 12, pp. 2825–2830, 2011.
 
+### Bộ dữ liệu và công trình liên quan
+
+[13] H. Pham Dinh, H. Nguyen Huy, and M. El-Haj, "VietJobs: A Vietnamese job
+advertisement dataset," arXiv preprint arXiv:2603.05262, 2026.
+
+[14] H. T. Tran, H. H. P. Vo, and S. T. Luu, "Predicting job titles from job
+descriptions with multi-label text classification," arXiv preprint arXiv:2112.11052,
+2021.
+
+### Các bộ mã hoá được so sánh
+
+[15] P. N.-T. Do, S. Q. Tran, P. G. Hoang, K. V. Nguyen, and N. L.-T. Nguyen, "VLUE: A
+new benchmark and multi-task knowledge transfer learning for Vietnamese natural
+language understanding," in *Findings of the Association for Computational
+Linguistics: NAACL 2024*, 2024, pp. 211–222. (Bài giới thiệu CafeBERT.)
+
+[16] N. Nguyen, T. Phan, D.-V. Nguyen, and K. Nguyen, "ViSoBERT: A pre-trained language
+model for Vietnamese social media text processing," in *Proc. 2023 Conf. Empirical
+Methods in Natural Language Processing (EMNLP)*, Singapore, 2023, pp. 5191–5207.
+
+[17] A. Conneau, K. Khandelwal, N. Goyal, V. Chaudhary, G. Wenzek, F. Guzmán, E. Grave,
+M. Ott, L. Zettlemoyer, and V. Stoyanov, "Unsupervised cross-lingual representation
+learning at scale," in *Proc. 58th Annual Meeting of the Association for
+Computational Linguistics (ACL)*, 2020, pp. 8440–8451.
+
+[18] D. Q. Nguyen, T. Pham, C. Tran, and L. T. Nguyen, "BamiBERT: A new BERT-based
+language model for Vietnamese," arXiv preprint arXiv:2607.02259, 2026.
+
+> **Nguồn mục tham khảo:** [13], [14] đọc từ trang đầu bản PDF arXiv; [15]–[18] đọc
+> từ trang arXiv, ACL Anthology và trang mô hình Hugging Face (2026-11-22). Số trang
+> của [15] lấy từ bibtex trên trang mô hình CafeBERT.
+>
+> **Đánh số:** số thứ tự sẽ được xếp lại theo lần trích đầu tiên khi lắp bản cuối.
+
 ---
 
-## Còn thiếu
+## Không trích
 
-> ✍️ **CẦN VIẾT TAY** — danh sách trên **chưa có công trình nào về chính bài toán của
-> đề tài**. Đó là khoảng trống lớn nhất của mục này, và nó chỉ lấp được bằng việc đọc
-> thật. Cần bổ sung ba nhóm:
->
-> | Nhóm | Số lượng tối thiểu nên có | Kế hoạch tra cứu |
-> |---|---|---|
+Các công trình liên quan về phân loại nghề và dự đoán lương ở nước ngoài (bảy bài từng
+có trong bản Google Doc) đã bị **bỏ** ngày 2026-11-22, vì tác giả chưa đọc (quy tắc 1 ở
+trên). Bài nào được đọc sau này thì thêm lại vào danh sách này và Bảng 2.1
+([chương 2](03-chuong-2-tong-quan.md#231-bảng-hệ-thống-hoá-các-công-trình-tham-khảo)).
+
+---|---|---|
 > | Phân loại tin tuyển dụng theo chuẩn nghề nghiệp | 3–4 | §2.3 |
 > | Dự đoán mức lương từ mô tả công việc | 3–4 | §2.3 |
 > | Công trình trong nước về văn bản tuyển dụng tiếng Việt | 2–3 | §2.3 |
