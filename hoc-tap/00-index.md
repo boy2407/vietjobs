@@ -27,6 +27,7 @@ Ba điều cần nói rõ ngay:
 | 4 | [Kiến trúc B — TextCNN](04-kien-truc-b-textcnn.md) | Một mạng học sâu cơ bản không dùng PhoBERT. **Đề xuất, chưa từng chạy** |
 | 5 | [Vòng huấn luyện và đo lường](05-vong-huan-luyen-va-do-luong.md) | "Học" thật ra là làm gì · từng núm vặn · đọc con số nào và vì sao không đọc accuracy |
 | 6 | [Chạy T1.3 từng bước](06-chay-t13-tung-buoc.md) | Đúng lần chạy sắp tới trên máy này — hình dạng ma trận, dung lượng tệp, thời gian, dấu hiệu hỏng, **trước khi** gõ lệnh |
+| 7 | [Ôn tập báo cáo](07-on-tap-bao-cao.md) | Các câu hỏi đã hỏi khi ôn báo cáo, kèm giải thích đời thường, câu trả lời của bạn và đáp án · đọc lại trước khi bảo vệ |
 
 Muốn đi nhanh: đọc bài 1 → bài 2 → bài 3. Bài 4 và 5 đọc sau cũng được. Sắp chạy T1.3
 thật thì đọc bài 6 ngay trước khi gõ lệnh.
