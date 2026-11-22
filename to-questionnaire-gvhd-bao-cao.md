@@ -2,11 +2,11 @@
 
 **Mục đích:** em cần thầy chốt năm điểm về phạm vi và trình bày để dồn thời gian còn lại vào đúng phần trước hạn nộp 29/12/2026.
 
-**Từ:** Nguyễn Trọng Nghĩa, **Gửi:** TS. Lưu Thanh Sơn, **Câu trả lời của thầy sẽ dùng để:** quyết định viết những gì ở Chương 4–6, có làm thêm phần hệ thống hay không, và có cần thuê GPU chấm thêm hay không.
+**Từ:** Nguyễn Trọng Nghĩa, **Gửi:** TS. Lưu Thanh Sơn, **Câu trả lời của thầy sẽ dùng để:** quyết định viết những gì ở Chương 4–6, có làm thêm phần hệ thống hay không, và trình bày phát hiện về tin gần trùng ở đâu.
 
 ## Bối cảnh
 
-Đề tài phân loại 16 nhóm ngành và ước lượng lương từ tin tuyển dụng VietJobs (47.707 tin sau loại trùng). Mô hình chốt là mô hình đa nhiệm CafeBERT (đóng băng) với đầu BiGRU‖BiLSTM→CNN: macro-F1 0,6322 trên dev, 0,6278 trên test; MAE 3,70 triệu trên dev, 3,92 triệu trên test. Chương 1–3 đã có trên Google Doc; Chương 4–6 còn ở bản nháp. Khi rà lại, em phát hiện cách gom tin đăng lại chỉ bắt tin giống hệt nhau sau khi bỏ dấu, nên 11,6 % tin dev có một bản giống ≥ 90 % trong train. Đo trên dev, bỏ các tin này ra thì MAE tăng từ 3,70 lên 3,77 triệu, còn macro-F1 tăng từ 0,6322 lên 0,6506. Hiện repo chưa có điểm suy luận (inference) hay giao diện để dùng mô hình; mới có mã huấn luyện và đánh giá.
+Đề tài phân loại 16 nhóm ngành và ước lượng lương từ tin tuyển dụng VietJobs (47.707 tin sau loại trùng). Mô hình chốt là mô hình đa nhiệm CafeBERT (đóng băng) với đầu BiGRU‖BiLSTM→CNN: macro-F1 0,6322 trên dev, 0,6278 trên test; MAE 3,70 triệu trên dev, 3,92 triệu trên test. Chương 1–3 đã có trên Google Doc; Chương 4–6 còn ở bản nháp. Khi rà lại, em phát hiện cách gom tin đăng lại chỉ bắt tin giống hệt nhau sau khi bỏ dấu, nên 11,4 % tin test có một bản giống ≥ 90 % trong train. Em đã chấm lại mô hình chốt trên phần test bỏ các tin này (không sửa tệp test): macro-F1 tăng từ 0,6278 lên 0,6488, còn MAE tăng từ 3,92 lên 4,11 triệu. Nghĩa là tin gần trùng không thổi phồng macro-F1 nhưng làm MAE trên test đẹp hơn một chút. Ở các tin có nội dung trùng hoàn toàn, nhãn ngành chỉ trùng 19,4 %, tức là nhãn có nhiễu. Hiện repo chưa có điểm suy luận (inference) hay giao diện để dùng mô hình; mới có mã huấn luyện và đánh giá.
 
 ## Cách trả lời
 
@@ -32,13 +32,13 @@ _Vì sao em hỏi: Chương 5 hiện có 17 bảng kết quả (Bảng 5.1–5.1
 
 ## Số liệu về tin gần trùng
 
-### Thầy chấp nhận em báo ảnh hưởng của tin gần trùng bằng số đo trên dev, hay cần đo cả trên test?
+### Em báo cả điểm trên toàn bộ test (số chính) và điểm trên phần test bỏ tin gần trùng (số phụ) như vậy có được không?
 
-_Vì sao em hỏi: đo trên test cần chấm lại mô hình trên GPU thuê; dev đã đo xong._
+_Vì sao em hỏi: số chính giữ đúng giao thức chạm test một lần; số phụ cho hội đồng thấy tin gần trùng làm điểm lệch bao nhiêu._
 
 >
 
-### Thầy muốn phát hiện này được trình bày ở đâu: một đoạn trong mục chia dữ liệu (§3.2), mục hạn chế (§6.2), hay cả hai?
+### Em đã ghi phát hiện này ở cả mục chia dữ liệu (§3.2) và mục hạn chế (§6.2). Thầy có muốn chuyển hoặc rút gọn chỗ nào không?
 
 >
 

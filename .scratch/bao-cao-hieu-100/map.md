@@ -14,17 +14,18 @@ Bản báo cáo Chương 1–3 (Google Doc) mà tác giả tự giải thích đ
 - Cách học: dạy trước bằng ví dụ đời thường, mỗi lượt một ý, hỏi lại; chỗ tác giả bí thì viết lại đoạn đó trong báo cáo. **Sau mỗi lượt, thêm mục vào `hoc-tap/07-on-tap-bao-cao.md`** (nơi tác giả đọc lại); `## Answer` của ticket chỉ tóm tắt và trỏ tới mục đó.
 - Không chạy thí nghiệm mới. Không biến đổi `test` (Rule 5). Mọi số có nguồn (Rule 7).
 - Thuật ngữ: `GLOSSARY.md`. Skill nên gọi: `grilling`, `domain-modeling`, `giai-thich`, `mo-xe`.
-- Đã sửa trước khi có bản đồ: Bảng 3.8 (số tin có lương theo manifest), §3.2 (định nghĩa nhóm và số đo tin gần trùng) — xem `tasks/T21-trung-gan-test-train.md`.
+- Đã sửa (ngoài ticket): Bảng 3.8 (số tin có lương theo manifest), §3.2 (định nghĩa nhóm, số đo tin gần trùng, nhãn nhiễu, điểm phần sạch), §6.2 hạn chế 7–8, `docs/01-data-audit.md` §2 — xem `tasks/T21-trung-gan-test-train.md`.
 
 ## Decisions so far
 
 - [Đợt vast dot-24: chấm test phần sạch](issues/06-vast-dot24-cham-test-sach.md): test phần sạch MAE 4,109 (toàn bộ 3,923), macro-F1 0,6488 (toàn bộ 0,6278)
+- [Ghi số dev hay test vào §3.2 và §6.2](issues/07-so-dev-hay-test.md): ghi số test, toàn bộ là số chính, phần sạch là số phụ
+- [Cách đưa phần sửa từ repo sang Google Doc](issues/10-dong-bo-repo-doc.md): sửa trong repo, chép sang Doc một lần khi xong Chương 1–3
 
 ## Not yet specified
 
 - Chương 4–6: viết theo bố cục T20 từ `04-results.md` và `metrics.json`, từng chương một.
 - Trình bày theo mẫu UIT: đánh số mục (Doc đang ra "4.", "17." thay vì 2.1.1), chú thích hình/bảng, Phụ lục A (thêm cột tên lớp có dấu).
-- Đưa bằng chứng nhãn nhiễu (tin gần trùng khác nhãn 70 %) vào §3.5.1 và `docs/01-data-audit.md`.
 - Kết quả các bộ chia lọc trùng của T14 (`splits-dedup-norm-1label-mh`…) có được ghi ở đâu và có nên nhắc trong báo cáo.
 
 ## Out of scope
