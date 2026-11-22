@@ -98,6 +98,13 @@ giống từ 90 % trở lên. Ở các cặp này, nhãn ngành chỉ trùng nha
 cặp cả hai cùng công bố lương thì lương trùng nhau 82,8 %. Hệ quả: phần trùng này
 không làm macro-F1 trên test đẹp lên, nhưng có thể làm MAE trên test thấp hơn thực tế.
 
+**Cùng nội dung, khác nhãn ngành.** Kể cả ở 217 tin test có tập từ trùng **hoàn toàn**
+với một tin train (Jaccard = 1), nhãn ngành chỉ trùng nhau 19,4 %. Một nội dung gần như
+giống hệt mang nhiều nhãn khác nhau, nên trên những tin này không mô hình nào đúng được
+mọi nhãn: đây là phần lỗi nằm ở nhãn, không nằm ở mô hình. Nguyên nhân chưa được đo
+(người đăng chọn ngành khác nhau, hay trang nguồn xếp một tin vào nhiều ngành). Phạm vi
+đo: tin `test` so với tin `train`.
+
 **Ảnh hưởng lên điểm của mô hình chốt.** Chấm mô hình chốt (`dl-mtl-caf-rnn-b01-cw-s42-v2`)
 riêng trên **phần sạch** của test, tức là bỏ qua khi tính điểm các tin có bản giống từ
 90 % trở lên. `test.csv` không bị sửa; phép đo này chỉ để biết điểm lệch bao nhiêu, không

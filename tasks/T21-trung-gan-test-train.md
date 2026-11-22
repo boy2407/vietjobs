@@ -23,8 +23,8 @@ tin train. Phát hiện trong buổi hỏi vặn báo cáo ngày 2026-11-22.
 
 - [x] Script chỉ đọc `scripts/near_dup_test_train.py` → `artifacts/eda/near_dup_test.json`
 - [x] Ghi vào bao-cao §3.2 (lỗ hổng `group_key` + số đo)
-- [ ] Ghi bằng chứng nhãn nhiễu vào bao-cao §3.5.1 và docs/01-data-audit.md
-- [ ] Ghi hạn chế MAE test vào §6.2
+- [x] Ghi bằng chứng nhãn nhiễu vào bao-cao §3.2 (đoạn "Cùng nội dung, khác nhãn ngành") và docs/01-data-audit.md §2
+- [x] Ghi hạn chế vào §6.2 (Bảng 6.2 dòng 7 và 8)
 - [x] Tác giả quyết (b): báo thêm điểm test trên phần sạch — đã ghi bảng vào bao-cao §3.2
 - [x] Đo trên dev từ dự đoán có sẵn (`scripts/score_test_clean.py dev` → `metrics_dev_clean.json`):
       MAE toàn bộ 3,700 (khớp Dashboard_last4), phần sạch 3,774, phần gần trùng 3,141;
@@ -33,7 +33,7 @@ tin train. Phát hiện trong buổi hỏi vặn báo cáo ngày 2026-11-22.
 - [x] Đo thêm phần test không gần trùng với **train + dev** (`clean_train_dev` trong
       `metrics_test_clean.json`; 1.312 tin bị loại, `vs_train_dev` trong `near_dup_test.json`):
       macro-F1 0,6511 (8.229 tin), MAE 4,116 (5.796 tin có lương)
-- [ ] Không bỏ tin khỏi `test` (Rule 5). Bỏ tin khỏi `train` là một thí nghiệm mới, cần train lại
+- [x] Không bỏ tin khỏi `test` (Rule 5, đã giữ). Bỏ tin khỏi `train` là một thí nghiệm mới, cần train lại
 
 ## Tiêu chí xong
 
@@ -49,3 +49,4 @@ Báo cáo nói rõ lỗ hổng, có số đo và nguồn, và tác giả trả l
 | 2026-11-22 | Claude | Chấm test phần sạch trên vast dot-24, cổng đạt |
 | 2026-11-22 | Claude | Thêm phép so với train + dev vào hai script, chạy lại từ dự đoán đã lưu (không chạy mô hình) |
 | 2026-11-22 | Claude | Thêm bảng điểm phần sạch (train; train + dev) vào bao-cao §3.2 |
+| 2026-11-22 | Claude | Nhãn nhiễu vào §3.2 và 01-data-audit, hạn chế 7–8 vào §6.2; sửa bảng câu hỏi gửi thầy theo số test |

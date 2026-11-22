@@ -70,6 +70,16 @@ nhưng không có bất ngờ nào.
 
 **12.808 dòng (26,8 %)** là tin đăng lại. Nhóm lớn nhất có 33 dòng.
 
+**Tầng 2 bỏ sót tin khác nhau một vài từ.** `group_key` chỉ gom các tin giống hệt nhau
+sau khi bỏ dấu, dấu câu và chữ hoa. So mỗi tin `test` với tin `train` giống nhất (Jaccard
+trên tập từ của tiêu đề, mô tả, yêu cầu): 1.089 tin test (11,4 %) giống từ 0,9 trở lên.
+Ở các cặp này, lương trùng nhau 82,8 % (773 cặp cùng công bố lương), nhưng nhãn ngành chỉ
+trùng 30,6 %. Ở 217 tin có tập từ trùng hoàn toàn, nhãn ngành chỉ trùng 19,4 %: cùng nội
+dung mang nhãn khác nhau. Ảnh hưởng lên điểm mô hình ở bao-cao §3.2. Bộ chia không đổi;
+`test` không bị sửa.
+
+> **Nguồn số liệu:** `artifacts/eda/near_dup_test.json` (`scripts/near_dup_test_train.py`).
+
 ---
 
 ## 3. Bốn bản sao cho mỗi cột văn bản

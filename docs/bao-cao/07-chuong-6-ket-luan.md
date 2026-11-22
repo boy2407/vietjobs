@@ -75,6 +75,8 @@ tính; lớp dense chỉ thêm một khoảng nhỏ.
 | 4 | Danh sách cột được bảo vệ khỏi rò rỉ là **danh sách viết tay** | Thấp hiện tại, cao nếu thêm trường văn bản mới |
 | 5 | Mẫu hồi quy đã bị **chọn lọc**: chỉ học trên 71,5 % tin có nhãn, và tỷ lệ này phụ thuộc ngành | Chưa đo được ảnh hưởng |
 | 6 | Đánh giá chéo trên VietJobs-37K dùng bảng ánh xạ nhãn còn ở trạng thái nháp (§4.8) | Trung bình |
+| 7 | `group_key` chỉ gom tin giống hệt sau khi bỏ dấu, nên 11,4 % tin test có bản giống ≥ 90 % trong train. Lương ở các cặp này phần lớn trùng nhau, nên MAE trên toàn bộ test (3,923 triệu) thấp hơn MAE trên phần sạch (4,109 triệu) (§3.2) | Thấp — macro-F1 không bị thổi phồng; cả hai số đều được báo cáo |
+| 8 | Cùng nội dung mang nhãn ngành khác nhau: ở các tin test có tập từ trùng hoàn toàn với một tin train, nhãn chỉ trùng 19,4 % (§3.2). Nguyên nhân chưa đo | Trung bình — đặt trần cho macro-F1, là vấn đề về nhãn |
 
 ---
 
