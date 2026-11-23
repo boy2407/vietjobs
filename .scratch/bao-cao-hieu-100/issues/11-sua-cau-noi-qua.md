@@ -1,7 +1,7 @@
 # Viết lại các câu nói quá trong Chương 1–3
 
 Type: grilling
-Status: open
+Status: closed
 Blocked by: 08
 
 ## Question
@@ -12,3 +12,4 @@ Với 10 câu nói quá trong câu trả lời của "Đối chiếu số liệu
 
 - 2026-11-23: Chương 1 xong (repo + Doc). Đã sửa câu 1 (CafeBERT chọn theo macro-F1, MAE thứ ba), 3 (hai checkpoint), 4 (test), 5 (nhóm tin đăng lại), 8 (ma trận nhầm lẫn mô hình chốt). Câu 6, 7, 9, 10 nằm ở Chương 2–3.
 - 2026-11-23: Chương 2 xong (repo + Doc). Câu 9 sửa (XLM-R bản base; bỏ "BamiBERT 2048"); câu 7 đã sửa từ 22/11. Thêm: câu khoảng trống thu về "trong hai công trình trên". Fig. 3 của [14] xác nhận hai nhánh song song, khớp `heads.py`. Còn câu 6, 10 ở Chương 3.
+- 2026-11-23: Chương 3 xong (repo + Doc). Câu 6 (chia dữ liệu: phân tầng theo nhãn phổ biến nhất của nhóm, chỉ group-disjoint được assert) và câu 10 (đuôi lương: 15 tin > 200 tr, 132 tin < 2 tr chưa xử lý) đã sửa. Cả 10 câu đã xử lý trong Chương 1–3.

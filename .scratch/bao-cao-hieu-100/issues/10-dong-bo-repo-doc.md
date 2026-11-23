@@ -19,3 +19,4 @@ Tác giả chọn (a), 2026-11-22: sửa trong `docs/bao-cao/` trước, chỉ c
 Phần còn lại vẫn theo (a). Mục lục trên Doc cần bấm cập nhật.
 - 2026-11-23: Chương 1 ghi lên Doc (48 yêu cầu, thay văn bản từng đoạn, giữ đề mục và định dạng), sau khi tác giả duyệt bản repo.
 - 2026-11-23: Chương 2 ghi lên Doc (8 đoạn thay, 1 đoạn thêm ở §2.4.2; giữ chỉ số trên γ ở §2.5).
+- 2026-11-23: Chương 3 ghi lên Doc (8 đoạn thay; Bảng 3.3 mới; Bảng 3.3–3.7 cũ đánh lại thành 3.4–3.8, cả danh mục bảng; xoá Phụ lục A; sửa lệnh train_mtl ở Phụ lục B). Tác giả cần làm mới mục lục và danh mục bảng.
