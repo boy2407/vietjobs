@@ -6,7 +6,9 @@ terms the thesis and its defence use with one fixed meaning.
 ## Language
 
 **Mô hình chốt** (final model):
-The single multi-task CafeBERT model with an RNN body that the thesis reports as its result.
+The single training run of the multi-task CafeBERT model with an RNN body that the thesis
+reports as its result. The run keeps two checkpoints: one picked by macro-F1 on dev for the
+classification head, one picked by MAE on dev for the salary head.
 _Avoid_: "CafeBERT với bốn đầu", best model
 
 **Cấu hình CafeBERT** (CafeBERT configuration):
