@@ -14,3 +14,4 @@ own rows, status and log; status is authoritative **in the sheet**.
 | T19 | Tuần 9: 1k tin ext37k-sal (CM + lương vs dev), `nhóm_nghề_khác`, tứ phân vị lương ≥ 100tr ([sheet](T19-tuan9-phan-tich.md)) | done | Claude (main session) | 2026-10-30 |
 | T20 | Viết lại báo cáo theo mẫu KLTN UIT, chốt CafeBERT, xuất LaTeX ([sheet](T20-bao-cao-theo-mau-uit.md)) | doing | Claude (main session) | 2026-11-05 |
 | T21 | Trùng gần test↔train mà `group_key` bỏ sót: đo, ghi báo cáo, quyết cách xử lý ([sheet](T21-trung-gan-test-train.md)) | done | Claude (main session) | 2026-11-22 |
+| T22 | Salary-disclosed train, conflict filter, extra columns, oversampling — CafeBERT Dense R0–R4 ([sheet](T22-cot-moi-loc-xung-dot.md)) | doing | Claude (main session) | 2026-11-23 |
