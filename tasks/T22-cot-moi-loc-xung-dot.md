@@ -20,13 +20,13 @@ author in the 2026-11-23 grilling session.
 
 | ID | Run | `train` | Extra columns | Imbalance | Status |
 |---|---|---|---|---|---|
-| T22.0 | code + tests (`dl/extra.py`, flags in `train_dl.py`) | — | — | — | todo |
-| T22.1 | encode `technical_skills_text`, `benefits_masked` with CafeBERT len 128 (`train`, `dev`) | — | — | — | todo |
-| T22.2 | R0 `dl-{cat,sal}-t22-r0-s{42..44}` | disclosed | none | as above | todo |
-| T22.3 | R1 `dl-{cat,sal}-t22-r1-s{42..44}` | disclosed, no conflict | none | as above | todo |
-| T22.4 | R2 `dl-{cat,sal}-t22-r2-s{42..44}` | disclosed | all | as above | todo |
-| T22.5 | R3 `dl-{cat,sal}-t22-r3-s{42..44}` | disclosed, no conflict | all | as above | todo |
-| T22.6 | R4 `dl-cat-t22-r4-s{42..44}` (category only) | best of R0–R3 | best of R0–R3 | class weight off, small classes repeated up to N | todo |
+| T22.0 | code + tests (`dl/extra.py`, flags in `train_dl.py`) | — | — | — | done |
+| T22.1 | encode `technical_skills_text`, `benefits_masked` with CafeBERT len 128 (`train`, `dev`) | — | — | — | done |
+| T22.2 | R0 `dl-{cat,sal}-t22-r0-s{42..44}` | disclosed | none | as above | done |
+| T22.3 | R1 `dl-{cat,sal}-t22-r1-s{42..44}` | disclosed, no conflict | none | as above | done |
+| T22.4 | R2 `dl-{cat,sal}-t22-r2-s{42..44}` | disclosed | all | as above | done |
+| T22.5 | R3 `dl-{cat,sal}-t22-r3-s{42..44}` | disclosed, no conflict | all | as above | done |
+| T22.6 | R4 `dl-cat-t22-r4-s{42..44}` (category only) | best of R0–R3 | best of R0–R3 | class weight off, small classes repeated up to N | done |
 | T22.7 | log, docs, thesis, workbook (Rules 1, 7, 10, 13) | — | — | — | todo |
 
 **Extra columns** (fitted on `train` only, then applied to `dev`):
@@ -51,3 +51,4 @@ uses them. This task filters `train` only and keeps the frozen splits.
 | Date | Who | What |
 |---|---|---|
 | 2026-11-23 | Claude | Sheet created after the author's "ok"; nothing run yet |
+| 2026-11-23 | Claude | R0–R4 run on Mac `cpu` (27 runs, `04-results.md`). PhoBERT xf caches not built (rental 25 too slow). Test scored once from saved `best.pt` by the author's override (`scripts/score_t22_test.py`, run by the author; `test.csv` sha256 70ba98d5… unchanged), 27 rows tagged test-informed. Results in sheet tabs ` Dashboard-v2` and `Score_v2`. T22.7 docs/thesis still open |
