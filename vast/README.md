@@ -45,3 +45,4 @@ ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - artifacts/<run_glob> lo
 1. Đủ mọi run của đợt có `metrics.json` + `history.jsonl` + log trên Mac.
 2. `best.pt` của mọi run đã nằm trên Mac (Đợt 2 mất 5 file vì bỏ qua bước này) và `torch.load` mở được từng file (Đợt 5 gặp một `best.pt` bị cắt khi kéo về).
 3. Bảng của file đợt đã điền số từ `metrics.json`.
+| 25 | [dot-25-t22-dense.md](dot-25-t22-dense.md) | T22 — CafeBERT 512 Dense R0–R4 (lọc xung đột, cột mới, lặp tin) | `train_dl.py` qua ssh | KHÔNG DÙNG — chạy trên Mac, chờ destroy |
