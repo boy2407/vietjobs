@@ -21,6 +21,11 @@ Postings whose title, description and requirements are identical after lower-cas
 removing accents and punctuation; a group always lands in one split.
 _Avoid_: nhóm trùng gần (it does not catch postings that differ by a word)
 
+**Tin xung đột nhãn** (conflicting-label posting):
+A train posting whose title, description and requirements are character-for-character
+identical to another posting's, while its occupation label differs.
+_Avoid_: tin trùng, nhãn nhiễu (without qualification)
+
 **Tin gần trùng** (near-duplicate posting):
 A dev or test posting that has a train posting with word-set Jaccard of at least 0.9 over
 title, description and requirements, while being in a different repost group.
