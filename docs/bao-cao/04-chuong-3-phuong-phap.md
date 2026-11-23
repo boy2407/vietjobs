@@ -1,274 +1,142 @@
 [← Chương 2](03-chuong-2-tong-quan.md) · [Bảng điều khiển](00-index.md) · [Chương 4 →](05-chuong-4-thuc-nghiem.md)
 
-# CHƯƠNG 3. PHƯƠNG PHÁP THỰC HIỆN
-
-Chương này trình bày toàn bộ đường đi của dữ liệu, từ tệp CSV thô đến vectơ đưa vào
-mạng nơ-ron. Mỗi bước được trình bày theo ba nhịp: **nguyên lý hoạt động**, **cách
-áp dụng trong đề tài**, và **lý do lệch khỏi giá trị mặc định** kèm số đo.
+# CHƯƠNG 3. BỘ DỮ LIỆU VIETJOBS
 
 ---
 
-## 3.1. Tổng quan quy trình thực hiện
+## 3.1. Nguồn dữ liệu và kiểm toán dữ liệu
 
-![Sườn tổng thể hệ thống](../figures/01-suon-tong-the.png)
+Bộ dữ liệu của đề tài là bộ VietJobs do Phạm Dinh, Nguyễn Huy và El-Haj công bố [13], dưới
+dạng tệp `VietJobs.csv` gồm 48.092 tin tuyển dụng tiếng Việt và 18 cột. Đơn vị lương là
+triệu đồng mỗi tháng. Mã băm sha256 của tệp được ghi vào tệp `manifest.json`: nếu tệp thô
+thay đổi, mọi con số đã đo mất tính so sánh, và điều đó phải được phát hiện ngay.
 
-**Hình 3.1: Sơ đồ tổng quan quy trình thực hiện đề tài**
-
-Quy trình gồm sáu khâu nối tiếp:
-
-**Bảng 3.1: Sáu khâu của quy trình**
-
-| Khâu | Việc làm | Mô-đun | Đầu ra |
-|---|---|---|---|
-| 1 | Làm sạch, loại trùng | `dataset.py` | 47.707 dòng |
-| 2 | Xử lý tiếng Việt, tách từ | `vitext.py` | 9 cột đã tách từ |
-| 3 | Chia tập theo nhóm | `dataset.py` | 34.354 / 3.812 / 9.541 |
-| 4 | Phân tích khám phá | `scripts/analyze_data.py` | 11 hình + `summary.json` |
-| 5 | Biểu diễn bằng PhoBERT | `dl/encode.py` | vectơ 768 chiều, lưu đệm |
-| 6 | Huấn luyện phần dày đặc | `dl/train_dl.py` | mô hình + `metrics.json` |
-
-Một quyết định kiến trúc bao trùm cả sáu khâu: **các khâu 1–3 chạy một lần và kết
-quả được ghi xuống đĩa**, các khâu 5–6 đọc lại kết quả đó. Lý do là chi phí: riêng
-việc tách từ cho 47.707 tin mất **780,3 giây** (13 phút), với **0 lỗi**. Nếu tách từ
-nằm trong vòng lặp huấn luyện thì mỗi lần chạy phải trả lại đúng 13 phút đó.
-
----
-
-## 3.2. Dữ liệu và kiểm toán dữ liệu
-
-### 3.2.1. Mô tả nguồn dữ liệu
-
-**Bảng 3.2: Thuộc tính của tệp dữ liệu thô**
-
-| Thuộc tính | Giá trị |
-|---|---|
-| Tệp | `data/raw/VietJobs.csv` |
-| Số dòng | 48.092 |
-| Số cột | 18 |
-| sha256 | `85862b06fda4e814…d0c49d477` |
-| Đơn vị lương | triệu VND/tháng |
-
-Mã băm sha256 được ghi vào `manifest.json` với đúng một nhiệm vụ: nếu tệp thô thay
-đổi, mọi con số đã đo mất tính so sánh được, và điều đó phải được phát hiện ngay lập
-tức chứ không phải ba tuần sau.
-
-Mười tám cột gốc chia thành bốn nhóm:
-
-**Bảng 3.3: Mô tả các trường dữ liệu**
+**Bảng 3.1: Các nhóm trường dữ liệu**
 
 | Nhóm | Các cột | Vai trò |
 |---|---|---|
-| Văn bản tự do | `job_title` · `description` · `requirements_text` | Tín hiệu chính, là đầu vào của PhoBERT |
-| Danh sách | `qualifications` · `technical_skills` · `soft_skills` · `benefits` | Vừa cho ra văn bản, vừa cho ra một cột đếm |
-| Có cấu trúc | `location` · `country` · `languages_required` · `experience_required` · `contract_type` · `working_hours` | Cột số và cột one-hot |
-| **Nhãn** | `category` · `salary` · `salary_min` · `salary_max` · `salary_avg` | Đáp án. Bốn cột lương **không bao giờ** vào ma trận đặc trưng |
+| Văn bản tự do | `job_title`, `description`, `requirements_text` | Đầu vào của mô hình |
+| Danh sách | `qualifications`, `technical_skills`, `soft_skills`, `benefits` | Không đưa vào mô hình |
+| Có cấu trúc | `location`, `country`, `languages_required`, `experience_required`, `contract_type`, `working_hours` | Không đưa vào mô hình |
+| Nhãn | `category`, `salary`, `salary_min`, `salary_max`, `salary_avg` | Đáp án, không bao giờ là đầu vào |
 
-**Một chi tiết đọc dữ liệu có hệ quả lớn.** Hàm `load_raw` đọc **mọi cột dưới dạng
-chuỗi** và chỉ coi chuỗi rỗng là giá trị khuyết. Lý do: để thư viện tự suy kiểu là để
-nó âm thầm biến `"01"` thành `1`, và biến `"NA"` — một mã ngành có thật — thành giá
-trị khuyết. Ép kiểu chuỗi rồi tự phân tích thì chậm hơn nhưng không có bất ngờ.
+Toàn bộ các cột được đọc dưới dạng chuỗi; chỉ chuỗi rỗng mới được coi là giá trị khuyết.
+Để thư viện tự suy kiểu sẽ âm thầm biến "01" thành 1, hoặc biến "NA" thành giá trị khuyết.
 
-### 3.2.2. Loại trùng lặp — hai tầng, hai mục đích khác nhau
+Ba trường văn bản mà mô hình đọc – tiêu đề, mô tả và yêu cầu – được điền ở gần như mọi dòng
+(100 %, 100 % và 99,98 %; chỉ 9 dòng để trống trường yêu cầu). Các trường điền thưa nhất là
+`technical_skills` (86,6 %) và `languages_required` (25,6 %). Một trường rỗng ở ba dòng
+trên bốn không phải là một đặc trưng, nên không được đưa vào mô hình.
 
-Đây là chỗ dễ nhầm nhất trong toàn bộ quy trình, nên cần nói rõ:
+> **Nguồn số liệu:** `data/processed/manifest.json` (`source_rows` = 48.092,
+> `source_sha256`, `salary_unit`) · `artifacts/eda/summary.json` (`completeness`) ·
+> `src/vietjobs/dl/text.py` (`FIELDS`: ba trường mô hình đọc).
 
-**Bảng 3.4: Hai tầng xử lý trùng lặp**
+---
 
-| Tầng | Hàm | Việc làm | Kết quả |
-|---|---|---|---|
-| 1. Trùng khớp hoàn toàn | `drop_duplicates()` | **Xoá** dòng giống nhau trên cả 18 cột | 48.092 → **47.707** (xoá **385**) |
-| 2. Gom nhóm trùng gần | `group_key()` | **Không xoá gì.** Chỉ gán một mã chung cho các tin gần giống nhau | 47.707 dòng → **34.899 nhóm** |
+## 3.2. Loại trùng lặp và sửa nhãn lương
 
-**Vì sao hai tầng xử lý khác nhau.** Dòng giống nhau trên cả 18 cột là **lỗi nhập
-liệu**, không phải thông tin; giữ lại chỉ khiến mô hình đếm một tin hai lần, tức tự
-gán lại trọng số một cách ngẫu nhiên. Ngược lại, tin *gần* giống nhau — "Nhân viên
-kinh doanh" đăng lại tuần sau với một câu phúc lợi sửa khác đi — **vẫn là dữ liệu
-thật**. Xoá chúng là vứt mẫu đi. Nhưng để chúng rơi vào hai tập khác nhau là rò rỉ.
-Giải pháp: giữ lại, và ép cả nhóm vào cùng một tập (§3.5).
+Trùng lặp được xử lý ở hai tầng, với hai mục đích khác nhau.
 
-**Thế nào là "gần giống".** `group_key()` ghép tiêu đề, mô tả và yêu cầu, đưa về chữ
-thường, bỏ dấu tiếng Việt và dấu câu, rồi băm thành một mã. Hai tin cùng mã khi ba
-trường này chỉ khác nhau ở chữ hoa/thường, dấu thanh hoặc dấu câu; các cột khác như
-phúc lợi hay địa điểm không tham gia. Hai tin khác nhau dù chỉ một từ trong ba
-trường đó sẽ ra hai mã khác nhau và có thể rơi vào hai tập khác nhau.
+**Bảng 3.2: Hai tầng xử lý trùng lặp**
 
-**Đo phần `group_key` bỏ sót.** So mỗi tin `test` với tin `train` giống nhất theo
-Jaccard trên tập từ của ba trường: 1.089 tin test (11,4 %) có một bản trong train
-giống từ 90 % trở lên. Ở các cặp này, nhãn ngành chỉ trùng nhau 30,6 %, nhưng ở 773
-cặp cả hai cùng công bố lương thì lương trùng nhau 82,8 %. Hệ quả: phần trùng này
-không làm macro-F1 trên test đẹp lên, nhưng có thể làm MAE trên test thấp hơn thực tế.
+| Tầng | Việc làm | Kết quả |
+|---|---|---|
+| 1. Trùng khớp hoàn toàn | Xóa dòng giống nhau trên cả 18 cột | 48.092 → 47.707 (xóa 385) |
+| 2. Gom nhóm tin đăng lại | Không xóa, chỉ gán mã nhóm chung | 47.707 dòng → 34.899 nhóm |
 
-**Cùng nội dung, khác nhãn ngành.** Kể cả ở 217 tin test có tập từ trùng **hoàn toàn**
-với một tin train (Jaccard = 1), nhãn ngành chỉ trùng nhau 19,4 %. Một nội dung gần như
-giống hệt mang nhiều nhãn khác nhau, nên trên những tin này không mô hình nào đúng được
-mọi nhãn: đây là phần lỗi nằm ở nhãn, không nằm ở mô hình. Nguyên nhân chưa được đo
-(người đăng chọn ngành khác nhau, hay trang nguồn xếp một tin vào nhiều ngành). Phạm vi
-đo: tin `test` so với tin `train`.
+Dòng giống nhau trên cả 18 cột là lỗi nhập liệu và bị xóa. Tin đăng lại – cùng tiêu đề, mô
+tả và yêu cầu, chỉ khác chữ hoa, dấu thanh hoặc dấu câu – vẫn là dữ liệu thật nên được giữ
+lại. Cả nhóm được gán chung một mã nhóm để luôn rơi vào cùng một tập (§3.4). Có 12.808 dòng
+(26,8 %) là tin đăng lại; nhóm lớn nhất có 33 dòng.
 
-**Ảnh hưởng lên điểm của mô hình chốt.** Chấm mô hình chốt (`dl-mtl-caf-rnn-b01-cw-s42-v2`)
-riêng trên **phần sạch** của test, tức là bỏ qua khi tính điểm các tin có bản giống từ
-90 % trở lên. `test.csv` không bị sửa; phép đo này chỉ để biết điểm lệch bao nhiêu, không
-dùng để chọn mô hình.
+Mã nhóm được tính từ tiêu đề, mô tả và yêu cầu sau khi đưa về chữ thường, bỏ dấu tiếng Việt
+và dấu câu. Vì vậy nó chỉ gom các tin giống hệt nhau ở ba trường này; khác nhau một từ là
+khác nhóm. So mỗi tin test với tin train giống nhất theo Jaccard trên tập từ của ba trường,
+1.089 tin test (11,4 %) có một bản trong train giống từ 90 % trở lên. Ở 773 cặp mà cả hai
+tin cùng công bố lương, lương trùng nhau 82,8 %, nhưng nhãn ngành của các cặp chỉ trùng
+30,6 %.
 
-| Phần test được chấm | Số tin | Macro-F1 | Số tin có lương | MAE (triệu) |
+Kể cả ở 217 tin test có tập từ trùng hoàn toàn với một tin train, nhãn ngành chỉ trùng
+19,4 %. Một nội dung gần như giống hệt mang nhiều nhãn khác nhau, nên trên những tin này
+không mô hình nào đúng được mọi nhãn. Đây là phần lỗi nằm ở nhãn, không nằm ở mô hình;
+nguyên nhân chưa được đo.
+
+Mô hình chốt được chấm thêm trên phần test bỏ các tin gần trùng. Tệp test không bị sửa;
+phép đo chỉ để biết điểm lệch bao nhiêu, không dùng để chọn mô hình.
+
+**Bảng 3.3: Điểm của mô hình chốt trên toàn bộ test và trên phần sạch**
+
+| Phần test | Số tin | macro-F1 | Số tin có lương | MAE (triệu) |
 |---|---|---|---|---|
 | Toàn bộ | 9.541 | 0,6278 | 6.773 | 3,923 |
 | Bỏ tin gần trùng với train | 8.452 | 0,6488 | 5.965 | 4,109 |
 | Bỏ tin gần trùng với train hoặc dev | 8.229 | 0,6511 | 5.796 | 4,116 |
 
-Trên phần sạch, macro-F1 tăng, và MAE cũng tăng, từ 3,923 lên 4,109–4,116 triệu. Điều này khớp với
-nhận định ở trên: tin gần trùng làm MAE trên toàn bộ test đẹp hơn một chút, nhưng không
-thổi phồng macro-F1. Loại thêm các tin gần trùng với dev chỉ bỏ ra 223 tin, và điểm gần
-như không đổi, vì mô hình không học trên dev.
+Tin gần trùng vì vậy không thổi phồng macro-F1, nhưng làm MAE trên toàn bộ test thấp hơn
+thực tế một chút.
 
-> **Nguồn số liệu:** `artifacts/eda/near_dup_test.json` (`scripts/near_dup_test_train.py`);
-> `artifacts/dl-mtl-caf-rnn-b01-cw-s42-v2/metrics_test_clean.json` (`scripts/score_test_clean.py`).
+Nhãn lương được sửa bằng bốn phép, mỗi phép ứng với một dạng lỗi có thật trong dữ liệu.
 
-**Số đo:** **12.808 dòng (26,8 %)** là tin đăng lại; nhóm lớn nhất có 33 dòng.
+**Bảng 3.4: Bốn phép sửa nhãn lương**
 
-### 3.2.3. Sửa chữa nhãn lương
-
-Bốn phép sửa, mỗi phép ứng với một dạng bẩn có thật trong dữ liệu:
-
-**Bảng 3.5: Bốn phép sửa nhãn lương**
-
-| Hiện tượng trong dữ liệu | Cách sửa |
+| Hiện tượng | Cách sửa |
 |---|---|
-| Có dòng `salary_min > salary_max` | Hoán đổi lại bằng `np.minimum` / `np.maximum` |
-| Chỉ công bố **một** biên (min = 0, max > 0) | Dùng biên có thật cho cả hai |
-| Không công bố con số nào | `salary_mid = 0` → `salary_disclosed = 0` |
+| `salary_min` > `salary_max` | Hoán đổi hai biên |
+| Chỉ công bố một biên | Dùng biên có thật cho cả hai |
+| Không công bố con số nào | `salary_disclosed` = 0, không dùng làm nhãn lương |
 | Phân bố lệch phải nặng | Nhãn hồi quy là `log1p(salary_mid)` |
 
-**Giá trị cực trị được đánh dấu, không bị xoá.** Cột `salary_extreme = 1` khi trung
-điểm ≥ 100 triệu.
+Phần đuôi phải được giữ lại: 2.204 tin nằm trên hàng rào IQR 28 triệu. Ở hai biên có 15 tin
+trên 200 triệu và 132 tin dưới 2 triệu, nghi nhập sai đơn vị; các tin này chưa được xử lý.
+Cái đuôi được xử lý bằng phép biến đổi `log1p` trên nhãn.
 
-*Lý do không cắt đuôi phân bố:* **cái đuôi là thật**. Một giám đốc điều hành thực sự
-nhận 500 triệu. Xoá những dòng đó là dạy mô hình rằng lương cao không tồn tại — nó sẽ
-đạt điểm cao hơn *trên tập đã bị cắt*, và sai một cách có hệ thống ngoài đời. Đánh
-dấu rồi báo cáo riêng là trung thực; xoá đi rồi khoe một MAE đẹp là tự lừa mình.
-
-*Cách xử lý cái đuôi mà không vứt dữ liệu:* dùng `log1p` làm nhãn hồi quy. Sai 5
-triệu ở mức lương 10 triệu là sai nặng; sai 5 triệu ở mức 200 triệu là gần đúng.
-Thang logarit nói được điều đó, thang tuyến tính thì không.
-
-> **Nguồn số liệu:** `data/processed/manifest.json` ·
-> [01-data-audit.md](../01-data-audit.md).
-
----
-
-## 3.3. Xử lý ngôn ngữ tiếng Việt
-
-PhoBERT cắt văn bản thành **đơn vị con BPE** rồi tra trong bảng nhúng đã học từ một
-kho văn bản đã chuẩn hoá và đã tách từ. Văn bản lệch khỏi phân bố đó không gây lỗi,
-nó chỉ vỡ thành những mảnh hiếm và cho vectơ kém hơn. Vì vậy mọi bước dưới đây nhằm
-đưa văn bản của đề tài về đúng dạng PhoBERT đã học.
-
-Mô hình đọc đúng ba cột: `job_title`, `description`, `requirements_text` (bài lương
-đọc bản `*_masked` của cùng ba cột, §3.4). Mỗi cột đi qua các bước sau, theo đúng thứ
-tự trong mã nguồn (Hình 3.2, Bảng 3.6).
-
-![Đường văn bản từ tin thô tới PhoBERT](../figures/03-xu-ly-tieng-viet.png)
-
-**Hình 3.2: Các giai đoạn xử lý văn bản từ tin thô tới vectơ PhoBERT**
-
-**Bảng 3.6: Các bước xử lý văn bản trước khi vào PhoBERT**
-
-| # | Bước | Ví dụ | Nơi chạy |
-|---|---|---|---|
-| 1 | Chuẩn hoá Unicode NFC, bỏ ký tự điều khiển và dấu đầu dòng, gộp khoảng trắng | `e` + hai dấu tổ hợp → `ế` | `dataset.clean` → `vitext.preprocess` |
-| 2 | Chuẩn hoá vị trí dấu thanh | `hòa` = `hoà` · `thúy` = `thuý` | như trên (`tone=True`) |
-| 3 | Mở rộng từ viết tắt | `NV` → `nhân viên` · `BHXH` → `bảo hiểm xã hội` | như trên (`abbrev=True`) |
-| 4 | Che con số lương — chỉ bản `*_masked` | `18 triệu` → `<SALARY>` | như trên (`mask=True`) |
-| 5 | Tách từ (`underthesea`) | `nhân viên` → `nhân_viên` | `vitext.segment_many`, ra cột `*_seg` |
-| 6 | Ghép ba trường, tiêu đề đứng trước | `tiêu đề . mô tả . yêu cầu` | `dl/text.py` |
-| 7 | Tách đơn vị con BPE, cắt ở 256 token | — | `dl/encode.py` (tokenizer của `vinai/phobert-base-v2`) |
-
-Thứ tự này là bắt buộc. Che lương chạy **sau** mở rộng viết tắt, vì `8tr` phải thành
-một con số trước khi che được. Che lương chạy **trước** tách từ, vì `<SALARY>` không
-được bị tách. Văn bản giữ nguyên chữ hoa, vì tokenizer của PhoBERT phân biệt hoa
-thường. Cái giá của việc cắt ở 256 token được đo ở §3.6.8.
+> **Nguồn số liệu:** `data/processed/manifest.json` (`rows_after_exact_dedup` = 47.707,
+> `dropped_exact_duplicates` = 385, `unique_groups` = 34.899) ·
+> [01-data-audit.md](../01-data-audit.md) §2 (nhóm lớn nhất 33 dòng) ·
+> `src/vietjobs/vitext.py` (`group_key`) · `artifacts/eda/near_dup_test.json` (`rows[0]`:
+> 217 tin, nhãn trùng 0,1935; `rows[2]`: 1.089 tin, 0,1141, nhãn trùng 0,3058, 773 cặp,
+> lương trùng 0,8279) · `artifacts/dl-mtl-caf-rnn-b01-cw-s42-v2/metrics_test.json` và
+> `metrics_test_clean.json` (`clean`, `clean_train_dev`) · `src/vietjobs/dataset.py`
+> (`derive_salary`) · `artifacts/eda/summary.json` (`salary.n_above_fence` = 2.204,
+> `fence_high` = 28, `n_implausible_high` = 15, `n_implausible_low` = 132).
 
 ---
 
-## 3.4. Cơ chế chống rò rỉ dữ liệu
+## 3.3. Cơ chế chống rò rỉ dữ liệu
 
-![Bốn bản sao của mỗi cột văn bản](../figures/02-bon-ban-sao-van-ban.png)
+Rò rỉ dữ liệu là khi mô hình nhìn thấy thông tin mà lúc dự đoán thật nó không có. Với bài
+toán lương, đường rò rỉ là chính con số lương được nhắc lại trong văn bản tin đăng. Lỗi này
+không sinh ra thông báo nào; nó chỉ tạo ra một điểm số đẹp không có giá trị.
 
-**Hình 3.3: Bốn bản sao của mỗi cột văn bản và quyền đọc của từng bài toán**
+Mỗi cột văn bản vì vậy được dựng sẵn hai họ: họ gốc (raw) cho bài toán phân loại, và họ đã
+che (masked) cho bài toán lương, trong đó mọi con số lương được thay bằng một ký hiệu. Hàm
+`features.resolve_column` là nơi duy nhất quyết định bài toán nào đọc họ nào. Vectơ của hai
+họ cũng được lưu thành hai tệp riêng. Cột phúc lợi là cột nhắc lại con số lương nhiều nhất,
+ở 10,65 % số dòng.
 
-### 3.4.1. Nguyên lý
+Ràng buộc này được giữ bằng bộ kiểm thử tự động `tests/test_no_leak.py` và
+`tests/test_dl_text.py`. Ba cột không nằm trong danh sách bảo vệ – `soft_skills_text`,
+`qualifications_text`, `technical_skills_text` – đã được đo có 0 dòng chứa con số lương.
 
-Rò rỉ dữ liệu là tình huống mô hình nhìn thấy thông tin mà lúc dự đoán thật nó không
-có. Trong đề tài này có hai đường rò rỉ, và **cả hai đều không sinh ra thông báo
-lỗi** — chúng chỉ tạo ra một điểm số đẹp không có giá trị.
-
-### 3.4.2. Cách áp dụng — bốn bản sao và một cửa duy nhất
-
-Mỗi cột văn bản tồn tại ở tối đa bốn dạng, dựng sẵn một lần trong `clean()`:
-
-**Bảng 3.7: Bốn bản sao của một cột văn bản**
-
-| Bản sao | Dựng bằng | Ai được đọc |
-|---|---|---|
-| `<tên>` | `preprocess(mask=False)` | chỉ bài toán phân loại |
-| `<tên>_seg` | thêm bước tách từ | chỉ bài toán phân loại |
-| `<tên>_masked` | `preprocess(mask=True)` | chỉ hai bài toán lương |
-| `<tên>_masked_seg` | che rồi tách từ | chỉ hai bài toán lương |
-
-**Lý do dựng sẵn cả bốn thay vì tính khi cần:** để việc chọn bản sao trở thành một
-phép tra bảng, chứ không phải một nhánh `if` rải rác khắp mã nguồn. Nơi duy nhất
-quyết định là hàm `features.resolve_column`. Một cánh cửa thì kiểm thử được; mười
-nhánh `if` thì không.
-
-Bốn cột được che: `job_title`, `description`, `requirements_text` và `benefits_text`.
-Cột phúc lợi được che riêng vì nó nhắc lại con số lương nhiều hơn mọi cột khác —
-**10,65 %** số dòng.
-
-**Điểm quan trọng đối với nhánh học sâu:** bộ đệm vectơ PhoBERT được tách thành hai
-họ tệp riêng trong `artifacts/embeddings/` — họ `raw` cho phân loại và họ `masked`
-cho lương. Trộn hai tệp này là một vụ rò rỉ lương âm thầm. Ràng buộc được giữ bằng
-`tests/test_no_leak.py` (22 kiểm thử) và `tests/test_dl_text.py` (8 kiểm thử).
-
-**Một hạn chế cần nói thẳng:** danh sách cột được bảo vệ (`UNMASKED_COLUMNS`) hiện
-vẫn là **danh sách viết tay**, nên bộ kiểm thử chỉ canh được những cột mà người viết
-nghĩ ra. Ba cột không có trong danh sách — `soft_skills_text`, `qualifications_text`,
-`technical_skills_text` — đã được đo: **0** dòng chứa con số lương, và phép đo đó là
-một kiểm thử thường trực trong `tests/test_no_leak.py`. Đường học sâu chỉ đọc ba
-trường văn bản ở §3.3.
+> **Nguồn số liệu:** `src/vietjobs/features.py` (`resolve_column`) ·
+> [02-vietnamese-nlp.md](../02-vietnamese-nlp.md) bảng chín bước, bước 4 (benefits 5.081
+> dòng, 10,65 %) · `tests/test_no_leak.py` (`test_skill_columns_carry_no_pay_figures`).
 
 ---
 
-## 3.5. Phân chia tập dữ liệu
+## 3.4. Phân chia tập dữ liệu
 
-### 3.5.1. Nguyên lý — chia theo nhóm, không chia theo dòng
+Dữ liệu được chia theo nhóm tin đăng lại chứ không theo dòng. Mỗi nhóm được xếp vào tầng
+theo nhãn phổ biến nhất của nhóm. Trong mỗi tầng, các nhóm được xáo trộn, rồi nhóm lớn nhất
+được đặt trước vào tập đang thiếu nhiều nhất so với hạn mức. Mã nguồn khẳng định không nhóm
+nào nằm ở hai tập; cả 16 lớp đều có mặt ở ba tập.
 
-Thuật toán `group_stratified_split` phải thoả **hai** ràng buộc cùng lúc, và hai ràng
-buộc này kéo ngược nhau:
+Phép chia chạy hai tầng: train và test theo tỷ lệ 8:2, rồi phần train chia tiếp thành train
+và dev theo tỷ lệ 9:1, với hạt giống 20260826. Chia hai tầng cho phép thay đổi lát cắt dev
+mà không một dòng nào của test bị dịch chuyển.
 
-1. **Không nhóm nào được nằm ở hai tập.** Mọi dòng cùng `group_id` phải rơi trọn vào
-   một tập.
-2. **Lớp hiếm phải sống sót.** Một lớp có 196 dòng phải xuất hiện ở cả tập kiểm định
-   lẫn tập kiểm tra, nếu không macro-F1 sẽ được tính trên số lớp khác nhau giữa các
-   lần chạy và bảng kết quả mất tính so sánh.
-
-**Cách áp dụng:** với **mỗi** lớp ngành nghề, xáo trộn các nhóm, rồi đặt **nhóm lớn
-nhất trước** vào tập nào đang thiếu so với hạn mức nhiều nhất. Đặt nhóm lớn trước vì
-chúng khó xếp nhất — để đến cuối thì chúng làm lệch tỷ lệ mà không còn gì để bù.
-
-### 3.5.2. Lược đồ hai tầng
-
-Từ ngày 2026-09-09, phép chia chạy **hai lần**:
-
-1. `train_pool : test` = **8 : 2**
-2. tập pool đó chia tiếp, `train : dev` = **9 : 1**
-
-Kết quả là tỷ lệ 72 / 8 / 20 trên số dòng. **Lý do chia hai lần thay vì một lần chia
-ba:** tầng 2 phải chạy lại được — đổi lát cắt dev khác, hoặc chạy k-fold trên pool —
-**mà không một dòng nào của `test` bị dịch chuyển**. Đó chính là điều giữ cho `test`
-dùng được đúng một lần, ở cuối. Tầng 2 rút với `seed + 1` để hai tầng không dùng
-chung một hoán vị. Hạt giống `SPLIT_SEED = 20260826` không đổi.
-
-**Bảng 3.8: Kết quả phân chia tập dữ liệu**
+**Bảng 3.5: Kết quả phân chia tập dữ liệu**
 
 | Tập | Số dòng | Tỷ lệ | Tin có công bố lương | Số lớp |
 |---|---|---|---|---|
@@ -276,450 +144,142 @@ chung một hoán vị. Hạt giống `SPLIT_SEED = 20260826` không đổi.
 | dev | 3.812 | 7,99 % | 2.698 | 16 |
 | test | 9.541 | 20,00 % | 6.773 | 16 |
 
-`groups_straddling_splits` = **0**, và hàm `build()` có một câu lệnh `assert` kiểm
-tra điều đó. Câu lệnh này không bao giờ được phép tắt đi. Tỷ lệ thực tế lệch không
-quá 0,01 điểm phần trăm so với mục tiêu, dù đơn vị chia là nhóm chứ không phải dòng.
+Số nhóm bị tách qua hai tập là 0, và điều này được kiểm tra bằng một câu lệnh `assert` trong
+mã nguồn. Tập dev dùng để chọn mô hình và siêu tham số. Tập test không dùng để chọn mô hình
+và không bao giờ bị biến đổi; các cấu hình trên bảng kết quả được chấm trên test nhiều nhất
+một lần, từ checkpoint đã lưu. Cái giá của lược đồ này là tập dev mỏng: lớp
+`nhóm_nghề_khác` chỉ có 25 dòng trong dev.
 
-**Cái giá của lược đồ mới là tập dev mỏng:** lớp nhỏ nhất, `nhóm_nghề_khác`, chỉ có
-**25** dòng trong dev (198 trong train, 64 trong test). F1 của lớp đó trên dev được
-đo trên 25 mẫu và sẽ dao động mạnh; phải đọc kèm `f1_macro_no_junk` và xác nhận trên
-`test` ở cuối.
-
-### 3.5.3. Chính sách chạm vào tập kiểm tra
-
-**Bảng 3.9: Chính sách sử dụng ba tập dữ liệu**
-
-| Tập | Dùng để | Được chạm bao nhiêu lần |
-|---|---|---|
-| `train` | Huấn luyện | Không giới hạn |
-| `dev` | Chọn mô hình, siêu tham số, cấu hình tiền xử lý | Không giới hạn |
-| `test` | Báo cáo con số cuối cùng | **Đúng một lần**, ở cuối |
-
-`test` không chỉ hiếm khi được chạm — nó **không bao giờ bị biến đổi**. Không lọc,
-không loại trùng, không cân bằng lớp, không cắt ngoại lệ, không chia lại. Mọi phép
-làm sạch hay điều chỉnh chỉ áp lên `train` và `dev`. Chương trình huấn luyện từ chối
-chạy với `--eval test` nếu không có cờ `--confirm-test`; cờ này tồn tại để việc chạm
-vào test là một hành động có chủ ý, không phải một mặc định.
-
-Lý do sâu hơn: mỗi lần nhìn vào test rồi quay lại chỉnh mô hình là một lần thông tin
-từ test rò vào một quyết định thiết kế. Làm vài lần thì test không còn là một ước
-lượng không thiên lệch nữa.
+> **Nguồn số liệu:** `src/vietjobs/dataset.py` (`group_stratified_split`,
+> `two_stage_split`, `assert` trong `build`) · `data/processed/manifest.json`
+> (`split_seed` = 20260826, `split_test_fraction` = 0,2, `split_dev_fraction` = 0,1,
+> `groups_straddling_splits` = 0, `splits.{train,dev,test}.rows`, `.salary_disclosed`,
+> `.categories`) · đếm `category` trên `dev.csv` (25 dòng `nhóm_nghề_khác`).
 
 ---
 
-## 3.6. Phân tích khám phá dữ liệu
+## 3.5. Phân tích khám phá dữ liệu
 
-**Phạm vi đo — tệp gốc.** Mọi con số **mô tả** trong mục này đo trên
-`data/raw/VietJobs.csv` sau khi khử trùng lặp chính xác: **47.707 dòng**, tức toàn
-bộ kho dữ liệu như đã thu thập, không phải một tập con. Chỉ những con số **quyết
-định** — mốc cơ sở không dùng mô hình, việc chọn `--max-len` — mới đo trên tập chia,
-và chúng được học trên `train`, chấm trên `dev`. Tập `test` không được đọc ở đây.
-Quy ước này là bắt buộc, xem `AGENTS.md` Rule 8.
+Mọi con số mô tả trong mục này đo trên tệp gốc sau khi loại trùng khớp hoàn toàn, 47.707
+dòng, tức toàn bộ kho dữ liệu như đã thu thập. Ba con số phục vụ quyết định mô hình được đo
+trên tập chia, và ghi rõ phạm vi tại chỗ: mốc đoán lớp lớn nhất (§3.5.1), độ dài chuỗi token
+và tỷ lệ cắt của CafeBERT (§3.5.4).
 
-Lý do đặt phần mô tả trên tệp gốc: một chương mô tả dữ liệu phải mô tả kho dữ liệu
-**như nó vốn có**, và tệp gốc **không đổi khi lược đồ chia thay đổi** — nhờ vậy mọi
-con số mô tả dưới đây sống sót qua lần chia lại ngày 09/09/2026.
+### 3.5.1. Độ lệch lớp
 
-> **Đã đo lại toàn bộ, 12/09/2026** (T1.1). `artifacts/eda/summary.json` được
-> sinh lại bằng lệnh trên, kèm `--tokens` trong `.venv-dl`, và mốc cơ sở ở mục
-> 3.6.6 được học và chấm trên lược đồ chia v2 hiện hành (`train` 34.354 / `dev`
-> 3.812). Không còn dấu `⛔` nào bên dưới.
+**Bảng 3.6: Số tin và tỷ lệ công bố lương của 16 nhóm ngành nghề (tệp gốc, 47.707 tin)**
 
-### 3.6.1. Độ đầy của các trường dữ liệu
+| Nhóm ngành nghề | Số tin | Tỷ lệ | Tỷ lệ công bố lương | Trung vị lương (triệu) |
+|---|---|---|---|---|
+| `kinh_doanh_bán_hàng_chăm_sóc_khách_hàng` | 8.213 | 17,2 % | 74,8 % | 14,0 |
+| `sản_xuất_lao_động_phổ_thông_cơ_khí` | 6.341 | 13,3 % | 68,9 % | 12,5 |
+| `marketing_truyền_thông_quảng_cáo_nội_dung` | 5.947 | 12,5 % | 73,8 % | 12,5 |
+| `tài_chính_kế_toán_ngân_hàng_bảo_hiểm` | 5.454 | 11,4 % | 69,6 % | 13,0 |
+| `du_lịch_nhà_hàng_khách_sạn_dịch_vụ` | 4.198 | 8,8 % | 76,5 % | 12,5 |
+| `thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí` | 3.406 | 7,1 % | 74,1 % | 13,5 |
+| `nhân_sự_hành_chính_pháp_chế_tư_vấn` | 3.210 | 6,7 % | 67,5 % | 12,5 |
+| `xây_dựng_kiến_trúc_bất_động_sản` | 2.809 | 5,9 % | 70,7 % | 16,0 |
+| `công_nghệ_thông_tin_kỹ_thuật_số` | 1.903 | 4,0 % | 60,1 % | 16,0 |
+| `logistics_vận_tải_chuỗi_cung_ứng` | 1.811 | 3,8 % | 69,0 % | 12,5 |
+| `kỹ_thuật_điện_điện_tử_viễn_thông` | 1.236 | 2,6 % | 72,3 % | 13,5 |
+| `giáo_dục_đào_tạo_nghiên_cứu` | 1.165 | 2,4 % | 75,7 % | 13,5 |
+| `y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học` | 963 | 2,0 % | 72,0 % | 14,0 |
+| `ngôn_ngữ_dịch_thuật` | 384 | 0,8 % | 62,0 % | 15,0 |
+| `nhóm_nghề_khác` | 345 | 0,7 % | 58,6 % | 11,0 |
+| `nông_nghiệp_năng_lượng_môi_trường` | 322 | 0,7 % | 64,0 % | 14,0 |
+| **Tổng** | **47.707** | **100 %** | **71,5 %** | **13,5** |
 
-![Độ đầy của trường](../figures/eda/eda-01-do-day-truong.png)
+Lớp lớn nhất có 8.213 tin, lớp nhỏ nhất 322 tin, tỷ lệ lệch 25,5:1. Bốn lớp lớn nhất chiếm
+54,4 % dữ liệu, bốn lớp nhỏ nhất chỉ 4,2 %. Hệ số Gini của cỡ lớp là 0,439 và độ dốc Zipf
+là −1,18: độ lệch là một dải liên tục, không có ngưỡng tự nhiên nào để tách ra vài lớp hiếm.
 
-**Hình 3.4: Tỷ lệ điền của 18 trường trong tệp gốc**
-
-> **Nguồn số liệu:** `docs/figures/eda/eda-01-do-day-truong.png`, 47.707 dòng.
-
-**Bảng 3.10: Độ đầy của 18 trường dữ liệu**
-
-| Trường | Số dòng có giá trị | Tỷ lệ |
-|---|---|---|
-| `salary_avg` · `salary_max` · `salary_min` · `category` · `description` · `salary` · `contract_type` · `location` · `job_title` · `experience_required` · `country` | 47.707 | **100 %** |
-| `requirements_text` | 47.698 | 100,0 % |
-| `benefits` | 47.668 | 99,9 % |
-| `qualifications` | 47.338 | 99,2 % |
-| `soft_skills` | 45.087 | 94,5 % |
-| `working_hours` | 42.760 | **89,6 %** |
-| `technical_skills` | 41.331 | **86,6 %** |
-| `languages_required` | 12.223 | **25,6 %** |
-
-Ba trường dưới 90 % là ba trường phải đọc kỹ. Một trường rỗng ở ba dòng trên bốn
-**không phải là một đặc trưng**: mô hình học trên nó chỉ học được "tin này không điền
-trường ấy" — một tính chất của quy trình nhập liệu, không phải của công việc.
-`languages_required` với 25,6 % rơi đúng vào trường hợp đó.
-
-Ba trường văn bản tự do nuôi PhoBERT — `job_title`, `description`,
-`requirements_text` — được điền ở gần như mọi dòng, nên đầu vào của nhánh chính không
-bị ảnh hưởng bởi vấn đề này.
-
-### 3.6.2. Độ lệch lớp
+Hệ quả cho việc đánh giá: luôn đoán lớp lớn nhất (học trên train, chấm trên dev) đã cho
+accuracy 0,2062 nhưng macro-F1 chỉ 0,0214. Vì vậy độ đo chính của bài toán phân loại là
+macro-F1.
 
 ![Lệch lớp](../figures/eda/eda-02a-lech-lop.png)
 
-**Hình 3.5: Phân bố số tin theo 16 nhóm ngành nghề**
+**Hình 3.1: Phân bố số tin theo 16 nhóm ngành nghề**
 
-![Tán xạ cỡ lớp](../figures/eda/eda-03a-co-lop.png)
+> **Nguồn số liệu:** `artifacts/eda/summary.json` (`class_counts`, `per_category[*]`,
+> `imbalance_ratio` = 25,51, `distribution.top4_share`, `bottom4_share`, `gini`,
+> `zipf_slope`, `floors`) · `docs/figures/eda/eda-02a-lech-lop.png`.
 
-**Hình 3.6: Tán xạ cỡ lớp trên thang logarit, và tỷ lệ công bố lương theo cỡ lớp**
+### 3.5.2. Phân bố mức lương
 
-> **Nguồn số liệu:** `docs/figures/eda/eda-02a-lech-lop.png`,
-> `eda-03a-co-lop.png`, `eda-03b-cong-bo-luong.png`, `eda-04-luong-theo-nganh.png`,
-> `eda-06-cong-bo-luong.png` — tất cả trên 47.707 dòng.
-
-**Bảng 3.11: Mười sáu nhóm ngành nghề trên tệp gốc**
-
-| Nhóm ngành nghề | Số tin | Tỷ lệ | Có công bố lương | Tỷ lệ công bố | Trung vị lương |
-|---|---|---|---|---|---|
-| `kinh_doanh_bán_hàng_chăm_sóc_khách_hàng` | **8.213** | 17,2 % | 6.141 | 74,8 % | 14,0 |
-| `sản_xuất_lao_động_phổ_thông_cơ_khí` | 6.341 | 13,3 % | 4.371 | 68,9 % | 12,5 |
-| `marketing_truyền_thông_quảng_cáo_nội_dung` | 5.947 | 12,5 % | 4.388 | 73,8 % | 12,5 |
-| `tài_chính_kế_toán_ngân_hàng_bảo_hiểm` | 5.454 | 11,4 % | 3.798 | 69,6 % | 13,0 |
-| `du_lịch_nhà_hàng_khách_sạn_dịch_vụ` | 4.198 | 8,8 % | 3.211 | **76,5 %** | 12,5 |
-| `thiết_kế_nghệ_thuật_giải_trí_truyền_hình_báo_chí` | 3.406 | 7,1 % | 2.524 | 74,1 % | 13,5 |
-| `nhân_sự_hành_chính_pháp_chế_tư_vấn` | 3.210 | 6,7 % | 2.166 | 67,5 % | 12,5 |
-| `xây_dựng_kiến_trúc_bất_động_sản` | 2.809 | 5,9 % | 1.987 | 70,7 % | **16,0** |
-| `công_nghệ_thông_tin_kỹ_thuật_số` | 1.903 | 4,0 % | 1.143 | 60,1 % | **16,0** |
-| `logistics_vận_tải_chuỗi_cung_ứng` | 1.811 | 3,8 % | 1.249 | 69,0 % | 12,5 |
-| `kỹ_thuật_điện_điện_tử_viễn_thông` | 1.236 | 2,6 % | 894 | 72,3 % | 13,5 |
-| `giáo_dục_đào_tạo_nghiên_cứu` | 1.165 | 2,4 % | 882 | 75,7 % | 13,5 |
-| `y_tế_dược_chăm_sóc_sức_khỏe_công_nghệ_sinh_học` | 963 | 2,0 % | 693 | 72,0 % | 14,0 |
-| `ngôn_ngữ_dịch_thuật` | 384 | 0,8 % | 238 | 62,0 % | 15,0 |
-| `nhóm_nghề_khác` | 345 | 0,7 % | 202 | **58,6 %** | **11,0** |
-| `nông_nghiệp_năng_lượng_môi_trường` | **322** | 0,7 % | 206 | 64,0 % | 14,0 |
-| **Tổng** | **47.707** | 100 % | **34.093** | **71,5 %** | 13,5 |
-
-**Bảng 3.12: Cấu trúc dải cỡ lớp**
-
-| Đại lượng | Giá trị | Cách đọc |
-|---|---|---|
-| Tỷ lệ lệch | **25,5 : 1** | lớp lớn nhất 8.213 tin trên lớp nhỏ nhất 322 tin |
-| Nếu chia đều 16 lớp | 2.982 tin/lớp | Chỉ **7** lớp đạt mức đó, 9 lớp còn lại nằm dưới |
-| Cỡ lớp trung vị | 2.356 tin | Thấp hơn trung bình — dải lệch phải |
-| Bốn lớp lớn nhất | **54,4 %** dữ liệu | Bốn ngành chiếm hơn nửa kho |
-| Bốn lớp nhỏ nhất | **4,2 %** dữ liệu | Cả bốn cộng lại chưa bằng một phần tư lớp lớn nhất |
-| Hệ số Gini của cỡ lớp | **0,439** | |
-| Độ dốc Zipf | **−1,18** | Một cái đuôi liên tục, không phải vài lớp hiếm tách biệt |
-
-Độ dốc −1,18 là con số quan trọng nhất bảng: nó nói rằng độ lệch lớp ở đây là **một
-dải liên tục**, không phải hai cụm "lớp bình thường" và "lớp hiếm". Vì vậy **không
-tồn tại một ngưỡng tự nhiên** để cắt ra vài lớp hiếm rồi gộp vào `nhóm_nghề_khác` —
-mọi điểm cắt đều tuỳ tiện, và mỗi lớp bị gộp là mất nhãn thật của nó.
-
-**Hệ quả trực tiếp cho việc chấm điểm:** luôn đoán lớp lớn nhất chỉ cho accuracy xấp
-xỉ tỷ lệ của lớp đó (17,2 % trên tệp gốc) và macro-F1 quanh 1/16 của con số ấy. Giá
-trị chính xác trên `dev` là con số quyết định, đặt ở mục 3.6.6. Đó là lý do độ đo
-chính là macro-F1 chứ không phải accuracy.
-
-**Hệ quả cho việc huấn luyện:** một hàm cross-entropy trần sẽ ưu ái bốn lớp lớn
-(54 % dữ liệu). Cờ `--class-weight` tồn tại để **đo xem** cân bằng lớp có giúp ích
-không, chứ không phải để bật mặc định.
-
-### 3.6.3. Phân bố mức lương
-
-![Phân bố lương](../figures/eda/eda-05a-thang-tho.png)
-
-**Hình 3.7: Phân bố mức lương trước và sau phép biến đổi `log1p`**
-
-> **Nguồn số liệu:** `docs/figures/eda/eda-05a-thang-tho.png`,
-> `eda-05b-sau-log1p.png` — 34.093 tin có
-> công bố lương, đơn vị triệu VND/tháng.
-
-**Bảng 3.13: Hình dạng phân bố mức lương**
+**Bảng 3.7: Hình dạng phân bố mức lương (34.093 tin có công bố lương)**
 
 | Đại lượng | Giá trị |
 |---|---|
-| Trung vị | **13,5** |
-| Trung bình | **15,6** |
-| Giá trị lớn nhất | **500,0** |
-| Độ lệch (skewness) — thang thô | **11,90** |
-| Độ lệch — sau `log1p` | **0,10** |
-| Độ nhọn (kurtosis) — thang thô | **282** |
-| p01 · p05 · p25 · p75 · p95 · p99 | **2,5 · 6,5 · 10,5 · 17,5 · 30,0 · 50,0** |
+| Trung vị | 13,5 |
+| Trung bình | 15,6 |
+| Giá trị lớn nhất | 500,0 |
+| Độ lệch – thang thô | 11,90 |
+| Độ lệch – sau `log1p` | 0,10 |
+| p01 · p05 · p25 · p75 · p95 · p99 | 2,5 · 6,5 · 10,5 · 17,5 · 30,0 · 50,0 |
 
-Trung bình 15,6 nằm **cao hơn** trung vị 13,5 — dấu hiệu kinh điển của đuôi phải.
-Huấn luyện hồi quy trên thang thô là để vài chục tin trên 200 triệu kéo toàn bộ
-gradient; huấn luyện trên `log1p` đưa độ lệch về 0,10, gần như đối xứng. Vì vậy nhánh
-hồi quy học `log1p(salary_mid)` và mọi báo cáo đều quy đổi ngược về triệu VND.
+Trung bình 15,6 triệu cao hơn trung vị 13,5 triệu, dấu hiệu của đuôi phải. Sau phép biến
+đổi `log1p`, độ lệch giảm từ 11,90 xuống 0,10, gần như đối xứng. Vì vậy mô hình học trên
+`log1p` của lương, và mọi kết quả được quy đổi ngược về triệu đồng.
 
-### 3.6.4. Ranh giới — đâu là đuôi thật, đâu là rác
+Ngành nghề gần như không nói gì về lương: phân rã phương sai của log-lương theo 16 ngành cho
+eta² = 0,032, tức ngành chỉ giải thích 3,2 % biến thiên. Trung vị lương theo ngành chỉ trải
+từ 11,0 đến 16,0 triệu. Tín hiệu lương nằm trong chi tiết của tin đăng – cấp bậc, kinh
+nghiệm, ngoại ngữ – chứ không ở nhãn ngành.
 
-**Bảng 3.14: Các giá trị ở hai biên của phân bố lương**
+![Phân bố lương thang thô](../figures/eda/eda-05a-thang-tho.png)
+![Phân bố lương sau log1p](../figures/eda/eda-05b-sau-log1p.png)
 
-| Ngưỡng | Số tin | Cách đọc |
-|---|---|---|
-| Trên hàng rào IQR (> 28,00) | **2.204** (6,5 % số nhãn) | Phần lớn là lương quản lý thật — **không cắt** |
-| > 200 triệu/tháng | **15** | Gần như chắc chắn là lương năm, hoặc sai đơn vị |
-| < 2 triệu/tháng | **132** | Gần như chắc chắn là lương theo giờ hoặc theo ca nhập nhầm ô |
-| Dưới hàng rào IQR | **0** | Biên dưới của hàng rào là 0,0, nên không tin nào rơi xuống dưới |
-| Đã bị `clean` đánh dấu `salary_extreme` (≥ 100) | **99** | Thấp hơn 2.204 tin trên hàng rào IQR — bộ lọc **chưa phủ hết** các tin đáng ngờ |
-| Tỷ lệ tin công bố một *khoảng* thay vì một con số | **92,9 %** | `salary_mid` là trung điểm của khoảng, nên bản thân nhãn đã là xấp xỉ |
+**Hình 3.2: Phân bố mức lương trước và sau phép biến đổi `log1p`**
 
-### 3.6.5. Nhãn lương chỉ tồn tại trên 71,5 % dữ liệu
+> **Nguồn số liệu:** `artifacts/eda/summary.json` (`salary`, `variance.eta_squared_log` =
+> 0,0317, `per_category[*].median`) · `docs/figures/eda/eda-05a-thang-tho.png`,
+> `eda-05b-sau-log1p.png`.
+
+### 3.5.3. Tỷ lệ công bố lương
+
+34.093 trên 47.707 tin có công bố lương, tức 71,5 %. Theo ngành, tỷ lệ này trải từ 58,6 %
+(`nhóm_nghề_khác`) đến 76,5 % (du lịch – nhà hàng – khách sạn – dịch vụ). Tương quan Pearson
+giữa tỷ lệ công bố và logarit cỡ lớp là 0,610 (p = 0,0122).
+
+Hệ quả: bài toán lương chỉ học và chấm trên các tin có công bố lương; 28,5 % còn lại không
+được gán nhãn 0. Vì việc công bố phụ thuộc ngành, mô hình lương học trên một mẫu đã bị chọn
+lọc, và các ngành nhỏ chịu thiệt hai lần.
 
 ![Tỷ lệ công bố lương](../figures/eda/eda-06-cong-bo-luong.png)
 
-**Hình 3.8: Tỷ lệ tin có công bố mức lương theo ngành nghề**
+**Hình 3.3: Tỷ lệ tin có công bố mức lương theo ngành nghề**
 
-**34.093 trên 47.707** tin có công bố lương — **71,5 %**. Theo ngành, tỷ lệ trải từ
-**58,6 %** (`nhóm_nghề_khác`) đến **76,5 %** (`du_lịch…`), xem cột tương ứng của Bảng
-3.11, và **không phân bố ngẫu nhiên**: panel bên phải của Hình 3.6 cho thấy lớp càng
-nhỏ thì càng ít công bố lương.
+> **Nguồn số liệu:** `artifacts/eda/summary.json` (`disclosure_rate` = 0,7146,
+> `per_category[*].disclosure_rate`, `distribution.size_vs_disclosure_pearson_logn` =
+> 0,6097, `size_vs_disclosure_p` = 0,0122) · `docs/figures/eda/eda-06-cong-bo-luong.png`.
 
-**Bảng 3.15: Quan hệ giữa cỡ lớp và nhãn lương**
+### 3.5.4. Độ dài văn bản
 
-| Đại lượng | Hệ số | p |
+Đo trên train và dev (38.166 tin) bằng tokenizer của PhoBERT, độ dài chuỗi ghép ba trường có
+trung vị 178 token, p95 là 370 token và tối đa 1.294 token.
+
+**Bảng 3.8: Tỷ lệ tin bị cắt theo độ dài tối đa (train và dev, tokenizer PhoBERT)**
+
+| Độ dài tối đa (token PhoBERT) | Tỷ lệ tin bị cắt | Tỷ lệ token còn giữ |
 |---|---|---|
-| Tỷ lệ công bố — Pearson(log n) | **0,610** | 0,0122 |
-| Mức lương trung vị — Spearman | **−0,227** | 0,398 (không có ý nghĩa thống kê) |
+| 128 | 77,6 % | 62,2 % |
+| 256 (giới hạn của PhoBERT) | 19,8 % | 91,5 % |
+| 512 | 1,1 % | 99,5 % |
 
-Cỡ lớp gắn chặt với **việc nhãn lương có tồn tại hay không**. Năm ngành nhỏ nhất vì
-vậy chịu phạt hai lần: ít tin để học ra lớp, lại còn ít nhãn hơn nữa cho nhánh hồi
-quy. Ba hệ quả:
-
-1. Nhánh hồi quy chỉ có nhãn cho 7 tin trong 10. Mạng lương vì vậy chỉ học và chấm
-   trên các tin có công bố lương; **28,5 %** còn lại bị loại khỏi bài toán này, không
-   được gán nhãn 0.
-2. Bài toán `disclosed` có mốc đa số xấp xỉ chính tỷ lệ công bố. Mô hình nào không
-   vượt được mốc đó là vô dụng; giá trị chính xác trên `dev` ở mục 3.6.6.
-3. Việc công bố lương **phụ thuộc ngành**, nên bỏ qua 28,5 % còn lại không phải một
-   phép bỏ sót ngẫu nhiên: mô hình hồi quy học trên một mẫu đã bị chọn lọc.
-
-### 3.6.6. Mốc cơ sở không dùng mô hình — học trên `train`, chấm trên `dev`
-
-Đây là mục duy nhất **không** đọc tệp gốc. Một mốc cơ sở là thứ mô hình phải vượt qua,
-nên nó phải được đo ở đúng nơi mô hình được đo: học trên `train`, chấm trên `dev`,
-không bao giờ chạm `test`.
-
-> **Đo lại trên lược đồ chia v2** (`train` 34.354 / `dev` 3.812 / `test` 9.541),
-> 12/09/2026.
-
-**Bảng 3.16: Mốc cơ sở không dùng mô hình**
-
-| Quy tắc dự đoán | Kết quả |
-|---|---|
-| Lương — đoán trung vị tập train (13,0) cho mọi tin | MAE **5,70** triệu · RMSE **10,52** triệu · R² −0,059 |
-| Lương — **biết trước ngành nghề thật**, đoán trung vị ngành đó | MAE **5,57** triệu · RMSE **10,33** triệu · R² −0,022 |
-| Ngành nghề — luôn đoán lớp lớn nhất | accuracy 0,2062 · macro-F1 **0,0214** |
-| Công bố lương — luôn đoán "có" | accuracy **0,7078** |
-
-### 3.6.7. Phát hiện quan trọng nhất — ngành nghề gần như không nói gì về lương
-
-![Tán xạ lương theo ngành](../figures/eda/eda-04-luong-theo-nganh.png)
-
-**Hình 3.9: Tán xạ mức lương trong từng nhóm ngành nghề**
-
-Phân rã phương sai của `log1p(salary_mid)` trên 16 ngành, tính trên 34.093 nhãn có
-công bố của tệp gốc:
-
-**Bảng 3.17: Phân rã phương sai log-lương theo ngành nghề**
-
-| Đại lượng | Giá trị |
-|---|---|
-| eta² (phương sai giữa ngành / tổng) | **0,032** — ngành nghề giải thích **3,2 %** |
-| Trung vị thấp nhất | `nhóm_nghề_khác` — 11,0 |
-| Trung vị cao nhất | `xây_dựng_kiến_trúc_bất_động_sản` và `công_nghệ_thông_tin_kỹ_thuật_số` — 16,0 |
-| Trung vị toàn corpus | 13,5 |
-
-Các mốc cơ sở ở mục 3.6.6 dẫn tới cùng kết luận từ phía kia: biết 100 % nhãn ngành
-nghề chỉ kéo MAE từ 5,70 xuống 5,57 triệu, tức giảm **2,3 %**. Hai kết luận:
-
-1. **Mốc của nhánh hồi quy là mốc đoán trung vị**, không phải 0. Mô hình rơi đúng vào
-   mốc ấy là mô hình chưa học được gì.
-2. Tín hiệu lương nằm trong **chi tiết của tin đăng** — cấp bậc, số năm kinh nghiệm,
-   ngoại ngữ, địa điểm — chứ không nằm ở nhãn ngành. Đây đúng là thứ một biểu diễn
-   theo ngữ cảnh như PhoBERT có cơ hội đọc được.
-
-Cần đọc con số 3,2 % kèm thiên lệch chọn mẫu ở mục 3.6.5: nó được đo trên tập đã công
-bố lương, mà việc công bố lương lại tương quan với cỡ lớp (r = 0,610).
-
-### 3.6.8. Cái giá của việc cắt văn bản ở 256 token
+PhoBERT chỉ nhận tối đa 256 token, nên 19,8 % số tin bị cắt dù vẫn giữ 91,5 % tổng số token.
+CafeBERT nhận 512 token; với tokenizer của CafeBERT, chỉ 5,7 % tin trong dev và 4,5 % tin
+trong train bị cắt. Đây là một trong những lý do CafeBERT được xem xét thay cho PhoBERT ở
+Chương 5.
 
 ![Độ dài token](../figures/eda/eda-07-do-dai-token.png)
 
-**Hình 3.10: Phân bố độ dài chuỗi sau khi tách bằng tokenizer PhoBERT**
+**Hình 3.4: Phân bố độ dài chuỗi sau khi tách bằng tokenizer PhoBERT**
 
-> **Nguồn số liệu:** `docs/figures/eda/eda-07-do-dai-token.png`, đo bằng
-> `PYTHONPATH=src .venv-dl/bin/python scripts/analyze_data.py --tokens` trên
-> `train` + `dev` của lược đồ v2 (38.166 tin), tokenizer `vinai/phobert-base-v2`.
-
-Đây là một **con số quyết định** (Rule 8): nó chỉ có ý nghĩa cho bước nhúng, không mô
-tả kho dữ liệu nói chung, nên được đo trên `train`+`dev`, không phải tệp gốc.
-
-**Bảng 3.18: Độ dài chuỗi (số token) và cái giá của việc cắt**
-
-| Đại lượng | Giá trị |
-|---|---|
-| Trung vị | **178** token |
-| p95 | **370** token |
-| Tối đa | 1.294 token |
-
-| `max_len` | Tỷ lệ tin bị cắt | Tỷ lệ token còn giữ được |
-|---|---|---|
-| 128 | 77,6 % | 62,2 % |
-| **256 (trần cứng của PhoBERT)** | **19,8 %** | **91,5 %** |
-| 512 | *1,1 %* | *99,5 %* |
-
-**256 không phải một siêu tham số được chọn, mà là trần cứng của kiến trúc.**
-`vinai/phobert-base-v2` khai báo `max_position_embeddings = 258`, tức chỉ 256 vị trí
-thực sự dùng được; đưa vào chuỗi dài hơn thì mô hình **báo lỗi `IndexError`** chứ
-không phải chạy kém đi (đo trực tiếp ngày 2026-09-16: 256 token chạy bình thường, 300
-và 512 token đều sập). Vì vậy dòng `512` trong bảng trên chỉ là một phép **giả định**,
-in nghiêng, trả lời câu hỏi "nếu dùng một mô hình có cửa sổ dài hơn thì được gì" — nó
-không phải một lựa chọn khả thi với PhoBERT-base.
-
-Đọc đúng của bảng này là **cái giá bắt buộc phải trả khi chọn PhoBERT-base**, không
-phải căn cứ biện minh cho một tham số: gần một phần năm số tin bị cắt mất phần đuôi,
-đổi lại vẫn giữ được **91,5 %** tổng khối lượng token. Phần bị mất chủ yếu nằm ở đuôi
-mô tả dài, không phải ở tiêu đề hay các câu đầu của yêu cầu công việc, đúng như thứ tự
-ghép trường đã chọn trong [`dl/text.py`](../../src/vietjobs/dl/text.py) — đây mới là
-quyết định thật sự của người làm, và nó có tác dụng giảm nhẹ cái giá trên.
-
-Chỉ có một lựa chọn thật sự còn lại là giữa 128 và 256, và bảng trả lời dứt khoát:
-hạ xuống 128 để chạy nhanh hơn sẽ cắt tới 77,6 % số tin và vứt đi gần 38 % lượng
-token.
-
-### 3.6.9. Tiêu đề tin có chia được thành nhóm vai trò không?
-
-Nguyên lý: gom cụm không giám sát trên vector tiêu đề cho biết dữ liệu có cấu trúc nhóm tự nhiên hay không. Ở đây: `job_title` (tệp gốc sau loại trùng, 47.707 dòng) được mã hoá bằng CafeBERT đóng băng (mean pooling), KMeans với k từ 6 đến 20. Silhouette cao nhất là 0,1399 ở k = 7, toàn bảng nằm trong 0,1058–0,1399, tức không có k nào tách cụm rõ; các cụm chia theo hình thức tiêu đề nhiều hơn theo nghề, chỉ cụm kế toán trùng rõ với một ngành. Phép đo chỉ mô tả, không đổi nhãn nào.
-
-> **Nguồn số liệu:** `artifacts/eda/title_clusters.json` (`scripts/cluster_titles.py`, T13.1); bảng đầy đủ ở [`docs/05-phan-tich-du-lieu.md`](../05-phan-tich-du-lieu.md) §9.
-
----
-
-### 3.6.10. Độ tách của các cặp lớp hay nhầm
-
-Nguyên lý: cosine giữa tâm hai lớp cho biết hai lớp có tách được trong không gian vector hay không. Ở đây: tâm lớp khớp trên `train` (34.354 dòng, vector CafeBERT `raw-len512`), số lần nhầm đếm trên `dev` từ run `dl-cat-cafe-rnn-ce-s42`. Cosine thô giữa các tâm lớp ≥ 0,9922 ở mọi cặp kể cả cặp đối chứng, nên không dùng được; sau khi trừ trung bình `train` còn 0,4690 (du_lịch – kinh_doanh), 0,2422 (thiết_kế – xây_dựng), −0,0549 (du_lịch – sản_xuất) và −0,2762 ở cặp đối chứng. Ngưỡng 0,50 / 0,65 / 0,80 được đặt cho cosine thô, chưa được hiệu chuẩn cho cosine đã trừ trung bình, nên chưa kết luận được cặp nào là lỗi mô hình.
-
-> **Nguồn số liệu:** `artifacts/eda/class-centroid-cosine.json` (`scripts/measure_class_centroid_cosine.py`, T14.3); bảng đầy đủ ở [`docs/05-phan-tich-du-lieu.md`](../05-phan-tich-du-lieu.md) §10.
-
-## 3.7. Kiến trúc mô hình
-
-![Kiến trúc học sâu](../figures/04-kien-truc-hoc-sau.png)
-
-**Hình 3.11: Hai mạng riêng: PhoBERT đóng băng + khối kết nối đầy đủ + một nhánh đầu ra**
-
-### 3.7.1. Luồng dữ liệu
-
-```
-tin tuyển dụng (tiêu đề · mô tả · yêu cầu, đã tách từ)
-   → chọn họ cột: raw (phân loại) | masked (lương)
-   → PhoBERT-base-v2, 135 triệu tham số, ĐÓNG BĂNG, cắt ở 256 token
-   → gộp trung bình có mặt nạ → vectơ 768 chiều
-   → lưu đệm .npy (tính một lần)
-   → LayerNorm → 768→256 → GELU → dropout → 256→128 → GELU
-   → mạng phân loại: 128 → 16 lớp   (cross-entropy)
-   → mạng lương:     128 → 1        (Huber trên log1p)
-```
-
-Hai bài toán là **hai mạng riêng biệt**, mỗi mạng có khối dày đặc và bộ đệm vectơ
-của mình (họ `raw` cho phân loại, họ `masked` cho lương).
-
-### 3.7.2. Năm quyết định thiết kế và lý do đo được của từng quyết định
-
-**Bảng 3.19: Năm quyết định kiến trúc**
-
-| Quyết định | Lý do |
-|---|---|
-| **Đóng băng PhoBERT** | Vectơ tính một lần rồi lưu đệm; các lần huấn luyện phần dày đặc đọc lại vectơ đó thay vì chạy lại PhoBERT |
-| **Đầu vào đã tách từ** | PhoBERT được tiền huấn luyện trên văn bản tách từ. Đưa văn bản chưa tách là đưa sai phân bố |
-| **Gộp trung bình, không dùng vectơ `<s>`** | Khi không tinh chỉnh, vectơ `<s>` của PhoBERT chưa từng được huấn luyện cho nhiệm vụ nào; lấy trung bình các token giữ lại nhiều tín hiệu từ vựng hơn |
-| **Lưu đệm vectơ ra `.npy`** | Trọng số đóng băng ⇒ vectơ không đổi giữa các epoch. Nhúng 34.354 tin `train` chỉ làm một lần (T1.2); mọi lần huấn luyện sau đọc lại tệp đệm |
-| **Huber cho hồi quy, không dùng MSE** | Lương lệch phải nặng (độ lệch 11,90, max 500 triệu trên tệp gốc). MSE để một nhúm điểm ngoại lệ kéo toàn bộ gradient |
-
-### 3.7.3. Chuẩn hoá đầu vào — quyết định cứu cả nhánh phân loại
-
-Vectơ PhoBERT **dị hướng**: cosin giữa hai tin bất kỳ có trung vị **0,896**
-(p05 = 0,838 · p95 = 0,943) — mọi tin nằm trong một hình nón hẹp. `LayerNorm` chuẩn
-hoá **theo từng mẫu**, nên nó không gỡ bỏ được hướng chung đó.
-
-Giải pháp gồm ba phần, áp cùng lúc:
-
-1. Chuẩn hoá **theo từng chiều** bằng thống kê của tập `train`, lưu thành
-   `scaler.npz` bên cạnh mô hình — vì đường suy luận bắt buộc phải dùng đúng những
-   con số đó (Quy tắc 4: huấn luyện và suy luận dùng chung một đường mã).
-2. Cắt chuẩn gradient ở **1,0**.
-3. Giảm tốc độ học từ 1e-3 xuống **3e-4**.
-
-Sự cố dẫn tới ba quyết định này, và cách chẩn đoán nó, được trình bày ở §4.6 — vì đó
-là một kết quả thực nghiệm, không phải một lựa chọn thiết kế có sẵn.
-
----
-
-### 3.7.4. Trunk dùng chung cho hai bài toán (T4.1)
-
-**Nguyên lý.** Học đa nhiệm cho hai bài dùng chung một phần thân (trunk). Mỗi bài giữ một đầu ra riêng. Thân nhận gradient từ cả hai loss.
-
-**Áp dụng ở đây.** Thân đọc họ `masked`, vì bài lương chỉ được đọc cột đã che (§3.4). Thân: LayerNorm → Linear 1024→256 → GELU → Dropout 0,3, trên vectơ CafeBERT 512 token đã gộp. Hai đầu, mỗi đầu Linear 256→128 → GELU → Dropout → Linear ra 16 lớp hoặc 1 giá trị `log1p` lương. Loss là `CE + α · SmoothL1`; phần lương chia cho số tin có lương trong batch, nên 28,5 % tin không có lương chỉ góp vào loss phân lớp.
-
-**Khác mặc định.** α = 5 thay vì 1: ở α = 1, loss lương chỉ bằng 0,06 lần loss phân lớp, nên thân gần như chỉ học cho phân lớp. α được chọn bằng quét trên `dev` (§4.4.3).
-
-> **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a1-s42/history.jsonl` (epoch 9), `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/metrics.json`.
-
-### 3.7.5. Nối hai encoder đông lạnh (T12.1)
-
-**Nguyên tắc.** Hai encoder đông lạnh cho hai góc nhìn khác nhau về cùng một tin: PhoBERT (768 chiều, văn bản đã tách từ, 256 token) và CafeBERT (1024 chiều, văn bản chưa tách từ, 512 token). Thay vì chọn một, head dense nhận vectơ nối `[PhoBERT ‖ CafeBERT]` có 1792 chiều. **Áp dụng.** Tùy chọn `--concat-encoder cafebert --concat-max-len 512` của `train_dl.py`, chỉ dùng với `--head dense`, mặc định tắt. Không nhúng lại: hai cache `.npy` đã có được đọc trực tiếp. Chuẩn hoá theo từng chiều vẫn tính trên `train` như §3.7.3, nay trên 1792 chiều. **Ràng buộc thứ tự hàng.** Hai cache chỉ được ghép khi sidecar của cả hai cùng split, cùng họ cột và cùng số dòng với `split` (`encode.check_same_rows`); thứ tự hàng do `D.load_split` quyết định nên ba khoá này là bằng chứng. **Quy tắc 3.** Bài toán lương đọc họ `masked` cho cả hai encoder (`cafebert-{train,dev}-masked-len512.npy` và `train/dev-masked-len256.npy`); phân loại đọc họ `raw`. Hàm kiểm tra từ chối ghép khác họ. **Lý do chọn.** Đo bằng 5 seed, §4.4.4: nối giảm MAE lương so với mỗi encoder đơn ở cả 5 seed, phân loại tăng nhẹ macro-F1 (KTC sát 0).
-
-> **Nguồn số liệu:** `src/vietjobs/dl/train_dl.py`, `src/vietjobs/dl/encode.py` (`check_same_rows`); `artifacts/t121/summary.json`; [06 §5.8](../06-baseline-dl.md).
-
-## 3.8. Các độ đo đánh giá
-
-### 3.8.1. Bài toán phân loại ngành nghề
-
-**Độ đo chính: macro-F1.** Lớp lớn nhất gấp hơn 25 lần lớp nhỏ nhất, nên accuracy sẽ
-vui vẻ che giấu một mô hình bỏ qua toàn bộ cái đuôi.
-
-*Nguyên lý:* với mỗi lớp, tính precision và recall rồi lấy trung bình điều hoà thành
-F1; macro-F1 là trung bình cộng **không trọng số** của 16 giá trị F1 đó. Không trọng
-số nghĩa là lớp 322 tin có tiếng nói ngang lớp 8.213 tin.
-
-Báo cáo kèm theo:
-
-- `f1_macro_no_junk` — macro-F1 trên 15 lớp, bỏ `nhóm_nghề_khác`. Lớp này là ngăn
-  chứa tạp; báo cáo cả hai con số giữ cho **nhiễu nhãn** và **lỗi mô hình** không bị
-  trộn làm một.
-- `f1_weighted` (ghi là **F1**) — cùng F1 nhưng trung bình có trọng số theo số mẫu
-  mỗi lớp, và `accuracy`. Từ 2026-09-20 đây là toàn bộ bộ chỉ số của bài phân lớp:
-  `balanced_accuracy` và `top3_accuracy` đã bị bỏ khỏi `evaluate.py`, nên các lần
-  chạy từ ngày đó không còn ghi hai số này.
-- Ma trận nhầm lẫn và 10 cặp lớp bị nhầm nhiều nhất.
-
-### 3.8.2. Bài toán hồi quy mức lương
-
-Mọi con số được **quy đổi về triệu VND/tháng** trước khi báo cáo. Một MAE trong không
-gian logarit không phải con số ai hành động được.
-
-**Bảng 3.20: Các độ đo của bài toán hồi quy**
-
-| Độ đo | Ý nghĩa |
-|---|---|
-| MAE | Sai số tuyệt đối trung bình |
-| RMSE | Căn bậc hai của sai số bình phương trung bình — phạt nặng các lỗi lớn |
-| R² (log) | Hệ số xác định, tính trên thang `log1p` |
-| ±20 % | Tỷ lệ tin có dự đoán nằm trong ±20 % giá trị thật |
-
-### 3.8.3. Quy tắc quyết định khi so sánh hai mô hình
-
-Ba ràng buộc bắt buộc với mọi bảng so sánh:
-
-1. **Mọi mô hình được thử cùng một số cấu hình.** So "cái tốt nhất trong chín lần
-   thử" với "lần thử đầu tiên" là so công sức tinh chỉnh, không phải so thuật toán.
-2. **Mỗi lần chạy đều lưu dự đoán từng dòng.** Không có nó thì lần chạy đó **không
-   ghép cặp được** với lần chạy nào khác.
-3. **Quyết định bằng bootstrap ghép cặp, không bằng độ lệch chuẩn.** Dùng **một** ma
-   trận chỉ số dùng chung cho mọi mô hình được so, rồi đọc `P(A > B)`. Ngưỡng:
-   **> 0,975 hoặc < 0,025** là khác biệt rõ; quanh 0,5 là không phân biệt được.
-
-Độ lệch chuẩn theo từng mô hình vẫn được báo cáo nhưng **không dùng để ra quyết
-định**: nó trả lời "điểm số này dịch chuyển bao nhiêu nếu đổi tập dev", trong khi câu
-hỏi cần trả lời là "A có thắng B trên đúng những dòng đó không". Hai mô hình thường
-sai trên cùng những tin mơ hồ, nên phép so ghép cặp nhạy hơn hẳn.
-
-> **Nguồn số liệu:** [03-protocol.md](../03-protocol.md) §4 và §7 ·
-> [05-phan-tich-du-lieu.md](../05-phan-tich-du-lieu.md) ·
-> [06-baseline-dl.md](../06-baseline-dl.md) §2 và §5.4.
+> **Nguồn số liệu:** `artifacts/eda/token_lengths.json` (`n` = 38.166, `median` = 178,
+> `p95` = 370, `max` = 1.294, `truncated_share`, `tokens_kept_share`) ·
+> `artifacts/embeddings/cafebert-{train,dev}-masked-len512.json` (`truncated_frac` =
+> 0,0446 / 0,0572) · `docs/figures/eda/eda-07-do-dai-token.png`.
 
 ---
 
