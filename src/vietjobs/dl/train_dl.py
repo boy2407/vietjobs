@@ -190,13 +190,16 @@ def t22_prepare(args, Xtr, ytr, tr_df, Xev, yev, ev_df):
         Xtr, ytr, tr_df = cut(Xtr, ytr, tr_df, XF.conflict_free(tr_df))
     if args.extra:
         stats = XF.fit_structured(tr_df)
+        text_cols, prefixes = XF.EXTRA_SETS[args.extra_set]
         out = []
         for X, df, split in ((Xtr, tr_df, "train"), (Xev, ev_df, args.eval)):
             S, names = XF.structured(df, stats)
-            txt = XF.text_block(split, len(D.load_split(split)), args.encoder)
-            out.append(np.concatenate([X, txt[df.index.to_numpy()], S], axis=1))
+            keep = XF.select(names, prefixes)
+            txt = XF.text_block(split, len(D.load_split(split)), args.encoder, text_cols)
+            out.append(np.concatenate([X, txt[df.index.to_numpy()], S[:, keep]], axis=1))
         Xtr, Xev = out
-        stats["structured_columns"] = names
+        stats["structured_columns"] = [names[i] for i in keep]
+        stats["text_columns"], stats["extra_set"] = list(text_cols), args.extra_set
     stats["n_train"], stats["n_eval"] = len(ytr), len(yev)
     return Xtr, ytr, tr_df, Xev, yev, ev_df, stats
 
@@ -321,6 +324,8 @@ def build_parser() -> argparse.ArgumentParser:
                     help="T22: bỏ khỏi train các tin cùng 3 cột đầu vào mà khác category")
     ap.add_argument("--extra", action="store_true",
                     help="T22: nối vector kỹ năng + phúc lợi (len128) và khối cột có cấu trúc")
+    ap.add_argument("--extra-set", default="all", choices=list(XF.EXTRA_SETS),
+                    help="T22: nhóm cột của --extra (all | exp_hours_skills)")
     ap.add_argument("--oversample", type=int, default=0,
                     help="T22: lặp tin lớp có ít hơn N dòng train lên N; không kèm --class-weight")
     return ap
@@ -598,7 +603,7 @@ def run(args: argparse.Namespace) -> dict:
         "config": vars(args), "env": env,
         "encoder": args.encoder,
         "columns": T.columns_for(args.task, segmented=ENC.ENCODERS[args.encoder]["segmented"])
-                   + (list(XF.TEXT_COLUMNS) + t22_stats["structured_columns"] if args.extra else []),
+                   + (t22_stats["text_columns"] + t22_stats["structured_columns"] if args.extra else []),
         "t22": t22_stats,
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 
@@ -658,7 +663,7 @@ def run(args: argparse.Namespace) -> dict:
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "
                      f"| {args.task} | {base}"
                      f"{cw_tag}{ls_tag}{loss_tag}"
-                     f") | title+desc+req{'+skills+benefits+struct' if args.extra else ''} | {prep} "
+                     f") | title+desc+req{('+skills+benefits+struct' if args.extra_set == 'all' else '+' + args.extra_set) if args.extra else ''} | {prep} "
                      f"| {args.eval} | {best_metrics['n']} | {headline} | {seconds:.1f}s "
                      f"| {env['git_sha'][:8]}{'+dirty' if env['git_dirty'] else ''} |\n")
 

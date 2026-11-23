@@ -54,6 +54,17 @@ def test_same_layout_for_every_split():
     assert a == b
 
 
+def test_exp_hours_skills_set_keeps_only_its_columns():
+    tr = _frame(XF.PROVINCE_MIN_ROWS)
+    _, names = XF.structured(tr, XF.fit_structured(tr))
+    text_cols, prefixes = XF.EXTRA_SETS["exp_hours_skills"]
+    kept = [names[i] for i in XF.select(names, prefixes)]
+    assert text_cols == ("technical_skills_text",)
+    assert "log1p_experience_months" in kept and "works_saturday" in kept
+    assert not any(n.startswith(("province", "contract", "lang", "education")) for n in kept)
+    assert XF.select(names, None) == list(range(len(names)))
+
+
 def test_conflict_free_drops_whole_conflicting_group():
     df = _frame(5)
     df.loc[1, "category"] = "y"                       # nhóm a/d/r mang 2 nhãn → bỏ cả 5

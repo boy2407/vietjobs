@@ -35,6 +35,19 @@ LANGUAGES = ("tiếng anh", "tiếng trung", "tiếng nhật", "tiếng hàn")
 EDUCATION = (("thpt", 0), ("phổ thông", 0), ("cấp 3", 0), ("trung cấp", 1),
              ("cao đẳng", 2), ("đại học", 3), ("thạc sĩ", 4), ("tiến sĩ", 5))
 PROVINCE_MIN_ROWS = 100
+# Nhóm cột cho ablation: (cột văn bản ngắn, tiền tố cột có cấu trúc được giữ; None = tất cả).
+EXTRA_SETS = {
+    "all": (TEXT_COLUMNS, None),
+    "exp_hours_skills": (("technical_skills_text",),
+                         ("log1p_experience_months", "days_per_week", "daily_span_h",
+                          "works_saturday", "works_sunday", "shift_work")),
+    # tác giả 2026-11-23: qualifications, technical_skills, languages, experience,
+    # contract_type, working_hours — tức "all" bỏ tỉnh và phúc lợi
+    "no_province_benefits": (("technical_skills_text",),
+                             ("log1p_experience_months", "contract=", "education",
+                              "days_per_week", "daily_span_h", "works_saturday",
+                              "works_sunday", "shift_work", "lang=")),
+}
 
 
 def text_cache_path(split: str, column: str, encoder: str = "cafebert",
@@ -42,10 +55,11 @@ def text_cache_path(split: str, column: str, encoder: str = "cafebert",
     return ENC.CACHE_DIR / f"{encoder}-{split}-xf-{column}-len{max_len}.npy"
 
 
-def text_block(split: str, n_rows: int, encoder: str = "cafebert") -> np.ndarray:
-    """Nối vector của hai cột văn bản ngắn; cache thiếu hoặc lệch số dòng thì dừng."""
+def text_block(split: str, n_rows: int, encoder: str = "cafebert",
+               columns: tuple[str, ...] = TEXT_COLUMNS) -> np.ndarray:
+    """Nối vector của các cột văn bản ngắn; cache thiếu hoặc lệch số dòng thì dừng."""
     parts = []
-    for col in TEXT_COLUMNS:
+    for col in columns:
         path = text_cache_path(split, col, encoder)
         if not path.exists():
             raise SystemExit(f"thiếu {path.name} — chạy `python -m vietjobs.dl.extra` trước")
@@ -130,6 +144,11 @@ def structured(df: pd.DataFrame, stats: dict) -> tuple[np.ndarray, list[str]]:
     cols["lang=other"] = rest.str.contains("tiếng", regex=False).to_numpy(float)
     names = list(cols)
     return np.stack([cols[n] for n in names], axis=1).astype(np.float32), names
+
+
+def select(names: list[str], prefixes) -> list[int]:
+    """Chỉ số các cột có cấu trúc thuộc nhóm; ``prefixes=None`` giữ tất cả."""
+    return [i for i, n in enumerate(names) if prefixes is None or n.startswith(tuple(prefixes))]
 
 
 def conflict_free(df: pd.DataFrame) -> np.ndarray:

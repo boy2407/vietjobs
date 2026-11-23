@@ -47,8 +47,8 @@ def main() -> None:
     df = D.load_split("test")
     base = {task: vectors(tmp, ENC.family(task), T.build_text(df, task=task, segmented=False), 512)
             for task in (C.TASK_CATEGORY, C.TASK_SALARY)}
-    txt = np.concatenate([vectors(tmp, f"xf-{c}", df[c].astype(str).str.strip().tolist(),
-                                  XF.TEXT_MAX_LEN) for c in XF.TEXT_COLUMNS], axis=1)
+    txt = {c: vectors(tmp, f"xf-{c}", df[c].astype(str).str.strip().tolist(), XF.TEXT_MAX_LEN)
+           for c in XF.TEXT_COLUMNS}
     disclosed = ((df["salary_disclosed"] == 1) & df["salary_mid"].notna()).to_numpy()
 
     rows = []
@@ -58,8 +58,11 @@ def main() -> None:
         X = base[m["task"]]
         if cfg.get("extra"):
             S, names = XF.structured(df, m["t22"])
-            assert names == m["t22"]["structured_columns"]
-            X = np.concatenate([X, txt, S], axis=1)
+            text_cols, prefixes = XF.EXTRA_SETS[cfg.get("extra_set", "all")]
+            keep = XF.select(names, prefixes)
+            assert [names[i] for i in keep] == m["t22"]["structured_columns"]
+            t = np.concatenate([txt[c] for c in text_cols], axis=1)
+            X = np.concatenate([X, t, S[:, keep]], axis=1)
         sc = np.load(run / "scaler.npz")
         Xs = torch.tensor((X - sc["mean"]) / sc["std"], dtype=torch.float32)
         out_dim = 1 if is_reg else len(m["labels"])
