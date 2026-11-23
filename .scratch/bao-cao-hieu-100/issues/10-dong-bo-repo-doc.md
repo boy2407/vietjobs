@@ -17,3 +17,4 @@ Tác giả chọn (a), 2026-11-22: sửa trong `docs/bao-cao/` trước, chỉ c
 - Đánh lại số trích dẫn: [19]→[13], [20]→[14], [22]–[25]→[15]–[18] (khớp `08-tai-lieu-tham-khao.md`).
 - Chương 3: Bảng 3.4 số tin có lương 24.622 / 2.698 / 6.773; sửa câu "tin đăng lại tuần sau với một câu sửa khác"; thêm ba đoạn về tin gần trùng, nhãn nhiễu và điểm trên phần sạch (dạng văn xuôi, không thêm bảng để khỏi đánh số lại).
 Phần còn lại vẫn theo (a). Mục lục trên Doc cần bấm cập nhật.
+- 2026-11-23: Chương 1 ghi lên Doc (48 yêu cầu, thay văn bản từng đoạn, giữ đề mục và định dạng), sau khi tác giả duyệt bản repo.
