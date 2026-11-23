@@ -1,5 +1,215 @@
 [← Chương 3](04-chuong-3-phuong-phap.md) · [Bảng điều khiển](00-index.md) · [Chương 5 →](06-chuong-5-he-thong.md)
 
+# PHẦN NHÁP CHO CHƯƠNG 4 – CÀI ĐẶT THỬ NGHIỆM
+
+> Các mục dưới đây được chuyển nguyên văn từ Chương 3 cũ ngày 2026-11-23, khi repo
+> chuyển sang bố cục 6 chương của bản Doc. Số mục (§3.x) là số cũ, giữ lại để truy
+> vết. Phần này **chưa được duyệt**; nó được viết lại khi tới lượt Chương 4.
+
+---
+
+## 3.1. Tổng quan quy trình thực hiện
+
+![Sườn tổng thể hệ thống](../figures/01-suon-tong-the.png)
+
+**Hình 3.1: Sơ đồ tổng quan quy trình thực hiện đề tài**
+
+Quy trình gồm sáu khâu nối tiếp:
+
+**Bảng 3.1: Sáu khâu của quy trình**
+
+| Khâu | Việc làm | Mô-đun | Đầu ra |
+|---|---|---|---|
+| 1 | Làm sạch, loại trùng | `dataset.py` | 47.707 dòng |
+| 2 | Xử lý tiếng Việt, tách từ | `vitext.py` | 9 cột đã tách từ |
+| 3 | Chia tập theo nhóm | `dataset.py` | 34.354 / 3.812 / 9.541 |
+| 4 | Phân tích khám phá | `scripts/analyze_data.py` | 11 hình + `summary.json` |
+| 5 | Biểu diễn bằng PhoBERT | `dl/encode.py` | vectơ 768 chiều, lưu đệm |
+| 6 | Huấn luyện phần dày đặc | `dl/train_dl.py` | mô hình + `metrics.json` |
+
+Một quyết định kiến trúc bao trùm cả sáu khâu: **các khâu 1–3 chạy một lần và kết
+quả được ghi xuống đĩa**, các khâu 5–6 đọc lại kết quả đó. Lý do là chi phí: riêng
+việc tách từ cho 47.707 tin mất **780,3 giây** (13 phút), với **0 lỗi**. Nếu tách từ
+nằm trong vòng lặp huấn luyện thì mỗi lần chạy phải trả lại đúng 13 phút đó.
+
+## 3.3. Xử lý ngôn ngữ tiếng Việt
+
+PhoBERT cắt văn bản thành **đơn vị con BPE** rồi tra trong bảng nhúng đã học từ một
+kho văn bản đã chuẩn hoá và đã tách từ. Văn bản lệch khỏi phân bố đó không gây lỗi,
+nó chỉ vỡ thành những mảnh hiếm và cho vectơ kém hơn. Vì vậy mọi bước dưới đây nhằm
+đưa văn bản của đề tài về đúng dạng PhoBERT đã học.
+
+Mô hình đọc đúng ba cột: `job_title`, `description`, `requirements_text` (bài lương
+đọc bản `*_masked` của cùng ba cột, §3.4). Mỗi cột đi qua các bước sau, theo đúng thứ
+tự trong mã nguồn (Hình 3.2, Bảng 3.6).
+
+![Đường văn bản từ tin thô tới PhoBERT](../figures/03-xu-ly-tieng-viet.png)
+
+**Hình 3.2: Các giai đoạn xử lý văn bản từ tin thô tới vectơ PhoBERT**
+
+**Bảng 3.6: Các bước xử lý văn bản trước khi vào PhoBERT**
+
+| # | Bước | Ví dụ | Nơi chạy |
+|---|---|---|---|
+| 1 | Chuẩn hoá Unicode NFC, bỏ ký tự điều khiển và dấu đầu dòng, gộp khoảng trắng | `e` + hai dấu tổ hợp → `ế` | `dataset.clean` → `vitext.preprocess` |
+| 2 | Chuẩn hoá vị trí dấu thanh | `hòa` = `hoà` · `thúy` = `thuý` | như trên (`tone=True`) |
+| 3 | Mở rộng từ viết tắt | `NV` → `nhân viên` · `BHXH` → `bảo hiểm xã hội` | như trên (`abbrev=True`) |
+| 4 | Che con số lương — chỉ bản `*_masked` | `18 triệu` → `<SALARY>` | như trên (`mask=True`) |
+| 5 | Tách từ (`underthesea`) | `nhân viên` → `nhân_viên` | `vitext.segment_many`, ra cột `*_seg` |
+| 6 | Ghép ba trường, tiêu đề đứng trước | `tiêu đề . mô tả . yêu cầu` | `dl/text.py` |
+| 7 | Tách đơn vị con BPE, cắt ở 256 token | — | `dl/encode.py` (tokenizer của `vinai/phobert-base-v2`) |
+
+Thứ tự này là bắt buộc. Che lương chạy **sau** mở rộng viết tắt, vì `8tr` phải thành
+một con số trước khi che được. Che lương chạy **trước** tách từ, vì `<SALARY>` không
+được bị tách. Văn bản giữ nguyên chữ hoa, vì tokenizer của PhoBERT phân biệt hoa
+thường. Cái giá của việc cắt ở 256 token được đo ở §3.6.8.
+
+### 3.6.6. Mốc cơ sở không dùng mô hình — học trên `train`, chấm trên `dev`
+
+Đây là mục duy nhất **không** đọc tệp gốc. Một mốc cơ sở là thứ mô hình phải vượt qua,
+nên nó phải được đo ở đúng nơi mô hình được đo: học trên `train`, chấm trên `dev`,
+không bao giờ chạm `test`.
+
+> **Đo lại trên lược đồ chia v2** (`train` 34.354 / `dev` 3.812 / `test` 9.541),
+> 12/09/2026.
+
+**Bảng 3.16: Mốc cơ sở không dùng mô hình**
+
+| Quy tắc dự đoán | Kết quả |
+|---|---|
+| Lương — đoán trung vị tập train (13,0) cho mọi tin | MAE **5,70** triệu · RMSE **10,52** triệu · R² −0,059 |
+| Lương — **biết trước ngành nghề thật**, đoán trung vị ngành đó | MAE **5,57** triệu · RMSE **10,33** triệu · R² −0,022 |
+| Ngành nghề — luôn đoán lớp lớn nhất | accuracy 0,2062 · macro-F1 **0,0214** |
+| Công bố lương — luôn đoán "có" | accuracy **0,7078** |
+
+## 3.7. Kiến trúc mô hình
+
+![Kiến trúc học sâu](../figures/04-kien-truc-hoc-sau.png)
+
+**Hình 3.11: Hai mạng riêng: PhoBERT đóng băng + khối kết nối đầy đủ + một nhánh đầu ra**
+
+### 3.7.1. Luồng dữ liệu
+
+```
+tin tuyển dụng (tiêu đề · mô tả · yêu cầu, đã tách từ)
+   → chọn họ cột: raw (phân loại) | masked (lương)
+   → PhoBERT-base-v2, 135 triệu tham số, ĐÓNG BĂNG, cắt ở 256 token
+   → gộp trung bình có mặt nạ → vectơ 768 chiều
+   → lưu đệm .npy (tính một lần)
+   → LayerNorm → 768→256 → GELU → dropout → 256→128 → GELU
+   → mạng phân loại: 128 → 16 lớp   (cross-entropy)
+   → mạng lương:     128 → 1        (Huber trên log1p)
+```
+
+Hai bài toán là **hai mạng riêng biệt**, mỗi mạng có khối dày đặc và bộ đệm vectơ
+của mình (họ `raw` cho phân loại, họ `masked` cho lương).
+
+### 3.7.2. Năm quyết định thiết kế và lý do đo được của từng quyết định
+
+**Bảng 3.19: Năm quyết định kiến trúc**
+
+| Quyết định | Lý do |
+|---|---|
+| **Đóng băng PhoBERT** | Vectơ tính một lần rồi lưu đệm; các lần huấn luyện phần dày đặc đọc lại vectơ đó thay vì chạy lại PhoBERT |
+| **Đầu vào đã tách từ** | PhoBERT được tiền huấn luyện trên văn bản tách từ. Đưa văn bản chưa tách là đưa sai phân bố |
+| **Gộp trung bình, không dùng vectơ `<s>`** | Khi không tinh chỉnh, vectơ `<s>` của PhoBERT chưa từng được huấn luyện cho nhiệm vụ nào; lấy trung bình các token giữ lại nhiều tín hiệu từ vựng hơn |
+| **Lưu đệm vectơ ra `.npy`** | Trọng số đóng băng ⇒ vectơ không đổi giữa các epoch. Nhúng 34.354 tin `train` chỉ làm một lần (T1.2); mọi lần huấn luyện sau đọc lại tệp đệm |
+| **Huber cho hồi quy, không dùng MSE** | Lương lệch phải nặng (độ lệch 11,90, max 500 triệu trên tệp gốc). MSE để một nhúm điểm ngoại lệ kéo toàn bộ gradient |
+
+### 3.7.3. Chuẩn hoá đầu vào — quyết định cứu cả nhánh phân loại
+
+Vectơ PhoBERT **dị hướng**: cosin giữa hai tin bất kỳ có trung vị **0,896**
+(p05 = 0,838 · p95 = 0,943) — mọi tin nằm trong một hình nón hẹp. `LayerNorm` chuẩn
+hoá **theo từng mẫu**, nên nó không gỡ bỏ được hướng chung đó.
+
+Giải pháp gồm ba phần, áp cùng lúc:
+
+1. Chuẩn hoá **theo từng chiều** bằng thống kê của tập `train`, lưu thành
+   `scaler.npz` bên cạnh mô hình — vì đường suy luận bắt buộc phải dùng đúng những
+   con số đó (Quy tắc 4: huấn luyện và suy luận dùng chung một đường mã).
+2. Cắt chuẩn gradient ở **1,0**.
+3. Giảm tốc độ học từ 1e-3 xuống **3e-4**.
+
+Sự cố dẫn tới ba quyết định này, và cách chẩn đoán nó, được trình bày ở §4.6 — vì đó
+là một kết quả thực nghiệm, không phải một lựa chọn thiết kế có sẵn.
+
+---
+
+### 3.7.4. Trunk dùng chung cho hai bài toán (T4.1)
+
+**Nguyên lý.** Học đa nhiệm cho hai bài dùng chung một phần thân (trunk). Mỗi bài giữ một đầu ra riêng. Thân nhận gradient từ cả hai loss.
+
+**Áp dụng ở đây.** Thân đọc họ `masked`, vì bài lương chỉ được đọc cột đã che (§3.4). Thân: LayerNorm → Linear 1024→256 → GELU → Dropout 0,3, trên vectơ CafeBERT 512 token đã gộp. Hai đầu, mỗi đầu Linear 256→128 → GELU → Dropout → Linear ra 16 lớp hoặc 1 giá trị `log1p` lương. Loss là `CE + α · SmoothL1`; phần lương chia cho số tin có lương trong batch, nên 28,5 % tin không có lương chỉ góp vào loss phân lớp.
+
+**Khác mặc định.** α = 5 thay vì 1: ở α = 1, loss lương chỉ bằng 0,06 lần loss phân lớp, nên thân gần như chỉ học cho phân lớp. α được chọn bằng quét trên `dev` (§4.4.3).
+
+> **Nguồn số liệu:** `artifacts/dl-mtl-cafe512-a1-s42/history.jsonl` (epoch 9), `artifacts/dl-mtl-cafe512-a{1,5,10,20}-s42/metrics.json`.
+
+### 3.7.5. Nối hai encoder đông lạnh (T12.1)
+
+**Nguyên tắc.** Hai encoder đông lạnh cho hai góc nhìn khác nhau về cùng một tin: PhoBERT (768 chiều, văn bản đã tách từ, 256 token) và CafeBERT (1024 chiều, văn bản chưa tách từ, 512 token). Thay vì chọn một, head dense nhận vectơ nối `[PhoBERT ‖ CafeBERT]` có 1792 chiều. **Áp dụng.** Tùy chọn `--concat-encoder cafebert --concat-max-len 512` của `train_dl.py`, chỉ dùng với `--head dense`, mặc định tắt. Không nhúng lại: hai cache `.npy` đã có được đọc trực tiếp. Chuẩn hoá theo từng chiều vẫn tính trên `train` như §3.7.3, nay trên 1792 chiều. **Ràng buộc thứ tự hàng.** Hai cache chỉ được ghép khi sidecar của cả hai cùng split, cùng họ cột và cùng số dòng với `split` (`encode.check_same_rows`); thứ tự hàng do `D.load_split` quyết định nên ba khoá này là bằng chứng. **Quy tắc 3.** Bài toán lương đọc họ `masked` cho cả hai encoder (`cafebert-{train,dev}-masked-len512.npy` và `train/dev-masked-len256.npy`); phân loại đọc họ `raw`. Hàm kiểm tra từ chối ghép khác họ. **Lý do chọn.** Đo bằng 5 seed, §4.4.4: nối giảm MAE lương so với mỗi encoder đơn ở cả 5 seed, phân loại tăng nhẹ macro-F1 (KTC sát 0).
+
+> **Nguồn số liệu:** `src/vietjobs/dl/train_dl.py`, `src/vietjobs/dl/encode.py` (`check_same_rows`); `artifacts/t121/summary.json`; [06 §5.8](../06-baseline-dl.md).
+
+## 3.8. Các độ đo đánh giá
+
+### 3.8.1. Bài toán phân loại ngành nghề
+
+**Độ đo chính: macro-F1.** Lớp lớn nhất gấp hơn 25 lần lớp nhỏ nhất, nên accuracy sẽ
+vui vẻ che giấu một mô hình bỏ qua toàn bộ cái đuôi.
+
+*Nguyên lý:* với mỗi lớp, tính precision và recall rồi lấy trung bình điều hoà thành
+F1; macro-F1 là trung bình cộng **không trọng số** của 16 giá trị F1 đó. Không trọng
+số nghĩa là lớp 322 tin có tiếng nói ngang lớp 8.213 tin.
+
+Báo cáo kèm theo:
+
+- `f1_macro_no_junk` — macro-F1 trên 15 lớp, bỏ `nhóm_nghề_khác`. Lớp này là ngăn
+  chứa tạp; báo cáo cả hai con số giữ cho **nhiễu nhãn** và **lỗi mô hình** không bị
+  trộn làm một.
+- `f1_weighted` (ghi là **F1**) — cùng F1 nhưng trung bình có trọng số theo số mẫu
+  mỗi lớp, và `accuracy`. Từ 2026-09-20 đây là toàn bộ bộ chỉ số của bài phân lớp:
+  `balanced_accuracy` và `top3_accuracy` đã bị bỏ khỏi `evaluate.py`, nên các lần
+  chạy từ ngày đó không còn ghi hai số này.
+- Ma trận nhầm lẫn và 10 cặp lớp bị nhầm nhiều nhất.
+
+### 3.8.2. Bài toán hồi quy mức lương
+
+Mọi con số được **quy đổi về triệu VND/tháng** trước khi báo cáo. Một MAE trong không
+gian logarit không phải con số ai hành động được.
+
+**Bảng 3.20: Các độ đo của bài toán hồi quy**
+
+| Độ đo | Ý nghĩa |
+|---|---|
+| MAE | Sai số tuyệt đối trung bình |
+| RMSE | Căn bậc hai của sai số bình phương trung bình — phạt nặng các lỗi lớn |
+| R² (log) | Hệ số xác định, tính trên thang `log1p` |
+| ±20 % | Tỷ lệ tin có dự đoán nằm trong ±20 % giá trị thật |
+
+### 3.8.3. Quy tắc quyết định khi so sánh hai mô hình
+
+Ba ràng buộc bắt buộc với mọi bảng so sánh:
+
+1. **Mọi mô hình được thử cùng một số cấu hình.** So "cái tốt nhất trong chín lần
+   thử" với "lần thử đầu tiên" là so công sức tinh chỉnh, không phải so thuật toán.
+2. **Mỗi lần chạy đều lưu dự đoán từng dòng.** Không có nó thì lần chạy đó **không
+   ghép cặp được** với lần chạy nào khác.
+3. **Quyết định bằng bootstrap ghép cặp, không bằng độ lệch chuẩn.** Dùng **một** ma
+   trận chỉ số dùng chung cho mọi mô hình được so, rồi đọc `P(A > B)`. Ngưỡng:
+   **> 0,975 hoặc < 0,025** là khác biệt rõ; quanh 0,5 là không phân biệt được.
+
+Độ lệch chuẩn theo từng mô hình vẫn được báo cáo nhưng **không dùng để ra quyết
+định**: nó trả lời "điểm số này dịch chuyển bao nhiêu nếu đổi tập dev", trong khi câu
+hỏi cần trả lời là "A có thắng B trên đúng những dòng đó không". Hai mô hình thường
+sai trên cùng những tin mơ hồ, nên phép so ghép cặp nhạy hơn hẳn.
+
+> **Nguồn số liệu:** [03-protocol.md](../03-protocol.md) §4 và §7 ·
+> [05-phan-tich-du-lieu.md](../05-phan-tich-du-lieu.md) ·
+> [06-baseline-dl.md](../06-baseline-dl.md) §2 và §5.4.
+
+---
+
 # CHƯƠNG 4. THỰC NGHIỆM VÀ ĐÁNH GIÁ
 
 > Mọi số trong chương đo trên lược đồ chia hai tầng 8:2 rồi 9:1 (tập `dev` 3.812
