@@ -36,6 +36,7 @@ from .. import config as C
 from .. import dataset as D
 from .. import evaluate as E
 from . import encode as ENC
+from . import extra as XF
 from . import text as T
 from .focal_loss import FocalLoss  # bản của itakurah/focal-loss-pytorch
 
@@ -172,6 +173,34 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
     return X[keep], None, y, df[keep]
 
 
+def t22_prepare(args, Xtr, ytr, tr_df, Xev, yev, ev_df):
+    """T22: lọc dòng và nối thêm cột, trước khi khớp thống kê chuẩn hoá.
+
+    Lọc xung đột chỉ chạm ``train``; ``dev`` chỉ bị giới hạn ở tin có lương để hai
+    bài chấm trên cùng tập dòng. ``test`` không đi qua đây (``--eval test`` bị chặn).
+    """
+    def cut(X, y, df, keep):
+        return X[keep], y[keep], df[keep]
+
+    stats = {}
+    if args.disclosed_only:
+        Xtr, ytr, tr_df = cut(Xtr, ytr, tr_df, (tr_df["salary_disclosed"] == 1).to_numpy())
+        Xev, yev, ev_df = cut(Xev, yev, ev_df, (ev_df["salary_disclosed"] == 1).to_numpy())
+    if args.drop_conflict:
+        Xtr, ytr, tr_df = cut(Xtr, ytr, tr_df, XF.conflict_free(tr_df))
+    if args.extra:
+        stats = XF.fit_structured(tr_df)
+        out = []
+        for X, df, split in ((Xtr, tr_df, "train"), (Xev, ev_df, args.eval)):
+            S, names = XF.structured(df, stats)
+            txt = XF.text_block(split, len(D.load_split(split)), args.encoder)
+            out.append(np.concatenate([X, txt[df.index.to_numpy()], S], axis=1))
+        Xtr, Xev = out
+        stats["structured_columns"] = names
+    stats["n_train"], stats["n_eval"] = len(ytr), len(yev)
+    return Xtr, ytr, tr_df, Xev, yev, ev_df, stats
+
+
 def token_stats(X, rows: np.ndarray, mask: np.ndarray, chunk: int = 512):
     """μ/σ theo từng chiều, tính trên **token thật** của `train`, đọc memmap theo khối.
 
@@ -285,6 +314,15 @@ def build_parser() -> argparse.ArgumentParser:
                          "tái lập, nhật ký chỉ nhận lần chạy thật")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--seed", type=int, default=C.RANDOM_SEED)
+    # T22 — chỉ head dense
+    ap.add_argument("--disclosed-only", action="store_true",
+                    help="T22: train và dev chỉ giữ tin có công bố lương (cả bài category)")
+    ap.add_argument("--drop-conflict", action="store_true",
+                    help="T22: bỏ khỏi train các tin cùng 3 cột đầu vào mà khác category")
+    ap.add_argument("--extra", action="store_true",
+                    help="T22: nối vector kỹ năng + phúc lợi (len128) và khối cột có cấu trúc")
+    ap.add_argument("--oversample", type=int, default=0,
+                    help="T22: lặp tin lớp có ít hơn N dòng train lên N; không kèm --class-weight")
     return ap
 
 
@@ -317,6 +355,11 @@ def run(args: argparse.Namespace) -> dict:
         raise SystemExit("--loss focal chỉ dùng cho phân lớp, salary đã dùng Huber")
     if args.loss in ("quantile", "ahuber") and args.task != C.TASK_SALARY:
         raise SystemExit(f"--loss {args.loss} chỉ dùng cho salary")
+    t22 = args.disclosed_only or args.drop_conflict or args.extra or args.oversample
+    if t22 and (args.head != "dense" or concat or args.eval == "test"):
+        raise SystemExit("cờ T22 chỉ dùng với --head dense, không concat, chấm dev")
+    if args.oversample and (args.task != C.TASK_CATEGORY or args.class_weight):
+        raise SystemExit("--oversample chỉ cho category và không kèm --class-weight")
     if args.head == "rnn" and args.batch > 64 and args.device != "cuda":
         # 256 × 768 float32 = 786 KB mỗi tin; batch 256 là 200 MB chỉ riêng đầu vào,
         # chưa kể trạng thái RNN — nặng cho CPU/MPS. Trên GPU (16 GB+) 200 MB không
@@ -335,6 +378,10 @@ def run(args: argparse.Namespace) -> dict:
                                      concat, args.layers)
     Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder,
                                      concat, args.layers)
+    t22_stats = None
+    if t22:
+        Xtr, ytr, tr_df, Xev, yev, ev_df, t22_stats = t22_prepare(
+            args, Xtr, ytr, tr_df, Xev, yev, ev_df)
     is_rnn = args.head == "rnn"
     n_train = len(ytr)
 
@@ -381,6 +428,11 @@ def run(args: argparse.Namespace) -> dict:
         # phải là tensor đã chuẩn hoá — không phải mảng numpy thô. Thiếu dòng này
         # thì `.to(device)` gãy trên numpy (bắt được bằng smoke run 2026-09-21).
         Xtr, Xev = Xtr_t, Xev_t
+        if args.oversample:
+            # Sau chuẩn hoá: μ/σ khớp trên tin gốc, không trên bản lặp.
+            rep = torch.from_numpy(XF.oversample(ytr_t.numpy(), args.oversample, args.seed))
+            Xtr, ytr_t, n_train = Xtr[rep], ytr_t[rep], len(rep)
+            t22_stats["n_train_oversampled"] = n_train
 
         def take(X, mask, idx):
             return X[idx].to(device), None
@@ -513,6 +565,9 @@ def run(args: argparse.Namespace) -> dict:
     model.load_state_dict(best_state)
     torch.save(best_state, out_dir / "best.pt")
     np.savez(out_dir / "scaler.npz", mean=mu, std=sigma)
+    if t22_stats is not None:  # đường suy luận phải dựng lại đúng khối này (quy tắc số 4)
+        (out_dir / "extra_stats.json").write_text(
+            json.dumps(t22_stats, indent=2, ensure_ascii=False), encoding="utf-8")
 
     pred_frame = {"y_true": yev if not is_reg else np.expm1(yev),
                   "y_pred": best_pred if not is_reg else np.expm1(best_pred),
@@ -542,7 +597,9 @@ def run(args: argparse.Namespace) -> dict:
         "labels": labels,
         "config": vars(args), "env": env,
         "encoder": args.encoder,
-        "columns": T.columns_for(args.task, segmented=ENC.ENCODERS[args.encoder]["segmented"]),
+        "columns": T.columns_for(args.task, segmented=ENC.ENCODERS[args.encoder]["segmented"])
+                   + (list(XF.TEXT_COLUMNS) + t22_stats["structured_columns"] if args.extra else []),
+        "t22": t22_stats,
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 
     if is_reg:
@@ -590,12 +647,18 @@ def run(args: argparse.Namespace) -> dict:
                 prep += f"+concat({args.concat_encoder}@{args.concat_max_len})"
             if is_rnn:
                 prep += "+token-level"
+            if args.disclosed_only:
+                prep += "+disclosed"
+            if args.drop_conflict:
+                prep += "+noconflict"
+            if args.oversample:
+                prep += f"+oversample{args.oversample}"
             if stopped_by == "time":
                 prep += "+time-capped"     # người đọc log biết run này chưa hội tụ tự nhiên
             fh.write(f"| {run_id} | {datetime.now(timezone.utc).strftime('%m-%d %H:%M')} "
                      f"| {args.task} | {base}"
                      f"{cw_tag}{ls_tag}{loss_tag}"
-                     f") | title+desc+req | {prep} "
+                     f") | title+desc+req{'+skills+benefits+struct' if args.extra else ''} | {prep} "
                      f"| {args.eval} | {best_metrics['n']} | {headline} | {seconds:.1f}s "
                      f"| {env['git_sha'][:8]}{'+dirty' if env['git_dirty'] else ''} |\n")
 
