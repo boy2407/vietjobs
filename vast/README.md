@@ -46,3 +46,4 @@ ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - artifacts/<run_glob> lo
 2. `best.pt` của mọi run đã nằm trên Mac (Đợt 2 mất 5 file vì bỏ qua bước này) và `torch.load` mở được từng file (Đợt 5 gặp một `best.pt` bị cắt khi kéo về).
 3. Bảng của file đợt đã điền số từ `metrics.json`.
 | 25 | [dot-25-t22-dense.md](dot-25-t22-dense.md) | T22 — CafeBERT 512 Dense R0–R4 (lọc xung đột, cột mới, lặp tin) | `train_dl.py` qua ssh | KHÔNG DÙNG — chạy trên Mac, chờ destroy |
+| 26 | [dot-26-t22-r6l4.md](dot-26-t22-r6l4.md) | T22 — R6-L4: CafeBERT last4 Dense lương, một text + 6 trường | `scripts/vast_run_t22_r6l4.sh` | CHƯA THUÊ |
