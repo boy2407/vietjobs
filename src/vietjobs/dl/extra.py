@@ -175,7 +175,9 @@ def main() -> None:
             if path.exists():
                 print(f"  có sẵn {path.name}")
                 continue
-            texts = df[col].astype(str).str.strip().tolist()
+            # PhoBERT học trên chuỗi đã tách từ; tên cache giữ tên cột logic.
+            src = F._SEG_NAME.get(col, col) if ENC.ENCODERS[args.encoder]["segmented"] else col
+            texts = df[src].astype(str).str.strip().tolist()
             print(f"[{split}] {args.encoder} · {col} · {len(texts):,} tin · len{TEXT_MAX_LEN}")
             emb = ENC.encode_texts(texts, max_len=TEXT_MAX_LEN, batch=args.batch,
                                    device=args.device, encoder=args.encoder)
