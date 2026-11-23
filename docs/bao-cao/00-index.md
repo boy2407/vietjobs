@@ -24,7 +24,7 @@ chuyển sang `xong` khi mọi con số trong chương đã có nguồn đo th�
 | 0 | [01-phan-dau.md](01-phan-dau.md) | Bìa · Lời cảm ơn · Danh mục · Tóm tắt | **bản thảo** | tổng hợp từ các chương |
 | 1 | [02-chuong-1-gioi-thieu.md](02-chuong-1-gioi-thieu.md) | Tổng quan | **chờ tác giả duyệt** (bản Doc 22/11 + sửa 2026-11-23) | đề cương · [01](../01-data-audit.md) · [05](../05-phan-tich-du-lieu.md) |
 | 2 | [03-chuong-2-tong-quan.md](03-chuong-2-tong-quan.md) | Cơ sở lý thuyết | **chờ tác giả duyệt** (bản Doc 23/11 + sửa 2026-11-23) | số của [13], [14] đối chiếu với bản PDF |
-| 3 | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) | Phương pháp thực hiện | **xong bản thảo** | [01](../01-data-audit.md) · [02](../02-vietnamese-nlp.md) · [03](../03-protocol.md) · [06](../06-baseline-dl.md) |
+| 3 | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) | Bộ dữ liệu VietJobs | **chờ tác giả duyệt** (bản Doc 23/11 + sửa 2026-11-23; §3.1, §3.3, §3.6.6, §3.7, §3.8 cũ chuyển sang phần nháp Chương 4) | [01](../01-data-audit.md) · [02](../02-vietnamese-nlp.md) · [03](../03-protocol.md) · [06](../06-baseline-dl.md) |
 | 4 | [05-chuong-4-thuc-nghiem.md](05-chuong-4-thuc-nghiem.md) | Thực nghiệm và đánh giá | **bản thảo · phân tích lỗi §4.5 chờ T2.1** | [04-results.md](../04-results.md) — xem §3 |
 | 5 | [06-chuong-5-he-thong.md](06-chuong-5-he-thong.md) | Cài đặt mã nguồn thực nghiệm | **xong bản thảo** | [08](../08-ma-nguon.md) · `pytest -q` |
 | 6 | [07-chuong-6-ket-luan.md](07-chuong-6-ket-luan.md) | Kết luận và hướng phát triển | **bản thảo một phần** | [09](../09-lo-trinh.md) |
@@ -138,7 +138,7 @@ Cả 11 hình đã render (`./scripts/render_figures.sh`). Chạy lại lệnh �
 một sơ đồ mermaid trong `docs/`.
 
 **Không còn hình thừa.** `scripts/analyze_data.py` sinh ra **bảy** hình, cả bảy đã có
-mặt trong §3.6 của chương 3 — `eda-01-do-day-truong.png` đo tỷ lệ điền của 18 trường
+mặt trong §3.5 của chương 3 — `eda-01-do-day-truong.png` đo tỷ lệ điền của 18 trường
 và đã trở thành Hình 3.4 (mục 3.6.1); `eda-07-do-dai-token.png` (độ dài token, cái giá
 của việc cắt ở 256) đã sinh ngày 12/09/2026 (T1.1) và trở thành Hình 3.10 (mục 3.6.8).
 
@@ -172,10 +172,10 @@ dòng nhận xét chưa phải là mô tả một lần chạy.
 | Nội dung bắt buộc | Nằm ở đâu trong `docs/bao-cao/` |
 |---|---|
 | 1 — đã chạy gì | [05-chuong-4-thuc-nghiem.md](05-chuong-4-thuc-nghiem.md) §4.1.3 (hồ sơ từng lần chạy) + bảng kết quả §4.3 / §4.4 |
-| 2 — mô hình | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) §3.7; phần lệch riêng của từng lần chạy viết trong nhận xét §4.3 / §4.4 |
-| 3 — xử lý dữ liệu | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) §3.2, §3.4, §3.5 |
-| 4 — xử lý tiếng Việt | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) §3.3 |
-| 5 — phân tích tiền xử lý | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) §3.6 + §3.8 (độ đo và mốc) |
+| 2 — mô hình | [05-chuong-4-thuc-nghiem.md](05-chuong-4-thuc-nghiem.md) phần nháp Chương 4 (§3.7 cũ); phần lệch riêng của từng lần chạy viết trong nhận xét §4.3 / §4.4 |
+| 3 — xử lý dữ liệu | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) §3.2, §3.3, §3.4 |
+| 4 — xử lý tiếng Việt | [05-chuong-4-thuc-nghiem.md](05-chuong-4-thuc-nghiem.md) phần nháp Chương 4 (§3.3 cũ) |
+| 5 — phân tích tiền xử lý | [04-chuong-3-phuong-phap.md](04-chuong-3-phuong-phap.md) §3.5 + phần nháp Chương 4 (§3.6.6 cũ: mốc; §3.8 cũ: độ đo) |
 
 Hai nghĩa vụ đi kèm:
 
@@ -202,5 +202,5 @@ Quy tắc 11 trong [../../AGENTS.md](../../AGENTS.md).
    (bằng chứng ablation nằm ở [02-vietnamese-nlp.md](../02-vietnamese-nlp.md)); không
    lặp lại mục khác mà dẫn chiếu tới nó; không diễn xuôi lại một bảng. Lần chạy thất
    bại vẫn là việc đã làm nên vẫn giữ (§4.6).
-4. **Ví dụ:** §3.3 chỉ kể NFC → dấu thanh → viết tắt → che lương → tách từ → ghép
+4. **Ví dụ:** mục xử lý tiếng Việt (§3.3 cũ, nay ở phần nháp Chương 4) chỉ kể NFC → dấu thanh → viết tắt → che lương → tách từ → ghép
    trường → tokenizer trên ba cột PhoBERT đọc.

@@ -237,9 +237,10 @@ session**, exactly as Rule 1 requires for `docs/`:
 | What you just did | Which chapter you must edit |
 |---|---|
 | Finished a training run | `05-chuong-4-thuc-nghiem.md` — the results table + §4.8 summary |
-| Changed the architecture / hyper-parameters | `04-chuong-3-phuong-phap.md` §3.7 |
-| Changed cleaning, splitting, or preprocessing | `04-chuong-3-phuong-phap.md` §3.2–§3.5 |
-| Re-ran the data analysis | `04-chuong-3-phuong-phap.md` §3.6 |
+| Changed the architecture / hyper-parameters | `05-chuong-4-thuc-nghiem.md` draft Chương 4 section (old §3.7) |
+| Changed cleaning, splitting, or leak masking | `04-chuong-3-phuong-phap.md` §3.2–§3.4 |
+| Changed Vietnamese preprocessing | `05-chuong-4-thuc-nghiem.md` draft Chương 4 section (old §3.3) |
+| Re-ran the data analysis | `04-chuong-3-phuong-phap.md` §3.5 |
 | Added / changed a module in `src/` | `06-chuong-5-he-thong.md` §5.2 |
 | Completed a roadmap item | `07-chuong-6-ket-luan.md` §6.1 (and drop the item from §6.3) |
 | Read a paper worth citing | `08-tai-lieu-tham-khao.md` **and** Table 2.1 in `03-chuong-2-tong-quan.md` |
@@ -305,7 +306,7 @@ Four obligations that come with it:
    not, the page contradicts itself — that is worse than being stale, because both
    numbers look measured.
 3. **When a figure is regenerated, `docs/05-phan-tich-du-lieu.md` and
-   `docs/bao-cao/04-chuong-3-phuong-phap.md` §3.6 are rewritten in the same
+   `docs/bao-cao/04-chuong-3-phuong-phap.md` §3.5 are rewritten in the same
    working session** — they are the two places that quote those figures.
 4. **A descriptive number that cannot be re-measured yet gets `⛔`**, never a
    leftover value from an older scope. Decision numbers measured under the old
@@ -362,10 +363,10 @@ Five things every run must be told:
 | Required content | Where it lives in `docs/bao-cao/` |
 |---|---|
 | 1 — what was run | `05-chuong-4-thuc-nghiem.md` §4.1.3 (per-run record) + the results table in §4.3 / §4.4 |
-| 2 — the model | `04-chuong-3-phuong-phap.md` §3.7; per-run deviations in the §4.3 / §4.4 prose |
-| 3 — data handling | `04-chuong-3-phuong-phap.md` §3.2, §3.4, §3.5 |
-| 4 — Vietnamese processing | `04-chuong-3-phuong-phap.md` §3.3 |
-| 5 — preprocessing analysis | `04-chuong-3-phuong-phap.md` §3.6 + §3.8 (metric and floor) |
+| 2 — the model | `05-chuong-4-thuc-nghiem.md` draft Chương 4 section (old §3.7); per-run deviations in the §4.3 / §4.4 prose |
+| 3 — data handling | `04-chuong-3-phuong-phap.md` §3.2, §3.3, §3.4 |
+| 4 — Vietnamese processing | `05-chuong-4-thuc-nghiem.md` draft Chương 4 section (old §3.3) |
+| 5 — preprocessing analysis | `04-chuong-3-phuong-phap.md` §3.5 + `05-chuong-4-thuc-nghiem.md` draft Chương 4 section (old §3.6.6 floors, old §3.8 metrics) |
 
 Two obligations that come with it:
 
@@ -400,7 +401,7 @@ Changing this list means editing **three** places: this rule, §7 of
    `docs/02-vietnamese-nlp.md`), do not repeat what another
    section already says (link to it), do not restate a table in prose.
    A run that failed is still a run that was done: it stays (Rule 7 item 4).
-4. **Example:** bao-cao §3.3 lists only NFC → tone marks → abbreviations →
+4. **Example:** the bao-cao Vietnamese-processing section (old §3.3) lists only NFC → tone marks → abbreviations →
    salary mask → word segmentation → field join, on the three columns PhoBERT
    reads — not the removed steps, not columns PhoBERT never reads.
 
