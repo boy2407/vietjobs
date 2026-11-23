@@ -123,7 +123,7 @@ language model for Vietnamese," arXiv preprint arXiv:2607.02259, 2026.
 Các công trình liên quan về phân loại nghề và dự đoán lương ở nước ngoài (bảy bài từng
 có trong bản Google Doc) đã bị **bỏ** ngày 2026-11-22, vì tác giả chưa đọc (quy tắc 1 ở
 trên). Bài nào được đọc sau này thì thêm lại vào danh sách này và Bảng 2.1
-([chương 2](03-chuong-2-tong-quan.md#231-bảng-hệ-thống-hoá-các-công-trình-tham-khảo)).
+([chương 2](03-chuong-2-tong-quan.md#22-các-công-trình-liên-quan)).
 
 ---|---|---|
 > | Phân loại tin tuyển dụng theo chuẩn nghề nghiệp | 3–4 | §2.3 |
@@ -132,7 +132,7 @@ trên). Bài nào được đọc sau này thì thêm lại vào danh sách này
 >
 > Với mỗi công trình đọc được, làm hai việc trong cùng một lần: thêm một mục vào danh
 > sách trên, và thêm một dòng vào Bảng 2.1 ở
-> [chương 2](03-chuong-2-tong-quan.md#233-bảng-hệ-thống-hoá-các-công-trình-tham-khảo).
+> [chương 2](03-chuong-2-tong-quan.md#22-các-công-trình-liên-quan).
 
 ---
 
