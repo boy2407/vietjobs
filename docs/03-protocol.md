@@ -14,6 +14,14 @@ huấn luyện.** Thay đổi chúng có nghĩa là không có dòng nào trong 
 có thể so sánh được với dòng khác, và bảng ablation — sản phẩm chính của báo
 cáo — trở nên vô nghĩa.
 
+**Ngoại lệ 2026-11-24 (tác giả), lược đồ v3.** Bộ `splits-sal17-11c` chia lại
+toàn bộ corpus: chỉ giữ tin có công khai lương, bỏ trước 5.220 dòng trùng đủ
+17 cột nhưng khác `category`, cùng seed và cùng tỷ lệ 8:2 rồi 9:1 → train
+21.801 / dev 2.422 / test 6.056 (`build_meta.json`). Cả hai bài đọc họ `masked`
+với 11 cột nối thành một chuỗi. Bộ này được chọn bằng `VIETJOBS_SPLITS`;
+`splits/` và `test` 9.541 dòng giữ nguyên. Số đo trên v3 không bao giờ được so
+với số đo trên `splits/` (AGENTS.md Rule 5 mục 7).
+
 Nếu việc xây dựng lại thực sự không thể tránh khỏi, hãy kiểm tra rằng manifest
 không thay đổi:
 
@@ -91,7 +99,7 @@ trải dài qua nhiều epoch, có thể thất bại giữa chừng, và **lý 
 | Tệp | Nó chứa gì | Vì sao bắt buộc |
 |---|---|---|
 | `history.jsonl` | một dòng JSON cho mỗi epoch: loss, chỉ số `val`, số giây | Nếu không có, không thể phân biệt được dưới khớp / quá khớp / lr sai |
-| `config.json` | mọi siêu tham số + seed | Một lần chạy không thể tái lập thì con số của nó không có giá trị |
+| `config.json` | mọi siêu tham số + seed; khoá `family` (từ 2026-11-24, T23.0): `masked` khi `category` đọc cột `*_masked`, `null` là họ mặc định theo bài | Một lần chạy không thể tái lập thì con số của nó không có giá trị |
 | `env.json` | device, phiên bản torch/transformers, encoder | Hai lần chạy trên hai máy có thời gian không thể so sánh được |
 | `best.pt` | trọng số tại epoch `val` tốt nhất | Nếu không, một lần crash ở giờ thứ hai sẽ làm mất tất cả |
 | `predictions_<eval>.parquet` | dự đoán theo từng dòng | Đọc các lỗi thực tế sau khi lần chạy đã kết thúc |

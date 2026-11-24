@@ -57,6 +57,8 @@ Phần mã nguồn trong `src/vietjobs/` mà đề tài dùng gồm **10 mô-đu
 
 **Thay đổi T12.1.** `src/vietjobs/dl/train_dl.py` có thêm `--concat-encoder` và `--concat-max-len` (chỉ head dense; mặc định tắt, đường mặc định không đổi). `load_task` nối vectơ của cache thứ hai sau vectơ chính. `src/vietjobs/dl/encode.py` có thêm `sidecar_of` và `check_same_rows`, kiểm tra cùng split, họ cột và số dòng trước khi ghép. Kiểm thử mới: `tests/test_dl_concat.py` (5 kiểm thử), đã chạy trong `.venv-dl`.
 
+**Thay đổi T23.0.** `src/vietjobs/dl/encode.py` và `src/vietjobs/dl/train_dl.py` có thêm cờ `--family masked` (mặc định tắt, đường cũ không đổi). Khi bật, bài `category` đọc ba cột `*_masked` và dùng chung tệp đệm với bài `salary`, giống `train_mtl.py`; nhãn vẫn là ngành. `config.json` của lần chạy ghi khoá `family`. Kiểm thử mới: `tests/test_dl_family.py` (4 kiểm thử).
+
 ### 5.2.1. Ba bất biến giữ cả hệ thống đứng vững
 
 **1. Một cánh cửa vào dữ liệu.** Đường học sâu không tự nối vào cột thô: nó gọi
