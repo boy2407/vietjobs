@@ -77,18 +77,15 @@ tài nhắm vào khoảng trống đó.
 
 ## 2.3. Biểu diễn văn bản bằng mô hình ngôn ngữ tiền huấn luyện
 
-Kiến trúc Transformer [1] và mô hình BERT [2] cho mỗi từ một vectơ phụ thuộc vào các từ
-xung quanh nó: cùng một từ ở hai câu khác nhau cho hai vectơ khác nhau. Mô hình được tiền
-huấn luyện trên kho văn bản lớn bằng nhiệm vụ đoán từ bị che, rồi dùng lại cho nhiệm vụ
-khác. RoBERTa [3] cho thấy chỉ cần điều chỉnh quy trình tiền huấn luyện – bỏ nhiệm vụ đoán
-câu kế tiếp, huấn luyện lâu hơn trên nhiều dữ liệu hơn – là đã cải thiện đáng kể chất
-lượng biểu diễn.
+Mô hình ngôn ngữ tiền huấn luyện như BERT [2], xây trên kiến trúc Transformer [1], được
+cho đọc rất nhiều văn bản bằng cách tập đoán lại từ bị che. Sau đó nó cho mỗi từ một
+vectơ, và vectơ này thay đổi theo câu chứa từ đó. PhoBERT và XLM-R, nền của CafeBERT, đều
+được huấn luyện theo cách của RoBERTa [3].
 
-Trong đề tài, các bộ mã hóa được giữ đóng băng: mỗi tin được mã hóa một lần, vectơ được
-lưu lại, và chỉ phần đầu mạng phía sau được huấn luyện. Cách làm này cho phép so sánh
-nhiều bộ mã hóa và nhiều đầu mạng với chi phí tính toán nhỏ. Vectơ của mỗi token lấy từ
-lớp ẩn cuối của bộ mã hóa, hoặc là trung bình của bốn lớp ẩn cuối. Mô hình chốt dùng
-trung bình bốn lớp ẩn cuối.
+Đề tài không huấn luyện lại các mô hình này. Mỗi tin được đọc một lần, vectơ được lưu lại,
+và chỉ phần đầu mạng phía sau được huấn luyện. Nhờ vậy đề tài thử được nhiều bộ mã hóa và
+nhiều đầu mạng mà tốn ít máy. Mô hình chốt lấy vectơ là trung bình bốn lớp cuối của
+CafeBERT.
 
 ### 2.3.1. PhoBERT
 
