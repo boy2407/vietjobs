@@ -127,7 +127,7 @@ def compute_salary_bin_weights(y_log: np.ndarray, beta_eff: float = 0.999) -> np
 
 def load_task(split: str, task: str, max_len: int, head: str = "dense",
               encoder: str = ENC.DEFAULT_ENCODER, concat: tuple[str, int] | None = None,
-              layers: int = 1, last4: bool | None = None):
+              layers: int = 1, last4: bool | None = None, family: str | None = None):
     """Trả về ``(X, mask, y, frame)`` — frame giữ lại để cắt lát kết quả theo ngành.
 
     ``head="dense"``  → ``X`` là ma trận ``[n, 768]`` đã gộp, ``mask`` là ``None``.
@@ -139,16 +139,17 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
     if last4:
         layers = 4
     df = D.load_split(split)
+    ctask = ENC.cache_task(task, family)  # cột và cache; nhãn vẫn theo ``task``
     if head == "rnn":
-        X, mask = ENC.token_cache_for(split, task, max_len=max_len, encoder=encoder,
+        X, mask = ENC.token_cache_for(split, ctask, max_len=max_len, encoder=encoder,
                                       layers=layers)
     else:
-        X, mask = ENC.embeddings_for(split, task, max_len=max_len, encoder=encoder,
+        X, mask = ENC.embeddings_for(split, ctask, max_len=max_len, encoder=encoder,
                                      layers=layers), None
         if concat is not None:
             c_enc, c_len = concat
-            ENC.check_same_rows(split, task, len(df), (encoder, max_len), (c_enc, c_len))
-            path = ENC.cache_path(split, task, c_len, encoder=c_enc, layers=layers)
+            ENC.check_same_rows(split, ctask, len(df), (encoder, max_len), (c_enc, c_len))
+            path = ENC.cache_path(split, ctask, c_len, encoder=c_enc, layers=layers)
             if not path.exists():
                 raise SystemExit(f"thiếu {path.name}: concat không nhúng lại — encode trước")
             X2 = np.load(path)
@@ -280,6 +281,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--concat-max-len", type=int, default=512,
                     help="max_len của cache --concat-encoder")
     ap.add_argument("--max-len", type=int, default=256)
+    ap.add_argument("--family", default=None, choices=["masked"],
+                    help="masked: category đọc *_masked, chung cache với salary (T23.0)")
     ap.add_argument("--patience", type=int, default=8)
     ap.add_argument("--max-minutes", type=float, default=0,
                     help="trần thời gian huấn luyện (phút, tính từ epoch 1); 0 = không giới hạn. "
@@ -380,9 +383,9 @@ def run(args: argparse.Namespace) -> dict:
     if getattr(args, "last4", False):
         args.layers = 4
     Xtr, mtr, ytr, tr_df = load_task("train", args.task, args.max_len, args.head, args.encoder,
-                                     concat, args.layers)
+                                     concat, args.layers, family=args.family)
     Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder,
-                                     concat, args.layers)
+                                     concat, args.layers, family=args.family)
     t22_stats = None
     if t22:
         Xtr, ytr, tr_df, Xev, yev, ev_df, t22_stats = t22_prepare(
@@ -602,7 +605,7 @@ def run(args: argparse.Namespace) -> dict:
         "labels": labels,
         "config": vars(args), "env": env,
         "encoder": args.encoder,
-        "columns": T.columns_for(args.task, segmented=ENC.ENCODERS[args.encoder]["segmented"])
+        "columns": T.columns_for(ENC.cache_task(args.task, args.family), segmented=ENC.ENCODERS[args.encoder]["segmented"])
                    + (t22_stats["text_columns"] + t22_stats["structured_columns"] if args.extra else []),
         "t22": t22_stats,
     }, indent=2, ensure_ascii=False), encoding="utf-8")

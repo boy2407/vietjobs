@@ -65,6 +65,12 @@ def family(task: str) -> str:
     return "masked" if task in C.MASKED_TASKS else "raw"
 
 
+def cache_task(task: str, fam: str | None = None) -> str:
+    """Bài toán dùng để chọn cột và tên cache. ``fam="masked"`` cho ``category`` đọc
+    bản ``*_masked`` và dùng chung cache với ``salary`` (T23.0) — như ``train_mtl``."""
+    return C.TASK_SALARY if fam == "masked" else task
+
+
 def hidden_of(encoder: str) -> int:
     return ENCODERS[encoder]["hidden"]
 
@@ -345,7 +351,11 @@ def main() -> None:
     ap.add_argument("--layers", type=int, default=1,
                     help="số lớp ẩn cuối được lấy trung bình trước khi gộp token (1 = chỉ lớp cuối, "
                          "cache cũ); cả --pooling mean lẫn none")
+    ap.add_argument("--family", default=None, choices=["masked"],
+                    help="masked: mọi bài đọc *_masked, chung cache với salary (T23.0); "
+                         "bỏ trống = họ theo bài như cũ")
     args = ap.parse_args()
+    task = cache_task(args.task, args.family)
     if args.last4:
         args.layers = 4
 
@@ -353,11 +363,11 @@ def main() -> None:
         raise SystemExit("test không được nhúng ở đây — xem docs/03-protocol.md, điều 2")
     for split in args.splits:
         if args.pooling == "none":
-            token_cache_for(split, args.task, max_len=args.max_len, batch=args.batch,
+            token_cache_for(split, task, max_len=args.max_len, batch=args.batch,
                             device=args.device, force=args.force, encoder=args.encoder,
                             layers=args.layers)
         else:
-            embeddings_for(split, args.task, max_len=args.max_len, batch=args.batch,
+            embeddings_for(split, task, max_len=args.max_len, batch=args.batch,
                            device=args.device, force=args.force, encoder=args.encoder,
                            layers=args.layers)
 
