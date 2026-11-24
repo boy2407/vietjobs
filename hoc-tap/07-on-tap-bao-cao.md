@@ -162,6 +162,22 @@ dịch đọc lại tin ở mỗi vòng học? Đổi lại, đề tài chịu m
 
 **Bạn trả lời.** (chờ)
 
+### 13. Năm bộ mã hoá giống và khác nhau ở đâu
+
+**Giống nhau.** Cả năm đều là "người phiên dịch" cùng một kiểu: kiến trúc RoBERTa, học bằng
+trò chơi đoán từ bị che, và trong đề tài đều được giữ nguyên (đóng băng).
+
+**Khác nhau ở bốn chỗ.** (1) **Cỡ người**: CafeBERT có 24 lớp và vectơ 1.024 số, bốn bộ kia
+12 lớp và 768 số. (2) **Đã đọc gì**: PhoBERT và BamiBERT chỉ đọc tiếng Việt, ViSoBERT đọc
+mạng xã hội tiếng Việt, XLM-R đọc 100 thứ tiếng, CafeBERT là XLM-R bản lớn đọc thêm tiếng
+Việt. (3) **Cắt chữ thế nào**: PhoBERT cần văn bản đã tách từ ("nhân_viên"), bốn bộ kia
+đọc văn bản thường. (4) **Đọc được bao dài**: PhoBERT 256 token, CafeBERT, ViSoBERT và XLM-R
+512, BamiBERT tới 2.048.
+
+**Câu hỏi.** Nếu một tin dài 400 token, bộ mã hoá nào phải cắt bớt tin đó?
+
+**Bạn trả lời.** (chờ)
+
 ## Chương 3 — Dữ liệu
 
 ### 6. train, dev, test
