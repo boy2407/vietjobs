@@ -200,6 +200,28 @@ tiết và mảnh chữ**, và tự học cách ghép nghĩa trong các lớp ph
 
 **Bạn trả lời.** (chờ)
 
+### 15. Tách từ + BPE (PhoBERT) so với SentencePiece (CafeBERT)
+
+**Tách từ + BPE — mạnh.** Mỗi mảnh là một **từ trọn nghĩa** ("nhân_viên"), nên câu ngắn hơn
+tính theo token và mô hình không phải tự ghép âm tiết. Kho từ chuyên cho tiếng Việt.
+
+**Tách từ + BPE — yếu.** Phải chạy thêm một bước tách từ, tốn thời gian và **sai không báo**:
+tách sai "nhân_viên" thành "nhân viên" hay ghép nhầm hai từ thì mô hình vẫn chạy, chỉ hiểu
+kém đi. Bộ tách từ học trên văn bản có dấu, nên tin không dấu dễ bị tách sai. Đưa câu chưa tách
+từ vào PhoBERT cũng là sai mà không có lỗi nào hiện ra.
+
+**SentencePiece — mạnh.** Đọc thẳng văn bản thô, **không có bước nào ở giữa để sai**. Dùng
+được cho mọi chuỗi: có dấu, không dấu, lẫn tiếng Anh. Từ lạ vẫn cắt được thành mảnh nhỏ.
+
+**SentencePiece — yếu.** Cắt theo âm tiết nên **một câu thành nhiều token hơn**, tốn chỗ trong
+giới hạn độ dài. Nghĩa của "nhân viên" phải do mô hình tự ghép từ hai mảnh. Kho từ chia cho
+nhiều ngôn ngữ (XLM-R, CafeBERT) nên mô hình to hơn.
+
+**Câu hỏi.** Cùng một tin, bộ nào cắt ra nhiều token hơn, và điều đó ảnh hưởng gì khi giới
+hạn độ dài là cố định?
+
+**Bạn trả lời.** (chờ)
+
 ## Chương 3 — Dữ liệu
 
 ### 6. train, dev, test
