@@ -220,7 +220,9 @@ nhiều ngôn ngữ (XLM-R, CafeBERT) nên mô hình to hơn.
 **Câu hỏi.** Cùng một tin, bộ nào cắt ra nhiều token hơn, và điều đó ảnh hưởng gì khi giới
 hạn độ dài là cố định?
 
-**Bạn trả lời.** (chờ)
+**Bạn trả lời.** Hỏi lại câu hỏi → đã giảng: SentencePiece cắt ra nhiều token hơn. Cùng một
+giới hạn thì nhiều tin bị cắt đuôi hơn, và phần bị mất là phần cuối của chuỗi ghép, tức trường
+yêu cầu ứng viên. Cần hỏi lại ở lượt sau.
 
 ## Chương 3 — Dữ liệu
 
