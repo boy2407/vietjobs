@@ -138,6 +138,30 @@ bình phương sai số?
 
 ---
 
+### 12. §2.3 — Biểu diễn văn bản bằng mô hình ngôn ngữ tiền huấn luyện
+
+**Giải thích.** Bộ mã hoá giống một **người phiên dịch đã đọc hàng triệu trang tiếng Việt**.
+Người đó học bằng trò chơi điền vào chỗ trống (che một từ, đoán lại từ đó). Sau khi học xong,
+đưa cho họ một tin tuyển dụng, họ viết cho **mỗi từ một "thẻ nghĩa"**, tức một dãy số
+(vectơ). Thẻ nghĩa phụ thuộc vào câu: "bàn" trong "bàn ghế" và "bàn" trong "bàn bạc" ra hai
+thẻ khác nhau. Đó là ý của Transformer và BERT. RoBERTa chỉ là cùng người phiên dịch, nhưng
+được học kỹ hơn: đọc nhiều hơn, lâu hơn, và bỏ một bài tập ít ích.
+
+**Đề tài dùng thế nào.** Đề tài **không dạy lại** người phiên dịch (giữ đóng băng). Mỗi tin
+chỉ đưa cho họ đọc **một lần**, rồi cất các thẻ nghĩa vào đĩa. Phần được huấn luyện là cái
+**đầu mạng nhỏ** phía sau, đọc các thẻ đó để đoán ngành và lương. Nhờ vậy thử được nhiều bộ
+mã hoá và nhiều đầu mạng mà không tốn nhiều máy.
+
+**"Trung bình bốn lớp ẩn cuối".** Người phiên dịch không viết thẻ nghĩa trong một lần: họ
+sửa qua nhiều bản nháp liên tiếp (mỗi bản nháp là một **lớp**). Cách đơn giản là lấy bản nháp
+cuối. Mô hình chốt lấy **trung bình bốn bản nháp cuối**, vì bản cuối cùng thường đã nghiêng
+về trò chơi điền chỗ trống, còn mấy bản trước đó giữ nghĩa chung hơn.
+
+**Câu hỏi.** Vì sao đề tài cất thẻ nghĩa vào đĩa rồi mới huấn luyện, thay vì cho người phiên
+dịch đọc lại tin ở mỗi vòng học? Đổi lại, đề tài chịu mất điều gì?
+
+**Bạn trả lời.** (chờ)
+
 ## Chương 3 — Dữ liệu
 
 ### 6. train, dev, test
