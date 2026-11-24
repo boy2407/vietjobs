@@ -178,6 +178,28 @@ Việt. (3) **Cắt chữ thế nào**: PhoBERT cần văn bản đã tách từ
 
 **Bạn trả lời.** (chờ)
 
+### 14. SentencePiece là gì
+
+**Giải thích.** Trước khi đọc, bộ mã hoá phải **cắt câu thành từng mảnh** (token), giống như
+cắt bánh mì thành lát trước khi ăn. SentencePiece là một cách cắt: nó học từ một kho văn bản
+lớn xem mảnh chữ nào hay gặp, rồi cắt câu thô theo các mảnh đó. Nó coi dấu cách cũng là một
+chữ (viết là `▁`), nên **không cần ai tách từ trước**, và dùng được cho mọi ngôn ngữ. Từ lạ
+bị cắt thành mảnh nhỏ hơn.
+
+**Ví dụ chạy thật** với câu "Nhân viên kinh doanh logistics":
+
+- CafeBERT (SentencePiece), đưa câu thường:
+  `▁Nhân · ▁viên · ▁kinh · ▁doanh · ▁logistic · s`
+- PhoBERT (BPE), phải đưa câu đã tách từ "Nhân_viên kinh_doanh logistics":
+  `Nhân_viên · kinh_doanh · logistics`
+
+PhoBERT cắt theo **từ** nhờ bước tách từ của underthesea làm trước. CafeBERT cắt theo **âm
+tiết và mảnh chữ**, và tự học cách ghép nghĩa trong các lớp phía sau.
+
+**Câu hỏi.** Vì sao đưa câu đã có dấu `_` ("nhân_viên") vào CafeBERT lại là sai?
+
+**Bạn trả lời.** (chờ)
+
 ## Chương 3 — Dữ liệu
 
 ### 6. train, dev, test
