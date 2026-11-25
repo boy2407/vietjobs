@@ -17,6 +17,7 @@ import hashlib
 import json
 import time
 from collections import defaultdict
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -327,6 +328,11 @@ def build(raw_path=C.RAW_CSV, out_dir=C.SPLIT_DIR, seed=C.SPLIT_SEED, segment=Tr
 
 def _column_dtypes(out_dir=C.SPLIT_DIR) -> dict:
     manifest = C.MANIFEST if out_dir == C.SPLIT_DIR else out_dir.parent / C.MANIFEST.name
+    # A derived split set that added columns (splits-sal17-11c, T23) carries its own
+    # manifest beside the CSVs; the shared one stays as `dataset build` wrote it.
+    own = Path(out_dir) / C.MANIFEST.name
+    if own.exists():
+        manifest = own
     if not manifest.exists():
         raise FileNotFoundError(
             f"{manifest} missing — it holds the column types the CSV cannot. "
