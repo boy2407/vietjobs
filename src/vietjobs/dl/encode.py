@@ -76,7 +76,8 @@ def hidden_of(encoder: str) -> int:
 
 
 def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
-               encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False) -> Path:
+               encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False,
+               chunked: bool = False) -> Path:
     """``kind``: ``pooled`` (tên cũ, giữ nguyên để cache đã có vẫn hợp lệ), ``tok``, ``mask``.
 
     ``layers > 1``: trung bình ``layers`` lớp ẩn cuối thay vì chỉ lớp cuối; ``pooled`` và
@@ -89,6 +90,8 @@ def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
     stem = f"{prefix}{split}-{family(task)}-len{max_len}"
     if layers > 1 and kind != "mask":
         stem += f"-last{layers}"
+    if chunked and kind == "pooled":
+        stem += "-chunk"
     if kind == "pooled":
         return CACHE_DIR / f"{stem}.npy"
     if kind == "tok":
@@ -166,9 +169,15 @@ def _hidden(model, enc, layers: int):
     return model(**enc).last_hidden_state
 
 
+def split_ids(ids: list, size: int) -> list:
+    """Cắt chuỗi id (chưa có token đặc biệt) thành các đoạn liền nhau, không chồng, dài ``size``."""
+    return [ids[i:i + size] for i in range(0, len(ids), size)] or [[]]
+
+
 def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
                  device: str = "auto", quiet: bool = False,
-                 encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False) -> np.ndarray:
+                 encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False,
+                 chunked: bool = False) -> np.ndarray:
     """Trả về ``[n, hidden]`` — trung bình có mặt nạ của lớp ẩn cuối
     (hoặc trung bình ``layers`` lớp ẩn cuối rồi mới gộp token, khi ``layers > 1``).
 
@@ -181,6 +190,9 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
     import torch
 
     tok, model, dev = _load_model(device, encoder)
+    if chunked:
+        return _encode_chunked(texts, tok, model, dev, max_len=max_len, batch=batch,
+                               quiet=quiet, layers=layers, hidden=hidden_of(encoder))
     out = np.zeros((len(texts), hidden_of(encoder)), dtype=np.float32)
     t0 = time.time()
     with torch.no_grad():
@@ -194,6 +206,38 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
             out[i:i + len(chunk)] = pooled.cpu().numpy()
             _progress(i, len(texts), batch, t0, quiet)
     return out
+
+
+def _encode_chunked(texts, tok, model, dev, *, max_len: int, batch: int, quiet: bool,
+                    layers: int, hidden: int) -> np.ndarray:
+    """Tin dài hơn ``max_len`` không bị cắt bỏ: chia thành đoạn ``max_len`` token (kể cả
+    token đặc biệt), nhúng từng đoạn, rồi lấy trung bình mọi token của mọi đoạn — tức
+    trọng số theo số token, như trung bình có mặt nạ của ``encode_texts``. Tin vừa một
+    đoạn cho cùng vector như cách cắt bỏ (T23, so độ công bằng giữa các encoder).
+    """
+    import torch
+
+    size = max_len - tok.num_special_tokens_to_add(pair=False)
+    pieces, owner = [], []
+    for i, t in enumerate(texts):
+        for p in split_ids(tok(t, add_special_tokens=False)["input_ids"], size):
+            pieces.append(tok.build_inputs_with_special_tokens(p))
+            owner.append(i)
+    owner = np.asarray(owner)
+    sums = np.zeros((len(texts), hidden), dtype=np.float64)
+    counts = np.zeros(len(texts), dtype=np.float64)
+    t0 = time.time()
+    with torch.no_grad():
+        for i in range(0, len(pieces), batch):
+            enc = tok.pad({"input_ids": pieces[i:i + batch]}, return_tensors="pt").to(dev)
+            h = _hidden(model, enc, layers)
+            m = enc["attention_mask"].unsqueeze(-1).float()
+            np.add.at(sums, owner[i:i + batch], (h * m).sum(1).double().cpu().numpy())
+            np.add.at(counts, owner[i:i + batch], m.sum((1, 2)).double().cpu().numpy())
+            _progress(i, len(pieces), batch, t0, quiet)
+    if not quiet:
+        print(f"  {len(pieces):,} đoạn cho {len(texts):,} tin")
+    return (sums / counts[:, None]).astype(np.float32)
 
 
 def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: int = 256,
@@ -230,24 +274,26 @@ def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: i
 
 def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
                    device: str = "auto", force: bool = False,
-                   encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False) -> np.ndarray:
+                   encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False,
+                   chunked: bool = False) -> np.ndarray:
     """Đọc cache nếu có, nếu chưa thì tính rồi ghi cache."""
     if last4:
         layers = 4
-    path = cache_path(split, task, max_len, encoder=encoder, layers=layers)
+    path = cache_path(split, task, max_len, encoder=encoder, layers=layers, chunked=chunked)
     if path.exists() and not force:
         return np.load(path)
     df = D.load_split(split)
     seg = ENCODERS[encoder]["segmented"]
     texts = T.build_text(df, task=task, segmented=seg)
-    tag = f" · last{layers}" if layers > 1 else ""
+    tag = (f" · last{layers}" if layers > 1 else "") + (" · chunked" if chunked else "")
     print(f"[{split}] {encoder} · {len(texts):,} tin · cột {T.columns_for(task, segmented=seg)} · max_len={max_len}{tag}")
     emb = encode_texts(texts, max_len=max_len, batch=batch, device=device, encoder=encoder,
-                       layers=layers)
+                       layers=layers, chunked=chunked)
     path.parent.mkdir(parents=True, exist_ok=True)
     np.save(path, emb)
     _write_sidecar(path, split=split, task=task, max_len=max_len, n=len(texts),
-                   encoder=encoder, texts=texts, layers=layers)
+                   encoder=encoder, texts=texts, layers=layers,
+                   pooling="chunked_token_mean" if chunked else "masked_mean")
     print(f"  -> {path}  {emb.shape}")
     return emb
 
@@ -354,7 +400,11 @@ def main() -> None:
     ap.add_argument("--family", default=None, choices=["masked"],
                     help="masked: mọi bài đọc *_masked, chung cache với salary (T23.0); "
                          "bỏ trống = họ theo bài như cũ")
+    ap.add_argument("--chunked", action="store_true",
+                    help="tin dài hơn --max-len chia thành đoạn thay vì cắt bỏ (chỉ --pooling mean)")
     args = ap.parse_args()
+    if args.chunked and args.pooling == "none":
+        raise SystemExit("--chunked chỉ dùng với --pooling mean")
     task = cache_task(args.task, args.family)
     if args.last4:
         args.layers = 4
@@ -369,7 +419,7 @@ def main() -> None:
         else:
             embeddings_for(split, task, max_len=args.max_len, batch=args.batch,
                            device=args.device, force=args.force, encoder=args.encoder,
-                           layers=args.layers)
+                           layers=args.layers, chunked=args.chunked)
 
 
 if __name__ == "__main__":
