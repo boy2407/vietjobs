@@ -18,6 +18,9 @@ lại không nối hai lần. Chỉ họ ``masked`` đổi; cả ``category`` v�
 """
 from __future__ import annotations
 
+import json
+import sys
+
 import pandas as pd
 
 from vietjobs import config as C
@@ -39,7 +42,25 @@ def extra_text(df: pd.DataFrame) -> pd.Series:
     return df.apply(one, axis=1)
 
 
+def write_manifest() -> None:
+    """Manifest riêng cạnh CSV: manifest gốc + 7 cột ``*_masked`` mới kiểu ``str``.
+
+    ``dataset.load_split`` từ chối cột lạ; manifest gốc của ``splits/`` giữ nguyên.
+    ``--manifest-only`` chỉ ghi tệp này, không dựng lại CSV.
+    """
+    meta = json.loads(C.MANIFEST.read_text(encoding="utf-8"))
+    cols = pd.read_csv(OUT / f"dev{C.SPLIT_SUFFIX}", nrows=0).columns
+    types = meta["column_dtypes"]
+    new = [c for c in cols if c not in types and not c.startswith("raw_")]
+    types.update({c: "str" for c in new})
+    meta["derived_from"] = "splits-sal17 + mask_sal17_extra.py + build_sal17_11c_split.py"
+    (OUT / C.MANIFEST.name).write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"manifest: +{len(new)} cột {new}")
+
+
 def main() -> None:
+    if "--manifest-only" in sys.argv:
+        return write_manifest()
     OUT.mkdir(parents=True, exist_ok=True)
     for split in C.SPLIT_NAMES:
         df = pd.read_csv(SRC / f"{split}{C.SPLIT_SUFFIX}", na_filter=False, dtype=str)
@@ -52,6 +73,7 @@ def main() -> None:
                                          for r, a in zip(df["requirements_masked_seg"], add_seg)]
         df.to_csv(OUT / f"{split}{C.SPLIT_SUFFIX}", index=False)
         print(f"{split}: {len(df):,} dòng · {(add != '').mean() * 100:.1f}% có đoạn thêm", flush=True)
+    write_manifest()
 
 
 if __name__ == "__main__":
