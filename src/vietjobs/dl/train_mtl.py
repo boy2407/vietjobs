@@ -70,10 +70,10 @@ def load_mtl(split: str, max_len: int, encoder: str = ENC.DEFAULT_ENCODER, head:
     df = D.load_split(split)
     # Trunk reads 'masked' family (use task 'salary' to get masked cache).
     # head="rnn": X là memmap float16 [n, T, dim] chưa gộp, mask [n, T] uint8.
-    if chunked and head == "rnn":
-        raise SystemExit("--chunked chỉ có cho --head dense")
     if head == "rnn":
-        X, mask = ENC.token_cache_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4)
+        # chunked: X là RaggedTokens, mask = None — mặt nạ dựng theo từng batch.
+        X, mask = ENC.token_cache_for(split, "salary", max_len=max_len, encoder=encoder,
+                                      last4=last4, chunked=chunked)
     else:
         X, mask = ENC.embeddings_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4,
                                      chunked=chunked), None
@@ -182,9 +182,10 @@ def run(args: argparse.Namespace) -> dict:
         # Như train_dl: đọc từng batch từ memmap, chuẩn hoá rồi mới đẩy lên device.
         def take(X, mask, idx):
             order = idx.numpy() if torch.is_tensor(idx) else idx
-            xb = (np.asarray(X[order], dtype=np.float32) - mu) / sigma
+            xb, mb = X.pad(order) if mask is None else (X[order], mask[order])
+            xb = (np.asarray(xb, dtype=np.float32) - mu) / sigma
             return (torch.from_numpy(xb).to(device),
-                    torch.from_numpy(mask[order].astype(np.uint8)).to(device))
+                    torch.from_numpy(mb.astype(np.uint8)).to(device))
         in_dim = ENC.hidden_of(args.encoder)
         model = MultiTaskRnn(in_dim, args.hidden, out_dim_cat, args.dropout,
                              spatial_dropout=args.spatial_dropout,

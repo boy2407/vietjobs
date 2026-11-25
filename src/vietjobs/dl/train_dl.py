@@ -141,11 +141,12 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
         layers = 4
     df = D.load_split(split)
     ctask = ENC.cache_task(task, family)  # cột và cache; nhãn vẫn theo ``task``
-    if chunked and (head == "rnn" or concat is not None):
-        raise SystemExit("--chunked chỉ có cho --head dense, không --concat-encoder")
+    if chunked and concat is not None:
+        raise SystemExit("--chunked không đi cùng --concat-encoder")
     if head == "rnn":
+        # chunked: X là RaggedTokens, mask = None — mặt nạ dựng theo từng batch.
         X, mask = ENC.token_cache_for(split, ctask, max_len=max_len, encoder=encoder,
-                                      layers=layers)
+                                      layers=layers, chunked=chunked)
     else:
         X, mask = ENC.embeddings_for(split, ctask, max_len=max_len, encoder=encoder,
                                      layers=layers, chunked=chunked), None
@@ -173,7 +174,7 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
         y = df.loc[keep, "salary_disclosed"].to_numpy(dtype=np.int64)
     if head == "rnn":
         rows = np.flatnonzero(keep)
-        return (X, rows), mask[rows], y, df[keep]
+        return (X, rows), (None if mask is None else mask[rows]), y, df[keep]
     return X[keep], None, y, df[keep]
 
 
@@ -226,8 +227,9 @@ def token_stats(X, rows: np.ndarray, mask: np.ndarray, chunk: int = 512):
             print(f"  thống kê chuẩn hoá: {i:,}/{len(rows):,} dòng "
                   f"({100 * i / len(rows):4.1f}%, {time.time() - t0:5.0f}s)", flush=True)
         idx = rows[i:i + chunk]
-        xb = np.asarray(X[idx], dtype=np.float32)          # [c, T, 768]
-        mb = mask[i:i + chunk][..., None].astype(np.float32)
+        xb, mb = X.pad(idx) if mask is None else (X[idx], mask[i:i + chunk])
+        xb = np.asarray(xb, dtype=np.float32)              # [c, T, 768]
+        mb = mb[..., None].astype(np.float32)
         total += (xb * mb).sum((0, 1))
         total_sq += ((xb ** 2) * mb).sum((0, 1))
         n_tok += int(mb.sum())
@@ -429,9 +431,11 @@ def run(args: argparse.Namespace) -> dict:
         def take(X, mask, idx):
             arr, rows = X
             order = idx.numpy() if torch.is_tensor(idx) else idx
-            xb = (np.asarray(arr[rows[order]], dtype=np.float32) - mu) / sigma
+            xb, mb = (arr.pad(rows[order]) if mask is None
+                      else (arr[rows[order]], mask[order]))
+            xb = (np.asarray(xb, dtype=np.float32) - mu) / sigma
             return (torch.from_numpy(xb).to(device),
-                    torch.from_numpy(mask[order].astype(np.uint8)).to(device))
+                    torch.from_numpy(mb.astype(np.uint8)).to(device))
         in_dim = ENC.hidden_of(args.encoder)
     else:
         in_dim = Xtr.shape[1]
@@ -603,7 +607,8 @@ def run(args: argparse.Namespace) -> dict:
     (out_dir / "env.json").write_text(json.dumps(env, indent=2), encoding="utf-8")
     (out_dir / "metrics.json").write_text(json.dumps({
         "run_id": run_id, "task": args.task, "model": arch,
-        "pooling": "none (token-level)" if is_rnn else "masked_mean",
+        "pooling": ("none (token-level" + (", chunked)" if args.chunked else ")")
+                    if is_rnn else "masked_mean"),
         "eval": args.eval, "best_epoch": best_epoch, "epochs_run": epoch,
         "stopped_by": stopped_by,
         "seconds": seconds, "metrics": best_metrics, "per_class": per_class,
