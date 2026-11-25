@@ -41,6 +41,10 @@ def main() -> None:
         add = extra_text(df)
         df["requirements_masked"] = [f"{r} . {a}" if a else r
                                      for r, a in zip(df["requirements_masked"], add)]
+        # PhoBERT đọc cột đã tách từ, nên đoạn thêm cũng phải được tách từ.
+        add_seg = V.segment_many(add.tolist())
+        df["requirements_masked_seg"] = [f"{r} . {a}" if a else r
+                                         for r, a in zip(df["requirements_masked_seg"], add_seg)]
         df.to_csv(OUT / f"{split}.csv", index=False)
         print(f"{split}: {len(df):,} dòng · {(add != '').mean() * 100:.1f}% có đoạn thêm")
 

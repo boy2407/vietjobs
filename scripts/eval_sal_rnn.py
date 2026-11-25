@@ -80,7 +80,18 @@ def main(run_id: str) -> None:
     if not ok:
         sys.exit(1)
 
-    df_test, df_ext = load_data()
+    if C.SPLIT_TAG == "splits-r6text":
+        # T22 R6: test giữ nguyên trên đĩa; đoạn sáu trường được dựng trong bộ nhớ như lúc train.
+        # Không chấm ext37k: tập đó không có sáu trường.
+        from build_r6text_split import extra_text
+        from vietjobs import vitext as V
+        df_test, df_ext = D.load_split("test", C.PROCESSED_DIR / "splits"), None
+        add = extra_text(df_test)
+        add_seg = V.segment_many(add.tolist())
+        for col, extra in (("requirements_masked", add.tolist()), ("requirements_masked_seg", add_seg)):
+            df_test[col] = [f"{r} . {a}" if a else r for r, a in zip(df_test[col], extra)]
+    else:
+        df_test, df_ext = load_data()
     k = keep_sal(df_test)
     res_test = sal_metrics(df_test.loc[k, "salary_mid"].to_numpy(float),
                            predict_log(model, df_test[k], enc, max_len, layers, mu, sigma, device))
@@ -88,6 +99,10 @@ def main(run_id: str) -> None:
         "run_id": run_id, "eval": "test", "n_test": int(k.sum()), "metrics_sal": res_test,
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 
+    if df_ext is None:
+        print(f"{run_id} TEST MAE={res_test['mae_trieu']:.3f} RMSE={res_test['rmse_trieu']:.3f} "
+              f"R2log={res_test['r2_log']:.4f}")
+        return
     res_ext = sal_metrics(df_ext["salary_mid"].to_numpy(float),
                           predict_log(model, df_ext, enc, max_len, layers, mu, sigma, device))
     (run_dir / "external_37k").mkdir(exist_ok=True)
