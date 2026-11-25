@@ -35,3 +35,14 @@ _Avoid_: tin trùng, leak (without qualification)
 The dev or test split with its near-duplicate postings left out, used only to measure how much
 they shift a score.
 _Avoid_: clean test, filtered test (test itself is never filtered)
+
+**Cắt bỏ** (truncation):
+Reading only the first tokens of a posting, up to the encoder's length limit, and discarding
+the rest.
+_Avoid_: cắt (without qualification), truncate
+
+**Cắt đoạn** (chunking):
+Splitting a posting that is longer than the encoder's length limit into consecutive,
+non-overlapping pieces so that every token of the posting is read; a posting that fits in one
+piece is read exactly as under cắt bỏ.
+_Avoid_: cắt trượt, sliding window (the pieces do not overlap)
