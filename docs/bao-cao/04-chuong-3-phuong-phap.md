@@ -272,6 +272,13 @@ CafeBERT nhận 512 token; với tokenizer của CafeBERT, chỉ 5,7 % tin trong
 trong train bị cắt. Đây là một trong những lý do CafeBERT được xem xét thay cho PhoBERT ở
 Chương 5.
 
+Trên lược đồ chia v3 `splits-sal17-11c` (T23), văn bản dài hơn vì 8 trường thêm được nối vào
+`requirements_masked`: trung vị 292 token PhoBERT trên train. Ở 256 token, PhoBERT cắt 67,4 %
+số tin và mất 21,4 % tổng số token; các encoder 512 token mất khoảng 5 % token; BamiBERT 1024
+token mất 0,10 % (Bảng 4.21).
+
+> **Nguồn số liệu:** `logs/t23-truncation.txt` (train 21.801 tin, đo bằng tokenizer của từng encoder).
+
 ![Độ dài token](../figures/eda/eda-07-do-dai-token.png)
 
 **Hình 3.4: Phân bố độ dài chuỗi sau khi tách bằng tokenizer PhoBERT**

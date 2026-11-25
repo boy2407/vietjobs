@@ -430,6 +430,44 @@ khác nhau, nên §4.4 dùng lần chạy `cpu` cho nhất quán.
 > `data/eda_xlsx/ket_qua_chay.xlsx` sheet `00_Runs` (cột `device`), và
 > AGENTS.md Rule 13 điều 5.
 
+
+### 4.3.3. T23 — phân loại trên lược đồ chia v3 `splits-sal17-11c` (Dense, MTL Dense)
+
+Lược đồ v3 dùng một bộ dữ liệu khác hẳn các mục trên, nên số ở mục này **không so được** với Bảng 4.5–4.20. Mục này chỉ so các encoder và các cấu trúc với nhau, trên cùng `dev`.
+
+**Hồ sơ lần chạy (Quy tắc 10).**
+1. *Đã chạy:* T23.2–T23.5, ngày 25/11/2026. Lệnh `powershell -ExecutionPolicy Bypass -File scripts\run_t23_windows.ps1 pooled dense` trên máy desktop Windows 11 (Ryzen 7 7800X3D, RTX 5060 8 GB), môi trường `.venv-dl` Python 3.12, torch 2.11.0+cu128, transformers 4.46.3. Encode trên `cuda` (09:18–09:59), huấn luyện trên `cpu` (09:59–10:22). Đọc `train` và `dev`, chấm `dev` (2.422 tin). `run_id`: `dl-cat-{enc}-dense-sal17-s{42..46}` và `dl-mtl-{enc}-dense-sal17-s{42..46}`.
+2. *Mô hình:* encoder đóng băng, vectơ trung bình 4 lớp cuối (`last4`) rồi gộp trung bình theo token; Dense hidden 256 (§3.7). AdamW lr 3e-4, weight decay 0,01, dropout 0,3, batch 256, tối đa 80 epoch, `patience` 12; mọi run dừng sớm theo `patience`. Hàm mất mát: CE với trọng số lớp *effective number* β 0,999 và label smoothing 0,05. MTL Dense dùng trunk chung (§3.7.4), α = 5. 5 seed (42–46) mỗi encoder.
+3. *Xử lý dữ liệu:* lược đồ v3 lấy 47.707 tin sau khử trùng, loại 5.220 tin xung đột nhãn trên 17 cột, giữ 30.279 tin có công bố lương, rồi chia 8:2 → 9:1 với seed 20260826: train 21.801 / dev 2.422 / test 6.056. Cả hai bài đọc họ cột `masked` (Quy tắc 3); văn bản là 3 cột gốc với 8 trường thêm nối vào `requirements_masked`.
+4. *Xử lý tiếng Việt:* các bước như §3.3. PhoBERT đọc văn bản đã tách từ, 256 token; CafeBERT, XLM-R, ViSoBERT đọc văn bản chưa tách từ, 512 token; BamiBERT 1024 token. Phần bị cắt ở Bảng 4.21.
+5. *Phân tích tiền xử lý và mốc:* ⛔ **CHƯA CÓ SỐ LIỆU** (T23): mốc không mô hình trên lược đồ v3.
+
+**Bảng 4.21: Phần bị cắt theo encoder (train 21.801 tin, lược đồ v3)**
+
+| Encoder | Độ dài tối đa | Tin bị cắt | Token bị mất |
+|---|---|---|---|
+| PhoBERT | 256 | 67,4 % | 21,4 % |
+| CafeBERT | 512 | 18,7 % | 5,2 % |
+| XLM-R | 512 | 18,7 % | 5,2 % |
+| ViSoBERT | 512 | 17,3 % | 5,0 % |
+| BamiBERT | 1024 | 0,24 % | 0,10 % |
+
+**Bảng 4.22: Phân loại trên `dev` lược đồ v3, trung bình ± độ lệch chuẩn mẫu trên 5 seed**
+
+| Encoder | Dense F1-macro | Dense F1-macro bỏ lớp "nhóm nghề khác" | MTL Dense F1-macro |
+|---|---|---|---|
+| PhoBERT | 0,6182 ± 0,0067 | 0,6538 ± 0,0042 | 0,6116 ± 0,0021 |
+| CafeBERT | **0,6231 ± 0,0047** | **0,6581 ± 0,0025** | **0,6248 ± 0,0033** |
+| XLM-R | 0,6159 ± 0,0038 | 0,6510 ± 0,0042 | 0,6092 ± 0,0070 |
+| ViSoBERT | 0,5795 ± 0,0064 | 0,6099 ± 0,0075 | 0,5818 ± 0,0054 |
+| BamiBERT | 0,6149 ± 0,0033 | 0,6500 ± 0,0034 | 0,6066 ± 0,0069 |
+
+CafeBERT cao nhất ở cả Dense và MTL Dense. PhoBERT, XLM-R và BamiBERT cách CafeBERT 0,007–0,008 F1-macro ở Dense, tức khoảng 1–2 lần độ lệch chuẩn giữa seed. ViSoBERT thấp hơn rõ, khoảng 0,04, nhưng không sụp đổ. Với PhoBERT, 8 trường thêm nằm ở cuối chuỗi, đúng phần bị cắt (Bảng 4.21).
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T23.6, T23.6b): `test` và `ext37k` của các run trên.
+
+> **Nguồn số liệu:** `artifacts/dl-{cat,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17-s{42..46}/metrics.json`, `env.json`; các dòng `*-dense-sal17-*` trong [04-results.md](../04-results.md); Bảng 4.21: `artifacts/embeddings/splits-sal17-11c/*-train-masked-len*-last4.json` (`truncated_frac`) và `logs/t23-truncation.txt`.
+
 ---
 
 ## 4.4. Kết quả bài toán ước lượng mức lương
@@ -685,6 +723,27 @@ Run `dl-mtl-caf-rnn-b01-cw-s42-v2`: huấn luyện và chấm trên cùng một 
 **Điều kiện chấm.** Mỗi run được huấn luyện và chấm trên cùng một máy; trước khi chấm `test`, `scripts/check_mtl_dev.py` chấm lại `dev` bằng đúng đường chấm và so với `metrics.json` (cả năm MTL Dense khớp tuyệt đối). Một lần chấm đầu ở máy khác máy huấn luyện cho `test` cao hơn `dev` ở mọi mô hình Dense (khoảng 0,03–0,09 macro-F1), tức vectơ lúc chấm không trùng vectơ lúc huấn luyện; các số đó bị loại. Số `test` là test-informed theo ngoại lệ 2026-10-15 của Quy tắc 5.
 
 > **Nguồn số liệu:** `artifacts/dl-mtl-{pho,caf,vis,xlm,bam}-dense-last4-cw-s42{,-v2}/`, `artifacts/dl-sal-{pho,cafe,visobert,xlmr,bamibert}-dense-last4-b01-cw-s{42..46}-v2/`, `artifacts/dl-mtl-{pho,caf,vis}-rnn-b01-cw-s42/`, `artifacts/dl-mtl-caf-rnn-b01-cw-s42-v2/` (`metrics.json`, `metrics_test.json`, `external_37k/metrics.json`); các dòng `-v2` trong [04-results.md](../04-results.md).
+
+
+### 4.4.6. T23 — ước lượng lương trên lược đồ chia v3 `splits-sal17-11c` (Dense, MTL Dense)
+
+Cùng đợt chạy, cùng dữ liệu và cùng xử lý tiếng Việt như §4.3.3 (mục 1, 3, 4 của hồ sơ lần chạy). Khác ở mô hình: Dense lương dùng SmoothL1 β 0,1 với `--class-weight` như §4.4.5, cùng bộ siêu tham số chung; `run_id` `dl-sal-{enc}-dense-sal17-s{42..46}`. MTL Dense là cùng 25 run ở Bảng 4.22, đọc phần lương. Mốc không mô hình trên lược đồ v3: ⛔ **CHƯA CÓ SỐ LIỆU** (T23).
+
+**Bảng 4.23: Ước lượng lương trên `dev` lược đồ v3, trung bình ± độ lệch chuẩn mẫu trên 5 seed**
+
+| Encoder | Dense MAE (triệu) | Dense RMSE (triệu) | Dense R² log | MTL Dense MAE (triệu) | MTL Dense R² log |
+|---|---|---|---|---|---|
+| PhoBERT | 4,146 ± 0,031 | 8,031 ± 0,105 | 0,549 ± 0,006 | 4,115 ± 0,032 | 0,560 ± 0,008 |
+| CafeBERT | **4,122 ± 0,014** | 8,120 ± 0,057 | **0,555 ± 0,009** | **4,092 ± 0,017** | **0,568 ± 0,008** |
+| XLM-R | 4,138 ± 0,028 | 8,209 ± 0,034 | 0,547 ± 0,003 | 4,158 ± 0,009 | 0,548 ± 0,006 |
+| ViSoBERT | 4,529 ± 0,035 | 8,513 ± 0,088 | 0,458 ± 0,011 | 4,531 ± 0,055 | 0,458 ± 0,004 |
+| BamiBERT | 4,159 ± 0,034 | 8,109 ± 0,133 | 0,550 ± 0,011 | 4,171 ± 0,022 | 0,547 ± 0,006 |
+
+Bốn encoder PhoBERT, CafeBERT, XLM-R, BamiBERT có MAE trong khoảng 4,12–4,16 triệu, chênh nhau cỡ độ lệch chuẩn giữa seed. RMSE thấp nhất thuộc về PhoBERT (8,031). ViSoBERT kém rõ, MAE cao hơn khoảng 0,4 triệu. Đa nhiệm giảm MAE so với Dense đơn nhiệm ở PhoBERT (4,146 → 4,115) và CafeBERT (4,122 → 4,092), nhưng tăng ở XLM-R và BamiBERT.
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T23.6, T23.6b): `test` và `ext37k` của các run trên.
+
+> **Nguồn số liệu:** `artifacts/dl-{sal,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17-s{42..46}/metrics.json`; các dòng `*-dense-sal17-*` trong [04-results.md](../04-results.md).
 
 ## 4.5. Phân tích lỗi
 
