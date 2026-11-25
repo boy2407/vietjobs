@@ -221,6 +221,10 @@ Created 2026-10-15 at the author's request. No re-encoding: reads the existing c
 
 Sheet: **[tasks/T22-cot-moi-loc-xung-dot.md](tasks/T22-cot-moi-loc-xung-dot.md)** — rows T22.0–T22.7, status kept there. Created 2026-11-23 at the author's request (grilling session). CafeBERT 512 + Dense, `cpu`, seeds 42–44, `dev` salary-disclosed rows only, `test` not read. Dependencies: T22.1 needs T22.0's encoder code; T22.2–T22.5 need T22.0 and T22.1; T22.6 needs T22.2–T22.5.
 
+### T23 — split scheme v3 `splits-sal17-11c` and retraining on it
+
+Sheets: **[tasks/T23-split-sal17.md](tasks/T23-split-sal17.md)** (the split, done) and **[tasks/T23-train-lai.md](tasks/T23-train-lai.md)** (90 runs: Dense, MTL Dense × 5 encoders × 5 seeds; RNN, MTL RNN × 5 encoders × 1 seed; one shared hyper-parameter set; every model scored on `test` and ext37k; one vast rental ≤ 15 USD; rows T23.0–T23.11b). Status kept there. Created 2026-11-24 (grilling session). Split exception: AGENTS.md Rule 5 item 7.
+
 ## 3. Rules that bind every task
 
 1. `SPLIT_SEED = 20260826` and the split fractions never change.
@@ -329,3 +333,4 @@ Sheet: **[tasks/T22-cot-moi-loc-xung-dot.md](tasks/T22-cot-moi-loc-xung-dot.md)*
 | 2026-10-17 | Claude | Added T14.1–T14.12 (user stories US1–US12, all `todo`) as sheet `tasks/T14-nhieu-nhan-va-van-ban.md` with the group A plan; created `tasks/README.md`. Docs only, no code, no runs |
 | 2026-10-17 | Claude | Ran T2.6–T2.8 (main session, author's "thực hiện toàn bộ"). T2.6: cause found in `group_stratified_split` (largest groups first → `train`), numbers in the T2.6 row. T2.7: top-1-in-set computed post-hoc from `predictions_dev.parquet`. T2.8: `--soft-target` + `group_soft_targets` in `train_dl.py`, 3 runs `dl-cat-soft-cpu-s43..45` (`.venv-dl`, cpu, PhoBERT Dense h=256, eval=dev) — no improvement. `export_runs.py` regenerated. docs/00, 01, 06, 08, bao-cao ch.3 §3.5.2 and ch.4 §4.3.1 updated; detail in `tasks/user-stories/`. `pytest -q` 198 passed, 2 skipped. |
 | 2026-11-23 | Claude | Opened T22 (sheet `tasks/T22-cot-moi-loc-xung-dot.md`) after the author approved the R0–R4 plan: disclosed-only train/dev, train-only conflict filter, extra columns, oversampling. Nothing run yet |
+| 2026-11-24 | Claude | Split T23 retraining into rows T23.0–T23.11b (`tasks/T23-train-lai.md`) at the author's request (tach-task): Dense structures 5 seeds, RNN structures 1 seed, one shared hyper-parameter set so structures compare, every trained model scored on `test` and ext37k. Code first, cheap cpu Dense before the GPU token-cache stage, with a 15 USD cost check before T23.7 |

@@ -180,6 +180,13 @@ There is **no inference entry point right now** — T5.1 owns adding one.
    purpose; the smallest class has 25 rows there, so read `f1_macro_no_junk`
    next to any per-class number and confirm on `test` at the end.
 6. **2026-10-15 exception (author):** every configuration on the results dashboard may be scored once on `test` from its saved `best.pt`, without retraining. These numbers are recorded as test-informed and are not used to claim a held-out final result.
+7. **2026-11-24 exception (author), split scheme v3:** `data/processed/splits-sal17-11c`
+   re-splits the whole corpus (salary-disclosed rows only, 17-column label conflicts
+   removed first; same seed and 8:2 → 9:1 fractions), so its `test` has **6,056 rows**.
+   Both tasks read this one set (`masked` family, 11 columns joined). It is selected with
+   `VIETJOBS_SPLITS`; `data/processed/splits/` and its 9,541-row `test` stay untouched.
+   Numbers on v3 are never compared with rows measured on `splits/`. See
+   `tasks/T23-split-sal17.md` and `tasks/T23-train-lai.md`.
 
 ## Rule 6 — language is per file, not per repository
 

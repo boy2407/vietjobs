@@ -15,3 +15,5 @@ own rows, status and log; status is authoritative **in the sheet**.
 | T20 | Viết lại báo cáo theo mẫu KLTN UIT, chốt CafeBERT, xuất LaTeX ([sheet](T20-bao-cao-theo-mau-uit.md)) | doing | Claude (main session) | 2026-11-05 |
 | T21 | Trùng gần test↔train mà `group_key` bỏ sót: đo, ghi báo cáo, quyết cách xử lý ([sheet](T21-trung-gan-test-train.md)) | done | Claude (main session) | 2026-11-22 |
 | T22 | Salary-disclosed train, conflict filter, extra columns, oversampling — CafeBERT Dense R0–R4 ([sheet](T22-cot-moi-loc-xung-dot.md)) | doing | Claude (main session) | 2026-11-23 |
+| T23 | Split `splits-sal17`: tin có lương, bỏ trùng 17 cột khác nhãn, chia lại 8:2→9:1 ([sheet](T23-split-sal17.md)) | doing | Claude (main session) | 2026-11-24 |
+| T23-train | Retrain 6 structures × 5 encoders on `splits-sal17-11c` (90 runs, Dense 5 seeds, shared hyper-parameters, test + ext37k), one vast rental ≤ 15 USD ([sheet](T23-train-lai.md)) | todo (author rents rental 28) | Claude (main session) | 2026-11-24 |
