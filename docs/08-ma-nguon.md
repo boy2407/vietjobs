@@ -2,9 +2,8 @@
 
 # Mã nguồn
 
-11 mô-đun trong `src/vietjobs/` (không tính `__init__.py`) · 2.942 dòng · 211 kiểm thử (209 chạy, 2 bỏ qua; đo 2026-10-17)
-(165 chạy ở `.venv`, 2 kiểm thử chạy hết vòng huấn luyện cần `transformers` nên chỉ chạy ở
-`.venv-dl`, nơi 29 kiểm thử có torch đều xanh).
+13 mô-đun trong `src/vietjobs/` (không tính `__init__.py`) · 4.169 dòng · 208 kiểm thử ở `.venv`
+(204 chạy, 6 bỏ qua vì cần torch; đo 2026-11-25). Các kiểm thử cần torch chạy ở `.venv-dl`.
 Nhánh chính là gói [`dl/`](../src/vietjobs/dl/).
 
 ---
@@ -51,10 +50,10 @@ flowchart LR
 | [`evaluate.py`](../src/vietjobs/evaluate.py) | 252 | Chỉ số cho cả ba tác vụ + bootstrap và so sánh theo cặp (paired comparison). Mọi lần chạy dùng chung nên các con số so sánh được với nhau | [03](03-protocol.md) |
 | [`config.py`](../src/vietjobs/config.py) | 85 | Đường dẫn · `SPLIT_SEED` · nhóm cột · tên tác vụ | — |
 | **[`dl/text.py`](../src/vietjobs/dl/text.py)** | 40 | Ghép ba trường văn bản thành đầu vào cho PhoBERT. Không phụ thuộc torch nên kiểm thử của nó chạy được trên mọi máy | [06](06-baseline-dl.md) |
-| **[`dl/encode.py`](../src/vietjobs/dl/encode.py)** | 376 | PhoBERT đông cứng, hai mức cache theo họ cột `raw`/`masked` (`--family masked`: mọi bài đọc `*_masked`, chung cache với `salary`, T23.0): `--pooling mean` → `[n, 768]` float32; `--pooling none` → `[n, 256, 768]` float16 memmap + mặt nạ, ghi tăng dần (T8.1). Sidecar `.json` ghi tokenizer/`max_len`/cột nguồn/pooling · `sidecar_of` và `check_same_rows` kiểm thứ tự hàng khi ghép hai cache (T12.1) | [06](06-baseline-dl.md) |
+| **[`dl/encode.py`](../src/vietjobs/dl/encode.py)** | 426 | PhoBERT đông cứng, hai mức cache theo họ cột `raw`/`masked` (`--family masked`: mọi bài đọc `*_masked`, chung cache với `salary`, T23.0): `--pooling mean` → `[n, 768]` float32; `--pooling none` → `[n, 256, 768]` float16 memmap + mặt nạ, ghi tăng dần (T8.1); `--chunked`: tin dài hơn `max_len` chia thành đoạn liền nhau rồi lấy trung bình mọi token thay vì cắt bỏ, cache `…-chunk.npy` (T23.5c). Sidecar `.json` ghi tokenizer/`max_len`/cột nguồn/pooling · `sidecar_of` và `check_same_rows` kiểm thứ tự hàng khi ghép hai cache (T12.1) | [06](06-baseline-dl.md) |
 | **[`dl/heads.py`](../src/vietjobs/dl/heads.py)** | 171 | `MultiTaskHead`, `MultiTaskRnn` (T4.1: thân `BiGruLstmCnn.features` dùng chung, hai đầu), `DenseHead` in_dim → [pre_hidden] → h → h/2 → out (`pre_hidden` T8.10), và `BiGruLstmCnn` (T8.2): SpatialDropout → Bi-GRU ‖ Bi-LSTM → Conv1d → avg/max pool có mặt nạ → dense; `pack_padded_sequence` nên đầu ra bất biến với pad | [06](06-baseline-dl.md) |
-| **[`dl/train_dl.py`](../src/vietjobs/dl/train_dl.py)** | 680 | `run(args)` = một lượt chạy = một dòng trong [04-results.md](04-results.md) + `history.jsonl`; `--head {dense,rnn}` đọc cache gộp hay memmap token theo batch; `--max-minutes` trần thời gian (ghi `stopped_by`); `--conv-channels`, `--branches` cho T8.5; `--concat-encoder` nối vectơ cache của encoder thứ hai cho head dense (T12.1, mặc định tắt); `--family masked` cho `category` đọc cache `masked`, nhãn vẫn là ngành (T23.0, mặc định giữ họ cũ) | [03](03-protocol.md) · [06](06-baseline-dl.md) |
-| **[`dl/train_mtl.py`](../src/vietjobs/dl/train_mtl.py)** | 323 | T4.1: một trunk, hai đầu (`MultiTaskHead` dense hoặc `MultiTaskRnn` với `--head rnn`), đọc họ `masked`. Loss `CE + α·SmoothL1` (`--alpha-sal`), phần lương chỉ trên tin có lương; ghi riêng `train_loss_cat`/`train_loss_sal`; mỗi bài một best epoch (`best.pt`, `best_sal.pt`) | [06 §5.7](06-baseline-dl.md#57-t41--đa-nhiệm-trunk-dense-2026-10-02) |
+| **[`dl/train_dl.py`](../src/vietjobs/dl/train_dl.py)** | 685 | `run(args)` = một lượt chạy = một dòng trong [04-results.md](04-results.md) + `history.jsonl`; `--head {dense,rnn}` đọc cache gộp hay memmap token theo batch; `--max-minutes` trần thời gian (ghi `stopped_by`); `--conv-channels`, `--branches` cho T8.5; `--concat-encoder` nối vectơ cache của encoder thứ hai cho head dense (T12.1, mặc định tắt); `--family masked` cho `category` đọc cache `masked`, nhãn vẫn là ngành (T23.0, mặc định giữ họ cũ) | [03](03-protocol.md) · [06](06-baseline-dl.md) |
+| **[`dl/train_mtl.py`](../src/vietjobs/dl/train_mtl.py)** | 403 | T4.1: một trunk, hai đầu (`MultiTaskHead` dense hoặc `MultiTaskRnn` với `--head rnn`), đọc họ `masked`. Loss `CE + α·SmoothL1` (`--alpha-sal`), phần lương chỉ trên tin có lương; ghi riêng `train_loss_cat`/`train_loss_sal`; mỗi bài một best epoch (`best.pt`, `best_sal.pt`) | [06 §5.7](06-baseline-dl.md#57-t41--đa-nhiệm-trunk-dense-2026-10-02) |
 | [`notebooks/colab_setup.py`](../notebooks/colab_setup.py) | 164 | Khôi phục splits + cache nhỏ từ Google Drive cho một phiên Colab, encode lại train token của họ cần dùng, chạy cổng test. Ba notebook `T8_3_category` / `T8_4_salary` / `T8_5_ablation.ipynb` gọi chung nó | memory `colab-drive-paths` |
 | [`external.py`](../src/vietjobs/external.py) | 549 | VietJobs-37K làm tập ngoài: tách `[TITLE]/[REQ]/[DESC]` về ba cột của ta, ánh xạ 60 → 16 (`apply_crosswalk`), bắt tin trùng với ba tập chia bằng băm chính xác **hoặc** cùng tiêu đề + Jaccard ≥ 0,5 (`overlap_mask`), quy ước lenient. Đọc lương bạc từ văn bản: `extract_salary` (mỏ neo từ lương hoặc tiêu đề mục → con số cùng câu), `audit_salary` xếp mọi tin vào một nhóm phủ, `salary_note`, `salary_rule`, `template_ids`. Không phụ thuộc torch | [10](10-danh-gia-ngoai.md) |
 | [`scripts/eval_external.py`](../scripts/eval_external.py) | 199 | Chấm một run `category` trên VietJobs-37K: khử trùng → ánh xạ → mã hóa PhoBERT (cache `ext37k-*`) → nạp `best.pt` + `scaler.npz` → strict/lenient + bootstrap → một dòng [04-results.md](04-results.md) mỗi tập | [10](10-danh-gia-ngoai.md) |
@@ -85,7 +84,7 @@ Quy tắc 4 trong [../AGENTS.md](../AGENTS.md).
 
 ## Kiểm thử
 
-231 kiểm thử, đếm bằng `pytest --collect-only -q`:
+208 kiểm thử ở `.venv`, đếm bằng `pytest --collect-only -q` (2026-11-25):
 
 | Tệp | Số kiểm thử | Giữ điều gì |
 |---|---|---|
@@ -96,6 +95,7 @@ Quy tắc 4 trong [../AGENTS.md](../AGENTS.md).
 | [`tests/test_bootstrap.py`](../tests/test_bootstrap.py) | 9 | Bootstrap tất định khi biết trước seed; hai mô hình giống hệt nhau hòa ở mức 0,5; so sánh theo cặp nhạy hơn so với σ độc lập; F1 theo từng mẫu của arXiv:2112.11052 bằng đúng accuracy khi đơn nhãn |
 | [`tests/test_dl_concat.py`](../tests/test_dl_concat.py) | 5 | Nối hai cache (T12.1): sidecar khớp thì qua; lệch số dòng, lệch họ `raw`/`masked` hoặc thiếu sidecar thì từ chối; cache PhoBERT pooled cũ đọc sidecar của cache token |
 | [`tests/test_dl_family.py`](../tests/test_dl_family.py) | 4 | `--family masked` (T23.0): mặc định giữ họ `raw` cho `category`; bật cờ thì `category` dùng đúng cache và cột `*_masked` của `salary`, nhãn vẫn là ngành — kiểm thử `load_task` skip khi thiếu torch |
+| [`tests/test_dl_chunk.py`](../tests/test_dl_chunk.py) | 4 | `--chunked` (T23.5c): các đoạn phủ mỗi token đúng một lần; cache có tên riêng; tin vừa một đoạn cho đúng vector cắt bỏ; tin dài lấy trung bình mọi token của mọi đoạn — hai kiểm thử sau cần torch |
 | [`tests/test_dl_encode.py`](../tests/test_dl_encode.py) | 13 | Cache token (T8.1): trung bình có mặt nạ của `[n, 256, 768]` bằng cache gộp (tol 1e-2), shape khớp `manifest.json`, pad ghi 0, sidecar ghi `pooling: none` — skip theo từng tổ hợp train/dev × raw/masked còn thiếu |
 | [`tests/test_dl_heads.py`](../tests/test_dl_heads.py) | 21 | `FocalLoss`; `DenseHead` giữ khoá state_dict cũ khi `pre_hidden=0` và dựng đúng 1024→512→256→128→16 khi bật; `BiGruLstmCnn` (T8.2): shape cho cả hai bài × ba cấu hình nhánh, **bất biến với pad**, max-pool không đọc pad, số tham số theo nhánh; **hai kiểm thử chạy hết `run()`** — một epoch Dense trọn vẹn và `--max-minutes` cắt đúng chỗ (cần torch + transformers, chạy ở `.venv-dl`) |
 
