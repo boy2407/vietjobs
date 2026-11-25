@@ -543,3 +543,36 @@ Ba run còn lại cùng cấu hình `-v2` (một seed, `cuda`). XLM-R chạy l�
 **Một lần chấm bị loại.** Lần chấm đầu của `eval_mtl_all.py` và `eval_dense_all.py` trên một máy khác máy huấn luyện cho `test` cao hơn `dev` ở mọi mô hình Dense (khoảng 0,03–0,09 macro-F1), tức vector lúc chấm không trùng vector lúc huấn luyện; các số đó bị loại, không dùng ở bất cứ bảng nào. Cách khắc phục là huấn luyện lại và chấm trên cùng một máy, kèm cổng `check_mtl_dev.py` như trên.
 
 > **Nguồn số liệu:** `artifacts/dl-mtl-{pho,caf,vis,xlm,bam}-dense-last4-cw-s42{,-v2}/{metrics.json,metrics_test.json,external_37k/metrics.json}`; `artifacts/dl-sal-{pho,cafe,visobert,xlmr,bamibert}-dense-last4-b01-cw-s{42..46}-v2/` (cùng ba file); `artifacts/dl-mtl-{pho,caf,vis}-rnn-b01-cw-s42/`, `artifacts/dl-mtl-{caf,pho,xlm,vis,bam}-rnn-b01-cw-s42-v2/` (`metrics.json`, `metrics_test.json`, `external_37k/metrics.json`); các dòng `*-v2` trong [04-results.md](04-results.md); `logs/vast-dot20/` (log huấn luyện và chấm).
+
+### 5.10 T23 — sáu cấu trúc trên lược đồ chia v3 `splits-sal17-11c`, phần Dense (2026-11-25)
+
+**Dữ liệu khác hẳn các mục trên.** Lược đồ v3 (AGENTS.md Rule 5 mục 7) chỉ giữ tin có công bố lương, loại xung đột nhãn trên 17 cột trước khi chia, rồi chia 8:2 → 9:1 với seed 20260826: train 21.801 / dev 2.422 / test 6.056. Văn bản là 3 cột `*_masked` gốc, với 8 trường thêm nối vào `requirements_masked`. Cả hai bài đọc họ `masked` (`category` qua `--family masked`). Không so được số ở mục này với bất kỳ mục nào ở trên, vì `dev` và `test` đều khác.
+
+**Cấu hình chung cho cả 6 cấu trúc.** `last4`, lr 3e-4, weight decay 0,01, dropout 0,3, tối đa 80 epoch, `patience` 12, Dense hidden 256. Phân lớp: CE + trọng số lớp *effective number* β 0,999 + label smoothing 0,05. Lương: SmoothL1 β 0,1 + `--class-weight`. Đa nhiệm: α = 5. Dense chạy 5 seed (42–46) trên `cpu`, trên máy desktop Windows (Python 3.12, torch 2.11.0+cu128, numpy 2.5.5, pandas 3.1.1, scikit-learn 1.9.1). Mọi run đều dừng sớm theo `patience`.
+
+**Độ dài tối đa và phần bị cắt** (train, đo bằng đúng tokenizer của `encode.py`):
+
+| Encoder | max_len | Tin bị cắt | Token bị mất | Token/tin trung vị |
+|---|---|---|---|---|
+| PhoBERT | 256 | 67,4 % | 21,4 % | 292 |
+| CafeBERT | 512 | 18,7 % | 5,2 % | 392 |
+| XLM-R | 512 | 18,7 % | 5,2 % | 392 |
+| ViSoBERT | 512 | 17,3 % | 5,0 % | 380 |
+| BamiBERT | 1024 | 0,24 % | 0,10 % | 372 |
+
+**Kết quả trên `dev` (2.422 tin), trung bình ± độ lệch chuẩn mẫu trên 5 seed:**
+
+| Encoder | Dense ngành F1-macro | Dense lương MAE (triệu) | Dense lương R² log | MTL Dense F1-macro | MTL Dense MAE (triệu) | MTL Dense R² log |
+|---|---|---|---|---|---|---|
+| PhoBERT | 0,6182 ± 0,0067 | 4,146 ± 0,031 | 0,549 ± 0,006 | 0,6116 ± 0,0021 | 4,115 ± 0,032 | 0,560 ± 0,008 |
+| CafeBERT | **0,6231 ± 0,0047** | **4,122 ± 0,014** | **0,555 ± 0,009** | **0,6248 ± 0,0033** | **4,092 ± 0,017** | **0,568 ± 0,008** |
+| XLM-R | 0,6159 ± 0,0038 | 4,138 ± 0,028 | 0,547 ± 0,003 | 0,6092 ± 0,0070 | 4,158 ± 0,009 | 0,548 ± 0,006 |
+| ViSoBERT | 0,5795 ± 0,0064 | 4,529 ± 0,035 | 0,458 ± 0,011 | 0,5818 ± 0,0054 | 4,531 ± 0,055 | 0,458 ± 0,004 |
+| BamiBERT | 0,6149 ± 0,0033 | 4,159 ± 0,034 | 0,550 ± 0,011 | 0,6066 ± 0,0069 | 4,171 ± 0,022 | 0,547 ± 0,006 |
+
+**Đọc kết quả.** CafeBERT đứng đầu cả ba cấu trúc Dense. Khoảng cách giữa CafeBERT, PhoBERT, XLM-R và BamiBERT nhỏ, cùng cỡ độ lệch chuẩn giữa seed. ViSoBERT kém rõ ở cả hai bài: thấp hơn khoảng 0,04 F1-macro và cao hơn khoảng 0,4 triệu MAE. Lần này ViSoBERT không sụp đổ. Đa nhiệm cho MAE thấp hơn Dense lương đơn nhiệm ở PhoBERT và CafeBERT, nhưng chênh lệch chỉ khoảng 1–2 lần độ lệch chuẩn. Với PhoBERT, 8 trường thêm phần lớn rơi vào đoạn bị cắt, nên PhoBERT gần như không đọc được thông tin mới mà T23 thêm vào.
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T23.6, T23.6b): `test` và `ext37k` của 75 run Dense.
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T23): mốc không mô hình trên `splits-sal17-11c`.
+
+> **Nguồn số liệu:** `artifacts/dl-{cat,sal,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17-s{42..46}/metrics.json` và `env.json`; các dòng `*-dense-sal17-*` trong [04-results.md](04-results.md); phần bị cắt: `artifacts/embeddings/splits-sal17-11c/*-train-masked-len*-last4.json` (`truncated_frac`) và `logs/t23-truncation.txt` (đầu ra của `logs/measure_trunc.py`, train và dev, máy desktop, 2026-11-25).
