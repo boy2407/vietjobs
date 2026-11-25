@@ -65,14 +65,18 @@ def environment(device, encoder: str = ENC.DEFAULT_ENCODER) -> dict:
     }
 
 
-def load_mtl(split: str, max_len: int, encoder: str = ENC.DEFAULT_ENCODER, head: str = "dense", last4: bool = False):
+def load_mtl(split: str, max_len: int, encoder: str = ENC.DEFAULT_ENCODER, head: str = "dense", last4: bool = False,
+             chunked: bool = False):
     df = D.load_split(split)
     # Trunk reads 'masked' family (use task 'salary' to get masked cache).
     # head="rnn": X là memmap float16 [n, T, dim] chưa gộp, mask [n, T] uint8.
+    if chunked and head == "rnn":
+        raise SystemExit("--chunked chỉ có cho --head dense")
     if head == "rnn":
         X, mask = ENC.token_cache_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4)
     else:
-        X, mask = ENC.embeddings_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4), None
+        X, mask = ENC.embeddings_for(split, "salary", max_len=max_len, encoder=encoder, last4=last4,
+                                     chunked=chunked), None
     
     if len(X) != len(df):
         raise SystemExit(f"cache {split} có {len(X)} dòng nhưng split có {len(df)}")
@@ -103,6 +107,8 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--pre-hidden", type=int, default=0)
     ap.add_argument("--last4", action="store_true",
                     help="đọc cache gộp từ 4 tầng cuối (last4)")
+    ap.add_argument("--chunked", action="store_true",
+                    help="đọc cache chia đoạn thay vì cắt bỏ (encode --chunked)")
     ap.add_argument("--beta-sal", type=float, default=0.1,
                     help="ngưỡng chuyển đổi Huber (Smooth L1) cho bài salary; mặc định 0.1")
     ap.add_argument("--head", default="dense", choices=["dense", "rnn"],
@@ -152,8 +158,8 @@ def run(args: argparse.Namespace) -> dict:
     np.random.seed(args.seed)
     device = ENC.pick_device(args.device)
 
-    Xtr, mtr, y_cat_tr, y_sal_tr, df_tr, keep_sal_tr = load_mtl("train", args.max_len, args.encoder, args.head, last4=args.last4)
-    Xev, mev, y_cat_ev, y_sal_ev, df_ev, keep_sal_ev = load_mtl(args.eval, args.max_len, args.encoder, args.head, last4=args.last4)
+    Xtr, mtr, y_cat_tr, y_sal_tr, df_tr, keep_sal_tr = load_mtl("train", args.max_len, args.encoder, args.head, last4=args.last4, chunked=args.chunked)
+    Xev, mev, y_cat_ev, y_sal_ev, df_ev, keep_sal_ev = load_mtl(args.eval, args.max_len, args.encoder, args.head, last4=args.last4, chunked=args.chunked)
 
     n_train = len(y_cat_tr)
     labels = sorted(set(y_cat_tr.tolist()))

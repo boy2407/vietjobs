@@ -127,7 +127,8 @@ def compute_salary_bin_weights(y_log: np.ndarray, beta_eff: float = 0.999) -> np
 
 def load_task(split: str, task: str, max_len: int, head: str = "dense",
               encoder: str = ENC.DEFAULT_ENCODER, concat: tuple[str, int] | None = None,
-              layers: int = 1, last4: bool | None = None, family: str | None = None):
+              layers: int = 1, last4: bool | None = None, family: str | None = None,
+              chunked: bool = False):
     """Trả về ``(X, mask, y, frame)`` — frame giữ lại để cắt lát kết quả theo ngành.
 
     ``head="dense"``  → ``X`` là ma trận ``[n, 768]`` đã gộp, ``mask`` là ``None``.
@@ -140,12 +141,14 @@ def load_task(split: str, task: str, max_len: int, head: str = "dense",
         layers = 4
     df = D.load_split(split)
     ctask = ENC.cache_task(task, family)  # cột và cache; nhãn vẫn theo ``task``
+    if chunked and (head == "rnn" or concat is not None):
+        raise SystemExit("--chunked chỉ có cho --head dense, không --concat-encoder")
     if head == "rnn":
         X, mask = ENC.token_cache_for(split, ctask, max_len=max_len, encoder=encoder,
                                       layers=layers)
     else:
         X, mask = ENC.embeddings_for(split, ctask, max_len=max_len, encoder=encoder,
-                                     layers=layers), None
+                                     layers=layers, chunked=chunked), None
         if concat is not None:
             c_enc, c_len = concat
             ENC.check_same_rows(split, ctask, len(df), (encoder, max_len), (c_enc, c_len))
@@ -289,6 +292,8 @@ def build_parser() -> argparse.ArgumentParser:
                          "Hết giờ thì dừng và giữ best.pt tới lúc đó — dùng cho phiên Colab có cap")
     ap.add_argument("--last4", action="store_true",
                     help="đọc cache gộp từ 4 tầng cuối (last4)")
+    ap.add_argument("--chunked", action="store_true",
+                    help="đọc cache chia đoạn thay vì cắt bỏ (encode --chunked)")
     ap.add_argument("--beta-sal", type=float, default=1.0,
                     help="ngưỡng chuyển đổi Huber (Smooth L1) cho bài salary; mặc định 1.0")
     ap.add_argument("--class-weight", action="store_true",
@@ -383,9 +388,9 @@ def run(args: argparse.Namespace) -> dict:
     if getattr(args, "last4", False):
         args.layers = 4
     Xtr, mtr, ytr, tr_df = load_task("train", args.task, args.max_len, args.head, args.encoder,
-                                     concat, args.layers, family=args.family)
+                                     concat, args.layers, family=args.family, chunked=args.chunked)
     Xev, mev, yev, ev_df = load_task(args.eval, args.task, args.max_len, args.head, args.encoder,
-                                     concat, args.layers, family=args.family)
+                                     concat, args.layers, family=args.family, chunked=args.chunked)
     t22_stats = None
     if t22:
         Xtr, ytr, tr_df, Xev, yev, ev_df, t22_stats = t22_prepare(
