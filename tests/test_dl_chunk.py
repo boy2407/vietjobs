@@ -104,3 +104,27 @@ def test_chunked_token_cache_names():
     assert tok.name == "train-masked-len256-last4-chunk-tok.f16.npy"
     assert off.name == "train-masked-len256-last4-chunk-off.npy"
 
+
+def test_chunked_tokens_keep_every_chunk_in_order(fake, tmp_path):
+    flat_path, off_path = tmp_path / "t.npy", tmp_path / "o.npy"
+    ENC.encode_tokens_chunked(["abcdefghij", "xy"], flat_path, off_path, max_len=8, batch=2,
+                              quiet=True)
+    rag = ENC.RaggedTokens(np.load(flat_path, mmap_mode="r"), np.load(off_path))
+    x, m = rag.pad(np.array([0, 1]))
+    first = [1, *map(ord, "abcdef"), 2, 1, *map(ord, "ghij"), 2]
+    assert x[0, :, 0].tolist() == first and m[0].sum() == len(first)
+    assert x[1, :4, 0].tolist() == [1, ord("x"), ord("y"), 2] and m[1].sum() == 4
+    pooled = ENC.encode_texts(["abcdefghij"], max_len=8, batch=2, quiet=True, chunked=True)
+    assert x[0, :, 0].astype(np.float32).mean() == pytest.approx(pooled[0, 0], rel=1e-3)
+
+
+def test_token_stats_on_ragged_reads_only_real_tokens_of_the_rows():
+    pytest.importorskip("torch")
+    from vietjobs.dl.train_dl import token_stats
+
+    flat = np.arange(12, dtype=np.float16).reshape(6, 2)
+    rag = ENC.RaggedTokens(flat, np.array([0, 1, 4, 6]))
+    mu, sigma = token_stats(rag, np.array([0, 2]), None)
+    real = flat[[0, 4, 5]].astype(np.float32)               # tin 1 bị loại, pad không tính
+    np.testing.assert_allclose(mu[0, 0], real.mean(0))
+    np.testing.assert_allclose(sigma[0, 0], real.std(0), rtol=1e-5)

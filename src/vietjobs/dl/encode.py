@@ -306,6 +306,40 @@ def encode_tokens(texts, tok_out: np.memmap, mask_out: np.ndarray, *, max_len: i
     tok_out.flush()
 
 
+def encode_tokens_chunked(texts, flat_path: Path, off_path: Path, *, max_len: int = 256,
+                          batch: int = 32, device: str = "auto", quiet: bool = False,
+                          encoder: str = DEFAULT_ENCODER, layers: int = 1) -> int:
+    """Như ``encode_tokens`` nhưng không cắt bỏ: mỗi đoạn nhúng riêng, token của các đoạn
+    một tin nối thành một dãy (giữ token đặc biệt của từng đoạn, như ``_encode_chunked``
+    nên trung bình dãy bằng vector pooled chia đoạn). Trả về tổng số token đã ghi.
+    """
+    import torch
+
+    tok, model, dev = _load_model(device, encoder)
+    pieces, owner = _pieces(texts, tok, max_len)
+    lens = np.array([len(p) for p in pieces], dtype=np.int64)
+    start = np.concatenate([[0], np.cumsum(lens)])
+    off = np.zeros(len(texts) + 1, dtype=np.int64)
+    np.add.at(off, owner + 1, lens)
+    off = np.cumsum(off)
+    flat = np.lib.format.open_memmap(flat_path, mode="w+", dtype=np.float16,
+                                     shape=(int(start[-1]), hidden_of(encoder)))
+    t0 = time.time()
+    with torch.no_grad():
+        for i in range(0, len(pieces), batch):
+            enc = tok.pad({"input_ids": pieces[i:i + batch]}, return_tensors="pt").to(dev)
+            h = _hidden(model, enc, layers).to(torch.float16).cpu().numpy()
+            for j, p in enumerate(range(i, min(i + batch, len(pieces)))):
+                flat[start[p]:start[p + 1]] = h[j, :lens[p]]
+            _progress(i, len(pieces), batch, t0, quiet)
+    flat.flush()
+    del flat
+    np.save(off_path, off)
+    if not quiet:
+        print(f"  {len(pieces):,} đoạn · {int(start[-1]):,} token cho {len(texts):,} tin")
+    return int(start[-1])
+
+
 def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
                    device: str = "auto", force: bool = False,
                    encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False,
@@ -334,9 +368,13 @@ def embeddings_for(split: str, task: str, *, max_len: int = 256, batch: int = 32
 
 def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 32,
                     device: str = "auto", force: bool = False,
-                    encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False):
+                    encoder: str = DEFAULT_ENCODER, layers: int = 1, last4: bool = False,
+                    chunked: bool = False):
     if last4:
         layers = 4
+    if chunked:
+        return _ragged_cache_for(split, task, max_len=max_len, batch=batch, device=device,
+                                 force=force, encoder=encoder, layers=layers), None
     """Trả về ``(tok, mask)`` — ``tok`` là memmap chỉ-đọc float16 ``[n, max_len, 768]``,
     ``mask`` là mảng uint8 ``[n, max_len]`` nạp hẳn vào RAM (vài MB).
 
@@ -366,6 +404,26 @@ def token_cache_for(split: str, task: str, *, max_len: int = 256, batch: int = 3
                    encoder=encoder, texts=texts, layers=layers)
     print(f"  -> {tok_path}  ({len(texts):,}, {max_len}, {hidden}) float16 · mask {mask_path.name}")
     return np.load(tok_path, mmap_mode="r"), mask
+
+
+def _ragged_cache_for(split: str, task: str, *, max_len: int, batch: int, device: str,
+                      force: bool, encoder: str, layers: int) -> RaggedTokens:
+    """Cache token chia đoạn (T23): đọc nếu có, nếu chưa thì nhúng rồi ghi."""
+    tok_path = cache_path(split, task, max_len, "tok", encoder, layers, chunked=True)
+    off_path = cache_path(split, task, max_len, "off", encoder, layers, chunked=True)
+    if not (tok_path.exists() and off_path.exists()) or force:
+        df = D.load_split(split)
+        seg = ENCODERS[encoder]["segmented"]
+        texts = T.build_text(df, task=task, segmented=seg)
+        print(f"[{split}] {encoder} · {len(texts):,} tin · max_len={max_len} · token-level · chunked")
+        tok_path.parent.mkdir(parents=True, exist_ok=True)
+        n_tok = encode_tokens_chunked(texts, tok_path, off_path, max_len=max_len, batch=batch,
+                                      device=device, encoder=encoder, layers=layers)
+        _write_sidecar(tok_path, split=split, task=task, max_len=max_len, n=len(texts),
+                       pooling="none (chunked)", dtype="float16",
+                       shape=[n_tok, hidden_of(encoder)], encoder=encoder, texts=texts,
+                       layers=layers)
+    return RaggedTokens(np.load(tok_path, mmap_mode="r"), np.load(off_path))
 
 
 def _write_sidecar(path: Path, *, split: str, task: str, max_len: int, n: int,
@@ -435,10 +493,9 @@ def main() -> None:
                     help="masked: mọi bài đọc *_masked, chung cache với salary (T23.0); "
                          "bỏ trống = họ theo bài như cũ")
     ap.add_argument("--chunked", action="store_true",
-                    help="tin dài hơn --max-len chia thành đoạn thay vì cắt bỏ (chỉ --pooling mean)")
+                    help="tin dài hơn --max-len chia thành đoạn thay vì cắt bỏ; với --pooling none "
+                         "token các đoạn nối thành một dãy, lưu gọn không đệm")
     args = ap.parse_args()
-    if args.chunked and args.pooling == "none":
-        raise SystemExit("--chunked chỉ dùng với --pooling mean")
     task = cache_task(args.task, args.family)
     if args.last4:
         args.layers = 4
@@ -449,7 +506,7 @@ def main() -> None:
         if args.pooling == "none":
             token_cache_for(split, task, max_len=args.max_len, batch=args.batch,
                             device=args.device, force=args.force, encoder=args.encoder,
-                            layers=args.layers)
+                            layers=args.layers, chunked=args.chunked)
         else:
             embeddings_for(split, task, max_len=args.max_len, batch=args.batch,
                            device=args.device, force=args.force, encoder=args.encoder,
