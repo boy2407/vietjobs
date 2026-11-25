@@ -8,6 +8,9 @@
 # chunk: đối chứng độ công bằng (tác giả, 2026-11-25) — cùng Dense, cùng tham số, nhưng tin dài
 # hơn max_len được chia đoạn thay vì cắt bỏ (encode --chunked); run_id mang "sal17chunk".
 #
+# rnn: cũng chia đoạn (tác giả, 2026-11-25) — token các đoạn nối thành một dãy, không trần độ
+# dài, cache lưu gọn không đệm (encode --pooling none --chunked); run_id mang "sal17chunk".
+#
 # Chạy lại cùng lệnh là chạy tiếp: run đã có metrics.json bị bỏ qua; MTL RNN dùng --resume.
 # Không đọc test: chấm test + ext37k là bước riêng, tác giả gõ lệnh (Rule 5).
 $ErrorActionPreference = "Continue"
@@ -69,13 +72,13 @@ function Stage-Chunk {
 }
 
 function Stage-Rnn($e) {
-  Say "ENCODE token last4 masked $e ($([int]((Get-PSDrive C).Free/1GB)) GB trong)"
+  Say "ENCODE token last4 masked chunked $e ($([int]((Get-PSDrive C).Free/1GB)) GB trong)"
   & $PY -m vietjobs.dl.encode --task salary --splits train dev --encoder $e --max-len $LEN[$e] `
-    --batch $BS[$e] --last4 --pooling none --device cuda 2>&1 | Tee-Object "logs\t23-encode-tok-$e.txt"
-  $base = @("--encoder", $e, "--max-len", $LEN[$e], "--head", "rnn") + $COMMON + $RNN + @("--device", "cuda", "--seed", 42)
-  Train "dl-cat-$e-rnn-sal17-s42" train_dl (@("--task", "category") + $base + $CAT)
-  Train "dl-sal-$e-rnn-sal17-s42" train_dl (@("--task", "salary") + $base + $SAL)
-  $rid = "dl-mtl-$e-rnn-sal17-s42"
+    --batch $BS[$e] --last4 --pooling none --chunked --device cuda 2>&1 | Tee-Object "logs\t23-encode-tok-$e.txt"
+  $base = @("--encoder", $e, "--max-len", $LEN[$e], "--head", "rnn", "--chunked") + $COMMON + $RNN + @("--device", "cuda", "--seed", 42)
+  Train "dl-cat-$e-rnn-sal17chunk-s42" train_dl (@("--task", "category") + $base + $CAT)
+  Train "dl-sal-$e-rnn-sal17chunk-s42" train_dl (@("--task", "salary") + $base + $SAL)
+  $rid = "dl-mtl-$e-rnn-sal17chunk-s42"
   if (-not (Test-Path "artifacts\$rid\metrics.json")) {
     Say "TRAIN $rid"
     & $PY -m vietjobs.dl.train_mtl @($base + $MTL) --run-id $rid --resume 2>&1 |
@@ -83,7 +86,10 @@ function Stage-Rnn($e) {
     if (-not (Test-Path "artifacts\$rid\metrics.json")) { Say "LOI MTL RNN $e"; exit 1 }
   }
   # Encoder chạy lần lượt nên chỉ cache token của encoder này còn trên đĩa.
-  Get-ChildItem "artifacts\embeddings\$env:VIETJOBS_SPLITS" -Filter "*masked-len$($LEN[$e])-last4-tok*.npy" -EA SilentlyContinue | Remove-Item
+  # Chỉ xoá cache token chia đoạn của đúng encoder này; cache pooled "-chunk.npy" giữ lại.
+  $pre = if ($e -eq "phobert") { "" } else { "$e-" }
+  foreach ($sp in "train", "dev") { foreach ($k in "tok.f16", "off") {
+    Remove-Item "artifacts\embeddings\$env:VIETJOBS_SPLITS\$pre$sp-masked-len$($LEN[$e])-last4-chunk-$k.npy" -EA SilentlyContinue } }
   Say "XONG RNN $e"
 }
 
