@@ -572,7 +572,19 @@ Ba run còn lại cùng cấu hình `-v2` (một seed, `cuda`). XLM-R chạy l�
 
 **Đọc kết quả.** CafeBERT đứng đầu cả ba cấu trúc Dense. Khoảng cách giữa CafeBERT, PhoBERT, XLM-R và BamiBERT nhỏ, cùng cỡ độ lệch chuẩn giữa seed. ViSoBERT kém rõ ở cả hai bài: thấp hơn khoảng 0,04 F1-macro và cao hơn khoảng 0,4 triệu MAE. Lần này ViSoBERT không sụp đổ. Đa nhiệm cho MAE thấp hơn Dense lương đơn nhiệm ở PhoBERT và CafeBERT, nhưng chênh lệch chỉ khoảng 1–2 lần độ lệch chuẩn. Với PhoBERT, 8 trường thêm phần lớn rơi vào đoạn bị cắt, nên PhoBERT gần như không đọc được thông tin mới mà T23 thêm vào.
 
-> ⛔ **CHƯA CÓ SỐ LIỆU** (T23.6, T23.6b): `test` và `ext37k` của 75 run Dense.
+**Cắt bỏ hay cắt đoạn (T23.5c).** Ở bảng trên, phần đuôi của tin dài hơn `max_len` bị bỏ. Lần chạy đối chứng dùng `encode.py --chunked`: tin dài được chia thành các đoạn liền nhau dài `max_len` (kể cả token đặc biệt), mỗi đoạn qua encoder riêng, rồi vector tin là trung bình mọi token của mọi đoạn. Tin vừa một đoạn cho đúng vector cũ: trên PhoBERT, 799 tin `dev` và 7.118 tin train ngắn trùng tuyệt đối (sai khác lớn nhất 0). Mọi thứ khác giữ nguyên, cùng 5 seed. Δ là trung bình hiệu số cùng seed (cắt đoạn − cắt bỏ) ± độ lệch chuẩn của hiệu số; ngoặc là số seed tốt hơn trên 5.
+
+| Encoder | Dense ngành F1-macro | Δ | Dense lương MAE (triệu) | Δ | MTL F1-macro | Δ | MTL MAE (triệu) | Δ |
+|---|---|---|---|---|---|---|---|---|
+| PhoBERT | 0,6203 ± 0,0044 | +0,0021 ± 0,0069 (4) | **4,087 ± 0,032** | **−0,059 ± 0,033 (5)** | 0,6161 ± 0,0061 | +0,0045 ± 0,0045 (3) | **4,053 ± 0,029** | **−0,062 ± 0,025 (5)** |
+| CafeBERT | **0,6296 ± 0,0023** | **+0,0064 ± 0,0029 (5)** | 4,103 ± 0,033 | −0,018 ± 0,024 (4) | **0,6258 ± 0,0032** | +0,0010 ± 0,0052 (2) | 4,063 ± 0,015 | −0,029 ± 0,017 (5) |
+| XLM-R | 0,6171 ± 0,0038 | +0,0012 ± 0,0042 (3) | 4,137 ± 0,035 | −0,001 ± 0,033 (3) | 0,6138 ± 0,0052 | +0,0045 ± 0,0062 (4) | 4,139 ± 0,018 | −0,020 ± 0,013 (5) |
+| ViSoBERT | 0,5807 ± 0,0033 | +0,0012 ± 0,0047 (2) | 4,528 ± 0,024 | −0,001 ± 0,031 (1) | 0,5765 ± 0,0068 | −0,0053 ± 0,0043 (0) | 4,509 ± 0,047 | −0,022 ± 0,029 (3) |
+| BamiBERT | 0,6144 ± 0,0033 | −0,0006 ± 0,0003 (0) | 4,159 ± 0,035 | −0,000 ± 0,005 (2) | 0,6063 ± 0,0062 | −0,0004 ± 0,0024 (4) | 4,173 ± 0,023 | +0,002 ± 0,003 (1) |
+
+**Đọc kết quả.** Encoder càng bị cắt nhiều thì càng được lợi. PhoBERT, mất 21,4 % token khi cắt bỏ, được lợi rõ nhất ở bài lương: MAE giảm khoảng 0,06 triệu và R² log tăng khoảng 0,02 ở cả 5 seed, cả Dense lẫn MTL. Ở bài ngành, PhoBERT chỉ tăng +0,002, nằm trong nhiễu. CafeBERT (mất 5,2 % token) tăng F1-macro Dense +0,0064 ở cả 5 seed, khoảng 2 lần độ lệch chuẩn của hiệu số, và giảm MAE MTL ở cả 5 seed. XLM-R chỉ đổi rõ ở MTL lương. ViSoBERT không đổi rõ. BamiBERT gần như không đổi, đúng với việc chỉ 0,24 % số tin của nó dài hơn 1024 token. Sau khi cắt đoạn, CafeBERT dẫn đầu bài ngành (0,6296) và PhoBERT dẫn đầu bài lương (MAE 4,087 Dense, 4,053 MTL), nhưng khoảng cách lương giữa PhoBERT và CafeBERT (0,016 Dense, 0,010 MTL) nhỏ hơn độ lệch chuẩn giữa seed.
+
+> ⛔ **CHƯA CÓ SỐ LIỆU** (T23.6, T23.6b): `test` và `ext37k` của 150 run Dense (cắt bỏ và cắt đoạn).
 > ⛔ **CHƯA CÓ SỐ LIỆU** (T23): mốc không mô hình trên `splits-sal17-11c`.
 
-> **Nguồn số liệu:** `artifacts/dl-{cat,sal,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17-s{42..46}/metrics.json` và `env.json`; các dòng `*-dense-sal17-*` trong [04-results.md](04-results.md); phần bị cắt: `artifacts/embeddings/splits-sal17-11c/*-train-masked-len*-last4.json` (`truncated_frac`) và `logs/t23-truncation.txt` (đầu ra của `logs/measure_trunc.py`, train và dev, máy desktop, 2026-11-25).
+> **Nguồn số liệu:** `artifacts/dl-{cat,sal,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17{,chunk}-s{42..46}/metrics.json` và `env.json`; các dòng `*-dense-sal17-*` và `*-dense-sal17chunk-*` trong [04-results.md](04-results.md); cổng vector trùng: `logs/t23-chunk-gate.txt` (đầu ra của `logs/chunk_gate.py`, desktop, 2026-11-25); phần bị cắt: `artifacts/embeddings/splits-sal17-11c/*-train-masked-len*-last4.json` (`truncated_frac`) và `logs/t23-truncation.txt` (đầu ra của `logs/measure_trunc.py`, train và dev, máy desktop, 2026-11-25).
