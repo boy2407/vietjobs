@@ -85,3 +85,22 @@ def test_long_text_averages_every_token_of_every_chunk(fake):
     assert got[0, 0] == pytest.approx(np.mean(ids))
     cut = ENC.encode_texts([text], max_len=8, batch=2, quiet=True)
     assert cut[0, 0] != pytest.approx(got[0, 0])  # cách cũ bỏ mất "ghij"
+
+
+def test_ragged_pad_rebuilds_each_posting():
+    flat = np.arange(12, dtype=np.float16).reshape(6, 2)   # 6 token, 2 chiều
+    rag = ENC.RaggedTokens(flat, np.array([0, 1, 4, 6]))   # tin dài 1, 3, 2 token
+    assert len(rag) == 3 and rag.shape[-1] == 2
+    x, m = rag.pad(np.array([2, 0]))
+    assert x.shape == (2, 2, 2) and m.tolist() == [[1, 1], [1, 0]]
+    np.testing.assert_array_equal(x[0], flat[4:6])
+    np.testing.assert_array_equal(x[1, 0], flat[0])
+    assert not x[1, 1].any()                                  # pad là 0
+
+
+def test_chunked_token_cache_names():
+    tok = ENC.cache_path("train", C.TASK_SALARY, 256, "tok", last4=True, chunked=True)
+    off = ENC.cache_path("train", C.TASK_SALARY, 256, "off", last4=True, chunked=True)
+    assert tok.name == "train-masked-len256-last4-chunk-tok.f16.npy"
+    assert off.name == "train-masked-len256-last4-chunk-off.npy"
+

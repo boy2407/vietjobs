@@ -90,7 +90,7 @@ def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
     stem = f"{prefix}{split}-{family(task)}-len{max_len}"
     if layers > 1 and kind != "mask":
         stem += f"-last{layers}"
-    if chunked and kind == "pooled":
+    if chunked and kind in ("pooled", "tok", "off"):
         stem += "-chunk"
     if kind == "pooled":
         return CACHE_DIR / f"{stem}.npy"
@@ -98,6 +98,8 @@ def cache_path(split: str, task: str, max_len: int, kind: str = "pooled",
         return CACHE_DIR / f"{stem}-tok.f16.npy"
     if kind == "mask":
         return CACHE_DIR / f"{stem}-mask.npy"
+    if kind == "off" and chunked:
+        return CACHE_DIR / f"{stem}-off.npy"
     raise ValueError(f"kind lạ: {kind}")
 
 
@@ -208,6 +210,44 @@ def encode_texts(texts, *, max_len: int = 256, batch: int = 32,
     return out
 
 
+def _pieces(texts, tok, max_len: int):
+    """Các đoạn ``max_len`` token (kể cả token đặc biệt) của mọi tin, theo thứ tự tin."""
+    size = max_len - tok.num_special_tokens_to_add(pair=False)
+    pieces, owner = [], []
+    for i, t in enumerate(texts):
+        for p in split_ids(tok(t, add_special_tokens=False)["input_ids"], size):
+            pieces.append(tok.build_inputs_with_special_tokens(p))
+            owner.append(i)
+    return pieces, np.asarray(owner)
+
+
+class RaggedTokens:
+    """Cache token chia đoạn: token thật của mọi tin nối liền trong ``flat [N, dim]``,
+    tin ``i`` nằm ở ``flat[off[i]:off[i + 1]]`` — không đệm trên đĩa, vì tin dài nhất
+    (2.080 token PhoBERT trên train) sẽ bắt mọi tin khác đệm theo nó.
+    """
+
+    def __init__(self, flat, off: np.ndarray):
+        self.flat, self.off = flat, off
+
+    def __len__(self) -> int:
+        return len(self.off) - 1
+
+    @property
+    def shape(self) -> tuple:
+        return (len(self), None, self.flat.shape[1])
+
+    def pad(self, idx: np.ndarray):
+        """``[b, T, dim]`` float16 và mặt nạ ``[b, T]`` uint8, ``T`` = tin dài nhất của batch."""
+        lens = self.off[idx + 1] - self.off[idx]
+        x = np.zeros((len(idx), int(lens.max()), self.flat.shape[1]), dtype=np.float16)
+        m = np.zeros(x.shape[:2], dtype=np.uint8)
+        for j, (i, n) in enumerate(zip(idx, lens)):
+            x[j, :n] = self.flat[self.off[i]:self.off[i] + n]
+            m[j, :n] = 1
+        return x, m
+
+
 def _encode_chunked(texts, tok, model, dev, *, max_len: int, batch: int, quiet: bool,
                     layers: int, hidden: int) -> np.ndarray:
     """Tin dài hơn ``max_len`` không bị cắt bỏ: chia thành đoạn ``max_len`` token (kể cả
@@ -217,13 +257,7 @@ def _encode_chunked(texts, tok, model, dev, *, max_len: int, batch: int, quiet: 
     """
     import torch
 
-    size = max_len - tok.num_special_tokens_to_add(pair=False)
-    pieces, owner = [], []
-    for i, t in enumerate(texts):
-        for p in split_ids(tok(t, add_special_tokens=False)["input_ids"], size):
-            pieces.append(tok.build_inputs_with_special_tokens(p))
-            owner.append(i)
-    owner = np.asarray(owner)
+    pieces, owner = _pieces(texts, tok, max_len)
     sums = np.zeros((len(texts), hidden), dtype=np.float64)
     counts = np.zeros(len(texts), dtype=np.float64)
     t0 = time.time()
