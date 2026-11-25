@@ -3,6 +3,10 @@
 #
 #   powershell -ExecutionPolicy Bypass -File scripts\run_t23_windows.ps1 pooled dense
 #   powershell -ExecutionPolicy Bypass -File scripts\run_t23_windows.ps1 rnn:cafebert
+#   powershell -ExecutionPolicy Bypass -File scripts\run_t23_windows.ps1 chunk
+#
+# chunk: đối chứng độ công bằng (tác giả, 2026-11-25) — cùng Dense, cùng tham số, nhưng tin dài
+# hơn max_len được chia đoạn thay vì cắt bỏ (encode --chunked); run_id mang "sal17chunk".
 #
 # Chạy lại cùng lệnh là chạy tiếp: run đã có metrics.json bị bỏ qua; MTL RNN dùng --resume.
 # Không đọc test: chấm test + ext37k là bước riêng, tác giả gõ lệnh (Rule 5).
@@ -50,6 +54,20 @@ function Stage-Dense {
   } }
 }
 
+function Stage-Chunk {
+  foreach ($e in $ENCS) {
+    Say "ENCODE pooled last4 masked chunked $e"
+    & $PY -m vietjobs.dl.encode --task salary --splits train dev --encoder $e --max-len $LEN[$e] `
+      --batch $BS[$e] --last4 --chunked --device cuda 2>&1 | Tee-Object "logs\t23-encode-chunk-$e.txt"
+  }
+  foreach ($e in $ENCS) { foreach ($s in 42..46) {
+    $base = @("--encoder", $e, "--max-len", $LEN[$e], "--head", "dense", "--chunked") + $COMMON + @("--device", "cpu", "--seed", $s)
+    Train "dl-cat-$e-dense-sal17chunk-s$s" train_dl (@("--task", "category") + $base + $CAT)
+    Train "dl-sal-$e-dense-sal17chunk-s$s" train_dl (@("--task", "salary") + $base + $SAL)
+    Train "dl-mtl-$e-dense-sal17chunk-s$s" train_mtl ($base + $MTL)
+  } }
+}
+
 function Stage-Rnn($e) {
   Say "ENCODE token last4 masked $e ($([int]((Get-PSDrive C).Free/1GB)) GB trong)"
   & $PY -m vietjobs.dl.encode --task salary --splits train dev --encoder $e --max-len $LEN[$e] `
@@ -73,6 +91,7 @@ foreach ($job in $args) {
   switch -Regex ($job) {
     "^pooled$" { Stage-Pooled }
     "^dense$"  { Stage-Dense }
+    "^chunk$"  { Stage-Chunk }
     "^rnn$"    { foreach ($e in $ENCS) { Stage-Rnn $e } }
     "^rnn:(.+)$" { Stage-Rnn $Matches[1] }
     default { "job la: $job"; exit 2 }
