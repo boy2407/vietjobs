@@ -48,4 +48,4 @@ ssh -p PORT root@IP "cd /workspace/vietjobs && tar czf - artifacts/<run_glob> lo
 | 25 | [dot-25-t22-dense.md](dot-25-t22-dense.md) | T22 — CafeBERT 512 Dense R0–R4 (lọc xung đột, cột mới, lặp tin) | `train_dl.py` qua ssh | KHÔNG DÙNG — chạy trên Mac, chờ destroy |
 | 26 | [dot-26-t22-r6l4.md](dot-26-t22-r6l4.md) | T22 — R6-L4: CafeBERT last4 Dense lương, một text + 6 trường | `scripts/vast_run_t22_r6l4.sh` | ĐÃ KÉO VỀ, chờ destroy |
 | 27 | [dot-27-t22-r6-rnn.md](dot-27-t22-r6-rnn.md) | T22 — R6-RNN: BiGRU-LSTM-CNN lương, một text + 6 trường, 5 encoder, seed 42 | `scripts/vast_run_t22_r6rnn.sh` | ĐÃ DỪNG (bỏ R6), chờ destroy |
-| 28 | [dot-28-t23-train-lai.md](dot-28-t23-train-lai.md) | T23 — 6 cấu trúc last4 × 5 encoder trên `splits-sal17-11c` (90 run) | `scripts/vast_run_t23.sh` | CHƯA THUÊ |
+| 28 | [dot-28-t23-train-lai.md](dot-28-t23-train-lai.md) | T23 — 6 cấu trúc last4 × 5 encoder trên `splits-sal17-11c` (90 run) | `scripts/vast_run_t23.sh` | KHÔNG THUÊ — chạy trên desktop Windows |

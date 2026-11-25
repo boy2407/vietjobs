@@ -1,7 +1,7 @@
 # Đợt 28 — T23: train lại 6 cấu trúc last4 × 5 encoder trên `splits-sal17-11c`
 
 **Task:** T23.2–T23.11b ([tasks/T23-train-lai.md](../tasks/T23-train-lai.md)). **Script:** `scripts/vast_run_t23.sh`.
-**Trạng thái:** CHƯA THUÊ. Trần chi phí **15 USD** cho cả đợt.
+**Trạng thái:** KHÔNG THUÊ — tác giả chuyển T23 sang máy desktop Windows (2026-11-25), runner `scripts/run_t23_windows.ps1`. Log chạy ghi ở `tasks/T23-train-lai.md`.
 
 **Dữ liệu.** `data/processed/splits-sal17-11c` (`VIETJOBS_SPLITS`), họ `masked`, 11 cột nối:
 train 21.801 / dev 2.422 / test 6.056 (lược đồ v3, AGENTS.md Rule 5 mục 7). Không so với `splits/`.
