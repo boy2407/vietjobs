@@ -464,9 +464,23 @@ Lược đồ v3 dùng một bộ dữ liệu khác hẳn các mục trên, nên
 
 CafeBERT cao nhất ở cả Dense và MTL Dense. PhoBERT, XLM-R và BamiBERT cách CafeBERT 0,007–0,008 F1-macro ở Dense, tức khoảng 1–2 lần độ lệch chuẩn giữa seed. ViSoBERT thấp hơn rõ, khoảng 0,04, nhưng không sụp đổ. Với PhoBERT, 8 trường thêm nằm ở cuối chuỗi, đúng phần bị cắt (Bảng 4.21).
 
+**Cắt đoạn thay cắt bỏ (T23.5c).** Bảng 4.21 cho thấy PhoBERT bỏ 21,4 % token, còn BamiBERT gần như không bỏ gì, nên Bảng 4.22 so các encoder trên lượng văn bản khác nhau. Lần chạy đối chứng giữ nguyên mọi thứ, chỉ đổi cách xử lý tin dài: `encode.py --chunked` chia tin thành các đoạn liền nhau dài `max_len` (kể cả token đặc biệt), nhúng từng đoạn, rồi lấy trung bình mọi token của mọi đoạn. Tin vừa một đoạn cho đúng vector cũ; trên PhoBERT, 799 tin `dev` ngắn trùng tuyệt đối. Cùng lệnh, cùng máy, cùng ngày 25/11/2026 (`run_t23_windows.ps1 chunk`), `run_id` `dl-{cat,mtl}-{enc}-dense-sal17chunk-s{42..46}`.
+
+**Bảng 4.24: Phân loại trên `dev` lược đồ v3 khi cắt đoạn; Δ là trung bình hiệu số cùng seed so với Bảng 4.22, ngoặc là số seed tăng trên 5**
+
+| Encoder | Dense F1-macro | Δ | MTL Dense F1-macro | Δ |
+|---|---|---|---|---|
+| PhoBERT | 0,6203 ± 0,0044 | +0,0021 (4) | 0,6161 ± 0,0061 | +0,0045 (3) |
+| CafeBERT | **0,6296 ± 0,0023** | **+0,0064 (5)** | **0,6258 ± 0,0032** | +0,0010 (2) |
+| XLM-R | 0,6171 ± 0,0038 | +0,0012 (3) | 0,6138 ± 0,0052 | +0,0045 (4) |
+| ViSoBERT | 0,5807 ± 0,0033 | +0,0012 (2) | 0,5765 ± 0,0068 | −0,0053 (0) |
+| BamiBERT | 0,6144 ± 0,0033 | −0,0006 (0) | 0,6063 ± 0,0062 | −0,0004 (4) |
+
+Chỉ CafeBERT Dense tăng ở cả 5 seed, khoảng 2 lần độ lệch chuẩn của hiệu số. Với PhoBERT, đọc thêm phần đuôi gần như không đổi bài phân loại: phần đầu tin (tiêu đề, mô tả) đã đủ để đoán ngành.
+
 > ⛔ **CHƯA CÓ SỐ LIỆU** (T23.6, T23.6b): `test` và `ext37k` của các run trên.
 
-> **Nguồn số liệu:** `artifacts/dl-{cat,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17-s{42..46}/metrics.json`, `env.json`; các dòng `*-dense-sal17-*` trong [04-results.md](../04-results.md); Bảng 4.21: `artifacts/embeddings/splits-sal17-11c/*-train-masked-len*-last4.json` (`truncated_frac`) và `logs/t23-truncation.txt`.
+> **Nguồn số liệu:** `artifacts/dl-{cat,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17{,chunk}-s{42..46}/metrics.json`, `env.json`; các dòng `*-dense-sal17-*` và `*-dense-sal17chunk-*` trong [04-results.md](../04-results.md); cổng vector trùng: `logs/t23-chunk-gate.txt`; Bảng 4.21: `artifacts/embeddings/splits-sal17-11c/*-train-masked-len*-last4.json` (`truncated_frac`) và `logs/t23-truncation.txt`.
 
 ---
 
@@ -741,9 +755,23 @@ Cùng đợt chạy, cùng dữ liệu và cùng xử lý tiếng Việt như §
 
 Bốn encoder PhoBERT, CafeBERT, XLM-R, BamiBERT có MAE trong khoảng 4,12–4,16 triệu, chênh nhau cỡ độ lệch chuẩn giữa seed. RMSE thấp nhất thuộc về PhoBERT (8,031). ViSoBERT kém rõ, MAE cao hơn khoảng 0,4 triệu. Đa nhiệm giảm MAE so với Dense đơn nhiệm ở PhoBERT (4,146 → 4,115) và CafeBERT (4,122 → 4,092), nhưng tăng ở XLM-R và BamiBERT.
 
+**Cắt đoạn thay cắt bỏ (T23.5c)** — cùng đợt chạy đối chứng như §4.3.3, `run_id` `dl-{sal,mtl}-{enc}-dense-sal17chunk-s{42..46}`.
+
+**Bảng 4.25: Ước lượng lương trên `dev` lược đồ v3 khi cắt đoạn; Δ là trung bình hiệu số cùng seed so với Bảng 4.23, ngoặc là số seed giảm MAE trên 5**
+
+| Encoder | Dense MAE (triệu) | Δ | Dense R² log | MTL Dense MAE (triệu) | Δ | MTL Dense R² log |
+|---|---|---|---|---|---|---|
+| PhoBERT | **4,087 ± 0,032** | **−0,059 (5)** | **0,570** | **4,053 ± 0,029** | **−0,062 (5)** | **0,578** |
+| CafeBERT | 4,103 ± 0,033 | −0,018 (4) | 0,560 | 4,063 ± 0,015 | −0,029 (5) | 0,575 |
+| XLM-R | 4,137 ± 0,035 | −0,001 (3) | 0,550 | 4,139 ± 0,018 | −0,020 (5) | 0,558 |
+| ViSoBERT | 4,528 ± 0,024 | −0,001 (1) | 0,455 | 4,509 ± 0,047 | −0,022 (3) | 0,462 |
+| BamiBERT | 4,159 ± 0,035 | −0,000 (2) | 0,550 | 4,173 ± 0,023 | +0,002 (1) | 0,547 |
+
+PhoBERT được lợi rõ nhất: MAE giảm khoảng 0,06 triệu ở cả 5 seed, cả Dense lẫn đa nhiệm, và R² log tăng khoảng 0,02. Đây là encoder bị cắt nhiều nhất (Bảng 4.21), và 8 trường thêm nằm đúng ở phần đuôi bị cắt. BamiBERT không đổi, vì gần như không tin nào dài quá 1024 token. Sau khi cắt đoạn, PhoBERT có MAE thấp nhất, nhưng cách CafeBERT 0,016 triệu (Dense) và 0,010 triệu (đa nhiệm), nhỏ hơn độ lệch chuẩn giữa seed. Bảng 4.23 vì vậy đánh giá thấp PhoBERT ở bài lương; so sánh công bằng giữa các encoder nên dùng Bảng 4.24–4.25.
+
 > ⛔ **CHƯA CÓ SỐ LIỆU** (T23.6, T23.6b): `test` và `ext37k` của các run trên.
 
-> **Nguồn số liệu:** `artifacts/dl-{sal,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17-s{42..46}/metrics.json`; các dòng `*-dense-sal17-*` trong [04-results.md](../04-results.md).
+> **Nguồn số liệu:** `artifacts/dl-{sal,mtl}-{phobert,cafebert,xlmr,visobert,bamibert}-dense-sal17{,chunk}-s{42..46}/metrics.json`; các dòng `*-dense-sal17-*` và `*-dense-sal17chunk-*` trong [04-results.md](../04-results.md).
 
 ## 4.5. Phân tích lỗi
 
