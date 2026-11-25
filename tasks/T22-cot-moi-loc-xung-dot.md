@@ -28,6 +28,7 @@ author in the 2026-11-23 grilling session.
 | T22.5 | R3 `dl-{cat,sal}-t22-r3-s{42..44}` | disclosed, no conflict | all | as above | done |
 | T22.6 | R4 `dl-cat-t22-r4-s{42..44}` (category only) | best of R0–R3 | best of R0–R3 | class weight off, small classes repeated up to N | done |
 | T22.7 | log, docs, thesis, workbook (Rules 1, 7, 10, 13) | — | — | — | todo |
+| T22.8 | R6-RNN `dl-sal-t22-r6rnn-{phobert,cafebert,xlmr,visobert,bamibert}-s42` (rental 27) | — | 6 fields as text (`splits-r6text`) | BiGRU-LSTM-CNN, seed 42 | dropped |
 
 **Extra columns** (fitted on `train` only, then applied to `dev`):
 
@@ -52,3 +53,7 @@ uses them. This task filters `train` only and keeps the frozen splits.
 |---|---|---|
 | 2026-11-23 | Claude | Sheet created after the author's "ok"; nothing run yet |
 | 2026-11-23 | Claude | R0–R4 run on Mac `cpu` (27 runs, `04-results.md`). PhoBERT xf caches not built (rental 25 too slow). Test scored once from saved `best.pt` by the author's override (`scripts/score_t22_test.py`, run by the author; `test.csv` sha256 70ba98d5… unchanged), 27 rows tagged test-informed. Results in sheet tabs ` Dashboard-v2` and `Score_v2`. T22.7 docs/thesis still open |
+| 2026-11-23 | Claude | R6-L4 `dl-sal-t22-r6l4-s{42..46}` (rental 26): dev MAE 4,075 ± 0,027, better than Last4 on 5/5 seeds. Logged in 04-results, 06 §5.10, bao-cao §4.4.6, 00, workbook, sheet ` Dashboard-v2` row 13. Test not scored |
+| 2026-11-23 | Claude | R6-L4 for PhoBERT, ViSoBERT, XLM-R, BamiBERT (rental 26); only CafeBERT passes the rule. Test scored once by the author on vast (`score_r6l4_test.py`), all 25 runs; sheets ` Dashboard-v2` rows 13–17 and `Score_v2` written |
+| 2026-11-24 | Claude | Added T22.8 (R6-RNN, 1 seed, author's choice). Rental 27 file, `scripts/vast_run_t22_r6rnn.sh`, and an `r6text` branch in `eval_sal_rnn.py` (test text built in memory, no ext37k) prepared before renting |
+| 2026-11-24 | Claude | Author dropped R6 (R6-L4 and R6-RNN). R6-RNN stopped during BamiBERT; dev MAE before stop: phobert 3.839, cafebert 3.770, xlmr 3.940, visobert 3.850 (old RNN 4.047/3.840/3.984/3.972). R6-L4 removed from docs/06 §5.10, bao-cao §4.4.6, 00-tong-quan and the two sheet tabs; its 04-results rows stay (append-only). Artifacts deleted by the author |

@@ -298,6 +298,14 @@ F1 theo từng lớp trên dev đối với lớp này được đo trên 25 m�
 hãy đọc `f1_macro_no_junk` cùng với nó, và xác nhận lại trên `test` ở bước
 cuối.
 
+**Lược đồ v3 (2026-11-24).** `data/processed/splits-sal17-11c` là bộ chia thứ
+hai, dựng từ file gốc sau `drop_duplicates()`: bỏ 5.220 dòng trùng đủ 17 cột
+khác nhãn, giữ 30.279 tin có công khai lương, chia 8:2 rồi 9:1 (seed 20260826)
+→ train 21.801 / dev 2.422 / test 6.056, 0 nhóm vắt qua hai tập
+(`build_meta.json`). Tám trường phụ đã che lương được nối vào
+`requirements_masked`. Chi tiết: `tasks/T23-split-sal17.md`; quy tắc:
+`03-protocol.md` §1.
+
 `SPLIT_SEED = 20260826` không đổi, nhưng **các tỷ lệ đã thay đổi**, nên bản
 thân các tập chia tách là mới. Mọi thứ được đo dưới lược đồ 70/15/15 cũ — mọi
 chuẩn đối sánh lương 5,86 cũ và các embedding PhoBERT đã
